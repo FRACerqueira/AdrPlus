@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AdrPlus": {
+      "commandName": "Project",
+      "commandLineArgs": "wizard"
+    }
+  }
+}

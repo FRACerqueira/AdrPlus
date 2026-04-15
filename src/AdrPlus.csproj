@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+		<AssemblyName>adrplus</AssemblyName>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<Authors>Fernando Cerqueira</Authors>
+		<Copyright>Copyright © 2025 Fernando Cerqueira</Copyright>
+		<PackageProjectUrl>https://github.com/FRACerqueira/AdrPlus</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/FRACerqueira/AdrPlus</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>adrplus</ToolCommandName>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageTags>adr;architecture;decision-records;dotnet-tool;cli</PackageTags>
+		<PackageDescription>A cross-platform .NET CLI tool for managing Architecture Decision Records (ADRs) — versioning, status workflows, interactive wizard and multi-language support.</PackageDescription>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\adr-template.md" />
+    <EmbeddedResource Include="Resources\adr-templateptbr.md" />
+  </ItemGroup>
+
+  <!-- Pack README and icon into the NuGet package -->
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\icon.png" Pack="true" PackagePath="\" Condition="Exists('..\icon.png')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.13" />
+    <PackageReference Include="PromptPlus" Version="5.0.6" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\AdrPlus.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdrPlus.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\AdrPlus.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdrPlus.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="adrplus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
