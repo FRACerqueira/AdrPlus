@@ -1,0 +1,52 @@
+name: Protect Main Branch
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  administration: write
+
+jobs:
+  protect:
+    name: Apply branch protection to main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply branch protection rules
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          curl -s -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$OWNER/$REPO/branches/main/protection" \
+            -d '{
+              "required_status_checks": null,
+              "enforce_admins": true,
+              "required_pull_request_reviews": {
+                "dismiss_stale_reviews": true,
+                "require_code_owner_reviews": false,
+                "required_approving_review_count": 1
+              },
+              "restrictions": null,
+              "required_linear_history": false,
+              "allow_force_pushes": false,
+              "allow_deletions": false,
+              "block_creations": false,
+              "required_conversation_resolution": true,
+              "lock_branch": false,
+              "allow_fork_syncing": false
+            }' | tee /tmp/response.json
+          if grep -q '"url"' /tmp/response.json; then
+            echo "Branch protection applied successfully."
+          else
+            echo "Failed to apply branch protection:"
+            cat /tmp/response.json
+            exit 1
+          fi
