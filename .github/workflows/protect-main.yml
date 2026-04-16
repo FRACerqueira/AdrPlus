@@ -2,13 +2,12 @@ name: Protect Main Branch
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
+# Branch protection via the REST API requires a token with admin:repo scope.
+# Store a Personal Access Token (PAT) or GitHub App installation token with
+# that permission as a repository secret named PROTECTION_TOKEN.
 permissions:
   contents: read
-  administration: write
 
 jobs:
   protect:
@@ -17,11 +16,11 @@ jobs:
     steps:
       - name: Apply branch protection rules
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PROTECTION_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
         run: |
-          curl -s -X PUT \
+          HTTP_STATUS=$(curl -s -o /tmp/response.json -w "%{http_code}" -X PUT \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -42,11 +41,11 @@ jobs:
               "required_conversation_resolution": true,
               "lock_branch": false,
               "allow_fork_syncing": false
-            }' | tee /tmp/response.json
-          if grep -q '"url"' /tmp/response.json; then
-            echo "Branch protection applied successfully."
+            }')
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Branch protection applied successfully (HTTP $HTTP_STATUS)."
           else
-            echo "Failed to apply branch protection:"
+            echo "Failed to apply branch protection (HTTP $HTTP_STATUS):"
             cat /tmp/response.json
             exit 1
           fi
