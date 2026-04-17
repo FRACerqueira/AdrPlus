@@ -1,0 +1,1005 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrMsgDefaultSettingsMissing" xml:space="preserve">
+    <value>DefaultSettings section is missing from configuration</value>
+  </data>
+  <data name="ErrMsgContentInvalidPath" xml:space="preserve">
+    <value>'content' contains an invalid file path: {0}</value>
+  </data>
+  <data name="ErrMsgContentPathTooLong" xml:space="preserve">
+    <value>'content' file path is too long: '{0}'</value>
+  </data>
+  <data name="ErrMsgContentPathNotSupported" xml:space="preserve">
+    <value>'content' file path format is not supported: '{0}'</value>
+  </data>
+  <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
+    <value>'folderRepo' must be a relative path. Absolute paths are not allowed: '{0}'</value>
+  </data>
+  <data name="ErrMsgDateFormatInvalid" xml:space="preserve">
+    <value>'dateformat' is invalid: '{0}'. Unable to validate date format</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="ErrMsgInvalidLanguageCode" xml:space="preserve">
+    <value>'language' contains an invalid language code: '{0}'. Expected format: e.g., 'en-US', 'pt-BR'</value>
+  </data>
+  <data name="ExceptionDirectoryNotFound" xml:space="preserve">
+    <value>Directory not found: {0}</value>
+  </data>
+  <data name="ExceptionUnknownCommand" xml:space="preserve">
+    <value>Unknown command: {0}</value>
+  </data>
+  <data name="ExceptionMissingArgumentValue" xml:space="preserve">
+    <value>Missing value for argument '{0}' ({1})</value>
+  </data>
+  <data name="ExceptionMissingRequiredArgument" xml:space="preserve">
+    <value>Required argument '{0}' ({1}) is missing</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="ErrMsgTemplateRepoFileNotFound" xml:space="preserve">
+    <value>ADR configuration file (template/adr-config.adrplus) not found. Please run the 'config' command first</value>
+  </data>
+  <data name="ExceptionInvalidArgumentToken" xml:space="preserve">
+    <value>Invalid Argument: {0}</value>
+  </data>
+  <data name="MsgCommandStarted" xml:space="preserve">
+    <value>'{0}' command started</value>
+  </data>
+  <data name="MsgCommandFinished" xml:space="preserve">
+    <value>'{0}' command finished</value>
+  </data>
+  <data name="StatusNew" xml:space="preserve">
+    <value>Proposed</value>
+  </data>
+  <data name="StatusAcc" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="StatusRej" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="StatusSup" xml:space="preserve">
+    <value>Superseded</value>
+  </data>
+  <data name="DefaultScope" xml:space="preserve">
+    <value>Enterprise;CrossDomain;Project</value>
+  </data>
+  <data name="Defaultskipdomain" xml:space="preserve">
+    <value>Enterprise</value>
+  </data>
+  <data name="DefaultHeaderDisclaimer" xml:space="preserve">
+    <value>(Do not remove this template. It is used and must remain unchanged to ensure consistency in documentation)</value>
+  </data>
+  <data name="DefaultPrefix" xml:space="preserve">
+    <value>ADR</value>
+  </data>
+  <data name="Examples" xml:space="preserve">
+    <value>Examples</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="FieldTitleFolderRepo" xml:space="preserve">
+    <value>ADR Repository Folder</value>
+  </data>
+  <data name="FieldTitleDateFormat" xml:space="preserve">
+    <value>Date Format</value>
+  </data>
+  <data name="FieldTitleTemplate" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="FieldTitlePrefix" xml:space="preserve">
+    <value>File Prefix</value>
+  </data>
+  <data name="FieldTitleLenSeq" xml:space="preserve">
+    <value>Length Sequence</value>
+  </data>
+  <data name="FieldTitleLenVersion" xml:space="preserve">
+    <value>Length Version</value>
+  </data>
+  <data name="FieldTitleLenRevision" xml:space="preserve">
+    <value>Length Revision</value>
+  </data>
+  <data name="FieldTitleLenScope" xml:space="preserve">
+    <value>Length Scope</value>
+  </data>
+  <data name="FieldTitleScopes" xml:space="preserve">
+    <value>Scopes</value>
+  </data>
+  <data name="FieldTitleFolderByScope" xml:space="preserve">
+    <value>Folder By Scope</value>
+  </data>
+  <data name="FieldTitleSkipDomain" xml:space="preserve">
+    <value>Skip Domain when</value>
+  </data>
+  <data name="FieldTitleSeparator" xml:space="preserve">
+    <value>Separator</value>
+  </data>
+  <data name="FieldTitleCaseTransform" xml:space="preserve">
+    <value>Case Transform</value>
+  </data>
+  <data name="FieldTitleStatusNew" xml:space="preserve">
+    <value>Text status Proposed</value>
+  </data>
+  <data name="FieldTitleStatusAccepted" xml:space="preserve">
+    <value>Text status Accepted</value>
+  </data>
+  <data name="FieldTitleStatusRejected" xml:space="preserve">
+    <value>Text status Rejected</value>
+  </data>
+  <data name="FieldTitleStatusSuperseded" xml:space="preserve">
+    <value>Text status Superseded</value>
+  </data>
+  <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
+    <value>Header Comment</value>
+  </data>
+  <data name="DefaultTextStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="DefaultTextRevision" xml:space="preserve">
+    <value>Revision</value>
+  </data>
+  <data name="FieldTitleHeaderStatus" xml:space="preserve">
+    <value>Status text in header</value>
+  </data>
+  <data name="FieldTitleHeaderVersion" xml:space="preserve">
+    <value>Version text in header</value>
+  </data>
+  <data name="FieldTitleHeaderRevision" xml:space="preserve">
+    <value>Revision text in header</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="ExceptionDirectoryPathEmpty" xml:space="preserve">
+    <value>Directory path cannot be empty</value>
+  </data>
+  <data name="ExceptionInvalidCaseFormat" xml:space="preserve">
+    <value>Invalid case model format: {0}</value>
+  </data>
+  <data name="ExceptionJsonStringNull" xml:space="preserve">
+    <value>The JSON string cannot be null or empty</value>
+  </data>
+  <data name="ExceptionFilenameEmpty" xml:space="preserve">
+    <value>Filename cannot be empty</value>
+  </data>
+  <data name="ExceptionFilenameMustHaveMdExtension" xml:space="preserve">
+    <value>Filename must have a .md extension</value>
+  </data>
+  <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
+    <value>Invalid filename format. Expected at least number and title</value>
+  </data>
+  <data name="ErrorFilenameNoPrefix" xml:space="preserve">
+    <value>Filename does not start with expected prefix: {0}</value>
+  </data>
+  <data name="ErrorInvalidNumberFormat" xml:space="preserve">
+    <value>Invalid number format: {0}</value>
+  </data>
+  <data name="ErrorInvalidVersionFormat" xml:space="preserve">
+    <value>Invalid version format: {0}</value>
+  </data>
+  <data name="ErrorInvalidRevisionFormat" xml:space="preserve">
+    <value>Invalid revision format: {0}</value>
+  </data>
+  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
+    <value>Invalid scope format: {0}</value>
+  </data>
+  <data name="ErrorInvalidSupersededNumberFormat" xml:space="preserve">
+    <value>Invalid Superseded number format: {0}</value>
+  </data>
+  <data name="ErrorUnexpectedPartInFilename" xml:space="preserve">
+    <value>Unexpected part in filename: {0}</value>
+  </data>
+  <data name="ErrorParsingFilename" xml:space="preserve">
+    <value>Error parsing filename: {0}</value>
+  </data>
+  <data name="ValidationMissingRequiredField" xml:space="preserve">
+    <value>Missing required field: '{0}'</value>
+  </data>
+  <data name="ValidationFieldMustBeBoolean" xml:space="preserve">
+    <value>Field '{0}' must be a boolean, but found: {1}</value>
+  </data>
+  <data name="ValidationFieldWrongType" xml:space="preserve">
+    <value>Field '{0}' must be of type {1}, but found: {2}</value>
+  </data>
+  <data name="ValidationUnexpectedFields" xml:space="preserve">
+    <value>Unexpected fields found: {0}</value>
+  </data>
+  <data name="ValidationInvalidJsonFormat" xml:space="preserve">
+    <value>Invalid JSON format: {0}</value>
+  </data>
+  <data name="ValidationFieldMustBeNonNegative" xml:space="preserve">
+    <value>Field '{0}' must be a non-negative number</value>
+  </data>
+  <data name="ValidationFieldMinimumValue" xml:space="preserve">
+    <value>Field '{0}' must be at least {1}</value>
+  </data>
+  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
+    <value>Field '{0}' must be empty when '{1}' is 0</value>
+  </data>
+  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
+    <value>Field '{0}' must be not empty when '{1}' is greater than 0</value>
+  </data>
+  <data name="ValidationScopeMinLength" xml:space="preserve">
+    <value>Each scope in '{0}' must be at least as long as the '{1}' value ({2})</value>
+  </data>
+  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
+    <value>The following scopes in '{0}' are not defined in '{1}': {2}</value>
+  </data>
+  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
+    <value>Field '{0}' cannot be true when '{1}' is empty</value>
+  </data>
+  <data name="ValidationMustbeFollowing" xml:space="preserve">
+    <value>Field '{0}' must be one of: {1}</value>
+  </data>
+  <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
+    <value>Field '{0}' cannot be empty</value>
+  </data>
+  <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
+    <value>Failed to start process</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
+    <value>Invalid Culture  {0}</value>
+  </data>
+  <data name="ValidationDateFormatInvalidFormat" xml:space="preserve">
+    <value>Format date invalid {0}</value>
+  </data>
+  <data name="ValidationFieldMaxCharValue" xml:space="preserve">
+    <value>The field '{0}' must have a maximum of 1 character</value>
+  </data>
+  <data name="FieldTitleLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="FieldTitleOpenAdr" xml:space="preserve">
+    <value>Command to Open ADR</value>
+  </data>
+  <data name="FieldTitleNoValue" xml:space="preserve">
+    <value>No character value</value>
+  </data>
+  <data name="FieldTitleYesValue" xml:space="preserve">
+    <value>Yes character value</value>
+  </data>
+  <data name="CancelledByUser" xml:space="preserve">
+    <value>Cancelled by user</value>
+  </data>
+  <data name="ConfigActionSaveAndFinish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="ConfigActionSaveAndFinishDesc" xml:space="preserve">
+    <value>Save configuration and exit</value>
+  </data>
+  <data name="ConfigErrorInvalidBoolean" xml:space="preserve">
+    <value>Invalid boolean value. Please enter 'true' or 'false'</value>
+  </data>
+  <data name="ConfigErrorInvalidNumber" xml:space="preserve">
+    <value>Invalid number format. Please enter a valid number</value>
+  </data>
+  <data name="ConfigErrorMinThreeChars" xml:space="preserve">
+    <value>Minimum of 3 characters required</value>
+  </data>
+  <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
+    <value>Text transformation applied to file names</value>
+  </data>
+  <data name="ConfigFieldDescDateFormat" xml:space="preserve">
+    <value>Date format pattern for ADR files</value>
+  </data>
+  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
+    <value>Organize ADRs in separate folders by scope</value>
+  </data>
+  <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
+    <value>Relative path to the ADR repository folder</value>
+  </data>
+  <data name="ConfigFieldDescHeaderDisclaimer" xml:space="preserve">
+    <value>Warning text displayed in ADR headers</value>
+  </data>
+  <data name="ConfigFieldDescLanguage" xml:space="preserve">
+    <value>Language code for localization (e.g., en-US, pt-BR)</value>
+  </data>
+  <data name="ConfigFieldDescLenRevision" xml:space="preserve">
+    <value>Length of the revision number in file names</value>
+  </data>
+  <data name="ConfigFieldDescLenScope" xml:space="preserve">
+    <value>Length of the scope abbreviation in file names</value>
+  </data>
+  <data name="ConfigFieldDescLenSeq" xml:space="preserve">
+    <value>Length of the sequence number in file names</value>
+  </data>
+  <data name="ConfigFieldDescLenVersion" xml:space="preserve">
+    <value>Length of the version number in file names</value>
+  </data>
+  <data name="ConfigFieldDescNoValue" xml:space="preserve">
+    <value>Character used to represent 'No' in prompts</value>
+  </data>
+  <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
+    <value>Command to open ADR files (must contain the text '{0}')</value>
+  </data>
+  <data name="ConfigFieldDescPrefix" xml:space="preserve">
+    <value>Prefix for ADR file names</value>
+  </data>
+  <data name="ConfigFieldDescScopes" xml:space="preserve">
+    <value>List of valid scopes for ADRs (separated by semicolon)</value>
+  </data>
+  <data name="ConfigFieldDescSeparator" xml:space="preserve">
+    <value>Character used to separate file name parts</value>
+  </data>
+  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
+    <value>Scopes where domain information is omitted</value>
+  </data>
+  <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
+    <value>Text label for the 'Accepted' status</value>
+  </data>
+  <data name="ConfigFieldDescStatusNew" xml:space="preserve">
+    <value>Text label for the 'Proposed' status</value>
+  </data>
+  <data name="ConfigFieldDescStatusRejected" xml:space="preserve">
+    <value>Text label for the 'Rejected' status</value>
+  </data>
+  <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
+    <value>Text label for the 'Superseded' status</value>
+  </data>
+  <data name="ConfigFieldDescYesValue" xml:space="preserve">
+    <value>Character used to represent 'Yes' in prompts</value>
+  </data>
+  <data name="ConfigInfoCurrentValue" xml:space="preserve">
+    <value>Current value: {0}</value>
+  </data>
+  <data name="ConfigInfoFileNameSample" xml:space="preserve">
+    <value>File name examples:</value>
+  </data>
+  <data name="ConfigInfoPropertyEditor" xml:space="preserve">
+    <value>Edit configuration property</value>
+  </data>
+  <data name="ConfigInfoSelectedField" xml:space="preserve">
+    <value>Selected field: {0}</value>
+  </data>
+  <data name="ConfigPromptChooseNewValue" xml:space="preserve">
+    <value>Choose a new value</value>
+  </data>
+  <data name="ConfigPromptEnterNewValue" xml:space="preserve">
+    <value>Enter a new value</value>
+  </data>
+  <data name="ConfigPromptOverwriteConfig" xml:space="preserve">
+    <value>The configuration file already exists. Do you want to overwrite it?</value>
+  </data>
+  <data name="ConfigPromptSelectField" xml:space="preserve">
+    <value>Select field to edit</value>
+  </data>
+  <data name="ConfigPromptSelectNewValues" xml:space="preserve">
+    <value>Select new values</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Domain" xml:space="preserve">
+    <value>Domain</value>
+  </data>
+  <data name="DomainSample" xml:space="preserve">
+    <value>Sample Domain</value>
+  </data>
+  <data name="ErrMsgConfigValidationFailed" xml:space="preserve">
+    <value>Configuration validation failed</value>
+  </data>
+  <data name="ErrMsgCritical" xml:space="preserve">
+    <value>Critical error occurred</value>
+  </data>
+  <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
+    <value>Too many arguments provided for help command</value>
+  </data>
+  <data name="ErrMsgInvalidRepoConfig" xml:space="preserve">
+    <value>Invalid repository configuration: {0}</value>
+  </data>
+  <data name="ErrMsgNotEmpty" xml:space="preserve">
+    <value>This field cannot be empty</value>
+  </data>
+  <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
+    <value>The command to open ADR must contain the text '{0}'</value>
+  </data>
+  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
+    <value>Duplicate scope entries found</value>
+  </data>
+  <data name="ErrMsgYesNoConflict" xml:space="preserve">
+    <value>Yes and No values cannot be the same</value>
+  </data>
+  <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
+    <value>Init command has not been executed. Run 'adrplus init' first</value>
+  </data>
+  <data name="ExceptionConfigFileNotFound" xml:space="preserve">
+    <value>Configuration file not found: {0}</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>Fields</value>
+  </data>
+  <data name="HelpHeaderAvailableCommands" xml:space="preserve">
+    <value>Available Commands</value>
+  </data>
+  <data name="InitCmdConfigFileAlreadyExists" xml:space="preserve">
+    <value>Configuration file already exists at: {0}</value>
+  </data>
+  <data name="ErrorDateFormat" xml:space="preserve">
+    <value>Invalid date format. Expected format: {0}</value>
+  </data>
+  <data name="NewAdrErrorFailedToOpen" xml:space="preserve">
+    <value>Failed to open ADR file. Error code: {0}</value>
+  </data>
+  <data name="ErrorInConfigFile" xml:space="preserve">
+    <value>Error in configuration file: {0}</value>
+  </data>
+  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
+    <value>Invalid scope '{0}'. Valid scopes are: {1}</value>
+  </data>
+  <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
+    <value>An ADR with this title already exists: {0}</value>
+  </data>
+  <data name="NewAdrPromptConfirmCreation" xml:space="preserve">
+    <value>Confirm ADR creation with these details?</value>
+  </data>
+  <data name="NewAdrPromptSelectDate" xml:space="preserve">
+    <value>Select reference date</value>
+  </data>
+  <data name="NewAdrPromptSelectDrive" xml:space="preserve">
+    <value>Select drive</value>
+  </data>
+  <data name="NewAdrSuccessExternalCommand" xml:space="preserve">
+    <value>Successfully executed: {0}</value>
+  </data>
+  <data name="SelectedRepository" xml:space="preserve">
+    <value>Selected repository</value>
+  </data>
+  <data name="PromptEnterAdrDomain" xml:space="preserve">
+    <value>Enter ADR domain</value>
+  </data>
+  <data name="PromptEnterAdrTitle" xml:space="preserve">
+    <value>Enter ADR title</value>
+  </data>
+  <data name="PromptReadingRegisteredDomains" xml:space="preserve">
+    <value>Reading registered domains...</value>
+  </data>
+  <data name="PromptSelectAdrRepositoryPath" xml:space="preserve">
+    <value>Select ADR repository path</value>
+  </data>
+  <data name="PromptSelectAdrScope" xml:space="preserve">
+    <value>Select ADR scope</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="TitleSample" xml:space="preserve">
+    <value>Sample Title</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome to AdrPlus v{0}</value>
+  </data>
+  <data name="HelpUsageSequenceAdr" xml:space="preserve">
+    <value>Sequence ID from ADR</value>
+  </data>
+  <data name="HelpUsageWizardNew" xml:space="preserve">
+    <value>Wizard to create new ADR</value>
+  </data>
+  <data name="HelpUsageWizardInit" xml:space="preserve">
+    <value>Wizard to configure the file repository</value>
+  </data>
+  <data name="HelpUsageTargetRepoPath" xml:space="preserve">
+    <value>Path to repository</value>
+  </data>
+  <data name="HelpUsageJsonFile" xml:space="preserve">
+    <value>Path to repository(repo) configuration json file</value>
+  </data>
+  <data name="HelpUsageTitleAdr" xml:space="preserve">
+    <value>Title of ADR</value>
+  </data>
+  <data name="HelpUsageDomainAdr" xml:space="preserve">
+    <value>Domain of ADR</value>
+  </data>
+  <data name="HelpUsageScopeAdr" xml:space="preserve">
+    <value>Scope of ADR</value>
+  </data>
+  <data name="HelpUsageOpenAdr" xml:space="preserve">
+    <value>Open ADR after execute command</value>
+  </data>
+  <data name="HelpUsageDateRefAdr" xml:space="preserve">
+    <value>Reference date of ADR</value>
+  </data>
+  <data name="HelpUsageOverwriteInit" xml:space="preserve">
+    <value>Overwrite the configuration file repository</value>
+  </data>
+  <data name="HelpUsageHelp" xml:space="preserve">
+    <value>Display help information (supress all other arguments)</value>
+  </data>
+  <data name="HelpUsageWizardNewVer" xml:space="preserve">
+    <value>Wizard to create a new version of an ADR</value>
+  </data>
+  <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
+    <value>ADR sequence {0} not found in {1}</value>
+  </data>
+  <data name="ErrorVersionNotconfig" xml:space="preserve">
+    <value>Version number not configured for repository {0}</value>
+  </data>
+  <data name="ErrMsgAdrTooShort" xml:space="preserve">
+    <value>The ADR file is too short</value>
+  </data>
+  <data name="ErrMsgAdrFileEmpty" xml:space="preserve">
+    <value>The ADR file is empty</value>
+  </data>
+  <data name="ErrMsgAdrHeaderDisclaimerInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected disclaimer header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderVersionInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected version header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderVersionFormatInvalid" xml:space="preserve">
+    <value>The version line does not have the expected format</value>
+  </data>
+  <data name="ErrMsgAdrHeaderRevisionInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected revision header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderRevisionFormatInvalid" xml:space="preserve">
+    <value>The revision line does not have the expected format.</value>
+  </data>
+  <data name="ErrMsgAdrHeaderScopeInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected scope header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected status header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusCreateLineInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected status create line</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusUpdateLineInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected status update line</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusChangeLineInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected status change line</value>
+  </data>
+  <data name="ErrMsgAdrHeaderTitleInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected title header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderSeparatorInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected separator line</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
+    <value>Status line does not have the expected format</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineParenthesesInvalid" xml:space="preserve">
+    <value>Status line has invalid parentheses order</value>
+  </data>
+  <data name="ErrMsgAdrStatusUnknown" xml:space="preserve">
+    <value>Unknown status: {0}</value>
+  </data>
+  <data name="ErrMsgAdrStatusDateFormatInvalid" xml:space="preserve">
+    <value>Invalid date format: {0}</value>
+  </data>
+  <data name="ErrMsgAdrHeaderParsingError" xml:space="preserve">
+    <value>Error parsing ADR header: {0}</value>
+  </data>
+  <data name="NewVerChooseAdr" xml:space="preserve">
+    <value>Choose an ADR</value>
+  </data>
+  <data name="NotFoundADR" xml:space="preserve">
+    <value>Not found ADR´s</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="ErrorRevisionNotconfig" xml:space="preserve">
+    <value>Revision number not configured for repository {0}</value>
+  </data>
+  <data name="CmdDescHelp" xml:space="preserve">
+    <value>Display help information for the available commands</value>
+  </data>
+  <data name="CmdDescWizard" xml:space="preserve">
+    <value>Launche the wizard for guided operations</value>
+  </data>
+  <data name="CmdDescConfig" xml:space="preserve">
+    <value>Launche configuration editor for the application, repository or template ADR settings</value>
+  </data>
+  <data name="CmdDescInit" xml:space="preserve">
+    <value>Initialize the repository with folders for ADRs</value>
+  </data>
+  <data name="CmdDescNew" xml:space="preserve">
+    <value>Create a new ADR with a new number (incremental number)</value>
+  </data>
+  <data name="CmdDescVersion" xml:space="preserve">
+    <value>Create a new ADR with a new version (incremental version, same number)</value>
+  </data>
+  <data name="CmdDescReview" xml:space="preserve">
+    <value>Create a new ADR with a new revision (incremental revision, same number and version)</value>
+  </data>
+  <data name="CmdDescAccepted" xml:space="preserve">
+    <value>Update the status of an ADR to 'accepted'</value>
+  </data>
+  <data name="CmdDescRejected" xml:space="preserve">
+    <value>Update the status of an ADR to 'rejected'</value>
+  </data>
+  <data name="CmdDescSupersede" xml:space="preserve">
+    <value>Supersede an ADR (incremental number, reset revision and version)</value>
+  </data>
+  <data name="CmdDescUndoStatus" xml:space="preserve">
+    <value>Undo the status (approved/rejected) of an ADR</value>
+  </data>
+  <data name="HelpUsageWizardNewRev" xml:space="preserve">
+    <value>Wizard to create a new revision of an ADR</value>
+  </data>
+  <data name="HelpUsageWizardSupersede" xml:space="preserve">
+    <value>Wizard for supersede an ADR</value>
+  </data>
+  <data name="HelpUsageWizardApprove" xml:space="preserve">
+    <value>Wizard for approve of ADR</value>
+  </data>
+  <data name="HelpUsageWizardReject" xml:space="preserve">
+    <value>Wizard to reject an ADR</value>
+  </data>
+  <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
+    <value>Wizard to undo the status (approved/rejected) of an ADR</value>
+  </data>
+  <data name="WaitReadFiles" xml:space="preserve">
+    <value>Wait, reading ADR´s...</value>
+  </data>
+  <data name="InvalidAppStructure" xml:space="preserve">
+    <value>Invalid application json file  structure</value>
+  </data>
+  <data name="InvalidRepoStructure" xml:space="preserve">
+    <value>Invalid repository json file  structure</value>
+  </data>
+  <data name="WhenNotWizard" xml:space="preserve">
+    <value>when not wizard</value>
+  </data>
+  <data name="AndHaveConfigurationEnabled" xml:space="preserve">
+    <value>and  have configuration enabled</value>
+  </data>
+  <data name="HelpUsageWizardConfigApp" xml:space="preserve">
+    <value>Application Settings Wizard (if file argument is not provided)</value>
+  </data>
+  <data name="HelpUsageWizardConfigRepo" xml:space="preserve">
+    <value>Repository Settings Wizard (if file argument is not provided)</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineSupersedeFormatInvalid" xml:space="preserve">
+    <value>Status missing filename format: {0}</value>
+  </data>
+  <data name="HelpUsageFileAdr" xml:space="preserve">
+    <value>File path name from ADR</value>
+  </data>
+  <data name="ExceptionFileNotFound" xml:space="preserve">
+    <value>File not found: {0}</value>
+  </data>
+  <data name="FileMustBeOverFolder" xml:space="preserve">
+    <value>File must be over folder {0}</value>
+  </data>
+  <data name="NotLatestVersion" xml:space="preserve">
+    <value>The specified ADR file is not the latest version. Please select the latest version</value>
+  </data>
+  <data name="NotValidStatusForUpdate" xml:space="preserve">
+    <value>The specified ADR file does not have a valid status({0}) for update or superseded</value>
+  </data>
+  <data name="NotValidStatusForAdr" xml:space="preserve">
+    <value>The specified ADR file does not have a valid status({0})</value>
+  </data>
+  <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
+    <value>The specified ADR file already has a valid status ({0}) for updating</value>
+  </data>
+  <data name="NotValidStatusForUndo" xml:space="preserve">
+    <value>The specified ADR file does not have a valid status ({0}) for undo</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="NotValidStatusForSupersede" xml:space="preserve">
+    <value>The specified ADR file does not have a valid status ({0}) or has already been superseded</value>
+  </data>
+  <data name="Undone" xml:space="preserve">
+    <value>Undone</value>
+  </data>
+  <data name="SelectAnOption" xml:space="preserve">
+    <value>Select  an option</value>
+  </data>
+  <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
+    <value>Adr Template Settings Wizard  (if file argument is not provided)</value>
+  </data>
+  <data name="InvalidMenuOption" xml:space="preserve">
+    <value>Menu option not implemented : {0}</value>
+  </data>
+  <data name="HelpUsageFileConfig" xml:space="preserve">
+    <value>Path to configuration file</value>
+  </data>
+  <data name="FileTemplateMusbeMd" xml:space="preserve">
+    <value>The file template must be a ".md" extension file</value>
+  </data>
+  <data name="PromptSelectAdrTemplatePath" xml:space="preserve">
+    <value>Select ADR template path</value>
+  </data>
+  <data name="WizardGroupConfigurationsTitle" xml:space="preserve">
+    <value>Configurations</value>
+  </data>
+  <data name="WizardGroupConfigurationsDescription" xml:space="preserve">
+    <value>Configure the application, repository template and the ADR content template settings</value>
+  </data>
+  <data name="WizardGroupAdrsTitle" xml:space="preserve">
+    <value>ADRs</value>
+  </data>
+  <data name="WizardGroupAdrsDescription" xml:space="preserve">
+    <value>Create and manage your ADRs</value>
+  </data>
+  <data name="WizardGroupCommandHelpTitle" xml:space="preserve">
+    <value>Command Help</value>
+  </data>
+  <data name="WizardGroupCommandHelpDescription" xml:space="preserve">
+    <value>Show command help information</value>
+  </data>
+  <data name="WizardGroupExitTitle" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="WizardGroupExitDescription" xml:space="preserve">
+    <value>Exit the wizard</value>
+  </data>
+  <data name="WizardAdrMainMenuTitle" xml:space="preserve">
+    <value>Main menu</value>
+  </data>
+  <data name="WizardAdrMainMenuDescription" xml:space="preserve">
+    <value>Return to main menu</value>
+  </data>
+  <data name="WizardAdrInitTitle" xml:space="preserve">
+    <value>Start a repository for ADRs for the first time</value>
+  </data>
+  <data name="WizardAdrInitDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrNewTitle" xml:space="preserve">
+    <value>Create a new ADR</value>
+  </data>
+  <data name="WizardAdrNewDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrApproveTitle" xml:space="preserve">
+    <value>Approve an existing ADR</value>
+  </data>
+  <data name="WizardAdrApproveDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrRejectTitle" xml:space="preserve">
+    <value>Reject an existing ADR</value>
+  </data>
+  <data name="WizardAdrRejectDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrVersionTitle" xml:space="preserve">
+    <value>Create a new version an existing ADR</value>
+  </data>
+  <data name="WizardAdrVersionDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrRevisionTitle" xml:space="preserve">
+    <value>Create a new revision an existing ADR</value>
+  </data>
+  <data name="WizardAdrRevisionDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrSupersedeTitle" xml:space="preserve">
+    <value>Supersede an existing ADR</value>
+  </data>
+  <data name="WizardAdrSupersedeDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
+    <value>Undo Approve/reject an existing ADR</value>
+  </data>
+  <data name="WizardAdrUndoStatusDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardConfigMainMenuTitle" xml:space="preserve">
+    <value>Main menu</value>
+  </data>
+  <data name="WizardConfigMainMenuDescription" xml:space="preserve">
+    <value>Return to main menu</value>
+  </data>
+  <data name="WizardConfigApplicationTitle" xml:space="preserve">
+    <value>Configure this application</value>
+  </data>
+  <data name="WizardConfigApplicationDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardConfigTemplateTitle" xml:space="preserve">
+    <value>Change Default ADR Content Template</value>
+  </data>
+  <data name="WizardConfigTemplateDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardConfigRepositoryTitle" xml:space="preserve">
+    <value>Configure default ADR repository template</value>
+  </data>
+  <data name="WizardConfigRepositoryDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardHelpMainMenuTitle" xml:space="preserve">
+    <value>Main menu</value>
+  </data>
+  <data name="WizardHelpMainMenuDescription" xml:space="preserve">
+    <value>Return to main menu</value>
+  </data>
+  <data name="WizardHelpConfigTitle" xml:space="preserve">
+    <value>Config command help</value>
+  </data>
+  <data name="WizardHelpConfigDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpInitTitle" xml:space="preserve">
+    <value>Init command help</value>
+  </data>
+  <data name="WizardHelpInitDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpNewTitle" xml:space="preserve">
+    <value>New command help</value>
+  </data>
+  <data name="WizardHelpNewDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpApproveTitle" xml:space="preserve">
+    <value>Approve command help</value>
+  </data>
+  <data name="WizardHelpApproveDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpRejectTitle" xml:space="preserve">
+    <value>Reject command help</value>
+  </data>
+  <data name="WizardHelpRejectDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpVersionTitle" xml:space="preserve">
+    <value>Version command help</value>
+  </data>
+  <data name="WizardHelpVersionDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpRevisionTitle" xml:space="preserve">
+    <value>Revision command help</value>
+  </data>
+  <data name="WizardHelpRevisionDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpSupersedeTitle" xml:space="preserve">
+    <value>Supersede command help</value>
+  </data>
+  <data name="WizardHelpSupersedeDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="WizardHelpUndoTitle" xml:space="preserve">
+    <value>Undo command help</value>
+  </data>
+  <data name="WizardHelpUndoDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
+  <data name="PressAnyKey" xml:space="preserve">
+    <value>Press any key to continue</value>
+  </data>
+  <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
+    <value>The ADR has been rejected. Do you want to continue?</value>
+  </data>
+</root>
