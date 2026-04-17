@@ -43,8 +43,6 @@ public class VersionCommandHandlerTests
             Language = "en-US"
         };
 
-        _mockConsole.GetCursorPosition().Returns((0, 0));
-
         var options = Options.Create(_config);
 
         _handler = new VersionCommandHandler(
@@ -467,8 +465,8 @@ public class VersionCommandHandlerTests
     public async Task ExecuteAsync_WhenLatestAdrIsInvalid_ThrowsInvalidDataException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusAcc": "Accepted"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
@@ -495,8 +493,8 @@ public class VersionCommandHandlerTests
     public async Task ExecuteAsync_WhenLatestAdrHasInvalidHeader_ThrowsInvalidDataException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusAcc": "Accepted"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
@@ -554,8 +552,8 @@ public class VersionCommandHandlerTests
     public async Task ExecuteAsync_WhenAdrStatusIsProposed_ThrowsInvalidDataException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
@@ -575,8 +573,8 @@ public class VersionCommandHandlerTests
     public async Task ExecuteAsync_WhenAdrHasStatusChange_ThrowsInvalidDataException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
@@ -597,10 +595,10 @@ public class VersionCommandHandlerTests
     public async Task ExecuteAsync_WithInvalidDateFormat_ThrowsFormatException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md", "--refdate", "invalid-date" };
+        var args = new[] { "--file", ValidAdrFilePath, "--refdate", "invalid-date" };
         var parsedArgs = new Dictionary<Arguments, string>
         {
-            { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" },
+            { Arguments.FileAdr, ValidAdrFilePath },
             { Arguments.DateRefAdr, "invalid-date" }
         };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusAcc": "Accepted"}""";
@@ -699,8 +697,8 @@ public class VersionCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(true, "C:\\", _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
-            .Returns((false, "C:\\repo"));
+        _mockConsole.PromptSelectFolderRepositoryAdr(true, SelectedDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));

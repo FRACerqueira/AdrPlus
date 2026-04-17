@@ -53,7 +53,7 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageSequenceAdr")]
         SequenceAdr,
         [CommandArgument("-p", "--path")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetPath")]
+        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
         TargetRepo,
         [CommandArgument("-t", "--title")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]

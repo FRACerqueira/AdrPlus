@@ -43,8 +43,6 @@ public class SupersedeCommandHandlerTests
             Language = "en-US"
         };
 
-        _mockConsole.GetCursorPosition().Returns((0, 0));
-
         var options = Options.Create(_config);
 
         _handler = new SupersedeCommandHandler(

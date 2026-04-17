@@ -1,8 +1,8 @@
 {
   "DefaultSettings": {
     "language": "en-us", //Language for show messages, e.g. "en-us", "pt-br".
-    "folderrepo": "doc/adr", //Folder for the ADRs in the repository, e.g. "docs/adr".
-    "comandopenadr": "code \"{0}\"", //Command to open the ADR, e.g. "code {0}". Optional, can be empty for no command.
+    "folderrepo": "doc/adr", //Folder for the ADRs in the repository, e.g. "doc/adr".
+    "comandopenadr": "", //Command to open the ADR, e.g. "code {0}". Optional, can be empty for no command.
     "yesvalue": "", //Character for yes, e.g. "y". Optional, can be empty for the default language (pt-br or en-us).
     "novalue": "" //Character for no, e.g. "n". Optional, can be empty for the default language (pt-br or en-us).
   }

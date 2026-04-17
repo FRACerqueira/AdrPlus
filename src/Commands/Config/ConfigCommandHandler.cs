@@ -9,6 +9,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -44,8 +45,7 @@ namespace AdrPlus.Commands.Config
         private readonly IConsoleWriter _console = console;
         private readonly IValidateJsonConfig _validateConfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private readonly IOptionsMonitor<AdrPlusConfig> _configMonitor = config;
-        private AdrPlusConfig CurrentConfig => _configMonitor.CurrentValue;
+        private AdrPlusConfig CurrentConfig = config.CurrentValue;
 
         private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardConfigApplication, Arguments.WizardConfigRepository,Arguments.WizardConfigTemplate,Arguments.FileConfig, Arguments.Help];
 
@@ -238,6 +238,8 @@ namespace AdrPlus.Commands.Config
             {
                 jsoncontent = WizardAppConfig(jsoncontent, cancellationToken);
             }
+            var aux = BuildAppFieldsFromJson(jsoncontent);
+            AppConstants.LanguageSetting = aux.First(x => x.Name.Equals(AppConstants.FieldLanguage, StringComparison.OrdinalIgnoreCase)).Value;
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
             LogMessages.LogCommandSuccessful(_logger, filePath);
             _console.WriteSuccess(filePath);
