@@ -124,7 +124,7 @@ namespace AdrPlus.Core
                 result.DateCreate = dateCreate;
 
                 var linestapdate = lines[6][2..];
-                if (linestapdate != "\\-")
+                if (linestapdate != AppConstants.AdrEmptyStatusMarker)
                 {
                     var (statusUpdate, dateUpdate, errorUpdate) = Helper.ParseStatusLine(linestapdate, config);
                     if (!string.IsNullOrEmpty(errorUpdate))
