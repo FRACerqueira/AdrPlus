@@ -44,9 +44,6 @@ public class ApproveCommandHandlerTests
            Language = "en-US"
         };
 
-        // Setup default console cursor position
-        _mockConsole.GetCursorPosition().Returns((0, 0));
-
         var options = Options.Create(_config);
 
         _handler = new ApproveCommandHandler(

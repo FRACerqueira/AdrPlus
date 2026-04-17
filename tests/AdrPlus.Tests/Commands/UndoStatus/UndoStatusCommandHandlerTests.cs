@@ -43,9 +43,6 @@ public class UndoStatusCommandHandlerTests
             Language = "en-US"
         };
 
-        // Setup default console cursor position
-        _mockConsole.GetCursorPosition().Returns((0, 0));
-
         var options = Options.Create(_config);
 
         _handler = new UndoStatusCommandHandler(
@@ -217,8 +214,8 @@ public class UndoStatusCommandHandlerTests
 
         SetupBasicMocks(parsedArgs, jsonConfig);
 
-        var adrInfo = CreateAdrFileNameComponentsEligibleForUndo("C:\\repo\\docs\\adr\\adr-0001.md");
-        _mockAdrServices.ParseFileName("C:\\repo\\docs\\adr\\adr-0001.md", Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+        var adrInfo = CreateAdrFileNameComponentsEligibleForUndo(ValidAdrFilePath);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);
         _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Unknown, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -459,8 +456,8 @@ public class UndoStatusCommandHandlerTests
 
         SetupBasicMocks(parsedArgs, jsonConfig);
 
-        var adrInfo = CreateAdrFileNameComponentsEligibleForUndo("C:\\repo\\docs\\adr\\adr-0001.md");
-        _mockAdrServices.ParseFileName("C:\\repo\\docs\\adr\\adr-0001.md", Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+        var adrInfo = CreateAdrFileNameComponentsEligibleForUndo(ValidAdrFilePath);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);
         _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Unknown, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, "Update failed"));
@@ -659,8 +656,8 @@ public class UndoStatusCommandHandlerTests
     public async Task ExecuteAsync_WhenCancelled_ThrowsOperationCanceledException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
@@ -682,8 +679,8 @@ public class UndoStatusCommandHandlerTests
     public async Task ExecuteAsync_WhenExceptionOccurs_LogsException()
     {
         // Arrange
-        var args = new[] { "--file", "C:\\repo\\docs\\adr\\adr-0001.md" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, "C:\\repo\\docs\\adr\\adr-0001.md" } };
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var exception = new InvalidOperationException("Test exception");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);

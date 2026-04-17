@@ -59,7 +59,6 @@ public class NewAdrCommandHandlerTests
             Language = "en-US"
         };
 
-        _mockConsole.GetCursorPosition().Returns((0, 0));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
 
         var options = Options.Create(_config);
