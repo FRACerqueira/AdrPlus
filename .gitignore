@@ -109,3 +109,4 @@ __MACOSX
 # Logs
 *.log
 Logs/
+/testEnvironments.json
