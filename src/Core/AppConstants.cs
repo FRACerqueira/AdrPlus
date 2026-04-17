@@ -31,6 +31,11 @@ namespace AdrPlus.Core
         public const char CommandArgsSeparator = (char)1;
 
         /// <summary>
+        /// The Markdown escape sequence used to represent an empty or null ADR status value in ADR file headers.
+        /// </summary>
+        public const string AdrEmptyStatusMarker = @"\-";
+
+        /// <summary>
         /// The application name.
         /// </summary>
         public const string NameApp = "AdrPlus";

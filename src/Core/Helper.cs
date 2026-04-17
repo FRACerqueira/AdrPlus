@@ -6,6 +6,7 @@ using AdrPlus.Domain;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus.Core
 {
@@ -109,7 +110,7 @@ namespace AdrPlus.Core
             var status = config.StatusMapping.First(x => x.Value.Equals(textStatus, StringComparison.OrdinalIgnoreCase)).Key;
 
             var dateString = statusLine.Substring(index2 + 1, index3 - index2 - 1).Trim();
-            if (!DateTime.TryParse(dateString, null, out var date))
+            if (!DateTime.TryParseExact(dateString,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out var date))
             {
                 return (AdrStatus.Unknown, null, string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrMsgAdrStatusDateFormatInvalid), dateString));
             }

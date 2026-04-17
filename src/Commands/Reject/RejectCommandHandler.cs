@@ -12,7 +12,6 @@ using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
-using System.Runtime.ExceptionServices;
 using System.Text.Json;
 
 namespace AdrPlus.Commands.Reject
@@ -147,7 +146,6 @@ namespace AdrPlus.Commands.Reject
                     throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
                 }
 
-
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
                 if (!IsValid)
@@ -176,23 +174,19 @@ namespace AdrPlus.Commands.Reject
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
-                AdrFileNameComponents? infoundo = null;
-                if (infoadr.SupersededValue.HasValue)
-                {
-                    infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootPath, repoconfig);
-                    if (infoundo == null)
-                    {
-                        throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
-                    }
-                }
                 var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Rejected, dateAdr, repoconfig, _filesystem, cancellationToken);
                 if (!updok)
                 {
                     throw new InvalidDataException(upderror);
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusRej} : {infoadr.FileName}");
-                if (infoundo != null)
+                if (infoadr.SupersededValue.HasValue)
                 {
+                    var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootPath, repoconfig);
+                    if (infoundo == null)
+                    {
+                        throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
+                    }
                     var (updundo, updundoerror) = await _adrServices.StatusChangeAdrAsync(infoundo.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
                     if (!updundo)
                     {

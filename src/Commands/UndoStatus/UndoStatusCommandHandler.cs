@@ -164,7 +164,6 @@ namespace AdrPlus.Commands.UndoStatus
                 {
                     throw new InvalidDataException(infoadr.Header.ErrorMessage);
                 }
-
                 if (!hasWizard)
                 {
                     if (!SelectionCondition(infoadr))

@@ -57,21 +57,6 @@ namespace AdrPlus.Core
         Task<(bool IsValid, string Error)> StatusChangeAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Extracts and parses the structured header and body content from an ADR Markdown file.
-        /// The header occupies the first 10 lines; everything from line 11 onwards is treated as body content.
-        /// </summary>
-        /// <param name="filePath">The file-system path to the ADR <c>.md</c> file.</param>
-        /// <param name="config">The ADR Plus configuration providing status mappings and date format.</param>
-        /// <param name="fileSystemService">The file system service used to read the file.</param>
-        /// <returns>
-        /// A tuple of (<see cref="AdrHeader"/> header, <see langword="string"/> content).
-        /// When parsing fails, <see cref="AdrHeader.IsValid"/> is <see langword="false"/> and <see cref="AdrHeader.ErrorMessage"/> describes the problem.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> or <paramref name="fileSystemService"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="filePath"/> is null, empty, or whitespace.</exception>
-        Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService);
-
-        /// <summary>
         /// Deserializes a JSON string produced by <c>adr-config.adrplus</c> into an <see cref="AdrPlusRepoConfig"/> instance.
         /// Only known fields are mapped; unknown fields are silently ignored.
         /// Property lookup is case-insensitive to tolerate hand-edited files.
@@ -111,17 +96,6 @@ namespace AdrPlus.Core
         /// <exception cref="ArgumentException">Thrown when <paramref name="directoryPath"/> is null, empty, or whitespace.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when <paramref name="directoryPath"/> does not exist.</exception>
         Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
-
-        /// <summary>
-        /// Reads all .md files from the specified directory recursively and parses their filenames.
-        /// </summary>
-        /// <param name="fileSystemService">The file system service to use for file operations.</param>
-        /// <param name="directoryPath">The directory path to search for .md files.</param>
-        /// <param name="config">The ADR Plus configuration containing naming conventions.</param>
-        /// <returns>A array of <see cref="AdrFileNameComponents"/> parsed from all .md files found.</returns>
-        /// <exception cref="ArgumentException">Thrown when the directory path is null, empty, or whitespace.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when the specified directory does not exist.</exception>
-        Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Searches all ADR files in <paramref name="directoryPath"/> for one whose unique title

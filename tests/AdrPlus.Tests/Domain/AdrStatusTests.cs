@@ -4,11 +4,15 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
+using System.Runtime.InteropServices;
 
 namespace AdrPlus.Tests.Domain;
 
 public class AdrStatusTests
 {
+    private static string PlatformPath(params string[] segments) => Path.Combine(segments);
+    private static string PlatformDrive => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:" : "/tmp";
+
     [Fact]
     public void AdrStatus_AllValues_AreDefined()
     {

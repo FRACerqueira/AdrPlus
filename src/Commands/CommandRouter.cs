@@ -17,7 +17,7 @@ namespace AdrPlus.Commands
     /// Routes incoming command requests to their appropriate handlers.
     /// Replaces the large switch statement in the old AdrServices.CommandSelector method.
     /// </summary>
-    internal sealed class CommandRouter(
+    internal class CommandRouter(
         IServiceProvider serviceProvider,
         ILogger<CommandRouter> logger,
         IConsoleWriter console,
@@ -26,7 +26,6 @@ namespace AdrPlus.Commands
         private readonly IServiceProvider _serviceProvider = serviceProvider;
         private readonly ILogger<CommandRouter> _logger = logger;
         private readonly IConsoleWriter _console = console;
-        private readonly IAdrServices _adrServices = adrServices;
         private readonly Dictionary<string, Type> _commandMap = adrServices.GenerateCommandsMap();
 
         /// <summary>

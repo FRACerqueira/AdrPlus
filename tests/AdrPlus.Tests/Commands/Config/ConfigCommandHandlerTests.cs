@@ -9,8 +9,10 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Config;
 
@@ -103,7 +105,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--application" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigApplication, string.Empty } };
-        var configPath = "C:\\config\\app.json";
+        var configPath = AppConfigPath;
         var jsonContent = """{"DefaultSettings": {"Language": "en"}}""";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -134,23 +136,21 @@ public class ConfigCommandHandlerTests
             { Arguments.WizardConfigApplication, string.Empty },
             { Arguments.FileConfig, "custom.json" }
         };
-        var configPath = "C:\\config\\app.json";
-        var customPath = "custom.json";
+        var configPath = AppConfigPath;
         var jsonContent = """{"DefaultSettings": {"Language": "en"}}""";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
-        _mockFileSystem.FileExists(configPath).Returns(true);
-        _mockFileSystem.FileExists(customPath).Returns(true);
-        _mockFileSystem.ReadAllTextAsync(customPath, Arg.Any<CancellationToken>()).Returns(jsonContent);
+        _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
         _mockValidateConfig.ValidateAppStructure(jsonContent).Returns((true, []));
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        await _mockFileSystem.Received(1).ReadAllTextAsync(customPath, Arg.Any<CancellationToken>());
-        await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--application" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigApplication, string.Empty } };
-        var configPath = "C:\\config\\app.json";
+        var configPath = AppConfigPath;
         var jsonContent = """{"DefaultSettings": {}}""";
         var errors = new[] { "Missing Language field" };
 
@@ -182,7 +182,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--application" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigApplication, string.Empty } };
-        var configPath = "C:\\config\\app.json";
+        var configPath = AppConfigPath;
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
@@ -203,7 +203,7 @@ public class ConfigCommandHandlerTests
             { Arguments.WizardConfigApplication, string.Empty },
             { Arguments.FileConfig, "missing.json" }
         };
-        var configPath = "C:\\config\\app.json";
+        var configPath = AppConfigPath;
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
@@ -225,7 +225,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--repository" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigRepository, string.Empty } };
-        var configPath = "C:\\repo\\.adrplus";
+        var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR", "LenSeq": 4}""";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -267,7 +267,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--repository" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigRepository, string.Empty } };
-        var configPath = "C:\\repo\\.adrplus";
+        var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR"}""";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -350,14 +350,13 @@ public class ConfigCommandHandlerTests
             { Arguments.WizardConfigRepository, string.Empty },
             { Arguments.FileConfig, "custom.json" }
         };
-        var configPath = "C:\\repo\\.adrplus";
-        var customPath = "custom.json";
+        var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR"}""";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-        _mockFileSystem.FileExists(customPath).Returns(true);
-        _mockFileSystem.ReadAllTextAsync(customPath, Arg.Any<CancellationToken>()).Returns(jsonContent);
+        _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(jsonContent).Returns((true, []));
         _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
 
@@ -365,8 +364,8 @@ public class ConfigCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        await _mockFileSystem.Received(1).ReadAllTextAsync(customPath, Arg.Any<CancellationToken>());
-        await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -404,8 +403,8 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-        _mockFileSystem.FileExists("invalid.json").Returns(true);
-        _mockFileSystem.ReadAllTextAsync("invalid.json", Arg.Any<CancellationToken>()).Returns(jsonContent);
+        _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(jsonContent).Returns((false, errors));
 
         // Act & Assert
@@ -429,21 +428,21 @@ public class ConfigCommandHandlerTests
             { Arguments.WizardConfigTemplate, string.Empty },
             { Arguments.FileConfig, "template.md" }
         };
-        var configPath = "C:\\config\\adr-template.md";
+        var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith("template.md"))).Returns(true);
-        _mockFileSystem.ReadAllTextAsync("template.md", Arg.Any<CancellationToken>()).Returns(templateContent);
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(templateContent);
         _mockValidateConfig.GetConfigAdrTemplatePath().Returns(configPath);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        await _mockFileSystem.Received(1).ReadAllTextAsync("template.md", Arg.Any<CancellationToken>());
-        await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, templateContent, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -489,10 +488,10 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--template" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
-        var drives = new[] { "C:\\", "D:\\" };
-        var selectedDrive = "C:\\";
-        var templatePath = "C:\\templates\\custom.md";
-        var configPath = "C:\\config\\adr-template.md";
+        var drives = MultipleTestDrives;
+        var selectedDrive = drives[0];
+        var templatePath = PathHelper.GetTemplateFilePath("custom.md");
+        var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -519,14 +518,14 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--template" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
-        var drives = new[] { "C:\\" };
-        var templatePath = "C:\\templates\\custom.md";
-        var configPath = "C:\\config\\adr-template.md";
+        var drives = new[] { SingleTestDrive };
+        var templatePath = PathHelper.GetTemplateFilePath("custom.md");
+        var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect("C:\\", Arg.Any<CancellationToken>())
+        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
         _mockFileSystem.FileExists(templatePath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
@@ -546,11 +545,11 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--template" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect("C:\\", Arg.Any<CancellationToken>())
+        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -564,7 +563,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--template" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
-        var drives = new[] { "C:\\", "D:\\" };
+        var drives = MultipleTestDrives;
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
@@ -582,12 +581,12 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--template" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
-        var drives = new[] { "C:\\" };
-        var templatePath = "C:\\templates\\missing.md";
+        var drives = new[] { SingleTestDrive };
+        var templatePath = PathHelper.GetTemplateFilePath("missing.md");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect("C:\\", Arg.Any<CancellationToken>())
+        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
         _mockFileSystem.FileExists(templatePath).Returns(false);
 

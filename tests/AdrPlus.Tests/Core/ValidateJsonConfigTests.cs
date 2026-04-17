@@ -1186,16 +1186,17 @@ public class ValidateJsonConfigTests
         var config = new AdrPlusConfig { FolderRepo = "docs/adr"};
         var templateContent = "# Template Content";
         var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
+        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md"));
 
-        // Setup: First call to FileExists returns false (config doesn't exist)
-        // Second call to FileExists returns true (template exists for reading)
-        var callCount = 0;
-        _fileSystem.FileExists(configPath).Returns(_ =>
+        // Setup: Handle multiple file path checks
+        _fileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
         {
-            callCount++;
-            return callCount > 1; // First call false, subsequent calls true
+            var path = callInfo.Arg<string>();
+            if (path == configPath) return false;      // config file doesn't exist
+            if (path == templatePath) return true;     // template file exists
+            return false;
         });
-        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(templateContent);
+        _fileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
 
         // Act
         var result = await validator.GetConfigDefaultRepoContentAsync(config, CancellationToken.None);
@@ -1421,8 +1422,7 @@ public class ValidateJsonConfigTests
                 { "casetransform", "CamelCase" },
                 { "statusnew", "New" },
                 { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },                
-                { "statussup", "Superseded" },
+                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
                 { "headerdisclaimer", "# Disclaimer" },
                 { "headerstatus", "## Status" },
                 { "headerversion", "## Version" },
@@ -1462,8 +1462,7 @@ public class ValidateJsonConfigTests
                 { "casetransform", format },
                 { "statusnew", "New" },
                 { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },               
-                { "statussup", "Superseded" },
+                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
                 { "headerdisclaimer", "# Disclaimer" },
                 { "headerstatus", "## Status" },
                 { "headerversion", "## Version" },
@@ -1753,8 +1752,6 @@ public class ValidateJsonConfigTests
         ErrorReport.Should().Contain(e => e.Contains("statusacc"));
     }
 
-
-
     [Fact]
     public void ValidateRepoStructure_WithEmptyStatusSuperseded_ReturnsInvalid()
     {
@@ -1911,7 +1908,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""folderrepo"": ""docs/adr"",
             ""dateformat"": ""yyyy-MM-dd"",
-            ""template"": ""# ADR {0}"",
+            ""template"": ""# ADR"",
             ""prefix"": ""ADR"",
             ""lenseq"": 4,
             ""lenversion"": 2,
@@ -1947,7 +1944,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""folderrepo"": ""docs/adr"",
             ""dateformat"": ""yyyy-MM-dd"",
-            ""template"": ""# ADR {0}"",
+            ""template"": ""# ADR"",
             ""prefix"": ""ADR"",
             ""lenseq"": 4,
             ""lenversion"": 2,

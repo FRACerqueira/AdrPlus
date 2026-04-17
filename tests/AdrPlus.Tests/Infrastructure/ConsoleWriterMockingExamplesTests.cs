@@ -7,6 +7,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Infrastructure;
 
@@ -248,7 +249,7 @@ public class ConsoleWriterMockingExamplesTests
         // Arrange
         var mockConsole = Substitute.For<IConsoleWriter>();
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var selectedDrive = "C:\\";
+        var selectedDrive = SelectedDrive;
 
         mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((IsAborted: false, Content: selectedDrive));

@@ -133,6 +133,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
                 }
+
                 var posindex = rootPath.LastIndexOf(folderadrroot, StringComparison.OrdinalIgnoreCase);
 
                 var targetPath = rootPath[..(posindex + folderadrroot.Length)];
@@ -145,7 +146,6 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
                 }
-
 
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);

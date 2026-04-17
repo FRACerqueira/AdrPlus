@@ -125,7 +125,7 @@ namespace AdrPlus.Commands.Review
 
                 var fileadr = Path.GetFullPath(parsedArgs[Arguments.FileAdr]);
                 if (!Path.HasExtension(fileadr))
-                { 
+                {
                     fileadr = Path.ChangeExtension(fileadr, ".md");
                 }
                 if (!_filesystem.FileExists(fileadr))
@@ -134,7 +134,7 @@ namespace AdrPlus.Commands.Review
                 }
                 var rootPath = Path.GetDirectoryName(fileadr) ?? string.Empty;
                 var folderadrroot = _config.GetFolderNormalized();
-
+                // Replace the throw statement to use the cached CompositeFormat
                 if (!rootPath.Contains(folderadrroot))
                 {
                     throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
@@ -145,7 +145,7 @@ namespace AdrPlus.Commands.Review
 
                 rootPath = rootPath[..posindex];
 
-                // Validate that the repository configuration file exists
+                // Validate config file exists and load repo config
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
                 if (!_filesystem.FileExists(configPath))
                 {
@@ -175,6 +175,16 @@ namespace AdrPlus.Commands.Review
                 {
                     throw new InvalidDataException(infoadr.Header.ErrorMessage);
                 }
+                if (!hasWizard)
+                {
+                    if (!SelectionCondition(infoadr))
+                    {
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig));
+                    }
+                }
+
+                // Parse date reference
+                var dateAdr = ParseDateReference(parsedArgs);
 
                 var curpos = _console.GetCursorPosition();
                 if (hasWizard)
@@ -225,8 +235,6 @@ namespace AdrPlus.Commands.Review
                         throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Superseded));
                     }
                 }
-
-                var dateAdr = ParseDateReference(parsedArgs);
 
                 // Create the new revision ADR record and file
                 var adrRecord = new AdrRecord

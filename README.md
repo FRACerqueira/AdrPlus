@@ -23,8 +23,8 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 
 - [Motivation and Benefits](#motivation-and-benefits)
 - [Features](#features)
-- [Requirements for building and installing](#requirements-for-building-and-installing)
-- [Requirements for running](#requirements-for-running)
+- [Requirements](#requirements)
+- [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Commands](#commands)
 - [Rules for adr commands](#rules-by-adr-commands)
@@ -63,23 +63,51 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ---
 
-## Requirements for building and installing
+## Requirements
+
+### For running
+
+- [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+
+`AdrPlus` can be used in repositories of **any language or framework** (C#, Java, Node.js, Python, Go, etc.), because it manages ADR files in Markdown and does not depend on your application stack.
+
+### For building and packaging from source
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
-## Requirements for running
+---
 
-`AdrPlus` can be used in repositories of **any language or framework** (C#, Java, Node.js, Python, Go, etc.), because it manages ADR files in Markdown and does not depend on your application stack.
+## Installation
 
-To use it from a local source build flow:
+### Install from NuGet (Recommended for .NET developers)
 
-1. Build and pack the source code (prerequisite).
-2. Install the generated local package.
-3. Run `adrplus` in any project folder.
+The easiest way to install `AdrPlus` is directly from [NuGet.org](https://www.nuget.org/packages/AdrPlus):
 
-### Build and generate a local installation package
+```bash
+dotnet tool install -g adrplus
+```
+
+To update to the latest version:
+
+```bash
+dotnet tool update -g adrplus
+```
+
+To uninstall:
+
+```bash
+dotnet tool uninstall -g adrplus
+```
+
+After installation, you can use `adrplus` from any terminal in any repository.
+
+### Build and install from source
+
+If you prefer to build from the repository source code:
+
+#### 1. Build and generate a local package
 
 ```bash
 # From repository root
@@ -88,7 +116,7 @@ dotnet build -c Release
 dotnet pack -c Release -o ./nupkg
 ```
 
-### Install from local package source
+#### 2. Install from local package
 
 ```bash
 # Install as global tool from local package folder
@@ -97,8 +125,6 @@ dotnet tool install -g adrplus --add-source ./nupkg
 # If already installed, update from the same local source
 dotnet tool update -g adrplus --add-source ./nupkg
 ```
-
-And use it in any repository, regardless of the language/framework used by the application.
 
 ---
 

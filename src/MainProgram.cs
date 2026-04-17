@@ -6,11 +6,9 @@
 using AdrPlus.Commands;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.Logging;
-using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus
 {

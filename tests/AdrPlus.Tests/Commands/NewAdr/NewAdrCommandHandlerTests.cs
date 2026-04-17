@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute.ExceptionExtensions;
@@ -29,11 +30,11 @@ public class NewAdrCommandHandlerTests
     private readonly AdrPlusConfig _config;
     private readonly NewAdrCommandHandler _handler;
 
-    private const string RepoPath = "C:\\repo";
+    private static readonly string RepoPath = Path.Combine(Path.GetTempPath(), "repo");
     private const string FolderRepo = "docs/adr";
     private const string ConfigFileName = ".adrplus";
-    private const string AdrFolderPath = $"{RepoPath}\\{FolderRepo}";
-    private const string ConfigFilePath = $"{AdrFolderPath}\\{ConfigFileName}";
+    private static readonly string AdrFolderPath = Path.Combine(RepoPath, FolderRepo);
+    private static readonly string ConfigFilePath = Path.Combine(AdrFolderPath, ConfigFileName);
 
     private static readonly string BasicJsonConfig =
         """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
@@ -677,7 +678,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\", "D:\\" };
+        var drives = TestPathData.TestDrives;
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -696,12 +697,12 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(true, "C:\\", _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryAdr(true, TestPathData.SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -715,7 +716,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -738,7 +739,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -763,7 +764,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -790,7 +791,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -819,7 +820,6 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -837,7 +837,6 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -905,7 +904,7 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var args = new[] { "--wizard" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
-        var drives = new[] { "C:\\" };
+        var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -938,7 +937,7 @@ public class NewAdrCommandHandlerTests
     private void SetupWizardMocksUpToConfirmation(string jsonConfig)
     {
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.GetDrives().Returns(["C:\\"]);
+        _mockFileSystem.GetDrives().Returns([TestPathData.SingleTestDrive]);
         _mockConsole.PromptSelectFolderRepositoryAdr(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);

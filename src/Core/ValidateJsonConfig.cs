@@ -641,7 +641,7 @@ namespace AdrPlus.Core
             var fullpath = GetConfigRepoFilePath();
             if (!_fileSystem.FileExists(fullpath))
             {
-                var template = await GetConfigRepoTemplateAsync(cancellationToken);
+                var template = await GetConfigAdrTemplateAsync(cancellationToken);
                 var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(template, config.FolderRepo), AppConstants.RepoSerializerOptions);
                 var normalized = NormalizeJsonKeysToLowerInvariant(aux);
                 await _fileSystem.WriteAllTextAsync(fullpath, normalized, cancellationToken);

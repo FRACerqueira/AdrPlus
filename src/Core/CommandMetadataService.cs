@@ -1,10 +1,18 @@
 using AdrPlus.Commands;
+using AdrPlus.Infrastructure.Process;
 using System.Text;
 
 namespace AdrPlus.Core
 {
     internal sealed class CommandMetadataService : ICommandMetadataService
     {
+        private readonly IProcessService _processService;
+
+        public CommandMetadataService(IProcessService processService)
+        {
+            _processService = processService ?? throw new ArgumentNullException(nameof(processService));
+        }
+
         public Dictionary<string, Type> GenerateCommandsMap()
         {
             var cmds = GetCommands();
@@ -17,7 +25,7 @@ namespace AdrPlus.Core
         }
 
         public string OpenFile(string filepath, string command)
-            => Helper.OpenFile(filepath, command);
+            => _processService.OpenFile(filepath, command);
 
         public (CommandsAdr Command, string Alias, Type ConfigCommandHandler, string Description)[] GetCommands()
         {

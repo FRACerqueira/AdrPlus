@@ -156,7 +156,7 @@ namespace AdrPlus.Domain
             };
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- \\-");
+                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
             }
             else
             {
@@ -180,7 +180,7 @@ namespace AdrPlus.Domain
             };
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- \\-");
+                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
             }
             else
             {
@@ -208,7 +208,7 @@ namespace AdrPlus.Domain
             }
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- \\-");
+                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
             }
             else
             {

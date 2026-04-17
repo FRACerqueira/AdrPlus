@@ -137,7 +137,7 @@ namespace AdrPlus.Core
                 }
 
                 var linestachange = lines[7][2..];
-                if (linestachange != "\\-")
+                if (linestachange != AppConstants.AdrEmptyStatusMarker)
                 {
                     var (statusChange, dateChange, errorChange) = Helper.ParseStatusLine(linestachange, config);
                     if (!string.IsNullOrEmpty(errorChange))

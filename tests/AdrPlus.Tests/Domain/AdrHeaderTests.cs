@@ -4,11 +4,15 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
+using System.Runtime.InteropServices;
 
 namespace AdrPlus.Tests.Domain;
 
 public class AdrHeaderTests
 {
+    private static string PlatformPath(params string[] segments) => Path.Combine(segments);
+    private static string PlatformDrive => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:" : "/tmp";
+
     [Fact]
     public void AdrHeader_DefaultValues_AreSetCorrectly()
     {

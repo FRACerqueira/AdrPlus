@@ -95,7 +95,7 @@ namespace AdrPlus.Commands.Config
                 var fileConfigPath = string.Empty;
                 if (parsedArgs.TryGetValue(Arguments.FileConfig, out string? value))
                 {
-                    fileConfigPath = value;
+                    fileConfigPath = Path.GetFullPath(value);
                 }
 
                 if (parsedArgs.ContainsKey(Arguments.WizardConfigRepository))

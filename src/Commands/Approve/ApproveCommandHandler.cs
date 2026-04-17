@@ -126,7 +126,7 @@ namespace AdrPlus.Commands.Approve
                 }
                 var rootPath = Path.GetDirectoryName(fileadr) ?? string.Empty;
                 var folderadrroot = _config.GetFolderNormalized();
-
+                // Replace the throw statement to use the cached CompositeFormat
                 if (!rootPath.Contains(folderadrroot))
                 {
                     throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
@@ -137,6 +137,7 @@ namespace AdrPlus.Commands.Approve
 
                 rootPath = rootPath[..posindex];
 
+                // Validate config file exists and load repo config
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
                 if (!_filesystem.FileExists(configPath))
                 {

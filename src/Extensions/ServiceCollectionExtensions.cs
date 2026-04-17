@@ -17,6 +17,7 @@ using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.FileSystem;
+using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +36,7 @@ namespace AdrPlus.Extensions
         public static IServiceCollection AddAdrPlusServices(this IServiceCollection services)
         {
             services.AddSingleton<IFileSystemService, FileSystemService>();
+            services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
             services.AddSingleton<IConsoleWriter, ConsoleWriter>();
             services.AddSingleton<IAdrFileParser, AdrFileParserService>();

@@ -4,6 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Infrastructure.FileSystem;
+using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Infrastructure;
 
@@ -20,7 +21,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\project\\test.txt";
+        var filePath = Path.Combine(SelectedDrive, "project", "test.txt");
         mockFileSystem.FileExists(filePath).Returns(true);
 
         // Act
@@ -36,7 +37,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\project\\nonexistent.txt";
+        var filePath = Path.Combine(SelectedDrive, "project", "nonexistent.txt");
         mockFileSystem.FileExists(filePath).Returns(false);
 
         // Act
@@ -65,7 +66,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\project\\test.txt";
+        var filePath = Path.Combine(SelectedDrive, "project", "test.txt");
         var expectedContent = "Test content";
 
         mockFileSystem.ReadAllTextAsync(filePath, Arg.Any<CancellationToken>())
@@ -84,7 +85,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\project\\test.txt";
+        var filePath = Path.Combine(SelectedDrive, "project", "test.txt");
         var expectedLines = new[] { "Line 1", "Line 2", "Line 3" };
 
         mockFileSystem.ReadAllLinesAsync(filePath, Arg.Any<CancellationToken>())
@@ -103,7 +104,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\project\\test.txt";
+        var filePath = Path.Combine(SelectedDrive, "project", "test.txt");
         var content = "Test content";
 
         // Act
@@ -122,7 +123,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\docs";
+        var dirPath = Path.Combine(SelectedDrive, "project", "docs");
         mockFileSystem.DirectoryExists(dirPath).Returns(true);
 
         // Act
@@ -137,8 +138,8 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\newdir";
-        var fullPath = "C:\\project\\newdir";
+        var dirPath = Path.Combine(SelectedDrive, "project", "newdir");
+        var fullPath = Path.Combine(SelectedDrive, "project", "newdir");
 
         mockFileSystem.CreateDirectory(dirPath).Returns(fullPath);
 
@@ -156,7 +157,7 @@ public class FileSystemServiceMockingExamplesTests
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
         var relativePath = "docs\\adr";
-        var absolutePath = "C:\\project\\docs\\adr";
+        var absolutePath = Path.Combine(SelectedDrive, "project", "docs", "adr");
 
         mockFileSystem.GetFullNameDirectory(relativePath).Returns(absolutePath);
 
@@ -165,7 +166,7 @@ public class FileSystemServiceMockingExamplesTests
 
         // Assert
         result.Should().Be(absolutePath);
-        result.Should().StartWith("C:\\");
+        result.Should().StartWith(SelectedDrive);
     }
 
     #endregion
@@ -177,13 +178,13 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\docs";
+        var dirPath = Path.Combine(SelectedDrive, "project", "docs");
         var searchPattern = "*.md";
         var expectedFiles = new[]
         {
-            "C:\\project\\docs\\ADR-0001.md",
-            "C:\\project\\docs\\ADR-0002.md",
-            "C:\\project\\docs\\ADR-0003.md"
+            Path.Combine(SelectedDrive, "project", "docs", "ADR-0001.md"),
+            Path.Combine(SelectedDrive, "project", "docs", "ADR-0002.md"),
+            Path.Combine(SelectedDrive, "project", "docs", "ADR-0003.md")
         };
 
         mockFileSystem.EnumerateFiles(dirPath, searchPattern).Returns(expectedFiles);
@@ -202,12 +203,12 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\docs\\adr";
+        var dirPath = Path.Combine(SelectedDrive, "project", "docs", "adr");
         var searchPattern = "ADR-*.md";
         var expectedFiles = new[]
         {
-            "C:\\project\\docs\\adr\\ADR-0001-Test.md",
-            "C:\\project\\docs\\adr\\ADR-0002-Another.md"
+            Path.Combine(SelectedDrive, "project", "docs", "adr", "ADR-0001-Test.md"),
+            Path.Combine(SelectedDrive, "project", "docs", "adr", "ADR-0002-Another.md")
         };
 
         mockFileSystem.GetFiles(dirPath, searchPattern, SearchOption.AllDirectories)
@@ -226,9 +227,9 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\docs";
+        var dirPath = Path.Combine(SelectedDrive, "project", "docs");
         var searchPattern = "*.md";
-        var expectedFiles = new[] { "C:\\project\\docs\\README.md" };
+        var expectedFiles = new[] { Path.Combine(SelectedDrive, "project", "docs", "README.md") };
 
         mockFileSystem.GetFiles(dirPath, searchPattern, SearchOption.TopDirectoryOnly)
             .Returns(expectedFiles);
@@ -238,7 +239,7 @@ public class FileSystemServiceMockingExamplesTests
 
         // Assert
         result.Should().ContainSingle();
-        result[0].Should().Be("C:\\project\\docs\\README.md");
+        result[0].Should().Be(Path.Combine(SelectedDrive, "project", "docs", "README.md"));
     }
 
     [Fact]
@@ -247,7 +248,7 @@ public class FileSystemServiceMockingExamplesTests
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
         var relativePath = "docs\\adr\\test.md";
-        var absolutePath = "C:\\project\\docs\\adr\\test.md";
+        var absolutePath = Path.Combine(SelectedDrive, "project", "docs", "adr", "test.md");
 
         mockFileSystem.GetFullNameFile(relativePath).Returns(absolutePath);
 
@@ -388,8 +389,8 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var dirPath = "C:\\project\\docs";
-        var filePath = "C:\\project\\docs\\test.txt";
+        var dirPath = Path.Combine(SelectedDrive, "project", "docs");
+        var filePath = Path.Combine(SelectedDrive, "project", "docs", "test.txt");
         var content = "Initial content";
 
         mockFileSystem.DirectoryExists(dirPath).Returns(false, true);
@@ -434,7 +435,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var docsPath = "C:\\project\\docs";
+        var docsPath = Path.Combine(SelectedDrive, "project", "docs");
 
         mockFileSystem.GetFiles(docsPath, "*.md", Arg.Any<SearchOption>())
             .Returns(["file1.md", "file2.md"]);
@@ -462,7 +463,7 @@ public class FileSystemServiceMockingExamplesTests
     {
         // Arrange
         var mockFileSystem = Substitute.For<IFileSystemService>();
-        var filePath = "C:\\protected\\file.txt";
+        var filePath = Path.Combine(SelectedDrive, "protected", "file.txt");
 
         mockFileSystem.ReadAllTextAsync(filePath, Arg.Any<CancellationToken>())
             .Returns<string>(x => throw new UnauthorizedAccessException("Access denied"));
