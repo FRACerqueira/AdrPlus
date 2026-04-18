@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.Intrinsics.X86;
 
 namespace AdrPlus
 {
@@ -74,13 +75,9 @@ namespace AdrPlus
                                 });
                             }).Build();
 
-                logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
                 var configapp = host.Services.GetRequiredService<IOptions<AdrPlusConfig>>().Value;
-
                 var consoleservice = host.Services.GetRequiredService<IConsoleWriter>();
-                consoleservice.ConfigurePrompt(configapp);
-                consoleservice.ShowBanner(AppConstants.BannerText);
+                logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
                 var appculture = configapp.Language;
                 var cultureInfo = new CultureInfo("en-us");
@@ -88,8 +85,10 @@ namespace AdrPlus
                 {
                     cultureInfo = new CultureInfo(appculture);
                 }
-                CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-                CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+                consoleservice.EnsureCulture(configapp);
+                consoleservice.ConfigurePrompt(configapp);
+                consoleservice.ShowBanner(AppConstants.BannerText);
+                AppConstants.LanguageSetting = appculture;
 
                 var validator = host.Services.GetRequiredService<IValidateJsonConfig>();
                 var (isValid, errorReport) = await validator.ValidateAsync();
@@ -106,7 +105,6 @@ namespace AdrPlus
                 }
 
                 var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
-
                 LogMessages.LogApplicationStarting(logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
                 consoleservice.ShowWellcome(appVersion);
 

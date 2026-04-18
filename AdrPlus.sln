@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37012.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11702.344 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdrPlus", "src\AdrPlus.csproj", "{8EE748A3-BA75-4A3B-F1C4-16FE7C5A0B10}"
 EndProject
@@ -21,6 +21,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{3CB3A6EC-87F
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ard", "ard", "{917F5141-943D-406B-A2A1-5FC639CF9B64}"
+	ProjectSection(SolutionItems) = preProject
+		doc\adr\adr-config.adrplus = doc\adr\adr-config.adrplus
+		doc\adr\ADR0001-Teste-V01.md = doc\adr\ADR0001-Teste-V01.md
+		doc\adr\ADR0001-Teste-V02.md = doc\adr\ADR0001-Teste-V02.md
+		doc\adr\ADR0002-Teste-V02-SUP0001.md = doc\adr\ADR0002-Teste-V02-SUP0001.md
 	EndProjectSection
 EndProject
 Global
@@ -43,6 +51,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3CB3A6EC-87F9-4116-BB06-693CA2CBBDA8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{917F5141-943D-406B-A2A1-5FC639CF9B64} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0413D04E-D74D-42CE-83E0-106149870F29}

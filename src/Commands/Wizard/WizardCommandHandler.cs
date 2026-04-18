@@ -12,8 +12,8 @@ using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PromptPlusLibrary;
 using System.Globalization;
+
 
 namespace AdrPlus.Commands.Wizard
 {
@@ -51,7 +51,7 @@ namespace AdrPlus.Commands.Wizard
         private readonly IAdrServices _adrServices = adrServices;
         private readonly (CommandsAdr Command, string Alias, Type ConfigCommandHandler, string Description)[] _commandsMap = adrServices.GetCommands();
         private readonly IOptionsMonitor<AdrPlusConfig> _configMonitor = config;
-        private AdrPlusConfig CurrentConfig => _configMonitor.CurrentValue;
+        private AdrPlusConfig CurrentConfig  = config.CurrentValue;
 
         private static readonly Arguments[] ValidCommandArgs = [Arguments.Help];
         private const string StartMenuHistoryKey = "StartMenuWizard";
@@ -87,9 +87,6 @@ namespace AdrPlus.Commands.Wizard
                 var currentMenu = await LoadOrInitializeStartMenuAsync(cancellationToken);
                 while (true)
                 {
-                    (_configMonitor as IConfigurationRoot)?.Reload();
-                    ApplyRuntimeSettings();
-
                     _console.ShowBanner(AppConstants.BannerText);
                     _console.ShowWellcome(_configuration[AppConstants.CfgNameVersionApp] ?? string.Empty);
                     _console.WriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "wizard"));
@@ -114,7 +111,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (PromptPlus.AbortedByCtrlC)
+                                if (_console.IsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -131,7 +128,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (PromptPlus.AbortedByCtrlC)
+                                if (_console.IsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -148,7 +145,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (PromptPlus.AbortedByCtrlC)
+                                if (_console.IsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -164,8 +161,10 @@ namespace AdrPlus.Commands.Wizard
                     }
                     if (!string.IsNullOrEmpty(currentMenu.Id))
                     {
-                        (_configMonitor as IConfigurationRoot)?.Reload();
-                        ApplyRuntimeSettings();
+                        if (currentMenu.Id == "1.01" &&  !AppConstants.LanguageSetting.Equals(CultureInfo.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
+                        }
                         if (_console.PressAnyKeyToContinue($"{Resources.AdrPlus.PressAnyKey}...", cancellationToken))
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
@@ -196,7 +195,6 @@ namespace AdrPlus.Commands.Wizard
             {
                 return savedMenu;
             }
-
             var startMenu = GetGroupMenu().First(x => x.Id == defaultMenuId);
             await _filesystem.SaveHistoryAsync(StartMenuHistoryKey, startMenu, cancellationToken);
             return startMenu;
@@ -324,20 +322,6 @@ namespace AdrPlus.Commands.Wizard
                 _console.EnabledEscToAbort(false);
             }
             return itemSelected;
-        }
-
-        private void ApplyRuntimeSettings()
-        {
-            var cultureInfo = new CultureInfo("en-us");
-            if (Helper.IsValidCultureName(CurrentConfig.Language))
-            {
-                cultureInfo = new CultureInfo(CurrentConfig.Language);
-            }
-            CultureInfo.CurrentCulture = cultureInfo;
-            CultureInfo.CurrentUICulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-            _console.EnsureCulture(CurrentConfig);
         }
 
         /// <summary>

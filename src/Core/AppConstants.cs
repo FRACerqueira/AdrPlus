@@ -14,6 +14,11 @@ namespace AdrPlus.Core
 {
     internal static class AppConstants
     {
+        /// <summary>
+        /// The default language setting for the application, initialized to the neutral language culture name obtained from the assembly's NeutralResourcesLanguageAttribute.
+        /// </summary>
+        public static string LanguageSetting { get; set; } = GetNeutralLanguage();
+
         public const string AppConfigfileName = "adrplus.json";
         /// <summary>
         /// The application banner text.
@@ -226,7 +231,7 @@ namespace AdrPlus.Core
         /// A frozen dictionary mapping configuration field names to their corresponding display titles, used for presenting user-friendly titles in the application's user interface when displaying configuration settings.
         /// Uses FrozenDictionary for optimal read performance.
         /// </summary>
-        private static  FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
+        private static FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
         {
                 { FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
                 { FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
@@ -297,19 +302,17 @@ namespace AdrPlus.Core
         /// </summary>
         public static JsonDocumentOptions DocumentOptions => _documentOptions;
 
-        private static readonly Lazy<string> _neutralLanguage = new(() =>
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var attribute = assembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
-            return attribute?.CultureName ?? "en-us";
-        });
-
         /// <summary>
         /// Gets the neutral language culture name from the assembly's NeutralResourcesLanguageAttribute.
         /// Returns "en-us" as the default if the attribute is not found.
         /// The result is cached after the first call.
         /// </summary>
         /// <returns>The neutral language culture name.</returns>
-        public static string GetNeutralLanguage() => _neutralLanguage.Value;
+        public static string GetNeutralLanguage()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var attribute = assembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
+            return attribute?.CultureName ?? "en-us";
+        }
     }
 }

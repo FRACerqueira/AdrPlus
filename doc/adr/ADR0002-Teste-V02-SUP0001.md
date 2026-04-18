@@ -4,7 +4,7 @@
 ##### -
 ##### Status
 - Proposed (2026-04-17)
-- \-
+- Accepted (2026-04-17)
 - \-
 # Teste
 ---

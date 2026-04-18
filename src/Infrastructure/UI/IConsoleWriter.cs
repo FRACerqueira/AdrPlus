@@ -16,6 +16,12 @@ namespace AdrPlus.Infrastructure.UI
     internal interface IConsoleWriter
     {
         /// <summary>
+        /// Checks if the current operation was aborted by the user pressing Ctrl+C.
+        /// </summary>
+        /// <returns> <c>true</c> if the operation was aborted by Ctrl+C; otherwise, <c>false</c>.</returns>
+        bool IsAbortedByCtrlC();
+
+        /// <summary>
         /// Ensures that the console culture settings are properly configured based on the provided application configuration. 
         /// </summary>
         /// <param name="config">

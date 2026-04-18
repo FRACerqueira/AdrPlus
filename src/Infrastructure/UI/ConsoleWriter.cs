@@ -20,6 +20,12 @@ namespace AdrPlus.Infrastructure.UI
         private readonly IAdrServices _adrServices = adrServices;
 
         /// <inheritdoc/>
+        public bool IsAbortedByCtrlC()
+        { 
+            return PromptPlus.AbortedByCtrlC;
+        }
+
+        /// <inheritdoc/>
         public void EnabledEscToAbort(bool enabled)
         { 
             PromptPlus.Config.EnabledAbortKey = enabled;
@@ -117,7 +123,8 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void ConfigurePrompt(AdrPlusConfig config)
         {
-            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language);
+            var cultureInfo = new CultureInfo(config.Language);
+            PromptPlus.Config.DefaultCulture = cultureInfo;
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
@@ -131,14 +138,17 @@ namespace AdrPlus.Infrastructure.UI
             {
                 PromptPlus.Config.NoChar = config.NoValue[0];
             }
-            var cultureInfo = new CultureInfo(config.Language);
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
         }
 
         public void EnsureCulture(AdrPlusConfig config)
         {
-            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language);
+            var cultureInfo = new CultureInfo(config.Language);
+
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+            CultureInfo.CurrentCulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
+            PromptPlus.Config.DefaultCulture = cultureInfo; 
             if (!string.IsNullOrWhiteSpace(config.YesValue))
             {
                 PromptPlus.Config.YesChar = config.YesValue[0];
@@ -147,9 +157,6 @@ namespace AdrPlus.Infrastructure.UI
             {
                 PromptPlus.Config.NoChar = config.NoValue[0];
             }
-            var cultureInfo = new CultureInfo(config.Language);
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
         }
 
         /// <inheritdoc/>
