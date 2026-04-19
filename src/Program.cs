@@ -69,7 +69,7 @@ namespace AdrPlus
                         {
                             config.SetBasePath(basepath);
                             var assemblyver = assembly.GetName()?.Version?.ToString() ?? "0.0.0.0";
-                            config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: true);
+                            config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: false);
                             config.AddInMemoryCollection(new Dictionary<string, string?>
                             {
                                                 { AppConstants.CfgNameVersionApp,assemblyver },
