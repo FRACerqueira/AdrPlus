@@ -27,7 +27,7 @@ public class ConfigCommandHandlerTests
     private readonly IConsoleWriter _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
-    private readonly IOptionsMonitor<AdrPlusConfig> _mockConfigMonitor;
+    private readonly IOptions<AdrPlusConfig> _mockConfig;
     private readonly AdrPlusConfig _config;
     private readonly ConfigCommandHandler _handler;
 
@@ -38,21 +38,19 @@ public class ConfigCommandHandlerTests
         _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
-        _mockConfigMonitor = Substitute.For<IOptionsMonitor<AdrPlusConfig>>();
+        _mockConfig = Substitute.For<IOptions<AdrPlusConfig>>();
 
         _config = new AdrPlusConfig
         {
             FolderRepo = "docs/adr",
         };
 
-        _mockConfigMonitor.CurrentValue.Returns(_config);
-
         _handler = new ConfigCommandHandler(
             _mockLogger,
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockConfigMonitor,
+            Options.Create(_config),
             _mockAdrServices);
     }
 
@@ -67,7 +65,7 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockConfigMonitor,
+            Options.Create(_config),
             _mockAdrServices);
 
         // Assert

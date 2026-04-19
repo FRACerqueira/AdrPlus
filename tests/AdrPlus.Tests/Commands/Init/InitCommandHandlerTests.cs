@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using static AdrPlus.Tests.Helpers.TestPathData;
@@ -42,11 +43,10 @@ public class InitCommandHandlerTests
             FolderRepo = "docs/adr",
         };
 
-        var options = Options.Create(_config);
 
         _handler = new InitCommandHandler(
             _mockLogger,
-            options,
+            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,

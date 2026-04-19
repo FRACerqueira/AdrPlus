@@ -10,7 +10,7 @@ namespace AdrPlus.Domain
     /// <summary>
     /// Represents the configuration for ADR Plus Repository.
     /// </summary>
-    internal sealed partial class AdrPlusRepoConfig
+    internal sealed class AdrPlusRepoConfig
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class.

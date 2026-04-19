@@ -13,8 +13,6 @@ namespace AdrPlus.Domain
     /// </summary>
     internal sealed record AdrPlusConfig
     {
-        private string? _normalizedFolderCache;
-
         /// <summary>
         /// Language for showing messages, e.g. "en-us", "pt-br". Optional.
         /// </summary>
@@ -48,7 +46,7 @@ namespace AdrPlus.Domain
         /// <returns>The normalized folder path string.</returns>
         public string GetFolderNormalized()
         {
-            return _normalizedFolderCache ??= FolderRepo
+            return FolderRepo
                 .Replace('\\', Path.DirectorySeparatorChar)
                 .Replace('/', Path.DirectorySeparatorChar);
         }

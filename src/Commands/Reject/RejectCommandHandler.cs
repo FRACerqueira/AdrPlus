@@ -182,11 +182,7 @@ namespace AdrPlus.Commands.Reject
                 LogAndWriteSuccess($"{repoconfig.StatusRej} : {infoadr.FileName}");
                 if (infoadr.SupersededValue.HasValue)
                 {
-                    var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootPath, repoconfig);
-                    if (infoundo == null)
-                    {
-                        throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
-                    }
+                    var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootPath, repoconfig) ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
                     var (updundo, updundoerror) = await _adrServices.StatusChangeAdrAsync(infoundo.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
                     if (!updundo)
                     {

@@ -14,11 +14,6 @@ namespace AdrPlus.Core
 {
     internal static class AppConstants
     {
-        /// <summary>
-        /// The default language setting for the application, initialized to the neutral language culture name obtained from the assembly's NeutralResourcesLanguageAttribute.
-        /// </summary>
-        public static string LanguageSetting { get; set; } = GetNeutralLanguage();
-
         public const string AppConfigfileName = "adrplus.json";
         /// <summary>
         /// The application banner text.

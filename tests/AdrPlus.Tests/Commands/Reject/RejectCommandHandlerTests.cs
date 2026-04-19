@@ -43,11 +43,9 @@ public class RejectCommandHandlerTests
             Language = "en-US"
         };
 
-        var options = Options.Create(_config);
-
         _handler = new RejectCommandHandler(
             _mockLogger,
-            options,
+            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,

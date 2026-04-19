@@ -43,11 +43,9 @@ public class ReviewCommandHandlerTests
             Language = "en-US"
         };
 
-        var options = Options.Create(_config);
-
         _handler = new ReviewCommandHandler(
             _mockLogger,
-            options,
+            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,

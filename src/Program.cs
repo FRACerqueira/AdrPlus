@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.Intrinsics.X86;
+using System.Xml.Xsl;
 
 namespace AdrPlus
 {
@@ -31,10 +31,10 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
+
             //normalize the path of the executing assembly to ensure it works correctly even if the app is run from a different directory
             var assembly = Assembly.GetExecutingAssembly()!;
             var basepath = Path.GetDirectoryName(assembly.Location)!;
-
             string Command = args.Length > 0 ? args[0] : string.Empty;
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
             ILogger? logger = null;
@@ -42,77 +42,86 @@ namespace AdrPlus
             var exitcode = 0;
             try
             {
-                host = Host.CreateDefaultBuilder()
-                            .UseConsoleLifetime()
-                            .ConfigureLogging((hostContext, services) =>
-                            {
-                                services.ClearProviders();
-                                services.AddFile(Path.Combine(basepath, "logs", $"{AppConstants.NameApp}.log"),
-                                    retainedFileCountLimit: 3,
-                                    outputTemplate: "{Timestamp:o} [{Level:u3}-{SourceContext}] {Message} {NewLine}{Exception}");
-                                services.AddFilter("Microsoft.AspNetCore", LogLevel.Error);
-                            })
-                            .ConfigureServices((hostContext, services) =>
-                            {
-                                services.Configure<AdrPlusConfig>(hostContext.Configuration.GetSection(AppConstants.DefaultSettingsRoot));
-                                services.AddHostedService<MainProgram>();
-                                services.AddAdrPlusServices();
-                            })
-                            .ConfigureHostOptions(options =>
-                            {
-                                options.ShutdownTimeout = TimeSpan.FromSeconds(10);
-                            })
-                            .ConfigureAppConfiguration((hostingContext, config) =>
-                            {
-                                config.SetBasePath(basepath);
-                                var assemblyver = assembly.GetName()?.Version?.ToString() ?? "0.0.0.0";
-                                config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: true);
-                                config.AddInMemoryCollection(new Dictionary<string, string?>
-                                {
-                                    { AppConstants.CfgNameVersionApp,assemblyver },
-                                    { AppConstants.CfgCommandName,Command },
-                                    { AppConstants.CfgCommandArgs,commandArgsString }
-                                });
-                            }).Build();
-
-                var configapp = host.Services.GetRequiredService<IOptions<AdrPlusConfig>>().Value;
-                var consoleservice = host.Services.GetRequiredService<IConsoleWriter>();
-                logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
-                var appculture = configapp.Language;
-                var cultureInfo = new CultureInfo("en-us");
-                if (!string.IsNullOrEmpty(appculture) && Helper.IsValidCultureName(appculture))
+                while (Helper.HasAppConfigChnage)
                 {
-                    cultureInfo = new CultureInfo(appculture);
-                }
-                consoleservice.EnsureCulture(configapp);
-                consoleservice.ConfigurePrompt(configapp);
-                consoleservice.ShowBanner(AppConstants.BannerText);
-                AppConstants.LanguageSetting = appculture;
+                    Helper.HasAppConfigChnage = false;
+                    host = Host.CreateDefaultBuilder()
+                        .UseConsoleLifetime()
+                        .ConfigureLogging((hostContext, services) =>
+                        {
+                            services.ClearProviders();
+                            services.AddFile(Path.Combine(basepath, "logs", $"{AppConstants.NameApp}.log"),
+                                retainedFileCountLimit: 3,
+                                outputTemplate: "{Timestamp:o} [{Level:u3}-{SourceContext}] {Message} {NewLine}{Exception}");
+                            services.AddFilter("Microsoft.AspNetCore", LogLevel.Error);
+                        })
+                        .ConfigureServices((hostContext, services) =>
+                        {
+                            services.Configure<AdrPlusConfig>(hostContext.Configuration.GetSection(AppConstants.DefaultSettingsRoot));
+                            services.AddHostedService<MainProgram>();
+                            services.AddAdrPlusServices();
+                        })
+                        .ConfigureHostOptions(options =>
+                        {
+                            options.ShutdownTimeout = TimeSpan.FromSeconds(10);
+                        })
+                        .ConfigureAppConfiguration((hostingContext, config) =>
+                        {
+                            config.SetBasePath(basepath);
+                            var assemblyver = assembly.GetName()?.Version?.ToString() ?? "0.0.0.0";
+                            config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: false);
+                            config.AddInMemoryCollection(new Dictionary<string, string?>
+                            {
+                                                { AppConstants.CfgNameVersionApp,assemblyver },
+                                                { AppConstants.CfgCommandName,Command },
+                                                { AppConstants.CfgCommandArgs,commandArgsString }
+                            });
+                        }).Build();
 
-                var validator = host.Services.GetRequiredService<IValidateJsonConfig>();
-                var (isValid, errorReport) = await validator.ValidateAsync();
-                if (!isValid)
-                {
-                    ConsoleWriter.ShowError(Resources.AdrPlus.ErrMsgConfigValidationFailed);
-                    foreach (var error in errorReport)
+                    var configapp = host.Services.GetRequiredService<IOptions<AdrPlusConfig>>().Value;
+                    var consoleservice = host.Services.GetRequiredService<IConsoleWriter>();
+                    logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+
+                    var appculture = configapp.Language;
+                    var cultureInfo = new CultureInfo("en-us");
+                    if (!string.IsNullOrEmpty(appculture) && Helper.IsValidCultureName(appculture))
                     {
-                        LogMessages.LogError(logger, error);
-                        ConsoleWriter.ShowError(error);
+                        cultureInfo = new CultureInfo(appculture);
                     }
-                    exitcode = 1;
-                    return exitcode;
+                    consoleservice.EnsureCulture(configapp);
+                    consoleservice.ConfigurePrompt(configapp);
+                    consoleservice.ShowBanner(AppConstants.BannerText);
+
+                    var validator = host.Services.GetRequiredService<IValidateJsonConfig>();
+                    var (isValid, errorReport) = await validator.ValidateAsync();
+                    if (!isValid)
+                    {
+                        ConsoleWriter.ShowError(Resources.AdrPlus.ErrMsgConfigValidationFailed);
+                        foreach (var error in errorReport)
+                        {
+                            LogMessages.LogError(logger, error);
+                            ConsoleWriter.ShowError(error);
+                        }
+                        exitcode = 1;
+                        return exitcode;
+                    }
+
+                    var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
+                    LogMessages.LogApplicationStarting(logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
+                    consoleservice.ShowWellcome(appVersion);
+
+                    await host.RunAsync();
+                    if (Helper.HasAppConfigChnage)
+                    {
+                        host.Dispose();
+                    }
+
                 }
-
-                var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
-                LogMessages.LogApplicationStarting(logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
-                consoleservice.ShowWellcome(appVersion);
-
-                await host.RunAsync();
 
             }
             catch (Exception ex)
             {
+                Helper.HasAppConfigChnage = false;
                 if (logger is not null)
                 {
                     LogMessages.LogCriticalError(logger, ex);
@@ -125,7 +134,6 @@ namespace AdrPlus
             {
                 host?.Dispose();
             }
-
             return exitcode;
         }
     }

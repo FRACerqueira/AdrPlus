@@ -12,7 +12,6 @@ using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 
 
 namespace AdrPlus.Commands.Wizard
@@ -35,7 +34,6 @@ namespace AdrPlus.Commands.Wizard
     internal sealed partial class WizardCommandHandler(
         CommandRouter commandRouter,
         IConfiguration configuration,
-        IOptionsMonitor<AdrPlusConfig> config,
         ILogger<WizardCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
@@ -50,8 +48,6 @@ namespace AdrPlus.Commands.Wizard
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IAdrServices _adrServices = adrServices;
         private readonly (CommandsAdr Command, string Alias, Type ConfigCommandHandler, string Description)[] _commandsMap = adrServices.GetCommands();
-        private readonly IOptionsMonitor<AdrPlusConfig> _configMonitor = config;
-        private AdrPlusConfig CurrentConfig  = config.CurrentValue;
 
         private static readonly Arguments[] ValidCommandArgs = [Arguments.Help];
         private const string StartMenuHistoryKey = "StartMenuWizard";
@@ -161,13 +157,13 @@ namespace AdrPlus.Commands.Wizard
                     }
                     if (!string.IsNullOrEmpty(currentMenu.Id))
                     {
-                        if (currentMenu.Id == "1.01" &&  !AppConstants.LanguageSetting.Equals(CultureInfo.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
-                        {
-                            break;
-                        }
                         if (_console.PressAnyKeyToContinue($"{Resources.AdrPlus.PressAnyKey}...", cancellationToken))
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                        }
+                        if (currentMenu.Id == "1.01")
+                        {
+                            break;
                         }
                     }
                 }

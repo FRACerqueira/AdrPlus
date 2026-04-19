@@ -46,7 +46,6 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ICommandMetadataService, CommandMetadataService>();
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
-
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
