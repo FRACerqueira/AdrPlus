@@ -5,11 +5,13 @@
 
 using AdrPlus.Commands.Help;
 using AdrPlus.Core;
+using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AdrPlus.Commands
 {

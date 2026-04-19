@@ -44,11 +44,9 @@ public class ApproveCommandHandlerTests
            Language = "en-US"
         };
 
-        var options = Options.Create(_config);
-
         _handler = new ApproveCommandHandler(
             _mockLogger,
-            options,
+            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,

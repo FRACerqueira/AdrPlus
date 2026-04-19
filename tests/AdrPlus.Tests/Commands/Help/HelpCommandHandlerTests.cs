@@ -7,9 +7,7 @@ using AdrPlus.Commands;
 using AdrPlus.Commands.Help;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.UI;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 
 namespace AdrPlus.Tests.Commands.Help;
 

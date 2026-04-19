@@ -61,11 +61,9 @@ public class NewAdrCommandHandlerTests
 
         _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
 
-        var options = Options.Create(_config);
-
         _handler = new NewAdrCommandHandler(
             _mockLogger,
-            options,
+            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,

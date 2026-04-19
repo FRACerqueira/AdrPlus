@@ -13,32 +13,30 @@ namespace AdrPlus.Domain
     /// </summary>
     internal sealed record AdrPlusConfig
     {
-        private string? _normalizedFolderCache;
-
         /// <summary>
         /// Language for showing messages, e.g. "en-us", "pt-br". Optional.
         /// </summary>
-        public string Language { get; init; } = AppConstants.GetNeutralLanguage();
+        public string Language { get; set; } = AppConstants.GetNeutralLanguage();
 
         /// <summary>
         /// Folder for the ADRs in the repository, e.g. "docs/adr". Optional, can be empty for the root folder.
         /// </summary>
-        public string FolderRepo { get; init; } = string.Empty;
+        public string FolderRepo { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the command used to open an ADR.
         /// </summary>
-        public string ComandOpenAdr { get; init; } = string.Empty;
+        public string ComandOpenAdr { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the character used for yes responses. Optional, can be empty for the default language (pt-br or en-us).
         /// </summary>
-        public string YesValue { get; init; } = string.Empty;
+        public string YesValue { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the character used for no responses. Optional, can be empty for the default language (pt-br or en-us).
         /// </summary>
-        public string NoValue { get; init; } = string.Empty;
+        public string NoValue { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the normalized folder path with proper directory separators for the current operating system.
@@ -48,7 +46,7 @@ namespace AdrPlus.Domain
         /// <returns>The normalized folder path string.</returns>
         public string GetFolderNormalized()
         {
-            return _normalizedFolderCache ??= FolderRepo
+            return FolderRepo
                 .Replace('\\', Path.DirectorySeparatorChar)
                 .Replace('/', Path.DirectorySeparatorChar);
         }

@@ -27,10 +27,6 @@ Yes. If scopes are enabled, ADRs with the same title can coexist as long as they
 
 No. The wizard is optional; you can run commands directly.
 
-### Which command should I use first in a new repository?
-
-Use `adrplus init` to initialize the ADR structure.
-
 ### What file stores application-level settings?
 
 `adrplus.json`.
@@ -51,43 +47,8 @@ No. You cannot customize ADR headers directly. You can customize status labels a
 
 ### Can I use custom status labels?
 
-Yes. You can customize status labels in `adr-config.adrplus` with `statusnew`, `statusacc`, `statusrej`, and `statussup`.
+No. You cannot customize ADR headers directly.. You can customize status labels in `adr-config.adrplus` with `statusnew`, `statusacc`, `statusrej`, and `statussup`.
 
-### How do I disable automatic opening of ADR files after commands?
-
-Set `OpenAdr` to an empty string (`""`) in `adrplus.json`.
-
-### What if I want to change the ADR template?
-
-You can customize the content of new ADRs running command `adrplus config --template`. the old ADRs will not be updated. 
-
-### Where are ADR files stored by default?
-
-By default, in `doc/adr` (configured by `folderrepo`).
-
-### Can I change the ADR folder location?
-
-Yes. Set a different value in `folderrepo`, but make sure to move existing ADR files accordingly.
-
-### What does `lenseq` control?
-
-It defines the number of digits in the ADR sequence (for example, `0001`).
-
-### What does `lenversion` control?
-
-It defines the number of digits for major version formatting.
-
-### What does `lenrevision` control?
-
-It defines revision numbering length; `0` disables revision numbering.
-
-### What does `separator` control?
-
-It defines the separator used in generated ADR file names.
-
-### What does `casetransform` control?
-
-It defines the case style applied to generated name segments.
 
 ### Can I organize ADRs by scope folders?
 
@@ -120,10 +81,6 @@ Yes. Pass arguments directly (for example, `--title`, `--file`, `--path`).
 ### How do I see command-specific help?
 
 Run `adrplus help <command>`.
-
-### Can I change the ADR numbering format after I've already created ADRs?
-
-Yes. New ADRs follow the new format; existing files keep their old names unless renamed manually.
 
 ### Can AdrPlus create links between superseded and superseding ADRs automatically?
 
@@ -158,7 +115,3 @@ Use repository practices (branch policies, code owners, reviews) to control conc
 ### What happens if `adr-config.adrplus` is missing or malformed?
 
 Commands that depend on repository config can fail until the file is fixed.
-
-### How can I upgrade AdrPlus while keeping backward compatibility with old ADR files?
-
-Upgrade incrementally, test in a branch, and keep naming/config conventions stable during migration.

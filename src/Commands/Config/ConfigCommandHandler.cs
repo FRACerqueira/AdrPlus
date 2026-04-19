@@ -37,7 +37,7 @@ namespace AdrPlus.Commands.Config
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
         IConsoleWriter console,
-        IOptionsMonitor<AdrPlusConfig> config,
+        IOptions<AdrPlusConfig> config,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<ConfigCommandHandler> _logger = logger;
@@ -45,7 +45,8 @@ namespace AdrPlus.Commands.Config
         private readonly IConsoleWriter _console = console;
         private readonly IValidateJsonConfig _validateConfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private AdrPlusConfig CurrentConfig = config.CurrentValue;
+        private readonly AdrPlusConfig _config = config.Value;
+
 
         private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardConfigApplication, Arguments.WizardConfigRepository,Arguments.WizardConfigTemplate,Arguments.FileConfig, Arguments.Help];
 
@@ -238,9 +239,8 @@ namespace AdrPlus.Commands.Config
             {
                 jsoncontent = WizardAppConfig(jsoncontent, cancellationToken);
             }
-            var aux = BuildAppFieldsFromJson(jsoncontent);
-            AppConstants.LanguageSetting = aux.First(x => x.Name.Equals(AppConstants.FieldLanguage, StringComparison.OrdinalIgnoreCase)).Value;
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
+            Helper.HasAppConfigChnage = true;
             LogMessages.LogCommandSuccessful(_logger, filePath);
             _console.WriteSuccess(filePath);
         }
@@ -269,7 +269,7 @@ namespace AdrPlus.Commands.Config
             }
             else
             {
-                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(CurrentConfig, cancellationToken);
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(_config, cancellationToken);
             }
             if (string.IsNullOrEmpty(fileConfigPath))
             {
@@ -602,7 +602,7 @@ namespace AdrPlus.Commands.Config
         /// <returns>An array of sample filename strings demonstrating the naming convention.</returns>
         private string[] GetSampleFiles(string modifiedConfig)
         {
-            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty, CurrentConfig.FolderRepo);
+            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty, _config.FolderRepo);
             var skipdomains = repoconfig.Getskipdomains();
             var scopes = repoconfig.GetScopes();
             var eligibleScope = scopes.Where(x => !skipdomains.Any(s => s == x)).FirstOrDefault() ?? string.Empty;

@@ -1,8 +1,6 @@
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using NSubstitute;
-using Xunit;
 
 namespace AdrPlus.Tests.Core
 {

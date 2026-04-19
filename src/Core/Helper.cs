@@ -4,14 +4,16 @@
 
 using AdrPlus.Domain;
 using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus.Core
 {
     internal static class Helper
     {
+        public static  bool HasAppConfigChnage = true;
+
         #region Validation
 
         /// <summary>
