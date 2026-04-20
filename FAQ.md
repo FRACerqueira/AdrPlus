@@ -15,10 +15,6 @@
 
 No. AdrPlus manages ADR Markdown files and can be used in repositories of any language or framework.
 
-### Can I use the tool in a repository that already has existing ADR files?
-
-Yes. AdrPlus will recognize existing ADR files and continue numbering from the highest valid sequence found.
-
 ### Is it possible to have multiple ADRs with the same title but different scopes?
 
 Yes. If scopes are enabled, ADRs with the same title can coexist as long as they are in different scopes.
@@ -47,8 +43,7 @@ No. You cannot customize ADR headers directly. You can customize status labels a
 
 ### Can I use custom status labels?
 
-No. You cannot customize ADR headers directly.. You can customize status labels in `adr-config.adrplus` with `statusnew`, `statusacc`, `statusrej`, and `statussup`.
-
+Yes. You can customize status labels in `adr-config.adrplus` with `statusnew`, `statusacc`, `statusrej`, and `statussup`.
 
 ### Can I organize ADRs by scope folders?
 
@@ -77,10 +72,6 @@ The tool scans existing ADR files, finds the highest sequence number, and increm
 ### Can I run AdrPlus without interactive prompts?
 
 Yes. Pass arguments directly (for example, `--title`, `--file`, `--path`).
-
-### How do I see command-specific help?
-
-Run `adrplus help <command>`.
 
 ### Can AdrPlus create links between superseded and superseding ADRs automatically?
 

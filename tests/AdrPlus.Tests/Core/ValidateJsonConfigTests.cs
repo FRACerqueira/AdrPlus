@@ -991,8 +991,8 @@ public class ValidateJsonConfigTests
         var result = validator.GetConfigAdrTemplatePath();
 
         // Assert
-        result.Should().Contain("template");
-        result.Should().Contain("adr-template.md");
+        result.Should().Contain(AppConstants.TemplateDirectoryName);
+        result.Should().Contain(AppConstants.AdrTemplateFileName);
         Path.IsPathRooted(result).Should().BeTrue();
     }
 
@@ -1055,7 +1055,7 @@ public class ValidateJsonConfigTests
         // Arrange
         var validator = CreateValidator([]);
         var expectedContent = "ADR template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md"));
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
         _fileSystem.FileExists(expectedPath).Returns(true);
         _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
@@ -1090,17 +1090,17 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(false);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
 
         // Assert
         _fileSystem.Received(1).CreateDirectory(templateDir);
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -1108,17 +1108,17 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("pt-BR", CancellationToken.None);
+        await validator.InitializeTemplateAsync("pt-BR", CancellationToken.None);
 
         // Assert
         _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -1126,17 +1126,16 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(true);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
 
         // Assert
         await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -1144,16 +1143,16 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync(null, CancellationToken.None);
+        await validator.InitializeTemplateAsync(null, CancellationToken.None);
 
         // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -1185,8 +1184,8 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var config = new AdrPlusConfig { FolderRepo = "docs/adr"};
         var templateContent = "# Template Content";
-        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md"));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
+        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
 
         // Setup: Handle multiple file path checks
         _fileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
@@ -1211,7 +1210,7 @@ public class ValidateJsonConfigTests
     #region Additional Edge Case Tests
 
     [Fact]
-    public async Task ValidateAsync_WithEmptyLanguage_IsValid()
+    public async Task ValidateAsync_WithEmptyLanguage_IsNotValid()
     {
         // Arrange
         var validator = CreateValidator(new Dictionary<string, string?>
@@ -1227,7 +1226,7 @@ public class ValidateJsonConfigTests
         var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
 
         // Assert
-        IsValid.Should().BeTrue();
+        IsValid.Should().BeFalse();
     }
 
     [Fact]
@@ -1240,8 +1239,8 @@ public class ValidateJsonConfigTests
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
-        var templatePath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
+        var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
         _fileSystem.FileExists(templatePath).Returns(false);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
 
@@ -1577,16 +1576,16 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("pt-PT", CancellationToken.None);
+        await validator.InitializeTemplateAsync("pt-PT", CancellationToken.None);
 
         // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -1594,16 +1593,16 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("invalid-culture", CancellationToken.None);
+        await validator.InitializeTemplateAsync("invalid-culture", CancellationToken.None);
 
         // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -1612,7 +1611,7 @@ public class ValidateJsonConfigTests
         // Arrange
         var validator = CreateValidator([]);
         var expectedContent = "template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
         var cts = new CancellationTokenSource();
         _fileSystem.FileExists(expectedPath).Returns(true);
         _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
@@ -1631,7 +1630,7 @@ public class ValidateJsonConfigTests
         // Arrange
         var validator = CreateValidator([]);
         var expectedContent = "ADR template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md"));
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
         var cts = new CancellationTokenSource();
         _fileSystem.FileExists(expectedPath).Returns(true);
         _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
@@ -1986,8 +1985,8 @@ public class ValidateJsonConfigTests
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
-        var contentPath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
+        var contentPath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
 
         _fileSystem.FileExists(contentPath).Returns(false);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
@@ -2167,16 +2166,16 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(true);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync(string.Empty, CancellationToken.None);
+        await validator.InitializeTemplateAsync(string.Empty, CancellationToken.None);
 
         // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>() , Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -2184,17 +2183,17 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-        var templateFile = Path.Combine(templateDir, "adr-template.md");
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
         _fileSystem.DirectoryExists(templateDir).Returns(false);
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        var result = await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
 
         // Assert
         _fileSystem.Received(1).CreateDirectory(templateDir);
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, result!, Arg.Any<CancellationToken>());
+        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     #endregion

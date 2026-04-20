@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # AdrPlus
 
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
@@ -5,8 +7,6 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
-
-[![icon](./icon.png)](./icon.png)
 
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no revision flow, and hard-to-track status changes).
 
@@ -276,6 +276,7 @@ adrplus config --application
 |`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`).|
 |`YesValue`| Default confirmation value for positive responses.|
 |`NoValue`| Default confirmation value for negative responses.|
+|`FolderRepo`| Relative path to the ADR repository folder (for example: `doc/adr`).|
 |`OpenAdr`| Opens the ADR file after creation/update when supported.|
 
 - VS Code users can set `OpenAdr` to `code {0}` to automatically open the created/updated ADR file in the editor.

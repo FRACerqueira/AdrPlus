@@ -38,6 +38,11 @@ namespace AdrPlus.Commands
         [Command("config", typeof(ConfigCommandHandler), "CmdDescConfig")]
         Config,
         /// <summary>
+        /// Update template repository settings or ADR metadata (Normalize title/domain/scope or change date of status).
+        /// </summary>
+        [Command("update", typeof(ConfigCommandHandler), "CmdDescUpdate")]
+        Update,
+        /// <summary>
         /// Initializes the repository with folders for ADRs.
         /// </summary>
         [Command("init", typeof(InitCommandHandler), "CmdDescInit")]

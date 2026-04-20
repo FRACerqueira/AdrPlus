@@ -7,15 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
-
-### Added
-
-- Nothing yet.
-
----
-
-## [1.0.0] — 2025-01-01
+## [0.1.0] ~ [0.1.1] — 2026-04-17 ~ 2026-04-19
 
 ### Added
 
@@ -33,6 +25,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support (`en-US` and `pt-BR`) for CLI messages and templates.
 - Cross-platform support (Windows, macOS, Linux).
 - Multi-target build: `net8.0`, `net9.0`, and `net10.0`.
-
-[Unreleased]: https://github.com/FRACerqueira/AdrPlus/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/FRACerqueira/AdrPlus/releases/tag/v1.0.0

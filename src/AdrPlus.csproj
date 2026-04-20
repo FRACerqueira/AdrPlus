@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
+		<Version>0.1.1</Version>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<AssemblyName>adrplus</AssemblyName>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
@@ -30,14 +31,28 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\adr-template.md" />
-    <EmbeddedResource Include="Resources\adr-templateptbr.md" />
+    <EmbeddedResource Include="Resources\adr-template.adrplus" />
+    <EmbeddedResource Include="Resources\adr-templateptbr.adrplus" />
+    <EmbeddedResource Include="Resources\alexandrian-templateptbr.md" />
+    <EmbeddedResource Include="Resources\business-case-templateptbr.md" />
+    <EmbeddedResource Include="Resources\merson-templateptbr.md" />
+    <EmbeddedResource Include="Resources\nygard-templateptbr.md" />
+    <EmbeddedResource Include="Resources\planguage-templateptbr.md" />
+    <EmbeddedResource Include="Resources\tyree-ackerman-templateptbr.md" />
+    <EmbeddedResource Include="Resources\tyree-ackerman-template.md" />
+    <EmbeddedResource Include="Resources\planguage-template.md" />
+    <EmbeddedResource Include="Resources\nygard-template.md" />
+    <EmbeddedResource Include="Resources\merson-template.md" />
+    <EmbeddedResource Include="Resources\business-case-template.md" />
+    <EmbeddedResource Include="Resources\alexandrian-template.md" />
+    <EmbeddedResource Include="Resources\madr-template.md" />
+    <EmbeddedResource Include="Resources\madr-templateptbr.md" />
   </ItemGroup>
 
   <!-- Pack README and icon into the NuGet package -->
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\icon.png" Pack="true" PackagePath="\" Condition="Exists('..\icon.png')" />
+    <None Include="..\NugetREADME.md" Pack="true" PackagePath="\README.md" />
+    <None Include="..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

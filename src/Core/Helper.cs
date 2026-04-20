@@ -12,7 +12,7 @@ namespace AdrPlus.Core
 {
     internal static class Helper
     {
-        public static  bool HasAppConfigChnage = true;
+        public static  bool HasAppConfigChange = true;
 
         #region Validation
 

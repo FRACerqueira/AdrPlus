@@ -1002,4 +1002,7 @@
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>The ADR has been rejected. Do you want to continue?</value>
   </data>
+  <data name="CmdDescUpdate" xml:space="preserve">
+    <value>Update the ADR template settings in the repository or the ADR metadata</value>
+  </data>
 </root>

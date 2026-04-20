@@ -8,6 +8,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -20,14 +21,6 @@ namespace AdrPlus.Core
     {
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IConfiguration _configuration = configuration;
-
-        // Private constants for file paths and templates
-        private const string TemplateDirectoryName = "template";
-        private const string AdrTemplateFileName = "adr-template.md";
-        private const string AdrTemplatePtBrFileName = "adr-templateptbr.md";
-        private const string AdrConfigFileName = "adr-config.adrplus";
-        private const string ResourceNamespace = "AdrPlus.Resources";
-        private const string PtCulturePrefix = "pt-";
 
         /// <summary>
         /// Validates the entire application configuration (DefaultSettings section) and returns a formatted error report.
@@ -62,16 +55,16 @@ namespace AdrPlus.Core
                 return errors;
             }
 
-            // Validate language (optional, can be empty)
+            // Validate language
             var language = section[AppConstants.FieldLanguage];
-            if (!string.IsNullOrWhiteSpace(language) && !Helper.IsValidCultureName(language))
+            if (string.IsNullOrWhiteSpace(language) || !Helper.IsValidCultureName(language))
             {
                 errors.Add(string.Format(null, FormatMessages.ErrMsgInvalidLanguageCodeFormat, language));
             }
 
             // Validate content (required for the generation of the ADR)
-            var contentpath = Path.Combine(TemplateDirectoryName, AdrTemplateFileName);
-            errors.AddRange(await ValidateContentFileAsync(language, contentpath, cancellationToken));
+            var contentpath = Path.Combine(AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+            errors.AddRange(await ValidateTemplateFileAsync(language, contentpath, cancellationToken));
 
             // Validate folderRepo (optional, must be relative path if specified)
             var folderRepo = section[AppConstants.FieldFolderRepo];
@@ -103,7 +96,7 @@ namespace AdrPlus.Core
         public string GetConfigRepoFilePath()
         {
             var baseDirectory = AppContext.BaseDirectory;
-            return Path.GetFullPath(Path.Combine(baseDirectory, TemplateDirectoryName, GetFileNameRepoConfig()));
+            return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, GetFileNameRepoConfig()));
         }
 
         /// <summary>
@@ -126,7 +119,7 @@ namespace AdrPlus.Core
         public async Task<string> GetConfigRepoTemplateAsync(CancellationToken cancellationToken)
         {
             var baseDirectory = AppContext.BaseDirectory;
-            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, TemplateDirectoryName, AdrConfigFileName));
+            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
             if (_fileSystem.FileExists(fullpath))
             {
                 return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
@@ -135,7 +128,7 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Retrieves the content of the ADR Markdown template file (<c>adr-template.md</c>) asynchronously.
+        /// Retrieves the content of the ADR Markdown template file (<c>adr-template.adrplus</c>) asynchronously.
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous operation, containing the template content as a string.</returns>
@@ -151,14 +144,14 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Gets the full file-system path for the ADR Markdown template file (<c>adr-template.md</c>).
+        /// Gets the full file-system path for the ADR Markdown template file (<c>adr-template.adrplus</c>).
         /// The file is expected in the <c>template</c> subdirectory of the application base directory.
         /// </summary>
-        /// <returns>The absolute path to <c>adr-template.md</c>.</returns>
+        /// <returns>The absolute path to <c>adr-template.adrplus</c>.</returns>
         public string GetConfigAdrTemplatePath()
         {
             var baseDirectory = AppContext.BaseDirectory;
-            return Path.GetFullPath(Path.Combine(baseDirectory, TemplateDirectoryName, AdrTemplateFileName));
+            return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
         }
 
         /// <summary>
@@ -167,19 +160,19 @@ namespace AdrPlus.Core
         /// <returns>The constant file name <c>adr-config.adrplus</c>.</returns>
         public string GetFileNameRepoConfig()
         {
-            return AdrConfigFileName;
+            return AppConstants.AdrConfigFileName;
         }
 
 
         /// <summary>
-        /// Validates that the content path represents a valid file path and, when the file does not exist, initializes the template.
+        /// Validates that the template path represents a valid file path and, when the file does not exist, initializes the template.
         /// Handles relative paths by resolving them against <see cref="AppContext.BaseDirectory"/>.
         /// </summary>
         /// <param name="culture">The culture value from the configuration (used to select the appropriate template language).</param>
         /// <param name="content">The content path value from the configuration to validate.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>An array of validation error messages. Empty when the path is valid and the file exists (or was successfully initialized).</returns>
-        private async Task<string[]> ValidateContentFileAsync(string? culture, string content, CancellationToken cancellationToken)
+        private async Task<string[]> ValidateTemplateFileAsync(string? culture, string content, CancellationToken cancellationToken)
         {
             List<string> errors = [];
             try
@@ -304,39 +297,89 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="appculture">The application culture string (e.g. "pt-BR"). Null or whitespace defaults to the English template.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>The template content that was written, or an empty string if the file already existed.</returns>
-        public async Task<string> InitializeTemplateAsync(string? appculture, CancellationToken cancellationToken)
+        public async Task InitializeTemplateAsync(string? appculture, CancellationToken cancellationToken)
         {
-            var content = string.Empty;
-            var resfiletemplate = AdrTemplateFileName;
-
-            if (!string.IsNullOrWhiteSpace(appculture) && Helper.IsValidCultureName(appculture))
-            {
-                if (appculture.StartsWith(PtCulturePrefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    resfiletemplate = AdrTemplatePtBrFileName;
-                }
-            }
             var baseDirectory = AppContext.BaseDirectory;
-            var fullPathtemplate = Path.GetFullPath(Path.Combine(baseDirectory, TemplateDirectoryName));
+            var fullPathtemplate = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName));
             if (!_fileSystem.DirectoryExists(fullPathtemplate))
             {
                 _fileSystem.CreateDirectory(fullPathtemplate);
             }
 
-            var fullPathfiletemplate = Path.GetFullPath(Path.Combine(fullPathtemplate, AdrTemplateFileName));
+            var fullPathfiletemplate = Path.GetFullPath(Path.Combine(fullPathtemplate, AppConstants.AdrTemplateFileName));
             if (!_fileSystem.FileExists(fullPathfiletemplate))
             {
-                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                using var stream = assembly.GetManifestResourceStream($"{ResourceNamespace}.{resfiletemplate}");
-                if (stream != null)
-                {
-                    using var reader = new StreamReader(stream);
-                    content = reader.ReadToEnd();
-                    await _fileSystem.WriteAllTextAsync(fullPathfiletemplate, content, cancellationToken);
-                }
+                await CreateTemplatesAsync(appculture, cancellationToken);
             }
-            return content!;
+        }
+
+        private async Task CreateTemplatesAsync(string? appculture, CancellationToken cancellationToken)
+        {
+            var baseDirectory = AppContext.BaseDirectory;
+            var fullBasePathTemplate = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName));
+
+            // Define template names to process
+            var templateNames = new[]
+            {
+                AppConstants.AdrTemplateFileName,
+                "madr-template.md",
+                "alexandrian-template.md",
+                "business-case-template.md",
+                "merson-template.md",
+                "nygard-template.md",
+                "planguage-template.md",
+                "tyree-ackerman-template.md"
+            };
+
+            foreach (var templateName in templateNames)
+            {
+                await EnsureTemplateFileExistsAsync(fullBasePathTemplate, templateName, appculture, cancellationToken);
+            }
+        }
+
+        private async Task EnsureTemplateFileExistsAsync(
+            string baseTemplatePath,
+            string templateFileName,
+            string? appculture,
+            CancellationToken cancellationToken)
+        {
+            var resourceFileName = GetResourceFileName(templateFileName, appculture);
+            var fullFilePath = Path.GetFullPath(Path.Combine(baseTemplatePath, templateFileName));
+
+            if (_fileSystem.FileExists(fullFilePath))
+            {
+                return;
+            }
+
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream($"{AppConstants.ResourceNamespace}.{resourceFileName}");
+            
+            if (stream == null)
+            {
+                return;
+            }
+
+            using var reader = new StreamReader(stream);
+            var content = reader.ReadToEnd();
+            await _fileSystem.WriteAllTextAsync(fullFilePath, content, cancellationToken);
+        }
+
+        private static string GetResourceFileName(string templateFileName, string? appculture)
+        {
+            if (string.IsNullOrWhiteSpace(appculture) || !Helper.IsValidCultureName(appculture))
+            {
+                return templateFileName;
+            }
+
+            if (!appculture.StartsWith(AppConstants.PtCulturePrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return templateFileName;
+            }
+
+            // Converts "template-name.md" to "template-nameptbr.md"
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(templateFileName);
+            var extension = Path.GetExtension(templateFileName);
+            return $"{nameWithoutExtension}ptbr{extension}";
         }
 
         /// <summary>

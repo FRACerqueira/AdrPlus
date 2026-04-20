@@ -169,6 +169,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Update the ADR template settings in the repository or the ADR metadata.
+        /// </summary>
+        internal static string CmdDescUpdate {
+            get {
+                return ResourceManager.GetString("CmdDescUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create a new ADR with a new version (incremental version, same number).
         /// </summary>
         internal static string CmdDescVersion {
