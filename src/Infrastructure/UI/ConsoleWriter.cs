@@ -467,7 +467,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
-                .AcceptInput(input => char.IsAsciiLetter(input) || input == ';')
+                .AcceptInput(input => char.IsAsciiLetter(input) || input == ';' || input == '*')
                 .SuggestionHandler(input => [Resources.AdrPlus.DefaultScope])
                 .PredicateSelected(input =>
                 {
@@ -517,7 +517,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
             var result = PromptPlus.Controls
                 .Slider(message, ShowDescField(fieldsJson))
-                .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 3)
+                .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 1)
                 .Layout(SliderLayout.UpDown)
                 .Step(1)
                 .LargeStep(5)
@@ -536,6 +536,19 @@ namespace AdrPlus.Infrastructure.UI
                 .Run(cancellationToken);
             return (result.IsAborted, !result.IsAborted && (bool)result.Content!);
         }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, bool Content) PromptEmptyTemplate(CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.PromptEmptyTemplate}: ";
+            var result = PromptPlus.Controls
+                .Switch(message, Resources.AdrPlus.HelpUsageEmptyAdr)
+                .OffValue(Resources.AdrPlus.No)
+                .OnValue(Resources.AdrPlus.Yes)
+                .Run(cancellationToken);
+            return (result.IsAborted, !result.IsAborted && (bool)result.Content!);
+        }
+
 
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldCaseTransform(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
@@ -682,9 +695,34 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(fieldsJson.Value)
                 .MaxLength(30)
                 .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler(input => [Resources.AdrPlus.DefaultTextRevision])
+                .SuggestionHandler(input => [Resources.AdrPlus.Revision])
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
+        }
+
+        public (bool IsAborted, RepoActions[] Content) PromptSelectRepoActions(CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.PromptSelectRepoActions}: ";
+            var result = PromptPlus.Controls
+                .MultiSelect<RepoActions>(message)
+                .TextSelector(action => TextForRepoActions(action))
+                .DefaultHistory()
+                .Range(1)
+                .EnabledHistory("AdrPlusRepoActionsSelection")
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? [] : result.Content!);
+        }
+
+        private static string TextForRepoActions(RepoActions actions)
+        {
+            return actions switch
+            {
+                RepoActions.Template => Resources.AdrPlus.Template,
+                RepoActions.Version => Resources.AdrPlus.Version,
+                RepoActions.Revision => Resources.AdrPlus.Revision,
+                RepoActions.Scope => Resources.AdrPlus.Scope,
+                _ => actions.ToString(),
+            };
         }
 
         /// <inheritdoc/>
@@ -756,7 +794,31 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryAdr}: ";
+            var result = PromptPlus.Controls
+                .FileSelect(message)
+                .OnlyFolders()
+                .DefaultHistory()
+                .EnabledHistory("AdrPlusRepoPathHistory")
+                .PredicateSelected(input =>
+                {
+                    var targetconfigPath = Path.Combine(input.FullPath,validateJsonConfig.GetFileNameRepoConfig());
+                    if (!fileSystemService.FileExists(targetconfigPath))
+                    {
+                        return (false, string.Format(null, FormatMessages.ExceptionFileNotFound, targetconfigPath));
+                    }
+                    return (true, "");
+                })
+                .Root(root)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content.FullPath);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryPath}: ";
             var result = PromptPlus.Controls

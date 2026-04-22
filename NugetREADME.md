@@ -20,6 +20,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 📚 Keep architectural decisions organized with a predictable structure
 - 🔍 Improve traceability with version, review, and supersede flows
 - ⚡ Reduce manual effort when creating and updating ADR files
+- 🛠️ Respect the repository's configuration for naming, structure, and ADR status for each team.
 - 🤝 Improve collaboration by making decision history visible to the whole team
 - 🚀 Accelerate onboarding by exposing context behind technical choices
 
@@ -33,6 +34,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - ⚙️ **Config editor** for application and repository settings
+- 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)

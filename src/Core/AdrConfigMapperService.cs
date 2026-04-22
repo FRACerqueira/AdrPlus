@@ -1,3 +1,8 @@
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Domain;
 using System.Text.Json;
 
@@ -5,6 +10,7 @@ namespace AdrPlus.Core
 {
     internal sealed class AdrConfigMapperService : IAdrConfigMapper
     {
+        /// <inheritdoc/>
         public AdrPlusRepoConfig FromJson(
             string jsonString,
             string template,

@@ -9,6 +9,7 @@ using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
+using AdrPlus.Commands.Repo;
 using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
@@ -38,15 +39,15 @@ namespace AdrPlus.Commands
         [Command("config", typeof(ConfigCommandHandler), "CmdDescConfig")]
         Config,
         /// <summary>
-        /// Update template repository settings or ADR metadata (Normalize title/domain/scope or change date of status).
-        /// </summary>
-        [Command("update", typeof(ConfigCommandHandler), "CmdDescUpdate")]
-        Update,
-        /// <summary>
         /// Initializes the repository with folders for ADRs.
         /// </summary>
         [Command("init", typeof(InitCommandHandler), "CmdDescInit")]
         Init,
+        /// <summary>
+        /// Upgrade repository's settings.
+        /// </summary>
+        [Command("repo", typeof(RepoCommandHandler), "CmdDescRepo")]
+        Repo,
         /// <summary>
         /// Creates a new ADR with a new number (incremental number).
         /// </summary>

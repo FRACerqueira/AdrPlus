@@ -96,7 +96,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0005-UseGraphQl-V02-API-Backend.md");
+        fileName.Should().Be("ADR-0005-UseGraphQl-V02-Api-Backend.md");
     }
 
     [Fact]

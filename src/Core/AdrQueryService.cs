@@ -1,3 +1,8 @@
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
@@ -9,6 +14,7 @@ namespace AdrPlus.Core
     {
         private readonly IAdrFileParser _fileParser = fileParser;
 
+        /// <inheritdoc/>
         public async Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             ArgumentNullException.ThrowIfNull(config);
@@ -39,6 +45,7 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
+        /// <inheritdoc/>
         public async Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             var allAdrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);
@@ -53,6 +60,7 @@ namespace AdrPlus.Core
                .ThenByDescending(adr => adr.Revision ?? 0)];
         }
 
+        /// <inheritdoc/>
         public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             ArgumentNullException.ThrowIfNull(config);
@@ -83,6 +91,7 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
+        /// <inheritdoc/>
         public async Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform), domain.ToCase(config.CaseTransform));
@@ -92,12 +101,14 @@ namespace AdrPlus.Core
             return aux?.FileName ?? string.Empty;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetNextNumber(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             AdrFileNameComponents[] adrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);
             return adrFiles.Length == 0 ? 1 : adrFiles.Max(f => f.Number) + 1;
         }
 
+        /// <inheritdoc/>
         public async Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             return (await ReadAllAdrByNumber(sequence, fileSystemService, directoryPath, config))
@@ -106,6 +117,7 @@ namespace AdrPlus.Core
                 .Last();
         }
 
+        /// <inheritdoc/>
         public async Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
             AdrFileNameComponents[] adrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);

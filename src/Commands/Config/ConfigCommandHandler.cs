@@ -9,7 +9,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -545,7 +544,7 @@ namespace AdrPlus.Commands.Config
                     _console.PromptEditFieldRevision(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
                 AppConstants.FieldScopes when lenscope > 0 => HandleEditField(() => 
                     _console.PromptEditFieldScopes(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldSkipDomain when lenscope > 0 => HandleEditField(() => 
+                AppConstants.FieldSkipDomain when lenscope > 0 => HandleEditField(() =>
                     _console.PromptEditFieldskipdomain(selection, fields, cancellationToken), selection, v => v.ToString()!),
                 AppConstants.FieldLenScope => HandleEditField(() => 
                     _console.PromptEditFieldLenScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),

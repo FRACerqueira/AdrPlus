@@ -132,7 +132,7 @@ namespace AdrPlus.Commands.Init
                 rootPath = Content;
             }
 
-            var folderPrompt = _console.PromptSelectFolderRepositoryAdr(false, rootPath, _fileSystem, _validateconfig, _appconfig, cancellationToken);
+            var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateconfig, _appconfig, cancellationToken);
             if (folderPrompt.IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

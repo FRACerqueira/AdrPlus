@@ -8,7 +8,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -238,21 +237,28 @@ namespace AdrPlus.Core
 
             var lenscope = int.Parse(jsonObject[AppConstants.FieldLenScope].ToString() ?? "0", CultureInfo.InvariantCulture);
             var folderByScope = bool.Parse(jsonObject[AppConstants.FieldFolderByScope].ToString() ?? "false");
-            var scopes = jsonObject[AppConstants.FieldScopes].ToString() ?? string.Empty;
-            var listscopes = scopes.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+            var fieldscopes = jsonObject[AppConstants.FieldScopes].ToString() ?? string.Empty;
+            var listscopes = fieldscopes
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Replace("*","").Trim()).ToArray();
             // Ensure lenversion and lenrevision are within valid ranges
             var lenversion = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenVersion].ToString() ?? "0", CultureInfo.InvariantCulture), 2, 3);
             var lenrevision = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenRevision].ToString() ?? "0", CultureInfo.InvariantCulture), 0, 3);
 
-            // Remove duplicate scopes (case-insensitive)
-            scopes = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
+            var scopes = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
 
-            var skipdomain = jsonObject[AppConstants.FieldSkipDomain].ToString() ?? string.Empty;
-            // Remove duplicate skipdomain entries (case-insensitive)
-            var skipdomainScopes = skipdomain.Split(';', StringSplitOptions.RemoveEmptyEntries)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-            skipdomain = string.Join(";", skipdomainScopes);
+            var listskipdomain = fieldscopes
+                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                     .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
+                     .Select(s => s.Replace("*", "").Trim()).ToArray();
+            if (listskipdomain.Length == 0)
+            {
+                var fieldskipscopes = jsonObject[AppConstants.FieldSkipDomain].ToString() ?? string.Empty;
+                listskipdomain = fieldskipscopes
+                     .Split(';', StringSplitOptions.RemoveEmptyEntries);
+            }
+            var skipdomain = string.Join(";", listskipdomain.Distinct(StringComparer.OrdinalIgnoreCase));
 
             if (lenscope == 0)
             {
@@ -262,12 +268,18 @@ namespace AdrPlus.Core
             }
             else if (scopes.Length == 0)
             {
-                scopes = Resources.AdrPlus.DefaultScope;
-                listscopes = scopes.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                fieldscopes = Resources.AdrPlus.DefaultScope;
+                listscopes = [.. fieldscopes
+                        .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.Replace("*", "").Trim())];
+                scopes = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
                 if (skipdomain.Length == 0)
                 {
-                    skipdomain = Resources.AdrPlus.Defaultskipdomain;
-                    skipdomainScopes = skipdomain.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    listskipdomain = [.. fieldscopes
+                             .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                             .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
+                             .Select(s => s.Replace("*", "").Trim())];
+                    skipdomain = string.Join(";", listskipdomain.Distinct(StringComparer.OrdinalIgnoreCase));
                 }
             }
             if (lenscope > 0 && scopes.Length > 0)
@@ -280,7 +292,7 @@ namespace AdrPlus.Core
             if (skipdomain.Length > 0 && listscopes.Length > 0)
             {
                 var validScopes = new HashSet<string>(listscopes, StringComparer.OrdinalIgnoreCase);
-                skipdomain = string.Join(';', skipdomainScopes.Where(validScopes.Contains));
+                skipdomain = string.Join(';', listskipdomain.Where(validScopes.Contains).Distinct(StringComparer.OrdinalIgnoreCase));
             }
             jsonObject[AppConstants.FieldLenVersion] = lenversion;
             jsonObject[AppConstants.FieldLenRevision] = lenrevision;

@@ -39,7 +39,7 @@ namespace AdrPlus.Domain
         /// <summary>
         /// Gets the template string used for formatting or processing content ADR.
         /// </summary>
-        public string Template { get; init; } = string.Empty;
+        public string Template { get; set; } = string.Empty;
 
         /// <summary>
         /// Optional prefix for the filename, e.g. "ADR-0001-My-ADR.md"
@@ -129,7 +129,7 @@ namespace AdrPlus.Domain
         /// <summary>
         /// Template for the revision section of the ADR. Optional.
         /// </summary>
-        public string HeaderRevision { get; set; } = Resources.AdrPlus.DefaultTextRevision;
+        public string HeaderRevision { get; set; } = Resources.AdrPlus.Revision;
 
         /// <summary>
         /// Gets the mapping between ADR status enum values and their string representations.

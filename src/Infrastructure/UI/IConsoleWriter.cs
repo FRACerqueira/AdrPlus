@@ -257,6 +257,14 @@ namespace AdrPlus.Infrastructure.UI
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected boolean value.</returns>
         (bool IsAborted, bool Content) PromptEditFieldFolderByScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
 
+
+        /// <summary>
+        /// Prompts the user to confirm whether to use an empty template and returns the result along with an abort status.
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected boolean value.</returns>
+        (bool IsAborted, bool Content) PromptEmptyTemplate(CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Prompts the user to edit the case transformation format and returns the result along with an abort status.
         /// </summary>
@@ -323,7 +331,7 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptSelectLogicalDrive(string message, IFileSystemService fileSystemService, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to select or create a folder for the ADR repository.
+        /// Prompts the user to select the repository folder.
         /// </summary>
         /// <param name="checknitCmd">Whether to check for init command requirements.</param>
         /// <param name="root">The root directory path to start browsing from.</param>
@@ -332,7 +340,26 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="repoConfig">The repository configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
-        (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default);
+        (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default);
+
+
+        /// <summary>
+        /// Prompts the user to select the repository ADR folder.
+        /// </summary>
+        /// <param name="root">The root directory path to start browsing from.</param>
+        /// <param name="fileSystemService">The file system service to use for directory operations.</param>
+        /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
+        /// <param name="repoConfig">The repository configuration.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
+        (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Prompts the user to select repository actions from a list of options. 
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected repository actions.</returns>
+        (bool IsAborted, RepoActions[] Content) PromptSelectRepoActions(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to edit the title of an ADR.

@@ -1,10 +1,10 @@
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
 using AdrPlus.Domain;
 using System.Globalization;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 

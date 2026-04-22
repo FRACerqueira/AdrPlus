@@ -394,7 +394,7 @@ namespace AdrPlus.Commands.NewAdr
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryAdr(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -495,7 +495,7 @@ namespace AdrPlus.Commands.NewAdr
         /// <param name="defDateRef">The reference date for the new ADR.</param>
         private void DisplayWizardSummary(Dictionary<Arguments, string> parsedArgs, DateTime defDateRef)
         {
-            _console.WriteInfo($"{Resources.AdrPlus.SelectedRepository} : {parsedArgs[Arguments.TargetRepo]}");
+            _console.WriteInfo($"{Resources.AdrPlus.RE} : {parsedArgs[Arguments.TargetRepo]}");
             _console.WriteInfo($"{Resources.AdrPlus.Date} : {defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}");
             _console.WriteInfo($"{Resources.AdrPlus.Title} : {parsedArgs[Arguments.TitleAdr]}");
 

@@ -20,6 +20,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
+using AdrPlus.Commands.Repo;
 
 namespace AdrPlus.Extensions
 {
@@ -48,6 +49,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<CommandRouter>();
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
+            services.AddSingleton<RepoCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
             services.AddSingleton<ConfigCommandHandler>();
             services.AddSingleton<NewAdrCommandHandler>();

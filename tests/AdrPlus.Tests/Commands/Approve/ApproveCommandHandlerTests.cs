@@ -472,7 +472,7 @@ public class ApproveCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(true, SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(true, SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert

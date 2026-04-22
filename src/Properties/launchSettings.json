@@ -1,11 +1,8 @@
 {
   "profiles": {
     "AdrPlus": {
-      "commandName": "Project"
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
+      "commandName": "Project",
+      "commandLineArgs": "repo --wizard\r\n"
     }
   }
 }

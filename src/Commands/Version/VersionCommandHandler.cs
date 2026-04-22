@@ -50,6 +50,7 @@ namespace AdrPlus.Commands.Version
              Arguments.FileAdr,
              Arguments.DateRefAdr,
              Arguments.OpenAdr,
+             Arguments.EmptyAdr,
              Arguments.Help];
 
         /// <summary>
@@ -258,6 +259,12 @@ namespace AdrPlus.Commands.Version
                 // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
 
+                var emptyard = false;
+                if (parsedArgs.ContainsKey(Arguments.EmptyAdr))
+                { 
+                    emptyard = true;
+                }
+
                 // Create ADR record and file
                 var adrRecord = new AdrRecord
                 {
@@ -269,7 +276,7 @@ namespace AdrPlus.Commands.Version
                     CreateRef = dateAdr,
                     Version = infolastadr.Header.Version+1,
                     Revision = repoconfig.LenRevision == 0 ? null : 1,
-                    Template = infoadr.ContentAdr!,
+                    Template = emptyard ? repoconfig.Template : infoadr.ContentAdr!,
                 };
                 var filePath = await CreateAdrFile(adrRecord, rootPath, repoconfig, cancellationToken);
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
@@ -415,7 +422,7 @@ namespace AdrPlus.Commands.Version
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryAdr(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -486,6 +493,16 @@ namespace AdrPlus.Commands.Version
                     parsedArgs[Arguments.OpenAdr] = string.Empty;
                 }
 
+                var emptyadr = _console.PromptEmptyTemplate(cancellationToken);
+                if (emptyadr.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (emptyadr.Content)
+                {
+                    parsedArgs[Arguments.EmptyAdr] = string.Empty;
+                }
+
                 // Display summary and confirm
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
@@ -522,7 +539,7 @@ namespace AdrPlus.Commands.Version
         /// <param name="defDateRef">The reference date for the operation.</param>
         private void DisplayWizardSummary(string rootpath ,string fileref, DateTime defDateRef)
         {
-            _console.WriteSummary(Resources.AdrPlus.SelectedRepository + ": " + rootpath);
+            _console.WriteSummary(Resources.AdrPlus.RE + ": " + rootpath);
             _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
             _console.WriteSummary("");
