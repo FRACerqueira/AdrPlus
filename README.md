@@ -26,6 +26,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Step-by-Step Guide](StepByStepGuide.md)  
 - [Commands](#commands)
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
@@ -62,7 +63,6 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
-
 ---
 
 ## Requirements
@@ -222,7 +222,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `wizard`    | Launch the interactive wizard for guided operations                          |
 | `config`    | Application configuration editor, repository, and default ADR template       |
 | `init`      | Initialize the ADR repository folder structure                               |
-| `Upgrade`   | Upgrade repository's settings                                                |
+| `upgrade`   | Upgrade repository's settings                                                |
 | `new`       | Create a new ADR with an incremental number                                  |
 | `version`   | Create a new version of an  ADR (increment version)                          |
 | `review`    | Create a new revision of an ADR (increment revision)                         |
