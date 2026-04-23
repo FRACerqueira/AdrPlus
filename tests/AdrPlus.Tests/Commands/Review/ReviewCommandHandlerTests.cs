@@ -591,6 +591,249 @@ public class ReviewCommandHandlerTests
 
     #endregion
 
+    #region ExecuteAsync - Empty ADR Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithEmptyAdrFlag_UsesTemplateFromConfig()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath, "--empty" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, TestPathData.ValidAdrFilePath },
+            { Arguments.EmptyAdr, string.Empty }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusRej": "Rejected", "Template": "## Template\nDefault template content"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAcceptedAdrComponents(TestPathData.ValidAdrFilePath);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - verify file write was called (template will be embedded in content)
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithoutEmptyAdrFlag_UsesContentFromSourceAdr()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = BuildJsonConfig();
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var originalContent = "## Original\nOriginal ADR content";
+        var adrInfo = CreateAdrComponentsWithContent(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, originalContent);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - file should be written with original content
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    #endregion
+
+    #region ExecuteAsync - FolderByScope Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFolderByScopeEnabled_CreatesFolderForScope()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 2, "FolderByScope": true, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusRej": "Rejected"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, "security");
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - verify file path includes scope folder
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFolderByScopeDisabled_NoScopeFolderCreated()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 2, "FolderByScope": false, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusRej": "Rejected"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, "security");
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - verify file write occurred
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    #endregion
+
+    #region ExecuteAsync - Superseded Chain Validation Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WhenAnyVersionHasSupersededStatus_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = BuildJsonConfig();
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAcceptedAdrComponents(TestPathData.ValidAdrFilePath);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+
+        // Mock ReadAllAdrByNumber to return an ADR with Superseded status
+        var supersededAdr = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Superseded);
+        _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult(new[] { supersededAdr }));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenNoSupersededInChain_SuccessfullyCreatesRevision()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = BuildJsonConfig();
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAcceptedAdrComponents(TestPathData.ValidAdrFilePath);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+
+        // Mock ReadAllAdrByNumber to return ADR without Superseded status
+        var validAdr = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown);
+        _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult(new[] { validAdr }));
+
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    #endregion
+
+    #region ExecuteAsync - Revision Increment Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithExistingRevision_IncrementsRevisionNumber()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = BuildJsonConfig();
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        // Create ADR with revision = 2
+        var adrInfo = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, revision: 2);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - new revision should be 3 (2 + 1)
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithNullRevision_DefaultsRevisionToOne()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = BuildJsonConfig();
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        // Create ADR with null revision (should default to 0)
+        var adrInfo = CreateAdrComponents(TestPathData.ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, revision: null);
+        SetupLatestAdrSequence(adrInfo);
+        _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        SetupCreateAdrFile();
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - new revision should be 1 (0 + 1)
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenLenRevisionZero_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", TestPathData.ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, TestPathData.ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 0}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+        _mockFileSystem.FileExists(TestPathData.ValidAdrFilePath).Returns(true);
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    #endregion
+
     #region ExecuteAsync - Open File Tests
 
     [Fact]
@@ -730,7 +973,7 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(true, TestPathData.SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(true, TestPathData.SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -750,7 +993,7 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((false, TestPathData.RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
@@ -776,7 +1019,7 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((false, TestPathData.RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
@@ -804,7 +1047,7 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((false, TestPathData.RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
@@ -834,7 +1077,7 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryAdr(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
             .Returns((false, TestPathData.RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
@@ -961,7 +1204,7 @@ public class ReviewCommandHandlerTests
     private static AdrFileNameComponents CreateAcceptedAdrComponents(string fileName) =>
         CreateAdrComponents(fileName, AdrStatus.Accepted, AdrStatus.Unknown);
 
-    private static AdrFileNameComponents CreateAdrComponents(string fileName, AdrStatus statusUpdate, AdrStatus statusChange)
+    private static AdrFileNameComponents CreateAdrComponents(string fileName, AdrStatus statusUpdate, AdrStatus statusChange, string scope = "default", int? revision = null)
     {
         return new AdrFileNameComponents
         {
@@ -972,13 +1215,36 @@ public class ReviewCommandHandlerTests
             {
                 IsValid = true,
                 Title = "My ADR",
+                Scope = scope,
                 StatusCreate = AdrStatus.Proposed,
                 StatusUpdate = statusUpdate,
                 StatusChange = statusChange,
                 Version = 1,
-                Revision = 0
+                Revision = revision ?? 0
             },
             ContentAdr = "## Context\nSome content."
+        };
+    }
+
+    private static AdrFileNameComponents CreateAdrComponentsWithContent(string fileName, AdrStatus statusUpdate, AdrStatus statusChange, string content, string scope = "default", int? revision = null)
+    {
+        return new AdrFileNameComponents
+        {
+            FileName = fileName,
+            IsValid = true,
+            Number = 1,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                Title = "My ADR",
+                Scope = scope,
+                StatusCreate = AdrStatus.Proposed,
+                StatusUpdate = statusUpdate,
+                StatusChange = statusChange,
+                Version = 1,
+                Revision = revision ?? 0
+            },
+            ContentAdr = content
         };
     }
 

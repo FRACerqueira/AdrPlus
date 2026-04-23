@@ -15,7 +15,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Reflection;
-using System.Xml.Xsl;
 
 namespace AdrPlus
 {
@@ -42,9 +41,9 @@ namespace AdrPlus
             var exitcode = 0;
             try
             {
-                while (Helper.HasAppConfigChnage)
+                while (Helper.HasAppConfigChange)
                 {
-                    Helper.HasAppConfigChnage = false;
+                    Helper.HasAppConfigChange = false;
                     host = Host.CreateDefaultBuilder()
                         .UseConsoleLifetime()
                         .ConfigureLogging((hostContext, services) =>
@@ -111,7 +110,7 @@ namespace AdrPlus
                     consoleservice.ShowWellcome(appVersion);
 
                     await host.RunAsync();
-                    if (Helper.HasAppConfigChnage)
+                    if (Helper.HasAppConfigChange)
                     {
                         host.Dispose();
                     }
@@ -121,7 +120,7 @@ namespace AdrPlus
             }
             catch (Exception ex)
             {
-                Helper.HasAppConfigChnage = false;
+                Helper.HasAppConfigChange = false;
                 if (logger is not null)
                 {
                     LogMessages.LogCriticalError(logger, ex);

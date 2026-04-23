@@ -1,3 +1,8 @@
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Commands;
 using AdrPlus.Infrastructure.Process;
 using System.Text;
@@ -8,11 +13,13 @@ namespace AdrPlus.Core
     {
         private readonly IProcessService _processService;
 
+        /// <inheritdoc/>
         public CommandMetadataService(IProcessService processService)
         {
             _processService = processService ?? throw new ArgumentNullException(nameof(processService));
         }
 
+        /// <inheritdoc/>
         public Dictionary<string, Type> GenerateCommandsMap()
         {
             var cmds = GetCommands();
@@ -24,9 +31,11 @@ namespace AdrPlus.Core
             return map;
         }
 
+        /// <inheritdoc/>
         public string OpenFile(string filepath, string command)
             => _processService.OpenFile(filepath, command);
 
+        /// <inheritdoc/>
         public (CommandsAdr Command, string Alias, Type ConfigCommandHandler, string Description)[] GetCommands()
         {
             var enumType = typeof(CommandsAdr);
@@ -43,6 +52,7 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
+        /// <inheritdoc/>
         public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand)
         {
             ArgumentNullException.ThrowIfNull(args);
@@ -123,6 +133,7 @@ namespace AdrPlus.Core
             return parsedArgs;
         }
 
+        /// <inheritdoc/>
         public string GetHelpText(string command, Arguments[] argsForCommand, string[] examples)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(command);

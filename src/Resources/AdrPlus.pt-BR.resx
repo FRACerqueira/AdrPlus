@@ -181,7 +181,7 @@
     <value>Substituído</value>
   </data>
   <data name="DefaultScope" xml:space="preserve">
-    <value>Enterprise;CrossDomain;Project</value>
+    <value>Enterprise*;CrossDomain;Project</value>
   </data>
   <data name="Defaultskipdomain" xml:space="preserve">
     <value>Enterprise</value>
@@ -258,7 +258,7 @@
   <data name="Version" xml:space="preserve">
     <value>Versão</value>
   </data>
-  <data name="DefaultTextRevision" xml:space="preserve">
+  <data name="Revision" xml:space="preserve">
     <value>Revisão</value>
   </data>
   <data name="FieldTitleHeaderStatus" xml:space="preserve">
@@ -442,7 +442,7 @@
     <value>Prefixo para nomes de arquivos ADR</value>
   </data>
   <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>Lista de escopos válidos para ADRs (separados por ponto e vírgula)</value>
+    <value>Lista de escopos válidos para ADRs (separados por ponto e vírgula. '*' no final de cada escopo para não usar domínio)</value>
   </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Caractere usado para separar as partes do nome do arquivo</value>
@@ -567,7 +567,7 @@
   <data name="NewAdrSuccessExternalCommand" xml:space="preserve">
     <value>Executado com sucesso: {0}</value>
   </data>
-  <data name="SelectedRepository" xml:space="preserve">
+  <data name="RE" xml:space="preserve">
     <value>Repositório selecionado</value>
   </data>
   <data name="PromptEnterAdrDomain" xml:space="preserve">
@@ -580,7 +580,7 @@
     <value>Lendo domínios registrados...</value>
   </data>
   <data name="PromptSelectAdrRepositoryPath" xml:space="preserve">
-    <value>Selecione o caminho do repositório ADR</value>
+    <value>Selecione o caminho do repositório</value>
   </data>
   <data name="PromptSelectAdrScope" xml:space="preserve">
     <value>Selecione o escopo do ADR</value>
@@ -601,13 +601,13 @@
     <value>ID de sequência do ADR</value>
   </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
-    <value>Assistente para criar novo ADR</value>
+    <value>Assistente para criar novo ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardInit" xml:space="preserve">
-    <value>Assistente para configurar o repositório de arquivos</value>
+    <value>Assistente para configurar o repositório de arquivos (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
-    <value>Caminho para o repositório</value>
+    <value>Caminho para raiz do repositório</value>
   </data>
   <data name="HelpUsageJsonFile" xml:space="preserve">
     <value>Caminho para o arquivo json de configuração do repositório</value>
@@ -634,7 +634,7 @@
     <value>Exibir informações de ajuda (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
-    <value>Assistente para criar nova versão de um ADR</value>
+    <value>Assistente para criar nova versão de um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
     <value>Sequência ADR {0} não encontrada em {1}</value>
@@ -715,13 +715,13 @@
     <value>Exibir informações de ajuda para os comandos disponíveis</value>
   </data>
   <data name="CmdDescWizard" xml:space="preserve">
-    <value>Iniciar o assistente para operações guiadas</value>
+    <value>Assistente para operações guiadas</value>
   </data>
   <data name="CmdDescConfig" xml:space="preserve">
-    <value>Inicie o editor de configuração para as configurações de do aplicativo, repositório ou modelo de ADR</value>
+    <value>Editor de configuração do aplicativo, repositório e modelo padrão de ADR</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Inicializar o repositório com pastas para ADRs</value>
+    <value>Iniciar um repositório para ADRs pela primeira vez</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
     <value>Criar um novo ADR com um novo número (número incremental)</value>
@@ -745,19 +745,19 @@
     <value>Desfazer o status (aprovado/rejeitado) de um ADR</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
-    <value>Assistente para criar nova revisão de um ADR</value>
+    <value>Assistente para criar nova revisão de um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardSupersede" xml:space="preserve">
-    <value>Assistente para substituir um ADR</value>
+    <value>Assistente para substituir um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardApprove" xml:space="preserve">
-    <value>Assistente para aprovar um ADR</value>
+    <value>Assistente para aprovar um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardReject" xml:space="preserve">
-    <value>Assistente para rejeitar um ADR</value>
+    <value>Assistente para rejeitar um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
-    <value>Assistente para desfazer o status (aprovado/rejeitado) de um ADR</value>
+    <value>Assistente para desfazer o status (aprovado/rejeitado) de um ADR (suprime todos os outros argumentos)</value>
   </data>
   <data name="WaitReadFiles" xml:space="preserve">
     <value>Aguarde, lendo ADRs...</value>
@@ -865,7 +865,7 @@
     <value>Retornar ao menu principal</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Iniciar um repositório de ADRs pela primeira vez</value>
+    <value>Iniciar um repositório para ADRs pela primeira vez</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
     <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
@@ -1001,5 +1001,95 @@
   </data>
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>O ADR foi rejeitado. Você quer continuar?</value>
+  </data>
+  <data name="CmdDescUpgrade" xml:space="preserve">
+    <value>Atualizar configurações do repositório</value>
+  </data>
+  <data name="HelpUsageEmptyAdr" xml:space="preserve">
+    <value>Usar apenas o modelo vazio na criação</value>
+  </data>
+  <data name="PromptEmptyTemplate" xml:space="preserve">
+    <value>Usar modelo sem dados</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Sim</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Não</value>
+  </data>
+  <data name="ErrMsgFileTemplateNotFound" xml:space="preserve">
+    <value>Arquivo de modelo não encontrado</value>
+  </data>
+  <data name="ErrMsgRepoVersionValueMustBeIntegerAndRangeVersion" xml:space="preserve">
+    <value>O valor do tamanho da versão deve ser um número inteiro e entre 2 e 3</value>
+  </data>
+  <data name="ErrMsgRepoVersionValueNotFound" xml:space="preserve">
+    <value>Valor do argumento para o tamanho da versão não encontrado</value>
+  </data>
+  <data name="ErrMsgRepoRevisionValueNotFound" xml:space="preserve">
+    <value>Valor do argumento para o tamanho da revisão não encontrado</value>
+  </data>
+  <data name="ErrMsgRepoScopeValueNotFound" xml:space="preserve">
+    <value>Valor do argumento para o tamanho da escopo não encontrado</value>
+  </data>
+  <data name="ErrMsgRepoScopeitemsValueNotFound" xml:space="preserve">
+    <value>Valor do argumento para a lista de escopo não encontrado</value>
+  </data>
+  <data name="ErrMsgRepoScopeAlreadySet" xml:space="preserve">
+    <value>Escopo do repositório já definida</value>
+  </data>
+  <data name="ErrMsgRepoRevisionAlreadySet" xml:space="preserve">
+    <value>Revisão do repositório já definida</value>
+  </data>
+  <data name="ErrMsgRepoRevisionValueMustBeIntegerAndRangeRevision" xml:space="preserve">
+    <value>O valor do tamanho da revisão deve ser um número inteiro e entre 1 e 3</value>
+  </data>
+  <data name="ErrMsgRepoScopeValueMustBeIntegerAndRangeScope" xml:space="preserve">
+    <value>O valor do tamanho do escopo deve ser um número inteiro  e entre 1 e 5</value>
+  </data>
+  <data name="PromptSelectAdrRepositoryAdr" xml:space="preserve">
+    <value>Selecione o caminho do repositório ADR</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>Modelo</value>
+  </data>
+  <data name="PromptSelectRepoActions" xml:space="preserve">
+    <value>Selecione opções para atualizar</value>
+  </data>
+  <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
+    <value>O valor do tamanho da versão deve ser maior que a versão atual</value>
+  </data>
+  <data name="WizardConfigUpgradeTitle" xml:space="preserve">
+    <value>Atualizar configurações do repositório</value>
+  </data>
+  <data name="WizardConfigUpgradeDescription" xml:space="preserve">
+    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+  </data>
+  <data name="HelpUsageWizardRepo" xml:space="preserve">
+    <value>Assistente para atualizar as configurações de ADR de um repositório</value>
+  </data>
+  <data name="HelpUsageTargetRepoAdrPath" xml:space="preserve">
+    <value>Caminho para a pasta ADR do repositório</value>
+  </data>
+  <data name="HelpUsageRepoTemplate" xml:space="preserve">
+    <value>Alterar modelo de ADR para este repositório</value>
+  </data>
+  <data name="HelpUsageRepoVersion" xml:space="preserve">
+    <value>Alterar a configuração de comprimento da versão para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoRevision" xml:space="preserve">
+    <value>Alterar a configuração de comprimento da revisão para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoScope" xml:space="preserve">
+    <value>Alterar a configuração de escopo (comprimento e itens) para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
+    <value>Lista de escopos (adicione um '*' ao final de cada escopo para ignorar a definição de domínio)</value>
+  </data>
+  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
+    <value>Criar pastas por escopo</value>
+  </data>
+  <data name="HelpUsageFileTemplate" xml:space="preserve">
+    <value>Caminho para o arquivo de template. Se omitido será o template da aplicação</value>
   </data>
 </root>

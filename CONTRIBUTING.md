@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # Contributing to AdrPlus
 
 Thank you for your interest in contributing! This document explains how to get involved.
@@ -56,7 +58,7 @@ By participating, you agree to follow these standards in all project spaces.
 
 | Tool | Minimum version |
 |------|----------------|
-| .NET SDK | 9.0 |
+| .NET SDK | 10.0 |
 | Git | 2.x |
 
 ### Build
@@ -90,7 +92,7 @@ dotnet-coverage collect -f cobertura -o coverage.cobertura.xml dotnet test
 
 ## Coding Guidelines
 
-- Target **C# 13 / .NET 9** idioms where possible (file-scoped namespaces, primary constructors, etc.).
+- Target **C# 14 / .NET 10** idioms where possible (file-scoped namespaces, primary constructors, etc.).
 - **Least exposure**: prefer `private` over `public` unless the API truly needs to be public.
 - **Null safety**: use `ArgumentNullException.ThrowIfNull` / `ArgumentException.ThrowIfNullOrWhiteSpace`; avoid `!`.
 - All async methods must end with `Async` and accept a `CancellationToken`.

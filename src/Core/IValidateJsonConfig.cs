@@ -82,12 +82,12 @@ namespace AdrPlus.Core
         string EnsureFieldsRepoStructure(string jsonContent);
 
         /// <summary>
-        /// Validates the specified JSON content against the expected structure and required fields, returning a report of any validation errors. 
+        /// Ensures the ADR Markdown template file exists on disk. When it is missing, extracts the appropriate embedded resource
+        /// (Portuguese for cultures starting with <c>pt-</c>, English otherwise) and writes it to the <c>template</c> directory.
         /// </summary>
-        /// <param name="appculture">The culture to use for validation.</param>
-        /// <param name="cancellationToken">Cancellation token for the async operation</param>
-        /// <returns>A Task that represents the asynchronous operation, containing a string with the content template.</returns>
-        Task<string> InitializeTemplateAsync(string? appculture, CancellationToken cancellationToken = default);
+        /// <param name="appculture">The application culture string (e.g. "pt-BR"). Null or whitespace defaults to the English template.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        Task InitializeTemplateAsync(string? appculture, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves a repository template , which can be used as a starting point for creating or validating the configuration. 

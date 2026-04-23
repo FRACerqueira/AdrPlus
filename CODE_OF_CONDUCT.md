@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # Code of Conduct
 
 ## Our Commitment

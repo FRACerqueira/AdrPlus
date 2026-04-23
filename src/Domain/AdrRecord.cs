@@ -97,7 +97,7 @@ namespace AdrPlus.Domain
             var scopeSuffix = string.Empty;
             if (!string.IsNullOrWhiteSpace(Scope) && config.LenScope > 0)
             {
-                scopeSuffix = $"{config.Separator}{Scope[..config.LenScope]}";
+                scopeSuffix = $"{config.Separator}{Scope[..config.LenScope].ToCase(config.CaseTransform)}";
                 if (Domain.Length > 0)
                 {
                     scopeSuffix += $"{config.Separator}{Domain.ToCase(config.CaseTransform)}";

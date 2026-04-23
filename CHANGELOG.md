@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # Changelog
 
 All notable changes to **AdrPlus** will be documented in this file.
@@ -7,15 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
-
-### Added
-
-- Nothing yet.
-
----
-
-## [1.0.0] — 2025-01-01
+## [0.1.0] ~ [0.2.0] — 2026-04-17 ~ 2026-04-23
 
 ### Added
 
@@ -27,12 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `approve` command — mark an ADR as approved.
 - `reject` command — mark an ADR as rejected.
 - `undo` command — revert the last status change of an ADR.
+- `upgrade` command — upgrade an ADR to the latest version of the template.
 - `config` command — interactive editor for application and repository settings.
 - `wizard` command — interactive guided wizard for all operations.
 - `help` command — display contextual help for any command.
 - Multi-language support (`en-US` and `pt-BR`) for CLI messages and templates.
 - Cross-platform support (Windows, macOS, Linux).
 - Multi-target build: `net8.0`, `net9.0`, and `net10.0`.
-
-[Unreleased]: https://github.com/FRACerqueira/AdrPlus/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/FRACerqueira/AdrPlus/releases/tag/v1.0.0

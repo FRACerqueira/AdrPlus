@@ -14,7 +14,43 @@ namespace AdrPlus.Core
 {
     internal static class AppConstants
     {
+        /// <summary>
+        /// The name of the directory where ADR templates are stored. This directory is used to store template files that define the structure and content of ADRs, allowing users to create new ADRs based on predefined templates.  
+        /// </summary>
+        public const string TemplateDirectoryName = "template";
+
+        /// <summary>
+        /// Represents the default file name for the ADR template file used by the application.
+        /// </summary>
+        /// <remarks>Use this constant when referencing or creating the ADR template file to ensure
+        /// consistency across the application.</remarks>
+        public const string AdrTemplateFileName = "adr-template.adrplus";
+
+        /// <summary>
+        /// Represents the default file name for the ADR configuration file.
+        /// </summary>
+        /// <remarks>Use this constant when referencing or creating the ADR configuration file to ensure
+        /// consistency across the application.</remarks>
+        public const string AdrConfigFileName = "adr-config.adrplus";
+
+        /// <summary>
+        /// The namespace where the application's embedded resources are located, used for loading templates, configuration files, and other resources that are compiled into the application assembly. 
+        /// </summary>
+        public const string ResourceNamespace = "AdrPlus.Resources";
+
+        /// <summary>
+        /// Represents the culture prefix for Portuguese language locales.
+        /// </summary>
+        /// <remarks>This constant can be used when constructing culture names or performing
+        /// culture-specific operations that require the Portuguese language prefix, such as "pt-BR" for Brazilian
+        /// Portuguese or "pt-PT" for Portuguese as used in Portugal.</remarks>
+        public const string PtCulturePrefix = "pt-";
+
+        /// <summary>
+        /// The name of the directory where ADR templates are stored. 
+        /// </summary>
         public const string AppConfigfileName = "adrplus.json";
+        
         /// <summary>
         /// The application banner text.
         /// </summary>

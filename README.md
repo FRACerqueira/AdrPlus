@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # AdrPlus
 
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
@@ -5,8 +7,6 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
-
-[![icon](./icon.png)](./icon.png)
 
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no revision flow, and hard-to-track status changes).
 
@@ -44,6 +44,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 📚 Keep architectural decisions organized with a predictable structure
 - 🔍 Improve traceability with version, review, and supersede flows
 - ⚡ Reduce manual effort when creating and updating ADR files
+- 🛠️ Respect the repository's configuration for naming, structure, and ADR status for each team
 - 🤝 Improve collaboration by making decision history visible to the whole team
 - 🚀 Accelerate onboarding by exposing context behind technical choices
 
@@ -57,6 +58,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - ⚙️ **Config editor** for application and repository settings
+- 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
@@ -134,6 +136,9 @@ dotnet tool update -g adrplus --add-source ./nupkg
 # 1. Run the command wizard to configure and use the tool
 adrplus wizard
 ```
+Using this for the first time? Follow the step-by-step guide to set up and create your first ADR:
+
+[Step-by-Step Guide](StepByStepGuide.md)
 
 ---
 
@@ -215,14 +220,15 @@ Use `adrplus help <command>` to check the available parameters for each command.
 |-------------|------------------------------------------------------------------------------|
 | `help`      | Display help information for all commands or a specific command              |
 | `wizard`    | Launch the interactive wizard for guided operations                          |
-| `config`    | Edit application and repository settings                                     |
+| `config`    | Application configuration editor, repository, and default ADR template       |
 | `init`      | Initialize the ADR repository folder structure                               |
+| `Upgrade`   | Upgrade repository's settings                                                |
 | `new`       | Create a new ADR with an incremental number                                  |
-| `version`   | Create a new major version of an accepted or rejected ADR (same number)      |
-| `review`    | Create a new revision of an ADR (same number and version)                    |
+| `version`   | Create a new version of an  ADR (increment version)                          |
+| `review`    | Create a new revision of an ADR (increment revision)                         |
 | `supersede` | Supersede an ADR by creating a successor with a new incremental number       |
-| `approve`   | Set an ADR status to *Accepted*                                               |
-| `reject`    | Set an ADR status to *Rejected*                                               |
+| `approve`   | Set an ADR status to *Accepted*                                              |
+| `reject`    | Set an ADR status to *Rejected*                                              |
 | `undo`      | Revert the last status change of an ADR                                      |
 
 Run `adrplus help <command>` for detailed usage of any command.
@@ -276,6 +282,7 @@ adrplus config --application
 |`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`).|
 |`YesValue`| Default confirmation value for positive responses.|
 |`NoValue`| Default confirmation value for negative responses.|
+|`FolderRepo`| Relative path to the ADR repository folder (for example: `doc/adr`).|
 |`OpenAdr`| Opens the ADR file after creation/update when supported.|
 
 - VS Code users can set `OpenAdr` to `code {0}` to automatically open the created/updated ADR file in the editor.

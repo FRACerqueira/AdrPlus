@@ -34,6 +34,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardInit")]
         WizardInit,
+        [CommandArgument("-w", "--wizard")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardRepo")]
+        WizardRepo,
         [CommandArgument("-a", "--application")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigApp")]
         WizardConfigApplication,
@@ -55,6 +58,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-p", "--path")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
         TargetRepo,
+        [CommandArgument("-p", "--path")]
+        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoAdrPath")]
+        TargetRepoAdr,
         [CommandArgument("-t", "--title")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]
         TitleAdr,
@@ -67,9 +73,33 @@ namespace AdrPlus.Commands
         [CommandArgument("-o", "--open")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageOpenAdr")]
         OpenAdr,
+        [CommandArgument("-e", "--empty")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsageEmptyAdr")]
+        EmptyAdr,
         [CommandArgument("-r", "--refdate")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageDateRefAdr")]
         DateRefAdr,
+        [CommandArgument("-t", "--template")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsageRepoTemplate")]
+        RepoTemplate,
+        [CommandArgument("-v", "--version")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoVersion")]
+        RepoVersion,
+        [CommandArgument("-r", "--revision")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoRevision")]
+        RepoRevision,
+        [CommandArgument("-s", "--scope")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoScope")]
+        RepoScope,
+        [CommandArgument("-i", "--items")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoScopeItems")]
+        RepoScopeItems,
+        [CommandArgument("-c", "--createfolders")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsageRepoWithFolders")]
+        RepoWithFolders,
+        [CommandArgument("-f", "--file")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
+        FileTemplate,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help

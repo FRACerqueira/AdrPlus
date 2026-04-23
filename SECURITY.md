@@ -1,9 +1,12 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # Security Policy
 
 ## Supported Versions
 
 | Version | Supported          |
 |---------|--------------------|
+| 0.x     | ❌ Partially supported |
 | 1.x     | ✅ Actively supported |
 
 ---

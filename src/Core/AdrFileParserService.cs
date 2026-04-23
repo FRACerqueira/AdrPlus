@@ -1,3 +1,8 @@
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
@@ -7,6 +12,7 @@ namespace AdrPlus.Core
 {
     internal sealed class AdrFileParserService : IAdrFileParser
     {
+        /// <inheritdoc/>
         public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
             var lines = await fileSystemService.ReadAllLinesAsync(filePath);
@@ -188,6 +194,7 @@ namespace AdrPlus.Core
             return (result, content);
         }
 
+        /// <inheritdoc/>
         public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
             const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;

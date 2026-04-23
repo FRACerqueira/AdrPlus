@@ -261,7 +261,7 @@ namespace AdrPlus.Commands.Approve
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderRepositoryAdr(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -354,7 +354,7 @@ namespace AdrPlus.Commands.Approve
         /// <param name="defDateRef">The reference date for the approval operation.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
-            _console.WriteSummary(Resources.AdrPlus.SelectedRepository + ": " + rootpath);
+            _console.WriteSummary(Resources.AdrPlus.RE + ": " + rootpath);
             _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
             _console.WriteSummary("");
