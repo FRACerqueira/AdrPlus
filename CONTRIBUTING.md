@@ -1,3 +1,5 @@
+[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+
 # Contributing to AdrPlus
 
 Thank you for your interest in contributing! This document explains how to get involved.
