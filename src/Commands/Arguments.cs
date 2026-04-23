@@ -94,7 +94,7 @@ namespace AdrPlus.Commands
         [CommandArgument("-i", "--items")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoScopeItems")]
         RepoScopeItems,
-        [CommandArgument("-w", "--withfolders")]
+        [CommandArgument("-c", "--createfolders")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageRepoWithFolders")]
         RepoWithFolders,
         [CommandArgument("-f", "--file")]

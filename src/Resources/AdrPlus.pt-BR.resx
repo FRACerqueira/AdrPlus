@@ -607,7 +607,7 @@
     <value>Assistente para configurar o repositório de arquivos (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
-    <value>Caminho para o repositório</value>
+    <value>Caminho para raiz do repositório</value>
   </data>
   <data name="HelpUsageJsonFile" xml:space="preserve">
     <value>Caminho para o arquivo json de configuração do repositório</value>
@@ -718,10 +718,10 @@
     <value>Assistente para operações guiadas</value>
   </data>
   <data name="CmdDescConfig" xml:space="preserve">
-    <value>Editor de configuração para as configurações de do aplicativo, repositório ou modelo ADR padrão</value>
+    <value>Editor de configuração do aplicativo, repositório e modelo padrão de ADR</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Inicializar o repositório com pastas para ADRs</value>
+    <value>Iniciar um repositório para ADRs pela primeira vez</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
     <value>Criar um novo ADR com um novo número (número incremental)</value>
@@ -865,7 +865,7 @@
     <value>Retornar ao menu principal</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Iniciar um repositório de ADRs pela primeira vez</value>
+    <value>Iniciar um repositório para ADRs pela primeira vez</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
     <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
@@ -1002,7 +1002,7 @@
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>O ADR foi rejeitado. Você quer continuar?</value>
   </data>
-  <data name="CmdDescRepo" xml:space="preserve">
+  <data name="CmdDescUpgrade" xml:space="preserve">
     <value>Atualizar configurações do repositório</value>
   </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
@@ -1058,5 +1058,38 @@
   </data>
   <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
     <value>O valor do tamanho da versão deve ser maior que a versão atual</value>
+  </data>
+  <data name="WizardConfigUpgradeTitle" xml:space="preserve">
+    <value>Atualizar configurações do repositório</value>
+  </data>
+  <data name="WizardConfigUpgradeDescription" xml:space="preserve">
+    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+  </data>
+  <data name="HelpUsageWizardRepo" xml:space="preserve">
+    <value>Assistente para atualizar as configurações de ADR de um repositório</value>
+  </data>
+  <data name="HelpUsageTargetRepoAdrPath" xml:space="preserve">
+    <value>Caminho para a pasta ADR do repositório</value>
+  </data>
+  <data name="HelpUsageRepoTemplate" xml:space="preserve">
+    <value>Alterar modelo de ADR para este repositório</value>
+  </data>
+  <data name="HelpUsageRepoVersion" xml:space="preserve">
+    <value>Alterar a configuração de comprimento da versão para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoRevision" xml:space="preserve">
+    <value>Alterar a configuração de comprimento da revisão para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoScope" xml:space="preserve">
+    <value>Alterar a configuração de escopo (comprimento e itens) para um repositório</value>
+  </data>
+  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
+    <value>Lista de escopos (adicione um '*' ao final de cada escopo para ignorar a definição de domínio)</value>
+  </data>
+  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
+    <value>Criar pastas por escopo</value>
+  </data>
+  <data name="HelpUsageFileTemplate" xml:space="preserve">
+    <value>Caminho para o arquivo de template. Se omitido será o template da aplicação</value>
   </data>
 </root>

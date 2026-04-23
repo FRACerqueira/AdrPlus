@@ -607,7 +607,7 @@
     <value>Wizard to configure the file repository (supress all other arguments)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
-    <value>Path to repository</value>
+    <value>Path to repository root</value>
   </data>
   <data name="HelpUsageJsonFile" xml:space="preserve">
     <value>Path to repository(repo) configuration json file</value>
@@ -718,10 +718,10 @@
     <value>Wizard for guided operations</value>
   </data>
   <data name="CmdDescConfig" xml:space="preserve">
-    <value>Configuration editor for the application, repository or default ADR template</value>
+    <value>Application configuration editor, repository, and default template ADR</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Initialize the repository with folders for ADRs</value>
+    <value>Initialize a repository for ADRs for the first time</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
     <value>Create a new ADR with a new number (incremental number)</value>
@@ -865,7 +865,7 @@
     <value>Return to main menu</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Start a repository for ADRs for the first time</value>
+    <value>Initialize a repository for ADRs for the first time</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
     <value>Once selected, press [ESC] if you want to return to the wizard</value>
@@ -1002,7 +1002,7 @@
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>The ADR has been rejected. Do you want to continue?</value>
   </data>
-  <data name="CmdDescRepo" xml:space="preserve">
+  <data name="CmdDescUpgrade" xml:space="preserve">
     <value>Upgrade repository's settings</value>
   </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
@@ -1058,5 +1058,38 @@
   </data>
   <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
     <value>The version size value must be larger than the current version</value>
+  </data>
+  <data name="WizardConfigUpgradeTitle" xml:space="preserve">
+    <value>Upgrade repository's settings</value>
+  </data>
+  <data name="WizardConfigUpgradeDescription" xml:space="preserve">
+    <value>Once selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="HelpUsageWizardRepo" xml:space="preserve">
+    <value>Wizard to update the ADR settings of a repository</value>
+  </data>
+  <data name="HelpUsageTargetRepoAdrPath" xml:space="preserve">
+    <value>Path to repository ADR folder</value>
+  </data>
+  <data name="HelpUsageRepoTemplate" xml:space="preserve">
+    <value>Change template of ADR for a repository</value>
+  </data>
+  <data name="HelpUsageRepoVersion" xml:space="preserve">
+    <value>Change the version length setting for a repository</value>
+  </data>
+  <data name="HelpUsageRepoRevision" xml:space="preserve">
+    <value>Change the revision length setting for a repository</value>
+  </data>
+  <data name="HelpUsageRepoScope" xml:space="preserve">
+    <value>Change the scope (length and items) setting for a repository</value>
+  </data>
+  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
+    <value>List of scopes (add a '*' to the end of each scope to ignore the domain definition)</value>
+  </data>
+  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
+    <value>Create folders by scope</value>
+  </data>
+  <data name="HelpUsageFileTemplate" xml:space="preserve">
+    <value>Path to the template file. If omitted, it will be the application template</value>
   </data>
 </root>

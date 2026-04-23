@@ -14,17 +14,17 @@ using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text.Json;
 
-namespace AdrPlus.Commands.Repo
+namespace AdrPlus.Commands.Upgrade
 {
-    internal sealed class RepoCommandHandler(
-        ILogger<RepoCommandHandler> logger,
+    internal sealed class UpgradeCommandHandler(
+        ILogger<UpgradeCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
         IConsoleWriter console,
         IAdrServices adrServices) : ICommandHandler
     {
-        private readonly ILogger<RepoCommandHandler> _logger = logger;
+        private readonly ILogger<UpgradeCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _console = console;
@@ -49,13 +49,13 @@ namespace AdrPlus.Commands.Repo
             if (parsedArgs.ContainsKey(Arguments.Help))
             {
                 _console.WriteHelp(_adrServices.GetHelpText(
-                    "repo",
+                    "upgrade",
                     ValidCommandArgs,
                     [
-                        "adrplus repo --wizard",
-                        "adrplus repo --template --path \"path/to/repository/folder-ADR\" --file \"path/to/template\"",
-                        "adrplus repo --version 3 --path \"path/to/repository/folder-ADR\"",
-                        "adrplus repo --scope 1 --path \\\"path/to/repository/folder-ADR\" --items \"list;of;scope\" --withfolders",
+                        "adrplus upgrade --wizard",
+                        "adrplus upgrade --template --path \"path/to/repository/folder-ADR\" --file \"path/to/template\"",
+                        "adrplus upgrade --version 2 --path \"path/to/repository/folder-ADR\"",
+                        "adrplus upgrade --scope 1 --path \\\"path/to/repository/folder-ADR\" --items \"list;of;scope\" --createfolders",
                     ]));
                 return;
             }
@@ -68,7 +68,7 @@ namespace AdrPlus.Commands.Repo
             var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRepo);
             if (hasWizard)
             {
-                parsedArgs = await RepoWizard(_config,cancellationToken);
+                parsedArgs = await UpgradeWizard(_config,cancellationToken);
             }
 
             parsedArgs.TryGetValue(Arguments.TargetRepoAdr, out var targetPathRepoconfig);
@@ -303,7 +303,7 @@ namespace AdrPlus.Commands.Repo
                 _console.WriteError(error);
             }
         }
-        private async Task<Dictionary<Arguments, string>> RepoWizard(AdrPlusConfig adrPlusConfig, CancellationToken cancellationToken)
+        private async Task<Dictionary<Arguments, string>> UpgradeWizard(AdrPlusConfig adrPlusConfig, CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
             while (true)

@@ -97,7 +97,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Configuration editor for the application, repository or default ADR template.
+        ///   Looks up a localized string similar to Application configuration editor, repository, and default template ADR.
         /// </summary>
         internal static string CmdDescConfig {
             get {
@@ -115,7 +115,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initialize the repository with folders for ADRs.
+        ///   Looks up a localized string similar to Initialize a repository for ADRs for the first time.
         /// </summary>
         internal static string CmdDescInit {
             get {
@@ -138,15 +138,6 @@ namespace AdrPlus.Resources {
         internal static string CmdDescRejected {
             get {
                 return ResourceManager.GetString("CmdDescRejected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Upgrade repository&apos;s settings.
-        /// </summary>
-        internal static string CmdDescRepo {
-            get {
-                return ResourceManager.GetString("CmdDescRepo", resourceCulture);
             }
         }
         
@@ -174,6 +165,15 @@ namespace AdrPlus.Resources {
         internal static string CmdDescUndoStatus {
             get {
                 return ResourceManager.GetString("CmdDescUndoStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade repository&apos;s settings.
+        /// </summary>
+        internal static string CmdDescUpgrade {
+            get {
+                return ResourceManager.GetString("CmdDescUpgrade", resourceCulture);
             }
         }
         
@@ -1582,6 +1582,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Path to the template file. If omitted, it will be the application template.
+        /// </summary>
+        internal static string HelpUsageFileTemplate {
+            get {
+                return ResourceManager.GetString("HelpUsageFileTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Display help information (supress all other arguments).
         /// </summary>
         internal static string HelpUsageHelp {
@@ -1618,6 +1627,60 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the revision length setting for a repository.
+        /// </summary>
+        internal static string HelpUsageRepoRevision {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoRevision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the scope (length and items) setting for a repository.
+        /// </summary>
+        internal static string HelpUsageRepoScope {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List of scopes (add a &apos;*&apos; to the end of each scope to ignore the domain definition).
+        /// </summary>
+        internal static string HelpUsageRepoScopeItems {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoScopeItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change template of ADR for a repository.
+        /// </summary>
+        internal static string HelpUsageRepoTemplate {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the version length setting for a repository.
+        /// </summary>
+        internal static string HelpUsageRepoVersion {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create folders by scope.
+        /// </summary>
+        internal static string HelpUsageRepoWithFolders {
+            get {
+                return ResourceManager.GetString("HelpUsageRepoWithFolders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scope of ADR.
         /// </summary>
         internal static string HelpUsageScopeAdr {
@@ -1636,7 +1699,16 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to repository.
+        ///   Looks up a localized string similar to Path to repository ADR folder.
+        /// </summary>
+        internal static string HelpUsageTargetRepoAdrPath {
+            get {
+                return ResourceManager.GetString("HelpUsageTargetRepoAdrPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to repository root.
         /// </summary>
         internal static string HelpUsageTargetRepoPath {
             get {
@@ -1731,6 +1803,15 @@ namespace AdrPlus.Resources {
         internal static string HelpUsageWizardReject {
             get {
                 return ResourceManager.GetString("HelpUsageWizardReject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard to update the ADR settings of a repository.
+        /// </summary>
+        internal static string HelpUsageWizardRepo {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardRepo", resourceCulture);
             }
         }
         
@@ -2419,7 +2500,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start a repository for ADRs for the first time.
+        ///   Looks up a localized string similar to Initialize a repository for ADRs for the first time.
         /// </summary>
         internal static string WizardAdrInitTitle {
             get {
@@ -2622,6 +2703,24 @@ namespace AdrPlus.Resources {
         internal static string WizardConfigTemplateTitle {
             get {
                 return ResourceManager.GetString("WizardConfigTemplateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        /// </summary>
+        internal static string WizardConfigUpgradeDescription {
+            get {
+                return ResourceManager.GetString("WizardConfigUpgradeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade repository&apos;s settings.
+        /// </summary>
+        internal static string WizardConfigUpgradeTitle {
+            get {
+                return ResourceManager.GetString("WizardConfigUpgradeTitle", resourceCulture);
             }
         }
         

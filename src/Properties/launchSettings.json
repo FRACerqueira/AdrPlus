@@ -2,7 +2,7 @@
   "profiles": {
     "AdrPlus": {
       "commandName": "Project",
-      "commandLineArgs": "repo --wizard\r\n"
+      "commandLineArgs": "wizard"
     }
   }
 }

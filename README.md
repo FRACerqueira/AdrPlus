@@ -136,6 +136,9 @@ dotnet tool update -g adrplus --add-source ./nupkg
 # 1. Run the command wizard to configure and use the tool
 adrplus wizard
 ```
+Using this for the first time? Follow the step-by-step guide to set up and create your first ADR:
+
+[Step-by-Step Guide](StepByStepGuide.md)
 
 ---
 
@@ -217,12 +220,12 @@ Use `adrplus help <command>` to check the available parameters for each command.
 |-------------|------------------------------------------------------------------------------|
 | `help`      | Display help information for all commands or a specific command              |
 | `wizard`    | Launch the interactive wizard for guided operations                          |
-| `config`    | Edit application and repository settings                                     |
+| `config`    | Application configuration editor, repository, and default ADR template       |
 | `init`      | Initialize the ADR repository folder structure                               |
-| `repo`      | Update repository's settings                                            |
+| `Upgrade`   | Upgrade repository's settings                                                |
 | `new`       | Create a new ADR with an incremental number                                  |
-| `version`   | Create a new major version of an accepted or rejected ADR (same number)      |
-| `review`    | Create a new revision of an ADR (same number and version)                    |
+| `version`   | Create a new version of an  ADR (increment version)                          |
+| `review`    | Create a new revision of an ADR (increment revision)                         |
 | `supersede` | Supersede an ADR by creating a successor with a new incremental number       |
 | `approve`   | Set an ADR status to *Accepted*                                              |
 | `reject`    | Set an ADR status to *Rejected*                                              |

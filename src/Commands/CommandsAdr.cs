@@ -9,10 +9,10 @@ using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
-using AdrPlus.Commands.Repo;
 using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
+using AdrPlus.Commands.Upgrade;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 
@@ -46,8 +46,8 @@ namespace AdrPlus.Commands
         /// <summary>
         /// Upgrade repository's settings.
         /// </summary>
-        [Command("repo", typeof(RepoCommandHandler), "CmdDescRepo")]
-        Repo,
+        [Command("upgrade", typeof(UpgradeCommandHandler), "CmdDescUpgrade")]
+        Upgrade,
         /// <summary>
         /// Creates a new ADR with a new number (incremental number).
         /// </summary>

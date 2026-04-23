@@ -4,7 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Commands;
-using AdrPlus.Commands.Repo;
+using AdrPlus.Commands.Upgrade;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
@@ -21,19 +21,19 @@ namespace AdrPlus.Tests.Commands.Repo;
 /// Unit tests for RepoCommandHandler class.
 /// Tests demonstrate repo command execution, configuration changes, wizard flows, and validation patterns using NSubstitute.
 /// </summary>
-public class RepoCommandHandlerTests
+public class UpgradeCommandHandlerTests
 {
-    private readonly ILogger<RepoCommandHandler> _mockLogger;
+    private readonly ILogger<UpgradeCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
     private readonly IConsoleWriter _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
-    private readonly RepoCommandHandler _handler;
+    private readonly UpgradeCommandHandler _handler;
 
-    public RepoCommandHandlerTests()
+    public UpgradeCommandHandlerTests()
     {
-        _mockLogger = Substitute.For<ILogger<RepoCommandHandler>>();
+        _mockLogger = Substitute.For<ILogger<UpgradeCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
@@ -45,7 +45,7 @@ public class RepoCommandHandlerTests
             Language = "en-US"
         };
 
-        _handler = new RepoCommandHandler(
+        _handler = new UpgradeCommandHandler(
             _mockLogger,
             Options.Create(_config),
             _mockFileSystem,
@@ -60,7 +60,7 @@ public class RepoCommandHandlerTests
     public void Constructor_WithValidParameters_CreatesInstance()
     {
         // Arrange & Act
-        var handler = new RepoCommandHandler(
+        var handler = new UpgradeCommandHandler(
             _mockLogger,
             Options.Create(_config),
             _mockFileSystem,
@@ -343,20 +343,20 @@ public class RepoCommandHandlerTests
     public async Task ExecuteAsync_WithVersionAlreadySet_ThrowsInvalidOperationException()
     {
         // Arrange
-        var args = new[] { "--version", "2", "--path", RepositoryPath };
+        var args = new[] { "--version", "1", "--path", RepositoryPath };
         var parsedArgs = new Dictionary<Arguments, string>
         {
-            { Arguments.RepoVersion, "2" },
+            { Arguments.RepoVersion, "1" },
             { Arguments.TargetRepoAdr, RepositoryPath }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 1}""";
         var configPath = ConfigFilePath;
 
         SetupBasicMocks(parsedArgs, jsonConfig, configPath);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
-            .Should().ThrowAsync<InvalidOperationException>();
+            .Should().ThrowAsync<ArgumentException>();
     }
 
     #endregion
