@@ -1,7 +1,6 @@
-## [short title of solved problem and solution]
+## Deciders
 
 * Deciders: [list everyone involved in the decision] <!-- optional -->
-* Date: [YYYY-MM-DD when the decision was last updated] <!-- optional -->
 
 Technical Story: [description | ticket/issue URL] <!-- optional -->
 

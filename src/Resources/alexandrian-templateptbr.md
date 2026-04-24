@@ -1,7 +1,6 @@
-## [título curto do problema resolvido e solução]
+## Decisores
 
 * Tomadores de decisão: [listar todos os envolvidos na decisão] <!-- opcional -->
-* Data: [AAAA-MM-DD quando a decisão foi atualizada pela última vez] <!-- opcional -->
 
 História Técnica: [descrição | URL do ticket/issue] <!-- opcional -->
 

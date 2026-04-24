@@ -132,8 +132,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 ```json
 {
-  "folderrepo": "doc/adr",
-  "dateformat": "",
+  "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
@@ -155,11 +154,11 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 }
 ```
 
-**Configuration keys explained:**
+**Configuration keys (relevant) explained:**
 
 | Key | Meaning | Example |
 |-----|---------|---------|
-| `folderrepo` | Where ADR files are stored | `doc/adr` |
+| `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). | N/A (auto-generated) |
 | `prefix` | Prefix for ADR identifiers | `ADR` → `ADR-0001` |
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
 | `lenversion` | Digits for major version | `2` → `01`, `02`, etc. |
@@ -579,7 +578,6 @@ adrplus upgrade --scope 1 --path "doc/adr" --items "backend;frontend;data*" --cr
 **Result configuration:**
 ```json
 {
-  "folderrepo": "doc/adr",
   "lenversion": 2,
   "lenrevision": 2,          ← Revision support enabled
   "lenscope": 1,              ← Scope support added

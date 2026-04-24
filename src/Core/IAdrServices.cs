@@ -64,11 +64,10 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="jsonString">The JSON string containing the repository settings. Must not be null or whitespace.</param>
         /// <param name="template">The default ADR template content used when the JSON does not specify one.</param>
-        /// <param name="defaultFolder">The default folder path used when the JSON does not specify a folder.</param>
         /// <returns>A new <see cref="AdrPlusRepoConfig"/> populated with values from <paramref name="jsonString"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="jsonString"/> is null or whitespace.</exception>
         /// <exception cref="JsonException">Thrown when <paramref name="jsonString"/> is not valid JSON.</exception>
-        AdrPlusRepoConfig FromJson(string jsonString, string template, string defaultFolder);
+        AdrPlusRepoConfig FromJson(string jsonString, string template);
 
         /// <summary>
         /// Reads all <c>.md</c> ADR files in <paramref name="directoryPath"/> whose filename begins with

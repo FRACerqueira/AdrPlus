@@ -21,7 +21,7 @@ public class AdrQueryServiceTests
     public AdrQueryServiceTests()
     {
         _queryService = new AdrQueryService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}", _directoryPath)
+        _config = new AdrPlusRepoConfig("# {0}")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -611,7 +611,7 @@ public class AdrQueryServiceTests
 
         // Assert
         result.Should().HaveCount(3);
-        result.Should().Contain(new[] { "Enterprise", "Team", "Project" });
+        result.Should().Contain(["Enterprise", "Team", "Project"]);
         result.Distinct().Should().HaveCount(result.Length);
     }
 

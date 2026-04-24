@@ -69,10 +69,9 @@ namespace AdrPlus.Core
         /// <summary>
         /// Retrieves the default repository configuration embeded content.
         /// </summary>
-        /// <param name="config">The configuration object to use for generating the default repository configuration content.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation</param>
         /// <returns>A Task that represents the asynchronous operation, containing a string with the default repository configuration.</returns>
-        Task<string> GetConfigDefaultRepoContentAsync(AdrPlusConfig config, CancellationToken cancellationToken = default);
+        Task<string> GetConfigDefaultRepoContentAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validates and adjusts the structure of the specified repository JSON content to ensure required fields are present.

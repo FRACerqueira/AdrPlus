@@ -21,7 +21,7 @@ public class AdrStatusServiceTests
     public AdrStatusServiceTests()
     {
         _statusService = new AdrStatusService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}", PathHelper.GetRepositoryAdrPath())
+        _config = new AdrPlusRepoConfig("# {0}")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -42,7 +42,7 @@ public class AdrStatusServiceTests
 
     #region Helpers
 
-    private AdrFileNameComponents CreateValidParsedFile(int number = 1, int version = 1)
+    private static AdrFileNameComponents CreateValidParsedFile(int number = 1, int version = 1)
     {
         return new AdrFileNameComponents
         {
@@ -69,7 +69,7 @@ public class AdrStatusServiceTests
         };
     }
 
-    private AdrFileNameComponents CreateInvalidParsedFile()
+    private static AdrFileNameComponents CreateInvalidParsedFile()
     {
         return new AdrFileNameComponents
         {
@@ -79,7 +79,7 @@ public class AdrStatusServiceTests
         };
     }
 
-    private AdrFileNameComponents CreateParsedFileWithInvalidHeader()
+    private static AdrFileNameComponents CreateParsedFileWithInvalidHeader()
     {
         return new AdrFileNameComponents
         {
@@ -102,7 +102,7 @@ public class AdrStatusServiceTests
     public async Task StatusUpdateAdrAsync_WithValidFileAndStatus_ReturnsSuccessAndWritesFile()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Accepted;
         var updateDate = new DateTime(2024, 6, 15);
         var cancellationToken = CancellationToken.None;
@@ -127,7 +127,7 @@ public class AdrStatusServiceTests
     public async Task StatusUpdateAdrAsync_WithValidFile_UpdatesHeaderStatusUpdate()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Rejected;
         var updateDate = new DateTime(2024, 3, 10);
         string capturedContent = string.Empty;
@@ -237,7 +237,7 @@ public class AdrStatusServiceTests
     public async Task StatusUpdateAdrAsync_WithDifferentStatuses_UpdatesCorrectly(int statusValue)
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = (AdrStatus)statusValue;
         var updateDate = new DateTime(2024, 7, 20);
 
@@ -259,7 +259,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var crossPlatformPath = PathHelper.GetAdrFilePath("ADR-0002-CrossPlatform-V01.md");
-        var parsedFile = CreateValidParsedFile(number: 2);
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile(number: 2);
 
         _fileParser.ParseFileName(crossPlatformPath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -276,7 +276,7 @@ public class AdrStatusServiceTests
     public async Task StatusUpdateAdrAsync_WithCancellationToken_PassesTokenToFileSystem()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var cts = new CancellationTokenSource();
         var cancellationToken = cts.Token;
 
@@ -302,7 +302,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeSupersedeAdrAsync_WithValidFileAndFilename_ReturnsSuccessAndWritesFile()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var supersedingFilename = "ADR-0002-NewDecision-V01.md";
         var changeDate = new DateTime(2024, 8, 1);
         var cancellationToken = CancellationToken.None;
@@ -327,7 +327,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeSupersedeAdrAsync_WithValidFile_UpdatesSupersededStatus()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var supersedingFilename = "ADR-0002-NewDecision-V01.md";
         var changeDate = new DateTime(2024, 8, 5);
         string capturedContent = string.Empty;
@@ -457,7 +457,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeSupersedeAdrAsync_WithDifferentFilenames_UpdatesCorrectly()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var filename1 = "ADR-0002-NewDecision-V01.md";
         var filename2 = "ADR-0003-AnotherDecision-V02.md";
 
@@ -468,7 +468,7 @@ public class AdrStatusServiceTests
         var (isValid1, _) = await _statusService.StatusChangeSupersedeAdrAsync(
             _filePath, filename1, DateTime.Now, _config, _fileSystemService, CancellationToken.None);
 
-        parsedFile = CreateValidParsedFile();
+        parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
@@ -485,7 +485,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var crossPlatformPath = PathHelper.GetAdrFilePath("ADR-0003-CrossPlatformSupersede-V01.md");
-        var parsedFile = CreateValidParsedFile(number: 3);
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile(number: 3);
 
         _fileParser.ParseFileName(crossPlatformPath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -502,7 +502,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeSupersedeAdrAsync_WithCancellationToken_PassesTokenToFileSystem()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var cts = new CancellationTokenSource();
         var cancellationToken = cts.Token;
 
@@ -528,7 +528,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithValidFileAndStatus_ReturnsSuccessAndWritesFile()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Accepted;
         var changeDate = new DateTime(2024, 9, 10);
         var cancellationToken = CancellationToken.None;
@@ -553,7 +553,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithValidFile_UpdatesHeaderStatusChange()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Rejected;
         var changeDate = new DateTime(2024, 9, 15);
         string capturedContent = string.Empty;
@@ -663,7 +663,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithDifferentStatuses_UpdatesCorrectly(int statusValue)
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = (AdrStatus)statusValue;
         var changeDate = new DateTime(2024, 10, 1);
 
@@ -684,7 +684,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithMultipleDateChanges_UpdatesCorrectly()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var date1 = new DateTime(2024, 5, 1);
         var date2 = new DateTime(2024, 10, 15);
 
@@ -695,7 +695,7 @@ public class AdrStatusServiceTests
         var (isValid1, _) = await _statusService.StatusChangeAdrAsync(
             _filePath, AdrStatus.Accepted, date1, _config, _fileSystemService, CancellationToken.None);
 
-        parsedFile = CreateValidParsedFile();
+        parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
@@ -712,7 +712,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var crossPlatformPath = PathHelper.GetAdrFilePath("ADR-0005-CrossPlatformChange-V01.md");
-        var parsedFile = CreateValidParsedFile(number: 5);
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile(number: 5);
 
         _fileParser.ParseFileName(crossPlatformPath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -729,7 +729,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithCancellationToken_PassesTokenToFileSystem()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var cts = new CancellationTokenSource();
         var cancellationToken = cts.Token;
 
@@ -751,7 +751,7 @@ public class AdrStatusServiceTests
     public async Task StatusChangeAdrAsync_WithSupersededStatus_HandlesCorrectly()
     {
         // Arrange
-        var parsedFile = CreateValidParsedFile();
+        var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var changeDate = new DateTime(2024, 11, 1);
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
@@ -775,9 +775,9 @@ public class AdrStatusServiceTests
     public async Task MultipleStatusOperations_OnSameFile_AllSucceed()
     {
         // Arrange
-        var parsedFile1 = CreateValidParsedFile();
-        var parsedFile2 = CreateValidParsedFile();
-        var parsedFile3 = CreateValidParsedFile();
+        var parsedFile1 = AdrStatusServiceTests.CreateValidParsedFile();
+        var parsedFile2 = AdrStatusServiceTests.CreateValidParsedFile();
+        var parsedFile3 = AdrStatusServiceTests.CreateValidParsedFile();
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .ReturnsForAnyArgs(x =>
@@ -833,7 +833,7 @@ public class AdrStatusServiceTests
         var date3 = new DateTime(2024, 12, 1);
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
-            .ReturnsForAnyArgs(x => Task.FromResult(CreateValidParsedFile()));
+            .ReturnsForAnyArgs(x => Task.FromResult(AdrStatusServiceTests.CreateValidParsedFile()));
 
         // Act
         var (result1, _) = await _statusService.StatusUpdateAdrAsync(

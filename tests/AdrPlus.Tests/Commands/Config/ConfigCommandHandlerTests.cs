@@ -228,7 +228,7 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(_config, Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
@@ -248,7 +248,7 @@ public class ConfigCommandHandlerTests
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
-        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
             .Returns(repoConfig);
 
         // Act
@@ -272,7 +272,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(_config, Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
@@ -292,7 +292,7 @@ public class ConfigCommandHandlerTests
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
-        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
             .Returns(repoConfig);
 
         // Act

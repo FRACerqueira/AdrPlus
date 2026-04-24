@@ -221,7 +221,7 @@ namespace AdrPlus.Commands.Init
             await _fileSystem.WriteAllTextAsync(configPath, jsonrepoconfig, cancellationToken);
             result.Add(_fileSystem.GetFullNameFile(configPath));
 
-            var config = _adrServices.FromJson(jsonrepoconfig, "", "")!;
+            var config = _adrServices.FromJson(jsonrepoconfig, "")!;
             CreateScopeDirectories(config, repoPath, result);
         }
     }

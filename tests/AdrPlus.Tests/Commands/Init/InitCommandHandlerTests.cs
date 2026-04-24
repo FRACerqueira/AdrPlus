@@ -137,7 +137,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -169,7 +169,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -270,7 +270,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -312,7 +312,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -394,7 +394,7 @@ public class InitCommandHandlerTests
             FolderByScope = true,
             Scopes = "frontend;backend;database"
         };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -434,7 +434,7 @@ public class InitCommandHandlerTests
             FolderByScope = true,
             Scopes = "frontend;backend"
         };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -471,7 +471,7 @@ public class InitCommandHandlerTests
             FolderByScope = false,
             Scopes = "frontend;backend"
         };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -508,7 +508,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -539,7 +539,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
 
         var repoConfig = new AdrPlusRepoConfig { FolderByScope = false };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -628,7 +628,7 @@ public class InitCommandHandlerTests
             FolderByScope = true,
             Scopes = "api"
         };
-        _mockAdrServices.FromJson(jsonConfig, "", "").Returns(repoConfig);
+        _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);

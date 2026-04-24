@@ -221,6 +221,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `help`      | Display help information for all commands or a specific command              |
 | `wizard`    | Launch the interactive wizard for guided operations                          |
 | `config`    | Application configuration editor, repository, and default ADR template       |
+| `migrate`   | Migrate existing ADRs to use the tool (create header)                        |
 | `init`      | Initialize the ADR repository folder structure                               |
 | `upgrade`   | Upgrade repository's settings                                                |
 | `new`       | Create a new ADR with an incremental number                                  |
@@ -304,8 +305,6 @@ adrplus config --repository
 
 ```json
 {
-  "folderrepo": "doc/adr",
-  "dateformat": "",
   "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
@@ -330,8 +329,6 @@ adrplus config --repository
 
 | Key | Description |
 |-----|-------------|
-| `folderrepo` | Relative path to the ADR repository folder (for example: `doc/adr`). |
-| `dateformat` | Date format used in ADR metadata. If empty, default culture formatting is used. |
 | `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). |
 | `prefix` | Prefix used in ADR titles/identifiers (for example: `ADR`). |
 | `lenseq` | Number of digits for the sequential ADR number (for example: `4` => `0001`). |
@@ -360,7 +357,6 @@ Use scopes and folder grouping to keep ADRs organized by area:
 
 ```json
 {
-  "folderrepo": "doc/adr",
   "scopes": "enterprise,project,backend,frontend,mobile,data",
   "skipdomain": "enterprise,project",
   "folderbyscope": true,
@@ -376,7 +372,6 @@ Use a simple flat structure with no scope folder split:
 
 ```json
 {
-  "folderrepo": "doc/adr",
   "scopes": "",
   "folderbyscope": false,
   "lenscope": 0,

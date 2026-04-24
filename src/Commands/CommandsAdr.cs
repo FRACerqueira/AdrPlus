@@ -7,6 +7,7 @@ using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
+using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
 using AdrPlus.Commands.Review;
@@ -38,6 +39,11 @@ namespace AdrPlus.Commands
         /// </summary>
         [Command("config", typeof(ConfigCommandHandler), "CmdDescConfig")]
         Config,
+        /// <summary>
+        /// Migrate repository's settings.
+        /// </summary>
+        [Command("migrate", typeof(MigrateCommandHandler), "CmdDescMigrate")]
+        Migrate,
         /// <summary>
         /// Initializes the repository with folders for ADRs.
         /// </summary>

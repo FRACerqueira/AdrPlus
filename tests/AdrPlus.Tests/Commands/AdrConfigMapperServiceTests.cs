@@ -14,7 +14,6 @@ public class AdrConfigMapperServiceTests
 {
     private readonly AdrConfigMapperService _mapper = new();
     private readonly string _template = "# ADR {0}";
-    private readonly string _defaultFolder = PathHelper.GetRepositoryAdrPath();
 
     #region Valid JSON Tests
 
@@ -25,12 +24,11 @@ public class AdrConfigMapperServiceTests
         var json = CreateMinimalJson();
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Should().NotBeNull();
         config.Template.Should().Be(_template);
-        config.FolderRepo.Should().Be(_defaultFolder);
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix);
         config.LenSeq.Should().Be(4);
         config.LenVersion.Should().Be(2);
@@ -66,7 +64,7 @@ public class AdrConfigMapperServiceTests
         );
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Prefix.Should().Be("DECISION");
@@ -102,7 +100,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithCaseTransform(caseFormatValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         var expectedFormat = (CaseFormat)expectedFormatInt;
@@ -120,7 +118,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenSeq, lenSeqValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenSeq.Should().Be(lenSeqValue);
@@ -136,7 +134,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenVersion, lenVersionValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenVersion.Should().Be(lenVersionValue);
@@ -152,7 +150,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenRevision, lenRevisionValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenRevision.Should().Be(lenRevisionValue);
@@ -168,7 +166,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenScope, lenScopeValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenScope.Should().Be(lenScopeValue);
@@ -185,7 +183,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldSeparator, separatorValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Separator.Should().Be(separatorValue[0]);
@@ -200,7 +198,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldFolderByScope, folderByScopeValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.FolderByScope.Should().Be(folderByScopeValue);
@@ -215,7 +213,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldFolderByScope, folderByScopeValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         var expectedValue = bool.Parse(folderByScopeValue);
@@ -229,7 +227,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateCaseInsensitiveJson();
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Prefix.Should().Be("ADR-PLUS");
@@ -247,7 +245,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldCaseTransform, "InvalidCaseFormat");
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.CaseTransform.Should().Be(CaseFormat.PascalCase);
@@ -258,7 +256,7 @@ public class AdrConfigMapperServiceTests
     {
         // Arrange - Test with 0
         var jsonZero = CreateJsonWithField(AppConstants.FieldLenSeq, 0);
-        var configZero = _mapper.FromJson(jsonZero, _template, _defaultFolder);
+        var configZero = _mapper.FromJson(jsonZero, _template);
         
         configZero.LenSeq.Should().Be(4); // Default value
 
@@ -266,7 +264,7 @@ public class AdrConfigMapperServiceTests
         var jsonNegative = CreateJsonWithField(AppConstants.FieldLenSeq, -1);
         
         // Act
-        var configNegative = _mapper.FromJson(jsonNegative, _template, _defaultFolder);
+        var configNegative = _mapper.FromJson(jsonNegative, _template);
 
         // Assert
         configNegative.LenSeq.Should().Be(4); // Default value
@@ -279,7 +277,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenVersion, -1);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenVersion.Should().Be(2); // Default value
@@ -292,7 +290,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenRevision, -1);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenRevision.Should().Be(0); // Default value
@@ -305,7 +303,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithField(AppConstants.FieldLenScope, -1);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.LenScope.Should().Be(0); // Default value
@@ -318,7 +316,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldSeparator, "");
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Separator.Should().Be('-'); // Default value
@@ -331,7 +329,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldSeparator, "--");
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Separator.Should().Be('-'); // Default value
@@ -344,7 +342,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldSeparator, "   ");
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Separator.Should().Be('-'); // Default value
@@ -357,7 +355,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldFolderByScope, "maybe");
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert - Should keep default (false)
         config.FolderByScope.Should().BeFalse();
@@ -375,7 +373,7 @@ public class AdrConfigMapperServiceTests
         });
 
         // Act
-        var config = _mapper.FromJson(jsonObject, _template, _defaultFolder);
+        var config = _mapper.FromJson(jsonObject, _template);
 
         // Assert
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix); // Default
@@ -391,7 +389,7 @@ public class AdrConfigMapperServiceTests
     public void FromJson_WithNullJsonString_ThrowsArgumentNullException()
     {
         // Act & Assert
-        var action = () => _mapper.FromJson(null!, _template, _defaultFolder);
+        var action = () => _mapper.FromJson(null!, _template);
         action.Should().Throw<ArgumentNullException>()
             .WithParameterName("jsonString");
     }
@@ -400,7 +398,7 @@ public class AdrConfigMapperServiceTests
     public void FromJson_WithEmptyJsonString_ThrowsArgumentNullException()
     {
         // Act & Assert
-        var action = () => _mapper.FromJson(string.Empty, _template, _defaultFolder);
+        var action = () => _mapper.FromJson(string.Empty, _template);
         action.Should().Throw<ArgumentNullException>()
             .WithParameterName("jsonString");
     }
@@ -409,55 +407,9 @@ public class AdrConfigMapperServiceTests
     public void FromJson_WithWhitespaceJsonString_ThrowsArgumentNullException()
     {
         // Act & Assert
-        var action = () => _mapper.FromJson("   ", _template, _defaultFolder);
+        var action = () => _mapper.FromJson("   ", _template);
         action.Should().Throw<ArgumentNullException>()
             .WithParameterName("jsonString");
-    }
-
-    #endregion
-
-    #region Cross-Platform Path Tests
-
-    [Fact]
-    public void FromJson_WithWindowsPath_CreatesConfigSuccessfully()
-    {
-        // Arrange
-        var windowsPath = @"C:\repo\docs\adr";
-        var json = CreateMinimalJson();
-
-        // Act
-        var config = _mapper.FromJson(json, _template, windowsPath);
-
-        // Assert
-        config.FolderRepo.Should().Be(windowsPath);
-    }
-
-    [Fact]
-    public void FromJson_WithUnixPath_CreatesConfigSuccessfully()
-    {
-        // Arrange
-        var unixPath = "/repo/docs/adr";
-        var json = CreateMinimalJson();
-
-        // Act
-        var config = _mapper.FromJson(json, _template, unixPath);
-
-        // Assert
-        config.FolderRepo.Should().Be(unixPath);
-    }
-
-    [Fact]
-    public void FromJson_WithCrossplatformPathHelper_WorksOnCurrentPlatform()
-    {
-        // Arrange
-        var currentPlatformPath = PathHelper.GetRepositoryAdrPath();
-        var json = CreateMinimalJson();
-
-        // Act
-        var config = _mapper.FromJson(json, _template, currentPlatformPath);
-
-        // Assert
-        config.FolderRepo.Should().Be(currentPlatformPath);
     }
 
     #endregion
@@ -476,7 +428,7 @@ public class AdrConfigMapperServiceTests
         });
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         // The mapper accepts and sets the value as-is from JSON, even if empty/whitespace
@@ -493,7 +445,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldStatusNew, statusValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.StatusNew.Should().Be(expected);
@@ -509,7 +461,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldStatusAccepted, statusValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.StatusAcc.Should().Be(expected);
@@ -524,7 +476,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldStatusRejected, statusValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.StatusRej.Should().Be(expected);
@@ -539,7 +491,7 @@ public class AdrConfigMapperServiceTests
         var json = CreateJsonWithStringField(AppConstants.FieldStatusSuperseded, statusValue);
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.StatusSup.Should().Be(expected);
@@ -558,7 +510,7 @@ public class AdrConfigMapperServiceTests
         });
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.HeaderDisclaimer.Should().Be("# Disclaimer Text");
@@ -588,7 +540,7 @@ public class AdrConfigMapperServiceTests
         });
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Prefix.Should().Be("VALID-PREFIX");
@@ -615,7 +567,7 @@ public class AdrConfigMapperServiceTests
         });
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Prefix.Should().Be("ADR");
@@ -630,7 +582,7 @@ public class AdrConfigMapperServiceTests
         var json = JsonSerializer.Serialize(new { });
 
         // Act
-        var config = _mapper.FromJson(json, _template, _defaultFolder);
+        var config = _mapper.FromJson(json, _template);
 
         // Assert
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix);
@@ -643,19 +595,17 @@ public class AdrConfigMapperServiceTests
     }
 
     [Fact]
-    public void FromJson_PreservesTemplateAndFolderParameters()
+    public void FromJson_PreservesTemplatParameters()
     {
         // Arrange
         var customTemplate = "## Decision Record: {0}";
-        var customFolder = PathHelper.GetAlternativeFolderPath();
         var json = CreateMinimalJson();
 
         // Act
-        var config = _mapper.FromJson(json, customTemplate, customFolder);
+        var config = _mapper.FromJson(json, customTemplate);
 
         // Assert
         config.Template.Should().Be(customTemplate);
-        config.FolderRepo.Should().Be(customFolder);
     }
 
     #endregion

@@ -187,7 +187,7 @@
     <value>Enterprise</value>
   </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
-    <value>(Não remova este template. Ele é usado e deve permanecer inalterado para garantir consistência na documentação)</value>
+    <value>(Não remova este template, , linhas 1~10. Ele é usado e deve permanecer inalterado para garantir consistência na documentação)</value>
   </data>
   <data name="DefaultPrefix" xml:space="preserve">
     <value>ADR</value>
@@ -1091,5 +1091,8 @@
   </data>
   <data name="HelpUsageFileTemplate" xml:space="preserve">
     <value>Caminho para o arquivo de template. Se omitido será o template da aplicação</value>
+  </data>
+  <data name="CmdDescMigrate" xml:space="preserve">
+    <value>Migrar ADRs existentes para usar a ferramenta (criar cabeçalho)</value>
   </data>
 </root>

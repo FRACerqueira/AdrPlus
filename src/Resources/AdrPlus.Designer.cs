@@ -124,6 +124,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migrate existing ADRs to use the tool (create header).
+        /// </summary>
+        internal static string CmdDescMigrate {
+            get {
+                return ResourceManager.GetString("CmdDescMigrate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create a new ADR with a new number (incremental number).
         /// </summary>
         internal static string CmdDescNew {
@@ -520,7 +529,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Do not remove this template. It is used and must remain unchanged to ensure consistency in documentation).
+        ///   Looks up a localized string similar to (Do not remove this template, lines 1~10. It is used and must remain unchanged to ensure consistency in documentation).
         /// </summary>
         internal static string DefaultHeaderDisclaimer {
             get {

@@ -268,7 +268,7 @@ namespace AdrPlus.Commands.Config
             }
             else
             {
-                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(_config, cancellationToken);
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(cancellationToken);
             }
             if (string.IsNullOrEmpty(fileConfigPath))
             {
@@ -601,7 +601,7 @@ namespace AdrPlus.Commands.Config
         /// <returns>An array of sample filename strings demonstrating the naming convention.</returns>
         private string[] GetSampleFiles(string modifiedConfig)
         {
-            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty, _config.FolderRepo);
+            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty);
             var skipdomains = repoconfig.Getskipdomains();
             var scopes = repoconfig.GetScopes();
             var eligibleScope = scopes.Where(x => !skipdomains.Any(s => s == x)).FirstOrDefault() ?? string.Empty;

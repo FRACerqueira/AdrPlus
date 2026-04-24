@@ -417,7 +417,6 @@ namespace AdrPlus.Core
                 // Define all required fields with their expected types
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
-                    { AppConstants.FieldFolderRepo, JsonValueKind.String },
                     { AppConstants.FieldTemplate, JsonValueKind.String },
                     { AppConstants.FieldPrefix, JsonValueKind.String },
                     { AppConstants.FieldLenSeq, JsonValueKind.Number },
@@ -691,13 +690,13 @@ namespace AdrPlus.Core
         /// <param name="config">The application configuration providing default folder and date format values.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous operation, containing the repository configuration JSON string.</returns>
-        public async Task<string> GetConfigDefaultRepoContentAsync(AdrPlusConfig config, CancellationToken cancellationToken = default)
+        public async Task<string> GetConfigDefaultRepoContentAsync(CancellationToken cancellationToken = default)
         {
             var fullpath = GetConfigRepoFilePath();
             if (!_fileSystem.FileExists(fullpath))
             {
                 var template = await GetConfigAdrTemplateAsync(cancellationToken);
-                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(template, config.FolderRepo), AppConstants.RepoSerializerOptions);
+                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(template), AppConstants.RepoSerializerOptions);
                 var normalized = NormalizeJsonKeysToLowerInvariant(aux);
                 await _fileSystem.WriteAllTextAsync(fullpath, normalized, cancellationToken);
                 return normalized;

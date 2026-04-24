@@ -13,8 +13,7 @@ namespace AdrPlus.Core
         /// <inheritdoc/>
         public AdrPlusRepoConfig FromJson(
             string jsonString,
-            string template,
-            string defaultFolder)
+            string template)
         {
             if (string.IsNullOrWhiteSpace(jsonString))
                 throw new ArgumentNullException(nameof(jsonString), Resources.AdrPlus.ExceptionJsonStringNull);
@@ -22,7 +21,7 @@ namespace AdrPlus.Core
             using var jsonDoc = JsonDocument.Parse(jsonString, AppConstants.DocumentOptions);
             var root = jsonDoc.RootElement;
 
-            var config = new AdrPlusRepoConfig(template, defaultFolder);
+            var config = new AdrPlusRepoConfig(template);
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldPrefix, out var prefixElement) && prefixElement.ValueKind == JsonValueKind.String)
                 config.Prefix = prefixElement.GetString()!;

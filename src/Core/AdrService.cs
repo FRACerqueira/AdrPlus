@@ -35,8 +35,8 @@ namespace AdrPlus.Core
             => _statusService.StatusChangeAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken);
 
         /// <inheritdoc/>
-        public AdrPlusRepoConfig FromJson(string jsonString, string template, string defaultFolder)
-            => _configMapper.FromJson(jsonString, template, defaultFolder);
+        public AdrPlusRepoConfig FromJson(string jsonString, string template)
+            => _configMapper.FromJson(jsonString, template);
 
         /// <inheritdoc/>
         public Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)

@@ -128,7 +128,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
-            PromptPlus.Config.PageSize = 10;
+            PromptPlus.Config.PageSize = 5;
 
             if (!string.IsNullOrWhiteSpace(config.YesValue))
             {

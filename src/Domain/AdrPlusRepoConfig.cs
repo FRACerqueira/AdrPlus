@@ -23,18 +23,10 @@ namespace AdrPlus.Domain
         /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class with default values.
         /// </summary>
         /// <param name="defaultTemplate">The default template content.</param>
-        /// <param name="defaultFolder">The default folder path.</param>
-        /// <param name="defaultDateformat">The default date format.</param>
-        public AdrPlusRepoConfig(string defaultTemplate, string defaultFolder)
+        public AdrPlusRepoConfig(string defaultTemplate)
         {
-            FolderRepo = defaultFolder;
             Template = defaultTemplate;
         }
-
-        /// <summary>
-        /// Folder for the ADRs in the repository, e.g. "docs/adr". Optional, can be empty for the root folder.
-        /// </summary>
-        public string FolderRepo { get; init; } = string.Empty;
 
         /// <summary>
         /// Gets the template string used for formatting or processing content ADR.

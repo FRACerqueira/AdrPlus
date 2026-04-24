@@ -1,4 +1,4 @@
-## [título breve do problema resolvido e solução]
+## Decisores
 
 * Tomadores de Decisão: [liste todas as pessoas envolvidas na decisão] <!-- opcional -->
 
