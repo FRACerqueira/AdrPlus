@@ -104,10 +104,10 @@ namespace AdrPlus.Core
         /// <param name="title">The ADR title to look for (case transformation is applied before matching).</param>
         /// <param name="domain">The ADR domain to combine with the title for matching.</param>
         /// <param name="fileSystemService">The file system service used for file operations.</param>
-        /// <param name="directoryPath">The directory path to search for ADR files.</param>
         /// <param name="config">The ADR Plus configuration containing naming conventions and case-transform rules.</param>
+        /// <param name="rootrepo">The root path of the repository.</param>
         /// <returns>The full file path of the first matching ADR, or an empty string when not found.</returns>
-        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService,string rootrepo, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Calculates the next available ADR sequence number by scanning all existing ADR files in

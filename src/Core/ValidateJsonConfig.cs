@@ -65,16 +65,6 @@ namespace AdrPlus.Core
             var contentpath = Path.Combine(AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
             errors.AddRange(await ValidateTemplateFileAsync(language, contentpath, cancellationToken));
 
-            // Validate folderRepo (optional, must be relative path if specified)
-            var folderRepo = section[AppConstants.FieldFolderRepo];
-            if (!string.IsNullOrWhiteSpace(folderRepo))
-            {
-                if (Path.IsPathRooted(folderRepo))
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, folderRepo));
-                }
-            }
-
             return errors;
         }
 
@@ -84,7 +74,7 @@ namespace AdrPlus.Core
         /// <returns><see langword="true"/> if the file exists; otherwise <see langword="false"/>.</returns>
         public bool HasTemplateRepoFile()
         {
-            return _fileSystem.FileExists(GetConfigRepoFilePath());
+            return _fileSystem.FileExists(GetDefaultConfigRepoFilePath());
         }
 
         /// <summary>
@@ -92,7 +82,7 @@ namespace AdrPlus.Core
         /// The file is expected in the <c>template</c> subdirectory of the application base directory.
         /// </summary>
         /// <returns>The absolute path to the <c>adr-config.adrplus</c> file.</returns>
-        public string GetConfigRepoFilePath()
+        public string GetDefaultConfigRepoFilePath()
         {
             var baseDirectory = AppContext.BaseDirectory;
             return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, GetFileNameRepoConfig()));
@@ -118,7 +108,7 @@ namespace AdrPlus.Core
         public async Task<string> GetConfigRepoTemplateAsync(CancellationToken cancellationToken)
         {
             var baseDirectory = AppContext.BaseDirectory;
-            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
+            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
             if (_fileSystem.FileExists(fullpath))
             {
                 return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
@@ -159,7 +149,7 @@ namespace AdrPlus.Core
         /// <returns>The constant file name <c>adr-config.adrplus</c>.</returns>
         public string GetFileNameRepoConfig()
         {
-            return AppConstants.AdrConfigFileName;
+            return AppConstants.AdrRepoConfigFileName;
         }
 
 
@@ -417,6 +407,7 @@ namespace AdrPlus.Core
                 // Define all required fields with their expected types
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
+                    { AppConstants.FieldFolderAdr, JsonValueKind.String },
                     { AppConstants.FieldTemplate, JsonValueKind.String },
                     { AppConstants.FieldPrefix, JsonValueKind.String },
                     { AppConstants.FieldLenSeq, JsonValueKind.Number },
@@ -537,7 +528,6 @@ namespace AdrPlus.Core
         {
             List<string> errors = [];
 
-            // Validate numeric fields 
             JsonElement property = root.GetProperty(AppConstants.FieldLenSeq);
             if (property.TryGetInt32(out var numvalue))
             {
@@ -680,6 +670,14 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderRevision));
             }
 
+            property = root.GetProperty(AppConstants.FieldFolderAdr);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldFolderAdr));
+            }
+
+
             return [.. errors];
         }
 
@@ -688,15 +686,16 @@ namespace AdrPlus.Core
         /// otherwise a new JSON string is generated from the embedded template and the supplied <paramref name="config"/> defaults.
         /// </summary>
         /// <param name="config">The application configuration providing default folder and date format values.</param>
+        /// <param name="pathadr">The path to the ADR folder, used to replace the placeholder in the template content.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous operation, containing the repository configuration JSON string.</returns>
-        public async Task<string> GetConfigDefaultRepoContentAsync(CancellationToken cancellationToken = default)
+        public async Task<string> GetConfigDefaultRepoContentAsync(string pathadr, CancellationToken cancellationToken = default)
         {
-            var fullpath = GetConfigRepoFilePath();
+            var fullpath = GetDefaultConfigRepoFilePath();
             if (!_fileSystem.FileExists(fullpath))
             {
                 var template = await GetConfigAdrTemplateAsync(cancellationToken);
-                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(template), AppConstants.RepoSerializerOptions);
+                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(pathadr, template), AppConstants.RepoSerializerOptions);
                 var normalized = NormalizeJsonKeysToLowerInvariant(aux);
                 await _fileSystem.WriteAllTextAsync(fullpath, normalized, cancellationToken);
                 return normalized;
@@ -724,7 +723,6 @@ namespace AdrPlus.Core
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
-                    { AppConstants.FieldFolderRepo, JsonValueKind.String },
                     { AppConstants.FieldOpenAdr, JsonValueKind.String },
                     { AppConstants.FieldYesValue, JsonValueKind.String },
                     { AppConstants.FieldNoValue, JsonValueKind.String },
@@ -798,29 +796,6 @@ namespace AdrPlus.Core
             if (openAdrValue.Length > 0 && !openAdrValue.Contains("{0}"))
             {
                 errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldOpenAdr, "{0}"));
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldFolderRepo);
-            var foldervalue = property.GetString() ?? string.Empty;
-            if (foldervalue.Length == 0)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldFolderRepo));
-            }
-            else
-            {
-                try
-                {
-                    // Validate that the path doesn't contain invalid characters
-                    _ = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, foldervalue));
-                }
-                catch (ArgumentException)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgContentInvalidPathFormat, foldervalue));
-                }
-                catch (NotSupportedException)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgContentPathNotSupportedFormat, foldervalue));
-                }
             }
 
             property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldYesValue);

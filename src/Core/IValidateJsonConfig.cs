@@ -3,8 +3,6 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
-using AdrPlus.Domain;
-
 namespace AdrPlus.Core
 {
     /// <summary>
@@ -56,7 +54,7 @@ namespace AdrPlus.Core
         /// <returns>
         /// The full file path of the configuration file
         /// </returns>
-        string GetConfigRepoFilePath();
+        string GetDefaultConfigRepoFilePath();
 
         /// <summary>
         /// Retrieves the file name configuration value.
@@ -69,9 +67,10 @@ namespace AdrPlus.Core
         /// <summary>
         /// Retrieves the default repository configuration embeded content.
         /// </summary>
+        /// <param name="pathadr">The path to the ADR folder, used to replace the placeholder in the template content.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation</param>
         /// <returns>A Task that represents the asynchronous operation, containing a string with the default repository configuration.</returns>
-        Task<string> GetConfigDefaultRepoContentAsync(CancellationToken cancellationToken = default);
+        Task<string> GetConfigDefaultRepoContentAsync(string pathadr, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validates and adjusts the structure of the specified repository JSON content to ensure required fields are present.

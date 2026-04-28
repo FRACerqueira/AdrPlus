@@ -47,16 +47,16 @@ namespace AdrPlus.Core
             => _queryService.ReadLatestAdrFiles(fileSystemService, directoryPath, config);
 
         /// <inheritdoc/>
-        public Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-            => _queryService.GetFileByUniqueTitle(title, domain, fileSystemService, directoryPath, config);
+        public Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService,string rootrepo, AdrPlusRepoConfig config)
+            => _queryService.GetFileByUniqueTitle(title, domain, fileSystemService, rootrepo, config);
 
         /// <inheritdoc/>
         public Task<int> GetNextNumber(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
             => _queryService.GetNextNumber(fileSystemService, directoryPath, config);
 
         /// <inheritdoc/>
-        public Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-            => _queryService.GetLatestADRSequence(sequence, fileSystemService, directoryPath, config);
+        public Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string rootPath, AdrPlusRepoConfig config)
+            => _queryService.GetLatestADRSequence(sequence, fileSystemService, rootPath, config);
 
         /// <inheritdoc/>
         public Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)

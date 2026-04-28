@@ -126,35 +126,26 @@ namespace AdrPlus.Commands.Reject
                 {
                     throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, fileadr));
                 }
-                var rootPath = Path.GetDirectoryName(fileadr) ?? string.Empty;
-                var folderadrroot = _config.GetFolderNormalized();
 
-                if (!rootPath.Contains(folderadrroot))
-                {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
-                }
-                var posindex = rootPath.LastIndexOf(folderadrroot, StringComparison.OrdinalIgnoreCase);
+                var configrootPath = _filesystem.GetFileRootRepositoryPath(fileadr)
+                    ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorCannotDetermineRootPath, fileadr));
+                var rootpath = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
-                var targetPath = rootPath[..(posindex + folderadrroot.Length)];
-
-                rootPath = rootPath[..posindex];
-
-                // Validate that the repository configuration file exists
-                var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
-                if (!_filesystem.FileExists(configPath))
-                {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
-                }
-
-                string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
+                string jsonString = await _filesystem.ReadAllTextAsync(configrootPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
+
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
+                if (repoconfig.LenVersion == 0)
+                {
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorVersionNotConfig, configrootPath));
+                }
+                
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
                 {
@@ -182,7 +173,7 @@ namespace AdrPlus.Commands.Reject
                 LogAndWriteSuccess($"{repoconfig.StatusRej} : {infoadr.FileName}");
                 if (infoadr.SupersededValue.HasValue)
                 {
-                    var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootPath, repoconfig) ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
+                    var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootpath, repoconfig) ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.SupersededValue.Value));
                     var (updundo, updundoerror) = await _adrServices.StatusChangeAdrAsync(infoundo.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
                     if (!updundo)
                     {
@@ -262,13 +253,13 @@ namespace AdrPlus.Commands.Reject
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                var configPath = Path.Combine(folderPrompt.Content, _config.FolderRepo, _validateconfig.GetFileNameRepoConfig());
+                var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
 
@@ -279,11 +270,10 @@ namespace AdrPlus.Commands.Reject
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                var targetPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _config.FolderRepo));
 
                 var curpos = _console.GetCursorPosition();
                 _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
-                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, targetPath, repoconfig);
+                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, folderPrompt.Content, repoconfig);
                 _console.ClearWait(curpos);
 
                 if (filesadrs.Length == 0)
@@ -349,7 +339,7 @@ namespace AdrPlus.Commands.Reject
         /// <param name="defDateRef">The reference date for the rejection operation.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
-            _console.WriteSummary(Resources.AdrPlus.RE + ": " + rootpath);
+            _console.WriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
             _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
             _console.WriteSummary("");

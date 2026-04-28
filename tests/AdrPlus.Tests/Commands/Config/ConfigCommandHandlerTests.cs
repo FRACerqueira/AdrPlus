@@ -42,7 +42,6 @@ public class ConfigCommandHandlerTests
 
         _config = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
         };
 
         _handler = new ConfigCommandHandler(
@@ -228,17 +227,17 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
         _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
-        var repoConfig = new AdrPlusRepoConfig
+        var repoConfig = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -272,17 +271,17 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
         _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
-        var repoConfig = new AdrPlusRepoConfig
+        var repoConfig = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -356,7 +355,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(jsonContent).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);

@@ -19,7 +19,7 @@ namespace AdrPlus.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AdrPlus {
@@ -255,15 +255,6 @@ namespace AdrPlus.Resources {
         internal static string ConfigFieldDescCaseTransform {
             get {
                 return ResourceManager.GetString("ConfigFieldDescCaseTransform", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Date format pattern for ADR files.
-        /// </summary>
-        internal static string ConfigFieldDescDateFormat {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescDateFormat", resourceCulture);
             }
         }
         
@@ -552,15 +543,6 @@ namespace AdrPlus.Resources {
         internal static string DefaultScope {
             get {
                 return ResourceManager.GetString("DefaultScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enterprise.
-        /// </summary>
-        internal static string Defaultskipdomain {
-            get {
-                return ResourceManager.GetString("Defaultskipdomain", resourceCulture);
             }
         }
         
@@ -1024,6 +1006,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot determine root path with ADR config.
+        /// </summary>
+        internal static string ErrorCannotDetermineRootPath {
+            get {
+                return ResourceManager.GetString("ErrorCannotDetermineRootPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid date format. Expected format: {0}.
         /// </summary>
         internal static string ErrorDateFormat {
@@ -1290,15 +1281,6 @@ namespace AdrPlus.Resources {
         internal static string FieldTitleCaseTransform {
             get {
                 return ResourceManager.GetString("FieldTitleCaseTransform", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Date Format.
-        /// </summary>
-        internal static string FieldTitleDateFormat {
-            get {
-                return ResourceManager.GetString("FieldTitleDateFormat", resourceCulture);
             }
         }
         
@@ -2158,15 +2140,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected repository.
-        /// </summary>
-        internal static string RE {
-            get {
-                return ResourceManager.GetString("RE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Required.
         /// </summary>
         internal static string Required {
@@ -2199,6 +2172,15 @@ namespace AdrPlus.Resources {
         internal static string SelectAnOption {
             get {
                 return ResourceManager.GetString("SelectAnOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected repository.
+        /// </summary>
+        internal static string SelectRepo {
+            get {
+                return ResourceManager.GetString("SelectRepo", resourceCulture);
             }
         }
         

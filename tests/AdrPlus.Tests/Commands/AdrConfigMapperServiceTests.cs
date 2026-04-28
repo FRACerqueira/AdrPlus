@@ -5,7 +5,6 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
-using AdrPlus.Tests.Helpers;
 using System.Text.Json;
 
 namespace AdrPlus.Tests.Commands;
@@ -28,6 +27,7 @@ public class AdrConfigMapperServiceTests
 
         // Assert
         config.Should().NotBeNull();
+        config.FolderAdr.Should().Be(AppConstants.DefaultFolderAdr);
         config.Template.Should().Be(_template);
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix);
         config.LenSeq.Should().Be(4);
@@ -619,6 +619,7 @@ public class AdrConfigMapperServiceTests
 
     private static string CreateFullJson(
         string? prefix = null,
+        string folderadr = "doc/adr",
         int lenSeq = 0,
         int lenVersion = 0,
         int lenRevision = 0,
@@ -657,6 +658,7 @@ public class AdrConfigMapperServiceTests
         if (headerStatus is not null) dict[AppConstants.FieldHeaderStatus] = headerStatus;
         if (headerVersion is not null) dict[AppConstants.FieldHeaderVersion] = headerVersion;
         if (headerRevision is not null) dict[AppConstants.FieldHeaderRevision] = headerRevision;
+        if (folderadr is not null) dict[AppConstants.FieldFolderAdr] = folderadr;
 
         return JsonSerializer.Serialize(dict);
     }

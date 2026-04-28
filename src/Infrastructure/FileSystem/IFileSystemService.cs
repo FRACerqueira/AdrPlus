@@ -45,11 +45,28 @@ namespace AdrPlus.Infrastructure.FileSystem
         string CreateDirectory(string path);
 
         /// <summary>
+        /// Gets the full path of the parent directory for the specified path.
+        /// </summary>
+        /// <param name="path">The file or directory path for which to retrieve the parent directory. Cannot be null or an empty string.</param>
+        /// <returns>The full path of the parent directory, or null if the specified path does not have a parent directory.</returns>
+        string? GetParentDirectory(string path);
+        
+
+        /// <summary>
+        /// Gets the root directory path of the repository that contains the specified file path.
+        /// </summary>
+        /// <param name="pathfileadr">The full file system path to the file for which to determine the containing repository's root directory.
+        /// Cannot be null or empty.</param>
+        /// <returns>The full path to the root directory of the repository containing the specified file, or null if the file is
+        /// not located within a recognized repository.</returns>
+        string? GetFileRootRepositoryPath(string pathfileadr);
+
+        /// <summary>
         /// Returns the fully qualified name of the specified directory.
         /// </summary>
-        /// <param name="path">The relative or absolute directory path to resolve.</param>
+        /// <param name="path">The relative or absolute file path to resolve.</param>
         /// <returns>The fully qualified directory path.</returns>
-        string GetFullNameDirectory(string path);
+        string GetFullNameDirectoryByFile(string path);
 
         /// <summary>
         /// Determines whether the specified file exists.

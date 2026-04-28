@@ -31,7 +31,7 @@ namespace AdrPlus.Core
         /// </summary>
         /// <remarks>Use this constant when referencing or creating the ADR configuration file to ensure
         /// consistency across the application.</remarks>
-        public const string AdrConfigFileName = "adr-config.adrplus";
+        public const string AdrRepoConfigFileName = "adr-config.adrplus";
 
         /// <summary>
         /// The namespace where the application's embedded resources are located, used for loading templates, configuration files, and other resources that are compiled into the application assembly. 
@@ -70,6 +70,9 @@ namespace AdrPlus.Core
         /// The Markdown escape sequence used to represent an empty or null ADR status value in ADR file headers.
         /// </summary>
         public const string AdrEmptyStatusMarker = @"\-";
+
+
+        public const string DefaultFolderAdr = @"doc/adr";
 
         /// <summary>
         /// The application name.
@@ -150,7 +153,7 @@ namespace AdrPlus.Core
         /// <summary>
         /// The name of the configuration file used by the application to store folder and preferences. 
         /// </summary>
-        public const string FieldFolderRepo = "folderrepo";
+        public const string FieldFolderAdr = "folderadr";
 
         /// <summary>
         /// The name of the configuration file used by the application to store yes value and preferences. 
@@ -268,7 +271,7 @@ namespace AdrPlus.Core
                 { FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
                 { FieldYesValue, Resources.AdrPlus.FieldTitleYesValue },
                 { FieldNoValue, Resources.AdrPlus.FieldTitleNoValue },
-                { FieldFolderRepo, Resources.AdrPlus.FieldTitleFolderRepo },
+                { FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
                 { FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
                 { FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
                 { FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },

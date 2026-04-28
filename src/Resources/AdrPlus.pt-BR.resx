@@ -183,9 +183,6 @@
   <data name="DefaultScope" xml:space="preserve">
     <value>Enterprise*;CrossDomain;Project</value>
   </data>
-  <data name="Defaultskipdomain" xml:space="preserve">
-    <value>Enterprise</value>
-  </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
     <value>(Não remova este template, , linhas 1~10. Ele é usado e deve permanecer inalterado para garantir consistência na documentação)</value>
   </data>
@@ -200,9 +197,6 @@
   </data>
   <data name="FieldTitleFolderRepo" xml:space="preserve">
     <value>Pasta do Repositório ADR</value>
-  </data>
-  <data name="FieldTitleDateFormat" xml:space="preserve">
-    <value>Formato de Data</value>
   </data>
   <data name="FieldTitleTemplate" xml:space="preserve">
     <value>Modelo</value>
@@ -405,9 +399,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Transformação de texto aplicada aos nomes de arquivo</value>
   </data>
-  <data name="ConfigFieldDescDateFormat" xml:space="preserve">
-    <value>Padrão de formato de data para arquivos ADR</value>
-  </data>
   <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
     <value>Organizar ADRs em pastas separadas por escopo</value>
   </data>
@@ -567,7 +558,7 @@
   <data name="NewAdrSuccessExternalCommand" xml:space="preserve">
     <value>Executado com sucesso: {0}</value>
   </data>
-  <data name="RE" xml:space="preserve">
+  <data name="SelectRepo" xml:space="preserve">
     <value>Repositório selecionado</value>
   </data>
   <data name="PromptEnterAdrDomain" xml:space="preserve">
@@ -1094,5 +1085,8 @@
   </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrar ADRs existentes para usar a ferramenta (criar cabeçalho)</value>
+  </data>
+  <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
+    <value>Não é possível determinar o caminho raiz com a configuração ADR</value>
   </data>
 </root>

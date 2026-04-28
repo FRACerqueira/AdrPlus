@@ -68,7 +68,7 @@ namespace AdrPlus.Commands.Upgrade
             var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRepo);
             if (hasWizard)
             {
-                parsedArgs = await UpgradeWizard(_config,cancellationToken);
+                parsedArgs = UpgradeWizard(cancellationToken);
             }
 
             parsedArgs.TryGetValue(Arguments.TargetRepoAdr, out var targetPathRepoconfig);
@@ -303,7 +303,7 @@ namespace AdrPlus.Commands.Upgrade
                 _console.WriteError(error);
             }
         }
-        private async Task<Dictionary<Arguments, string>> UpgradeWizard(AdrPlusConfig adrPlusConfig, CancellationToken cancellationToken)
+        private Dictionary<Arguments, string> UpgradeWizard(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
             while (true)

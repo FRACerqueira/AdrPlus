@@ -126,35 +126,25 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, fileadr));
                 }
-                var rootPath = Path.GetDirectoryName(fileadr) ?? string.Empty;
-                var folderadrroot = _config.GetFolderNormalized();
-                // Replace the throw statement to use the cached CompositeFormat
-                if (!rootPath.Contains(folderadrroot))
-                {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
-                }
+                var configrootPath = _filesystem.GetFileRootRepositoryPath(fileadr)
+                        ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorCannotDetermineRootPath, fileadr));
 
-                var posindex = rootPath.LastIndexOf(folderadrroot, StringComparison.OrdinalIgnoreCase);
+                var rootrepo = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
-                var targetPath = rootPath[..(posindex + folderadrroot.Length)];
-
-                rootPath = rootPath[..posindex];
-
-                // Validate config file exists and load repo config
-                var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
-                if (!_filesystem.FileExists(configPath))
-                {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
-                }
-
-                string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
+                string jsonString = await _filesystem.ReadAllTextAsync(configrootPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
+
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+
+                if (repoconfig.LenVersion == 0)
+                {
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorVersionNotConfig, configrootPath));
+                }
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
@@ -181,7 +171,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
                 }
-                var nextNumber = await _adrServices.GetNextNumber(_filesystem, rootPath, repoconfig);
+                var nextNumber = await _adrServices.GetNextNumber(_filesystem, rootrepo, repoconfig);
                 if (hasWizard)
                 {
                     _console.ClearWait(curpos);
@@ -209,7 +199,7 @@ namespace AdrPlus.Commands.Supersede
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
-                var filePath = await CreateAdrFile(adrRecord, rootPath, repoconfig, cancellationToken);
+                var filePath = await CreateAdrFile(adrRecord, rootrepo, repoconfig, cancellationToken);
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
                 // Open file if requested
@@ -260,14 +250,14 @@ namespace AdrPlus.Commands.Supersede
         /// repository folder, creating a scope sub-folder when <see cref="AdrPlusRepoConfig.FolderByScope"/> is enabled.
         /// </summary>
         /// <param name="adrRecord">The ADR record whose filename and content will be generated.</param>
-        /// <param name="targetPath">The root directory of the repository (without the FolderRepo suffix).</param>
+        /// <param name="rootPath">The root directory of the repository.</param>
         /// <param name="auxconfig">The repository configuration defining folder structure and naming.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>The fully qualified path of the newly created ADR file.</returns>
-        private async Task<string> CreateAdrFile(AdrRecord adrRecord, string targetPath, AdrPlusRepoConfig auxconfig, CancellationToken cancellationToken)
+        private async Task<string> CreateAdrFile(AdrRecord adrRecord, string rootPath, AdrPlusRepoConfig auxconfig, CancellationToken cancellationToken)
         {
             var filename = adrRecord.GetFileName(auxconfig);
-            var folder = Path.GetFullPath(Path.Combine(targetPath, _config.FolderRepo));
+            var folder = Path.GetFullPath(Path.Combine(rootPath, auxconfig.FolderAdr));
 
             if (auxconfig.FolderByScope)
             {
@@ -349,14 +339,14 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
                 // Validate repo config
-                var configPath = Path.Combine(folderPrompt.Content, _config.FolderRepo, _validateconfig.GetFileNameRepoConfig());
+                var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
 
@@ -367,11 +357,9 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                var targetPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _config.FolderRepo));
-
                 var curpos = _console.GetCursorPosition();
                 _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
-                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, targetPath, repoconfig);
+                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, folderPrompt.Content, repoconfig);
                 _console.ClearWait(curpos);
 
                 if (filesadrs.Length == 0)
@@ -439,7 +427,7 @@ namespace AdrPlus.Commands.Supersede
         /// <param name="defDateRef">The reference date for the supersede operation.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
-            _console.WriteSummary(Resources.AdrPlus.RE + ": " + rootpath);
+            _console.WriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
             _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
             _console.WriteSummary("");

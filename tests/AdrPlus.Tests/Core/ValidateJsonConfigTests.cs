@@ -4,7 +4,6 @@
 // ***************************************************************************************
 
 using AdrPlus.Core;
-using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -33,6 +32,7 @@ public class ValidateJsonConfigTests
     {
         return JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { AppConstants.FieldFolderAdr, "doc/adr" },
             { AppConstants.FieldTemplate, "# ADR {0}" },
             { AppConstants.FieldPrefix, "ADR" },
             { AppConstants.FieldLenSeq, 4 },
@@ -60,7 +60,6 @@ public class ValidateJsonConfigTests
         return @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""n""
@@ -91,7 +90,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "invalid-lang" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         // Act
@@ -102,49 +100,14 @@ public class ValidateJsonConfigTests
         ErrorReport.Should().Contain(e => e.Contains("invalid-lang"));
     }
 
-    [Fact]
-    public async Task ValidateAsync_WithAbsoluteFolderRepo_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "/absolute/path" }
-        });
-
-        // Act
-        var (IsValid, ErrorReport) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("relative"));
-    }
-
-    [Fact]
-    public async Task ValidateAsync_WithEmptyDateFormat_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeTrue(); // Empty date format is allowed
-    }
-
-    [Fact]
+    
+   [Fact]
     public async Task ValidateAsync_WithValidConfiguration_ReturnsValid()
     {
         // Arrange
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
@@ -284,6 +247,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 2 }, // Less than minimum of 3
@@ -319,6 +283,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -424,6 +389,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -494,6 +460,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -583,7 +550,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""invalid-culture"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""n""
@@ -629,7 +595,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code"",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""n""
@@ -652,7 +617,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
                 ""yesvalue"": ""yes"",
                 ""novalue"": ""n""
@@ -675,7 +639,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""no""
@@ -949,7 +912,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
 
         // Act
-        var result = validator.GetConfigRepoFilePath();
+        var result = validator.GetDefaultConfigRepoFilePath();
 
         // Assert
         result.Should().Contain("template");
@@ -1160,7 +1123,7 @@ public class ValidateJsonConfigTests
         _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync(CancellationToken.None);
+        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
 
         // Assert
         result.Should().Be(expectedContent);
@@ -1184,7 +1147,7 @@ public class ValidateJsonConfigTests
         _fileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
 
         // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync(CancellationToken.None);
+        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
 
         // Assert - should be serialized JSON containing config values and template
         result.Should().Contain(templateContent);
@@ -1201,7 +1164,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
@@ -1221,7 +1183,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -1244,6 +1205,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1279,6 +1241,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1314,6 +1277,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1349,6 +1313,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1388,6 +1353,7 @@ public class ValidateJsonConfigTests
         {
             var json = JsonSerializer.Serialize(new Dictionary<string, object>
             {
+                { "folderadr", "doc/adr" },
                 { "template", "# ADR {0}" },
                 { "prefix", "ADR" },
                 { "lenseq", 4 },
@@ -1401,7 +1367,8 @@ public class ValidateJsonConfigTests
                 { "casetransform", "CamelCase" },
                 { "statusnew", "New" },
                 { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
+                { "statusrej", "Rejected" },
+                { "statussup", "Superseded" },
                 { "headerdisclaimer", "# Disclaimer" },
                 { "headerstatus", "## Status" },
                 { "headerversion", "## Version" },
@@ -1427,6 +1394,7 @@ public class ValidateJsonConfigTests
         {
             var json = JsonSerializer.Serialize(new Dictionary<string, object>
             {
+                { "folderadr", "doc/adr" },
                 { "template", "# ADR {0}" },
                 { "prefix", "ADR" },
                 { "lenseq", 4 },
@@ -1440,7 +1408,8 @@ public class ValidateJsonConfigTests
                 { "casetransform", format },
                 { "statusnew", "New" },
                 { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
+                { "statusrej", "Rejected" },            
+                { "statussup", "Superseded" },
                 { "headerdisclaimer", "# Disclaimer" },
                 { "headerstatus", "## Status" },
                 { "headerversion", "## Version" },
@@ -1463,7 +1432,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": """",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""n""
@@ -1590,7 +1558,7 @@ public class ValidateJsonConfigTests
         // Arrange
         var validator = CreateValidator([]);
         var expectedContent = "template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
         var cts = new CancellationTokenSource();
         _fileSystem.FileExists(expectedPath).Returns(true);
         _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
@@ -1629,6 +1597,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1642,7 +1611,8 @@ public class ValidateJsonConfigTests
             { "casetransform", "CamelCase" },
             { "statusnew", "New" },
             { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
+            { "statusrej", "Rejected" },            
+            { "statussup", "Superseded" },
             { "headerdisclaimer", "" },
             { "headerstatus", "## Status" },
             { "headerversion", "## Version" },
@@ -1664,6 +1634,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1699,6 +1670,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1734,6 +1706,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1769,6 +1742,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1804,6 +1778,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1839,6 +1814,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
+            { "folderadr", "doc/adr" },
             { "template", "# ADR {0}" },
             { "prefix", "ADR" },
             { "lenseq", 4 },
@@ -1952,7 +1928,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         var contentPath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -1976,7 +1951,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
@@ -2017,53 +1991,6 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeFalse();
         ErrorReport.Should().Contain(e => e.Contains("invalid") || e.Contains("path"));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithUnsupportedFolderRepoPath_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        // On Windows, paths like "CON", "PRN", "AUX", "NUL" are reserved and can cause NotSupportedException
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""CON"",
-                ""comandopenadr"": ""code {0}"",
-                ""dateformat"": ""yyyy-MM-dd"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var result = validator.ValidateAppStructure(json);
-
-        // Assert - CON is a reserved name on Windows, may or may not trigger validation error depending on OS
-        // The test documents the behavior
-        result.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithValidFolderRepoPath_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, _) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeTrue();
     }
 
     [Fact]
@@ -2113,7 +2040,6 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": """",
                 ""yesvalue"": ""y"",
                 ""novalue"": ""n""
@@ -2232,7 +2158,7 @@ public class ValidateJsonConfigTests
             .Returns<string>(x => throw new FileNotFoundException("Template not found"));
 
         // Act
-        var act = async () => await validator.GetConfigDefaultRepoContentAsync(CancellationToken.None);
+        var act = async () => await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();

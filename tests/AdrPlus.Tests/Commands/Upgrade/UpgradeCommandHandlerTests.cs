@@ -12,10 +12,9 @@ using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
-namespace AdrPlus.Tests.Commands.Repo;
+namespace AdrPlus.Tests.Commands.Upgrade;
 
 /// <summary>
 /// Unit tests for RepoCommandHandler class.
@@ -41,7 +40,6 @@ public class UpgradeCommandHandlerTests
 
         _config = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
             Language = "en-US"
         };
 
@@ -683,7 +681,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, Array.Empty<RepoActions>()));
+            .Returns((false, []));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
 
@@ -751,7 +749,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, new[] { RepoActions.Template }));
+            .Returns((false, [RepoActions.Template]));
         _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
@@ -774,7 +772,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, new[] { RepoActions.Version }));
+            .Returns((false, [RepoActions.Version]));
         _mockConsole.PromptEditFieldVersion(Arg.Any<FieldsJson>(), Arg.Any<CancellationToken>())
             .Returns((false, 2));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -806,7 +804,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, new[] { RepoActions.Revision }));
+            .Returns((false, [RepoActions.Revision]));
         _mockConsole.PromptEditFieldVersion(Arg.Any<FieldsJson>(), Arg.Any<CancellationToken>())
             .Returns((false, 1));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -839,7 +837,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, new[] { RepoActions.Scope }));
+            .Returns((false, [RepoActions.Scope]));
         _mockConsole.PromptEditFieldLenScope(Arg.Any<FieldsJson>(), Arg.Any<CancellationToken>())
             .Returns((false, 2));
         _mockConsole.PromptEditFieldScopes(Arg.Any<FieldsJson>(), Arg.Any<CancellationToken>())
@@ -879,7 +877,7 @@ public class UpgradeCommandHandlerTests
         _mockConsole.PromptSelectFolderRepositoryAdr(SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((false, Array.Empty<RepoActions>()));
+            .Returns((false, []));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
@@ -906,7 +904,7 @@ public class UpgradeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptSelectRepoActions(Arg.Any<CancellationToken>())
-            .Returns((true, Array.Empty<RepoActions>()));
+            .Returns((true, []));
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))

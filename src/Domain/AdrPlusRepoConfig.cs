@@ -10,28 +10,23 @@ namespace AdrPlus.Domain
     /// <summary>
     /// Represents the configuration for ADR Plus Repository.
     /// </summary>
-    internal sealed class AdrPlusRepoConfig
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class with default values.
+    /// </remarks>
+    /// <param name="folderadr">The default folder for ADRs.</param>
+    /// <param name="template">The default template content.</param>
+    internal sealed class AdrPlusRepoConfig(string folderadr, string template)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class.
-        /// </summary>
-        public AdrPlusRepoConfig()
-        { 
-        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class with default values.
+        /// Folder for the ADRs in the repository, e.g. "docs/adr".
         /// </summary>
-        /// <param name="defaultTemplate">The default template content.</param>
-        public AdrPlusRepoConfig(string defaultTemplate)
-        {
-            Template = defaultTemplate;
-        }
+        public string FolderAdr { get; set; } = folderadr;
 
         /// <summary>
         /// Gets the template string used for formatting or processing content ADR.
         /// </summary>
-        public string Template { get; set; } = string.Empty;
+        public string Template { get; set; } = template;
 
         /// <summary>
         /// Optional prefix for the filename, e.g. "ADR-0001-My-ADR.md"

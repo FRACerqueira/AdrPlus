@@ -27,7 +27,10 @@ namespace AdrPlus.Core
                 return (false, parsefile.Header.ErrorMessage);
             }
             parsefile.Header.StatusUpdate = adrStatus;
-            parsefile.Header.DateUpdate = dref;
+            if (adrStatus != AdrStatus.Unknown)
+            {
+                parsefile.Header.DateUpdate = dref;
+            }
 
             var record = Helper.CreateAdrRecord(parsefile, config);
             var contentfile = $"{record.GetHeader(config)}{record.Template}";

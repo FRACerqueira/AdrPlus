@@ -14,7 +14,7 @@ namespace AdrPlus.Tests.Core
         {
             _parser = new AdrFileParserService();
             _fileSystemService = Substitute.For<IFileSystemService>();
-            _config = new AdrPlusRepoConfig
+            _config = new   AdrPlusRepoConfig("","")
             {
                 LenRevision = 2,
                 StatusNew = "Proposed",
@@ -213,7 +213,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "test.md";
-            var configNoRevision = new AdrPlusRepoConfig
+            var configNoRevision = new AdrPlusRepoConfig("", "")
             {
                 LenRevision = 0,
                 StatusNew = "Proposed",
@@ -362,7 +362,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "test.md";
-            var customConfig = new AdrPlusRepoConfig
+            var customConfig = new AdrPlusRepoConfig("", "")
             {
                 LenRevision = 2,
                 StatusNew = "Proposed",
@@ -592,7 +592,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "test.md";
-            var customConfig = new AdrPlusRepoConfig
+            var customConfig = new AdrPlusRepoConfig("", "")
             {
                 LenRevision = 2,
                 StatusNew = "Proposed",
@@ -641,7 +641,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - When LenScope = 0, scope field is still extracted from the ADR file
             // but the configuration indicates the repo doesn't use scopes
             var filePath = "test.md";
-            var configNoScope = new AdrPlusRepoConfig
+            var configNoScope = new AdrPlusRepoConfig("", "")
             {
                 LenRevision = 2,
                 StatusNew = "Proposed",

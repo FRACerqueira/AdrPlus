@@ -21,7 +21,7 @@ public class AdrStatusServiceTests
     public AdrStatusServiceTests()
     {
         _statusService = new AdrStatusService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}")
+        _config = new AdrPlusRepoConfig("# {0}","doc/adr")
         {
             Prefix = "ADR",
             LenSeq = 4,

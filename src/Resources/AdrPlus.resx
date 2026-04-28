@@ -183,9 +183,6 @@
   <data name="DefaultScope" xml:space="preserve">
     <value>Enterprise*;CrossDomain;Project</value>
   </data>
-  <data name="Defaultskipdomain" xml:space="preserve">
-    <value>Enterprise</value>
-  </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
     <value>(Do not remove this template, lines 1~10. It is used and must remain unchanged to ensure consistency in documentation)</value>
   </data>
@@ -200,9 +197,6 @@
   </data>
   <data name="FieldTitleFolderRepo" xml:space="preserve">
     <value>ADR Repository Folder</value>
-  </data>
-  <data name="FieldTitleDateFormat" xml:space="preserve">
-    <value>Date Format</value>
   </data>
   <data name="FieldTitleTemplate" xml:space="preserve">
     <value>Template</value>
@@ -405,9 +399,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Text transformation applied to file names</value>
   </data>
-  <data name="ConfigFieldDescDateFormat" xml:space="preserve">
-    <value>Date format pattern for ADR files</value>
-  </data>
   <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
     <value>Organize ADRs in separate folders by scope</value>
   </data>
@@ -567,7 +558,7 @@
   <data name="NewAdrSuccessExternalCommand" xml:space="preserve">
     <value>Successfully executed: {0}</value>
   </data>
-  <data name="RE" xml:space="preserve">
+  <data name="SelectRepo" xml:space="preserve">
     <value>Selected repository</value>
   </data>
   <data name="PromptEnterAdrDomain" xml:space="preserve">
@@ -1094,5 +1085,8 @@
   </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrate existing ADRs to use the tool (create header)</value>
+  </data>
+  <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
+    <value>Cannot determine root path with ADR config</value>
   </data>
 </root>

@@ -85,7 +85,7 @@ public class FileSystemServiceTests
         try
         {
             // Act
-            var result = _fileSystemService.GetFullNameDirectory(_testDirectory);
+            var result = _fileSystemService.GetFullNameDirectoryByFile(_testDirectory);
 
             // Assert
             result.Should().NotBeNullOrEmpty();

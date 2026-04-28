@@ -44,10 +44,10 @@ namespace AdrPlus.Core
         /// <param name="title">The title of the ADR to find.</param>
         /// <param name="domain">The domain to search within.</param>
         /// <param name="fileSystemService">The file system service used to access files.</param>
-        /// <param name="directoryPath">The directory path to search in.</param>
+        /// <param name="rootrepo">The root path repository</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <returns>The file path of the ADR with the matching title and domain.</returns>
-        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService,string rootrepo, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Gets the next available ADR sequence number asynchronously.

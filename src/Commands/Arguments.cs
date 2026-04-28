@@ -102,6 +102,6 @@ namespace AdrPlus.Commands
         FileTemplate,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
-        Help
+        Help,
     }
 }

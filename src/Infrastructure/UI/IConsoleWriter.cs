@@ -337,10 +337,9 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="root">The root directory path to start browsing from.</param>
         /// <param name="fileSystemService">The file system service to use for directory operations.</param>
         /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
-        /// <param name="repoConfig">The repository configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
-        (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default);
+        (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
 
 
         /// <summary>

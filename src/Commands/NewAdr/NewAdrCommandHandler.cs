@@ -107,7 +107,7 @@ namespace AdrPlus.Commands.NewAdr
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
                 }
 
-                var configPath = Path.GetFullPath(Path.Combine(targetPath, _config.FolderRepo, _validateconfig.GetFileNameRepoConfig()));
+                var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
                 if (!_filesystem.FileExists(configPath))
                 {
                     throw new FileNotFoundException(Resources.AdrPlus.ErrorInitCommandNotExecuted);
@@ -132,7 +132,7 @@ namespace AdrPlus.Commands.NewAdr
                 {
                     _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
                 }
-                existfile = await _adrServices.GetFileByUniqueTitle(title, domain, _filesystem, Path.Combine(targetPath, _config.FolderRepo), repoconfig);
+                existfile = await _adrServices.GetFileByUniqueTitle(title, domain, _filesystem, targetPath,  repoconfig);
                 if (hasWizard)
                 {
                     _console.ClearWait(curpos);
@@ -142,13 +142,12 @@ namespace AdrPlus.Commands.NewAdr
                     throw new InvalidOperationException(string.Format(null, FormatMessages.NewAdrErrorUniqueTitleAlreadyExists, Path.GetFileName(existfile)));
                 }
 
-                var folderRepo = Path.GetFullPath(Path.Combine(targetPath, _config.FolderRepo));
                 curpos = _console.GetCursorPosition();
                 if (hasWizard)
                 {
                     _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
                 }
-                var nextNumber = await _adrServices.GetNextNumber(_filesystem, folderRepo, repoconfig);
+                var nextNumber = await _adrServices.GetNextNumber(_filesystem, targetPath, repoconfig);
                 if (hasWizard)
                 {
                     _console.ClearWait(curpos);
@@ -308,7 +307,7 @@ namespace AdrPlus.Commands.NewAdr
         private async Task<string> CreateAdrFile(AdrRecord adrRecord, string targetPath, AdrPlusRepoConfig auxconfig, CancellationToken cancellationToken)
         {
             var filename = adrRecord.GetFileName(auxconfig);
-            var folder = Path.Combine(targetPath, _config.FolderRepo);
+            var folder = Path.GetFullPath(Path.Combine(targetPath, auxconfig.FolderAdr));
             
             if (auxconfig.FolderByScope)
             {
@@ -394,14 +393,14 @@ namespace AdrPlus.Commands.NewAdr
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig,  cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
                 // Validate repo config
-                var configPath = Path.Combine(folderPrompt.Content, _config.FolderRepo, _validateconfig.GetFileNameRepoConfig());
+                var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
 
@@ -495,7 +494,7 @@ namespace AdrPlus.Commands.NewAdr
         /// <param name="defDateRef">The reference date for the new ADR.</param>
         private void DisplayWizardSummary(Dictionary<Arguments, string> parsedArgs, DateTime defDateRef)
         {
-            _console.WriteInfo($"{Resources.AdrPlus.RE} : {parsedArgs[Arguments.TargetRepo]}");
+            _console.WriteInfo($"{Resources.AdrPlus.SelectRepo} : {parsedArgs[Arguments.TargetRepo]}");
             _console.WriteInfo($"{Resources.AdrPlus.Date} : {defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}");
             _console.WriteInfo($"{Resources.AdrPlus.Title} : {parsedArgs[Arguments.TitleAdr]}");
 

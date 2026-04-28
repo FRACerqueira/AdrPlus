@@ -250,7 +250,6 @@ namespace AdrPlus.Commands.Wizard
                 "1.01" => ["-a"],
                 "1.02" => ["-t"],
                 "1.03" => ["-r"],
-                "1.04" => ["-w"],
                 _ => throw await CreateInvalidMenuExceptionAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken),
             };
             if (itemSelected!.Id == "1.04")
@@ -546,14 +545,7 @@ namespace AdrPlus.Commands.Wizard
                     Title = Resources.AdrPlus.WizardConfigRepositoryTitle,
                     Description = Resources.AdrPlus.WizardConfigRepositoryDescription,
                     EnabledWhenNotConfigured = true
-                },
-                new ItemMenuWizard
-                {
-                    Id = "1.04",
-                    Title = Resources.AdrPlus.WizardConfigUpgradeTitle,
-                    Description = Resources.AdrPlus.WizardConfigUpgradeDescription,
-                    EnabledWhenNotConfigured = false
-                },
+                }
             ];
         }
 

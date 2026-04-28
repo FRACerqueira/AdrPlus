@@ -21,10 +21,17 @@ namespace AdrPlus.Core
             using var jsonDoc = JsonDocument.Parse(jsonString, AppConstants.DocumentOptions);
             var root = jsonDoc.RootElement;
 
-            var config = new AdrPlusRepoConfig(template);
+            var config = new AdrPlusRepoConfig(AppConstants.DefaultFolderAdr,template);
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldFolderAdr, out var folderadrElement) && folderadrElement.ValueKind == JsonValueKind.String)
+            {
+                config.FolderAdr = folderadrElement.GetString()!;
+            }
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldPrefix, out var prefixElement) && prefixElement.ValueKind == JsonValueKind.String)
+            { 
                 config.Prefix = prefixElement.GetString()!;
+            }
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldLenSeq, out var lenseqElement) && lenseqElement.ValueKind == JsonValueKind.Number)
             {

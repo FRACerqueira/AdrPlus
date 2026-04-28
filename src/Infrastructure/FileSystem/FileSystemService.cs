@@ -20,10 +20,13 @@ namespace AdrPlus.Infrastructure.FileSystem
         public bool DirectoryExists(string path) => Directory.Exists(path);
 
         /// <inheritdoc/>
+        public string? GetParentDirectory(string path) => Directory.GetParent(path)?.FullName;
+
+        /// <inheritdoc/>
         public string CreateDirectory(string path) => Directory.CreateDirectory(path).FullName;
 
         /// <inheritdoc/>
-        public string GetFullNameDirectory(string path) => new DirectoryInfo(path).FullName;
+        public string GetFullNameDirectoryByFile(string pathfile) => new FileInfo(pathfile).Directory?.FullName??string.Empty;
 
         /// <inheritdoc/>
         public bool FileExists(string path) => File.Exists(path);
@@ -53,6 +56,22 @@ namespace AdrPlus.Infrastructure.FileSystem
 
         /// <inheritdoc/>
         public string[] GetDrives() => Directory.GetLogicalDrives();
+
+        public string? GetFileRootRepositoryPath(string pathfileadr)
+        {
+            var directory = GetParentDirectory(pathfileadr);
+            while (!string.IsNullOrEmpty(directory))
+            {
+                var rootRepositoryPath = Path.Combine(directory, AppConstants.AdrRepoConfigFileName);
+                if (FileExists(rootRepositoryPath))
+                {
+                    return rootRepositoryPath;
+                }
+                directory = GetParentDirectory(directory);
+            }
+            return null;
+        }
+
 
         /// <inheritdoc/>
         public async Task SaveHistoryAsync<T>(string fileKey, T content, CancellationToken cancellationToken = default)

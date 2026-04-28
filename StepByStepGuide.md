@@ -114,7 +114,6 @@ Example `adrplus.json`:
     "Language": "en-US",
     "YesValue": "",
     "NoValue": "",
-    "FolderRepo": "doc/adr",
     "OpenAdr": "code {0}"
   }
 }
@@ -132,6 +131,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 ```json
 {
+  "folderadr": "doc/adr","
   "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
@@ -158,6 +158,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 | Key | Meaning | Example |
 |-----|---------|---------|
+| `folderadr` | Folder where ADR files are stored. | `doc/adr` |
 | `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). | N/A (auto-generated) |
 | `prefix` | Prefix for ADR identifiers | `ADR` → `ADR-0001` |
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
@@ -555,7 +556,6 @@ Here's a realistic scenario: You start with a simple repository and want to add 
 **Initial configuration:**
 ```json
 {
-  "folderrepo": "doc/adr",
   "lenversion": 2,
   "lenrevision": 0,
   "lenscope": 0,
@@ -593,8 +593,7 @@ doc/
 └── adr/
     ├── backend/
     ├── frontend/
-    ├── data/
-    └── adr-config.adrplus
+    └── data/
 ```
 
 ### Limitations and Important Notes

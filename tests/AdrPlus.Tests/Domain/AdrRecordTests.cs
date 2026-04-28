@@ -40,7 +40,7 @@ public class AdrRecordTests
     public void GetFileName_WithBasicConfig_GeneratesCorrectFileName()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -72,7 +72,7 @@ public class AdrRecordTests
     public void GetFileName_WithScopeAndDomain_IncludesInFileName()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -103,7 +103,7 @@ public class AdrRecordTests
     public void GetFileName_WithSuperseded_IncludesSupersedeTag()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -134,7 +134,7 @@ public class AdrRecordTests
     public void GetFileName_WithNoRevision_ExcludesRevision()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -163,7 +163,7 @@ public class AdrRecordTests
     public void GetFileName_WithDifferentCaseFormats_AppliesTransformation()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -192,7 +192,7 @@ public class AdrRecordTests
     public void GetFileName_WithCamelCase_GeneratesCorrectFileName()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,
@@ -221,7 +221,7 @@ public class AdrRecordTests
     public void GetFileName_WithScopeOnly_IncludesScopeInFileName()
     {
         // Arrange
-        var config = new AdrPlusRepoConfig
+        var config = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR-",
             LenSeq = 4,

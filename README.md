@@ -273,7 +273,6 @@ adrplus config --application
     "Language": "en-US",
     "YesValue": "",
     "NoValue": "",
-    "FolderRepo": "doc/adr",
     "OpenAdr": "code {0}",
   }
 }
@@ -283,7 +282,6 @@ adrplus config --application
 |`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`).|
 |`YesValue`| Default confirmation value for positive responses.|
 |`NoValue`| Default confirmation value for negative responses.|
-|`FolderRepo`| Relative path to the ADR repository folder (for example: `doc/adr`).|
 |`OpenAdr`| Opens the ADR file after creation/update when supported.|
 
 - VS Code users can set `OpenAdr` to `code {0}` to automatically open the created/updated ADR file in the editor.
@@ -305,6 +303,7 @@ adrplus config --repository
 
 ```json
 {
+  "folderadr": "doc/adr","
   "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
@@ -329,6 +328,7 @@ adrplus config --repository
 
 | Key | Description |
 |-----|-------------|
+| `folderadr` | Folder where ADR files are stored. |
 | `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). |
 | `prefix` | Prefix used in ADR titles/identifiers (for example: `ADR`). |
 | `lenseq` | Number of digits for the sequential ADR number (for example: `4` => `0001`). |

@@ -199,7 +199,6 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .AddGroupedItems(Resources.AdrPlus.Fields, fields.Where(x => x.IsEnabled), false)
-                .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{AppConstants.GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
@@ -787,7 +786,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}: ";
             var resuldefarrdomain = PromptPlus.Controls
                 .WaitCommand(message)
-                .CommandHandler(() => defarrdomain = _adrServices.GetDomains(fileSystemService, Path.Combine(path, config.FolderRepo), adrPlusRepo).Result)
+                .CommandHandler(() => defarrdomain = _adrServices.GetDomains(fileSystemService, Path.Combine(path, adrPlusRepo.FolderAdr), adrPlusRepo).Result)
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
             return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!);
@@ -818,7 +817,7 @@ namespace AdrPlus.Infrastructure.UI
 
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, AdrPlusConfig repoConfig, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryPath}: ";
             var result = PromptPlus.Controls
@@ -832,7 +831,7 @@ namespace AdrPlus.Infrastructure.UI
                     {
                         return (true, "");
                     }
-                    var targetPath = Path.Combine(input.FullPath, repoConfig.FolderRepo, validateJsonConfig.GetFileNameRepoConfig());
+                    var targetPath = Path.Combine(input.FullPath, validateJsonConfig.GetFileNameRepoConfig());
                     if (!fileSystemService.FileExists(targetPath))
                     {
                         return (false, Resources.AdrPlus.ErrorInitCommandNotExecuted);
@@ -908,7 +907,7 @@ namespace AdrPlus.Infrastructure.UI
             return field.Name switch
             {
                 AppConstants.FieldLanguage=> Resources.AdrPlus.ConfigFieldDescLanguage,
-                AppConstants.FieldFolderRepo => Resources.AdrPlus.ConfigFieldDescFolderRepo,
+                AppConstants.FieldFolderAdr => Resources.AdrPlus.ConfigFieldDescFolderRepo,
                 AppConstants.FieldOpenAdr => Resources.AdrPlus.ConfigFieldDescOpenAdr,
                 AppConstants.FieldYesValue => Resources.AdrPlus.ConfigFieldDescYesValue,
                 AppConstants.FieldNoValue => Resources.AdrPlus.ConfigFieldDescNoValue,

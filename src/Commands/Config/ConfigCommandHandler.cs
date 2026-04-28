@@ -268,7 +268,7 @@ namespace AdrPlus.Commands.Config
             }
             else
             {
-                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(cancellationToken);
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
             }
             if (string.IsNullOrEmpty(fileConfigPath))
             {
@@ -281,7 +281,7 @@ namespace AdrPlus.Commands.Config
                 throw new InvalidDataException(Resources.AdrPlus.InvalidRepoStructure);
             }
 
-            var filePath = _validateConfig.GetConfigRepoFilePath();
+            var filePath = _validateConfig.GetDefaultConfigRepoFilePath();
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
             LogMessages.LogCommandSuccessful(_logger, filePath);
             _console.WriteSuccess(filePath);
@@ -530,7 +530,7 @@ namespace AdrPlus.Commands.Config
                     _console.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldNoValue => HandleEditField(() => 
                     _console.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldFolderRepo => HandleEditField(() => 
+                AppConstants.FieldFolderAdr => HandleEditField(() => 
                     _console.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldOpenAdr => HandleEditField(() => 
                     _console.PromptEditFielOpenAdr(selection, cancellationToken), selection, v => v.Trim()),

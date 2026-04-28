@@ -21,7 +21,7 @@ public class AdrQueryServiceTests
     public AdrQueryServiceTests()
     {
         _queryService = new AdrQueryService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}")
+        _config = new AdrPlusRepoConfig("# {0}", "doc/adr")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -378,9 +378,6 @@ public class AdrQueryServiceTests
         // Arrange
         const string title = "Decision";
         const string domain = "Enterprise";
-        var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(
-            title.ToCase(_config.CaseTransform),
-            domain.ToCase(_config.CaseTransform));
 
         var filePath = PathHelper.GetAdrFilePath("ADR-0001-Decision.md");
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
