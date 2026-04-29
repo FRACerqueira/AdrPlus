@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -422,7 +422,7 @@ public class UpgradeCommandHandlerTests
             { Arguments.RepoRevision, "1" },
             { Arguments.TargetRepoAdr, RepositoryPath }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenRevision": 1}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenRevision": 1, "FolderAdr": "adr"}""";
         var configPath = ConfigFilePath;
 
         SetupBasicMocks(parsedArgs, jsonConfig, configPath);
@@ -964,6 +964,19 @@ public class UpgradeCommandHandlerTests
         _mockFileSystem.FileExists(configPath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>())
+            .Returns(callInfo =>
+            {
+                var filePath = callInfo.Arg<string>();
+                return Path.GetDirectoryName(filePath) ?? string.Empty;
+            });
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>())
+            .Returns(callInfo =>
+            {
+                var filePath = callInfo.Arg<string>();
+                var directory = Path.GetDirectoryName(filePath);
+                return string.IsNullOrEmpty(directory) ? null : Path.Combine(directory, ".adrplus");
+            });
     }
 
     private void SetupWizardMocks(string jsonConfig)
@@ -977,8 +990,9 @@ public class UpgradeCommandHandlerTests
 
     private static string GetValidRepoConfig()
     {
-        return """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 0, "LenRevision": 0, "LenScope": 0}""";
+        return """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 0, "LenRevision": 0, "FolderAdr": "adr", "LenScope": 0}""";
     }
 
     #endregion
 }
+

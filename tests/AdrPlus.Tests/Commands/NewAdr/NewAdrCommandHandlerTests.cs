@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -37,13 +37,13 @@ public class NewAdrCommandHandlerTests
     private static readonly string ConfigFilePath = Path.Combine(AdrFolderPath, ConfigFileName);
 
     private static readonly string BasicJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
     private static readonly string ScopedJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
     private static readonly string ScopedSkipDomainJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
     public NewAdrCommandHandlerTests()
     {
@@ -925,6 +925,21 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.Contains(ConfigFileName)), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+
+        var repoConfig = new AdrPlusRepoConfig("", "")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenVersion = 2,
+            FolderAdr = "adr",
+            FolderByScope = false,
+            Separator = '-',
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
     }
 
     private void SetupWizardMocksUpToConfirmation(string jsonConfig)
@@ -942,6 +957,21 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+
+        var repoConfig = new AdrPlusRepoConfig("", "")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenVersion = 2,
+            FolderAdr = "adr",
+            FolderByScope = false,
+            Separator = '-',
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
     }
 
     private NewAdrCommandHandler CreateHandlerWith(AdrPlusConfig config)
@@ -957,3 +987,4 @@ public class NewAdrCommandHandlerTests
 
     #endregion
 }
+
