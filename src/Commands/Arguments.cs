@@ -37,6 +37,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardRepo")]
         WizardRepo,
+        [CommandArgument("-w", "--wizard")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardMigrate")]
+        WizardMigrate,
         [CommandArgument("-a", "--application")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigApp")]
         WizardConfigApplication,
@@ -100,6 +103,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
         FileTemplate,
+        [CommandArgument("-c", "--count")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageCountAdr")]
+        CountAdr,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help,

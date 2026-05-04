@@ -598,7 +598,7 @@
     <value>Assistente para configurar o repositório de arquivos (suprime todos os outros argumentos)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
-    <value>Caminho para raiz do repositório</value>
+    <value>Caminho para a pasta raiz do repositório</value>
   </data>
   <data name="HelpUsageJsonFile" xml:space="preserve">
     <value>Caminho para o arquivo json de configuração do repositório</value>
@@ -1088,5 +1088,8 @@
   </data>
   <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
     <value>Não é possível determinar o caminho raiz com a configuração ADR</value>
+  </data>
+  <data name="HelpUsageWizardMigrate" xml:space="preserve">
+    <value>Assistente para migrar os ADR´s para uso da ferramenta AdrPlus (criação do cabeçalho)</value>
   </data>
 </root>

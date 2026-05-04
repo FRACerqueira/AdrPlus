@@ -1690,7 +1690,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to repository ADR folder.
+        ///   Looks up a localized string similar to Path to the repository&apos;s ADR folder.
         /// </summary>
         internal static string HelpUsageTargetRepoAdrPath {
             get {
@@ -1699,7 +1699,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to repository root.
+        ///   Looks up a localized string similar to Path to the repository&apos;s root folder.
         /// </summary>
         internal static string HelpUsageTargetRepoPath {
             get {
@@ -1758,6 +1758,15 @@ namespace AdrPlus.Resources {
         internal static string HelpUsageWizardInit {
             get {
                 return ResourceManager.GetString("HelpUsageWizardInit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard for migrating ADRs to use the AdrPlus tool (header creation).
+        /// </summary>
+        internal static string HelpUsageWizardMigrate {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardMigrate", resourceCulture);
             }
         }
         

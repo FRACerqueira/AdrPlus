@@ -36,6 +36,7 @@ namespace AdrPlus.Commands
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         public async Task RouteAsync(string commandName, string[] args, CancellationToken cancellationToken)
         {
+            var logcmd = string.Join(' ', new[] { commandName }.Concat(args));
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 try
@@ -68,7 +69,7 @@ namespace AdrPlus.Commands
 
             try
             {
-                LogMessages.LogExecutingCommand(_logger, commandName);
+                LogMessages.LogExecutingCommand(_logger, logcmd);
                 _console.WriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, commandName));
                 var handler = (ICommandHandler)_serviceProvider.GetRequiredService(handlerType);
                 await handler.ExecuteAsync(args, cancellationToken);
@@ -81,7 +82,7 @@ namespace AdrPlus.Commands
             }
             finally
             {
-                LogMessages.LogCommandCompleted(_logger, commandName);
+                LogMessages.LogCommandCompleted(_logger, logcmd);
                 _console.WriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, commandName));
             }
         }
