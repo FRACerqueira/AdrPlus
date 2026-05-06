@@ -184,7 +184,7 @@
     <value>Enterprise*;CrossDomain;Project</value>
   </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
-    <value>(Do not remove this template, lines 1~10. It is used and must remain unchanged to ensure consistency in documentation)</value>
+    <value>Do not remove this comment, lines and table</value>
   </data>
   <data name="DefaultPrefix" xml:space="preserve">
     <value>ADR</value>
@@ -244,19 +244,13 @@
     <value>Text status Superseded</value>
   </data>
   <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
-    <value>Header Comment</value>
-  </data>
-  <data name="DefaultTextStatus" xml:space="preserve">
-    <value>Status</value>
+    <value>Disclaimer header</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="Revision" xml:space="preserve">
     <value>Revision</value>
-  </data>
-  <data name="FieldTitleHeaderStatus" xml:space="preserve">
-    <value>Status text in header</value>
   </data>
   <data name="FieldTitleHeaderVersion" xml:space="preserve">
     <value>Version text in header</value>
@@ -657,17 +651,14 @@
   <data name="ErrMsgAdrHeaderScopeInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected scope header</value>
   </data>
-  <data name="ErrMsgAdrHeaderStatusInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected status header</value>
-  </data>
   <data name="ErrMsgAdrHeaderStatusCreateLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected status create line</value>
+    <value>The ADR file does not have the expected created status</value>
   </data>
   <data name="ErrMsgAdrHeaderStatusUpdateLineInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected status update line</value>
   </data>
   <data name="ErrMsgAdrHeaderStatusChangeLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected status change line</value>
+    <value>The ADR file does not have the expected changed status</value>
   </data>
   <data name="ErrMsgAdrHeaderTitleInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected title header</value>
@@ -1091,5 +1082,62 @@
   </data>
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
     <value>Wizard for migrating ADRs to use the AdrPlus tool (header creation)</value>
+  </data>
+  <data name="HelpUsageMatchAdr" xml:space="preserve">
+    <value>Number of ARDs that must meet the criteria</value>
+  </data>
+  <data name="DefaultHeaderTitleFile" xml:space="preserve">
+    <value>File title md</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>Changed</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Values</value>
+  </data>
+  <data name="Migrated" xml:space="preserve">
+    <value>Migrated</value>
+  </data>
+  <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
+    <value>File Title text in header</value>
+  </data>
+  <data name="FieldTitleHeaderScope" xml:space="preserve">
+    <value>Scope text in header</value>
+  </data>
+  <data name="FieldTitleHeaderDomain" xml:space="preserve">
+    <value>Domain text in header</value>
+  </data>
+  <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
+    <value>Status Created text in header</value>
+  </data>
+  <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
+    <value>Status created text in header</value>
+  </data>
+  <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
+    <value>Status superseded text in header</value>
+  </data>
+  <data name="FieldTitleHeaderTableFields" xml:space="preserve">
+    <value>Fields text header</value>
+  </data>
+  <data name="FieldTitleHeaderTableValues" xml:space="preserve">
+    <value>Values text header</value>
+  </data>
+  <data name="FieldTitleHeaderMigrated" xml:space="preserve">
+    <value>Migrant's comment</value>
+  </data>
+  <data name="Superseded" xml:space="preserve">
+    <value>Superseded</value>
+  </data>
+  <data name="ErrMsgAdrInvalidHeader" xml:space="preserve">
+    <value>Invalid header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderDomainInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected domain header</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusSupersededLineInvalid" xml:space="preserve">
+    <value>The ADR file does not have the expected superseded status</value>
   </data>
 </root>

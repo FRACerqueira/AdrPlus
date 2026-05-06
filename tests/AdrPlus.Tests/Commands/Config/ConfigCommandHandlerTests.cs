@@ -12,6 +12,7 @@ using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Config;
@@ -653,6 +654,204 @@ public class ConfigCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Test exception");
+    }
+
+    #endregion
+
+    #region Sample File Generation
+
+    [Fact]
+    public void GetSampleFiles_GeneratesMultipleSamples()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase,
+            LenScope = 0,
+            Scopes = string.Empty,
+            SkipDomain = string.Empty,
+            FolderByScope = false
+        };
+
+        var jsonContent = JsonSerializer.Serialize(repoConfig);
+        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "GetSampleFiles",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        var samples = (string[])method?.Invoke(_handler, new object[] { jsonContent })!;
+
+        // Assert
+        samples.Should().NotBeEmpty();
+        samples.Length.Should().Be(4); // 4 sample models created in GetSampleFiles
+    }
+
+    [Fact]
+    public void GetSampleFiles_GeneratedFileNamesFollowFormat()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase,
+            LenScope = 0,
+            Scopes = string.Empty,
+            SkipDomain = string.Empty,
+            FolderByScope = false
+        };
+
+        var jsonContent = JsonSerializer.Serialize(repoConfig);
+        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "GetSampleFiles",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        var samples = (string[])method?.Invoke(_handler, new object[] { jsonContent })!;
+
+        // Assert - samples follow ADRNNNN-TITLE.md pattern with .md extension
+        samples.Should().AllSatisfy(s => s.Should().StartWith("ADR"));
+        samples.Should().AllSatisfy(s => s.Should().EndWith(".md"));
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithProposedStatus_CreatesCorrectRecord()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null, new object[] 
+        { 
+            1, // number
+            1, // version
+            1, // revision
+            AdrStatus.Proposed, // status
+            null, // superseded
+            "X", // titleSuffix
+            string.Empty, // scope
+            string.Empty, // domainSuffix
+            repoConfig // repoConfig
+        })!;
+
+        // Assert
+        model.StatusCreate.Should().Be(AdrStatus.Proposed);
+        model.Superseded.Should().BeNull();
+        model.Number.Should().Be(1);
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithSupersededStatus_CreatesCorrectRecord()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null, new object[] 
+        { 
+            3, // number
+            1, // version
+            1, // revision
+            AdrStatus.Superseded, // status
+            2, // superseded (ADR-002)
+            "Y", // titleSuffix
+            string.Empty, // scope
+            "K", // domainSuffix
+            repoConfig // repoConfig
+        })!;
+
+        // Assert
+        model.StatusCreate.Should().Be(AdrStatus.Superseded);
+        model.Superseded.Should().Be(2);
+        model.Number.Should().Be(3);
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithScope_IncludesInModel()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null, new object[] 
+        { 
+            2, // number
+            1, // version
+            1, // revision
+            AdrStatus.Proposed, // status
+            null, // superseded
+            "Y", // titleSuffix
+            "architecture", // scope
+            "K", // domainSuffix
+            repoConfig // repoConfig
+        })!;
+
+        // Assert
+        model.Scope.Should().Be("architecture");
+        model.Domain.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void DisplaySampleFiles_CallsConsoleWriteInfo()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase,
+            LenScope = 0,
+            Scopes = string.Empty,
+            SkipDomain = string.Empty,
+            FolderByScope = false
+        };
+
+        var jsonContent = JsonSerializer.Serialize(repoConfig);
+        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "DisplaySampleFiles",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        method?.Invoke(_handler, new object[] { jsonContent });
+
+        // Assert - console.WriteInfo should be called for header and samples
+        _mockConsole.Received(1).WriteInfo(Resources.AdrPlus.ConfigInfoFileNameSample);
+        _mockConsole.Received(4).WriteInfo(Arg.Is<string>(s => s.StartsWith("- ")));
     }
 
     #endregion

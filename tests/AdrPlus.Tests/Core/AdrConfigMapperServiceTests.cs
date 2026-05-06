@@ -7,7 +7,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using System.Text.Json;
 
-namespace AdrPlus.Tests.Commands;
+namespace AdrPlus.Tests.Core;
 
 public class AdrConfigMapperServiceTests
 {
@@ -58,7 +58,6 @@ public class AdrConfigMapperServiceTests
             folderByScope: true,
             skipDomain: "Team",
             headerDisclaimer: "# Confidential",
-            headerStatus: "## Current Status",
             headerVersion: "## Version Info",
             headerRevision: "## Revision Info"
         );
@@ -82,7 +81,6 @@ public class AdrConfigMapperServiceTests
         config.FolderByScope.Should().BeTrue();
         config.SkipDomain.Should().Be("Team");
         config.HeaderDisclaimer.Should().Be("# Confidential");
-        config.HeaderStatus.Should().Be("## Current Status");
         config.HeaderVersion.Should().Be("## Version Info");
         config.HeaderRevision.Should().Be("## Revision Info");
     }
@@ -504,7 +502,6 @@ public class AdrConfigMapperServiceTests
         var json = JsonSerializer.Serialize(new
         {
             headerdisclaimer = "# Disclaimer Text",
-            headerstatus = "## Status Section",
             headerversion = "## Version Section",
             headerrevision = "## Revision Section"
         });
@@ -513,10 +510,212 @@ public class AdrConfigMapperServiceTests
         var config = _mapper.FromJson(json, _template);
 
         // Assert
-        config.HeaderDisclaimer.Should().Be("# Disclaimer Text");
-        config.HeaderStatus.Should().Be("## Status Section");
         config.HeaderVersion.Should().Be("## Version Section");
         config.HeaderRevision.Should().Be("## Revision Section");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTitleFile_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertitlefile = "ADR File"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTitleFile.Should().Be("ADR File");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderScope_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headerscope = "Organizational Scope"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderScope.Should().Be("Organizational Scope");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderDomain_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headerdomain = "Technical Domain"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderDomain.Should().Be("Technical Domain");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTitleStatusCreated_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertitlestatuscreated = "Creation Status"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTitleStatusCreated.Should().Be("Creation Status");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTitleStatusChanged_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertitlestatuschanged = "Change Status"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTitleStatusChanged.Should().Be("Change Status");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTitleStatusSuperseded_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertitlestatussuperseded = "Supersession Status"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTitleStatusSuperseded.Should().Be("Supersession Status");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTableFields_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertablefields = "Field Names"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTableFields.Should().Be("Field Names");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderTableValues_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertablevalues = "Field Values"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTableValues.Should().Be("Field Values");
+    }
+
+    [Fact]
+    public void FromJson_WithHeaderMigrated_ParsesCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headermigrated = "Migrated"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderMigrated.Should().Be("Migrated");
+    }
+
+    [Fact]
+    public void FromJson_WithAllHeaderFields_ParsesAllCorrectly()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headerdisclaimer = "Confidential",
+            headertitlefile = "ADR Record",
+            headerversion = "Release",
+            headerrevision = "Amendment",
+            headerscope = "Scope",
+            headerdomain = "Domain",
+            headertitlestatuscreated = "Initiated",
+            headertitlestatuschanged = "Revised",
+            headertitlestatussuperseded = "Replaced",
+            headertablefields = "Attribute",
+            headertablevalues = "Content",
+            headermigrated = "Imported"
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderDisclaimer.Should().Be("Confidential");
+        config.HeaderTitleFile.Should().Be("ADR Record");
+        config.HeaderVersion.Should().Be("Release");
+        config.HeaderRevision.Should().Be("Amendment");
+        config.HeaderScope.Should().Be("Scope");
+        config.HeaderDomain.Should().Be("Domain");
+        config.HeaderTitleStatusCreated.Should().Be("Initiated");
+        config.HeaderTitleStatusChanged.Should().Be("Revised");
+        config.HeaderTitleStatusSuperseded.Should().Be("Replaced");
+        config.HeaderTableFields.Should().Be("Attribute");
+        config.HeaderTableValues.Should().Be("Content");
+        config.HeaderMigrated.Should().Be("Imported");
+    }
+
+    [Fact]
+    public void FromJson_WithWrongTypeForHeaderFields_IgnoresInvalidFieldsAndKeepsDefaults()
+    {
+        // Arrange
+        var json = JsonSerializer.Serialize(new
+        {
+            headertitlefile = 123, // Should be string
+            headerscope = true, // Should be string
+            headerdomain = new { nested = "object" }, // Should be string
+            headertitlestatuscreated = 456.78 // Should be string
+        });
+
+        // Act
+        var config = _mapper.FromJson(json, _template);
+
+        // Assert
+        config.HeaderTitleFile.Should().Be(Resources.AdrPlus.DefaultHeaderTitleFile);
+        config.HeaderScope.Should().Be(Resources.AdrPlus.Scope);
+        config.HeaderDomain.Should().Be(Resources.AdrPlus.Domain);
+        config.HeaderTitleStatusCreated.Should().Be(Resources.AdrPlus.Created);
     }
 
     #endregion
@@ -634,7 +833,6 @@ public class AdrConfigMapperServiceTests
         bool? folderByScope = null,
         string? skipDomain = null,
         string? headerDisclaimer = null,
-        string? headerStatus = null,
         string? headerVersion = null,
         string? headerRevision = null)
     {
@@ -655,7 +853,6 @@ public class AdrConfigMapperServiceTests
         if (folderByScope is not null) dict[AppConstants.FieldFolderByScope] = folderByScope;
         if (skipDomain is not null) dict[AppConstants.FieldSkipDomain] = skipDomain;
         if (headerDisclaimer is not null) dict[AppConstants.FieldHeaderDisclaimer] = headerDisclaimer;
-        if (headerStatus is not null) dict[AppConstants.FieldHeaderStatus] = headerStatus;
         if (headerVersion is not null) dict[AppConstants.FieldHeaderVersion] = headerVersion;
         if (headerRevision is not null) dict[AppConstants.FieldHeaderRevision] = headerRevision;
         if (folderadr is not null) dict[AppConstants.FieldFolderAdr] = folderadr;

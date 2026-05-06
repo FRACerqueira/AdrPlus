@@ -21,6 +21,7 @@ using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
 using AdrPlus.Commands.Upgrade;
+using AdrPlus.Commands.Migrate;
 
 namespace AdrPlus.Extensions
 {
@@ -49,6 +50,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<CommandRouter>();
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
+            services.AddSingleton<MigrateCommandHandler>();
             services.AddSingleton<UpgradeCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
             services.AddSingleton<ConfigCommandHandler>();

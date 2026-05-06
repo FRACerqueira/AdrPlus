@@ -69,6 +69,21 @@ namespace AdrPlus.Core
         /// <exception cref="JsonException">Thrown when <paramref name="jsonString"/> is not valid JSON.</exception>
         AdrPlusRepoConfig FromJson(string jsonString, string template);
 
+
+        /// <summary>
+        /// Reads all <c>.md</c> ADR files in <paramref name="directoryPath"/>
+        /// </summary>
+        /// <param name="fileSystemService">The file system service used for file operations.</param>
+        /// <param name="directoryPath">The directory path to search for <c>.md</c> files.</param>
+        /// <param name="config">The ADR Plus configuration containing naming conventions.</param>
+        /// <param name="includeNotMatched">Indicates whether to include ADR files that do not match the configured naming conventions.</param>
+        /// <returns>An array of <see cref="AdrFileNameComponents"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> or <paramref name="fileSystemService"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="directoryPath"/> is null, empty, or whitespace.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown when <paramref name="directoryPath"/> does not exist.</exception>
+        Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched);
+
+
         /// <summary>
         /// Reads all <c>.md</c> ADR files in <paramref name="directoryPath"/> whose filename begins with
         /// the configured prefix and the zero-padded <paramref name="sequence"/> number, then parses each one.

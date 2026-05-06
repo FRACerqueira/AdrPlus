@@ -6,7 +6,7 @@
     },
     "WSL": {
       "commandName": "WSL2",
-      "distributionName": "Ubuntu-20.04"
+      "distributionName": "Ubuntu-22.04"
     }
   }
 }

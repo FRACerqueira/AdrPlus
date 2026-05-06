@@ -37,13 +37,13 @@ public class NewAdrCommandHandlerTests
     private static readonly string ConfigFilePath = Path.Combine(AdrFolderPath, ConfigFileName);
 
     private static readonly string BasicJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     private static readonly string ScopedJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     private static readonly string ScopedSkipDomainJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     public NewAdrCommandHandlerTests()
     {
@@ -718,6 +718,10 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+        _mockConsole.WriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.ClearWait(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
@@ -741,9 +745,13 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+        _mockConsole.WriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.ClearWait(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -766,9 +774,13 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockConsole.WriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.ClearWait(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -793,9 +805,13 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockConsole.WriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.ClearWait(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
@@ -926,6 +942,12 @@ public class NewAdrCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
+        // Setup console wait-state mocks for GetFileByUniqueTitle and GetNextNumber operations
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.ClearWait(cursorPos);
+
         var repoConfig = new AdrPlusRepoConfig("", "")
         {
             Prefix = "ADR",
@@ -952,9 +974,13 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.Contains(ConfigFileName))).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockConsole.WriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.ClearWait(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 

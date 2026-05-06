@@ -9,7 +9,7 @@ using AdrPlus.Infrastructure.Process;
 using AdrPlus.Tests.Helpers;
 using AdrPlus.Tests.Infrastructure.Process;
 
-namespace AdrPlus.Tests.Commands;
+namespace AdrPlus.Tests.Core;
 
 /// <summary>
 /// Unit tests for CommandMetadataService class.

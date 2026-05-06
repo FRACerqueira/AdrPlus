@@ -229,7 +229,7 @@ namespace AdrPlus.Commands.NewAdr
             }
 
             string domainArg = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? valueArg) ? valueArg : string.Empty;
-            bool skipdomains = auxconfig.Getskipdomains().Any(x => x.Equals(scopeArg, StringComparison.OrdinalIgnoreCase));
+            bool skipdomains = auxconfig.GetSkipDomains().Any(x => x.Equals(scopeArg, StringComparison.OrdinalIgnoreCase));
 
             if (domainArg.Length == 0 && !skipdomains)
             {
@@ -423,7 +423,7 @@ namespace AdrPlus.Commands.NewAdr
                 defTitle = titlePrompt.Content.Trim();
 
                 // Get date
-                var dateRefPrompt = _console.PrompCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, defDateRef, _config, cancellationToken);
+                var dateRefPrompt = _console.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, defDateRef, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -442,7 +442,7 @@ namespace AdrPlus.Commands.NewAdr
                     parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
                     defScope = scopePrompt.Content.Trim();
 
-                    if (!auxconfig.Getskipdomains().Any(x => x.Equals(scopePrompt.Content, StringComparison.OrdinalIgnoreCase)))
+                    if (!auxconfig.GetSkipDomains().Any(x => x.Equals(scopePrompt.Content, StringComparison.OrdinalIgnoreCase)))
                     {
                         if (oldDefFolder != defFolder)
                         {

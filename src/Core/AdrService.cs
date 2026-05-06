@@ -23,6 +23,10 @@ namespace AdrPlus.Core
         private readonly ICommandMetadataService _commandMetadataService = commandMetadataService;
 
         /// <inheritdoc/>
+        public Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched)
+            => _queryService.ReadAllAdrFiles(fileSystemService, directoryPath, config, includeNotMatched);
+
+        /// <inheritdoc/>
         public Task<(bool Isvalid, string Error)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
             => _statusService.StatusUpdateAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken);
 

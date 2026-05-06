@@ -170,7 +170,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, DateTime Content) PrompCalendar(string message, DateTime dateref, AdrPlusConfig config, CancellationToken cancellationToken = default)
+        public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, CancellationToken cancellationToken = default)
         {
             message =$"{message}: ";
             var result = PromptPlus.Controls
@@ -290,47 +290,6 @@ namespace AdrPlus.Infrastructure.UI
                     {
                         return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
                     }
-                    return (true, string.Empty);
-                })
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFielDateFormat(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .MaxLength(10)
-                .SuggestionHandler(input => ["yyyy-MM-dd"])
-                .PredicateSelected(input =>
-                {
-                    if (input.Trim().Length == 0)
-                    {
-                        return (true, string.Empty);
-                    }
-                    var isvalid = true;
-                    try
-                    {
-                        var testDate = DateTime.UtcNow;
-                        var formatted = testDate.ToString(input, CultureInfo.InvariantCulture);
-                        if (!DateTime.TryParse(formatted, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-                        { 
-                            isvalid = false;
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        isvalid = false;
-                    }
-
-                    if (!isvalid)
-                    {
-                        return (false, string.Format(null, FormatMessages.ValidationDateFormatInvalidFormat, input));
-                    }
-
                     return (true, string.Empty);
                 })
                 .Run(cancellationToken);
@@ -577,7 +536,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, AdrFileNameComponents? info) PromptSelecLatesAdrs(AdrFileNameComponents[] adrFiles,AdrPlusRepoConfig adrPlusRepoConfig, Func<AdrFileNameComponents, (bool, string?)> validselect, CancellationToken cancellationToken = default)
+        public (bool IsAborted, AdrFileNameComponents? info) PromptSelecAdrs(AdrFileNameComponents[] adrFiles,AdrPlusRepoConfig adrPlusRepoConfig, Func<AdrFileNameComponents, (bool, string?)> validselect, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.NewVerChooseAdr}: ";
             var result = PromptPlus.Controls
@@ -589,13 +548,21 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     if (info.Header.StatusChange != AdrStatus.Unknown)
                     {
-                        return adrPlusRepoConfig.StatusMapping[info.Header.StatusChange];
+                        return Helper.GetResourceStatus(info.Header.StatusChange);
                     }
-                    else if (info.Header.StatusUpdate != AdrStatus.Unknown)
+                    if (info.Header.StatusUpdate != AdrStatus.Unknown)
                     {
-                        return adrPlusRepoConfig.StatusMapping[info.Header.StatusUpdate];
+                        return Helper.GetResourceStatus(info.Header.StatusUpdate);
                     }
-                    return adrPlusRepoConfig.StatusMapping[info.Header.StatusCreate];
+                    if (info.Header.StatusCreate != AdrStatus.Unknown)
+                    {
+                        return Helper.GetResourceStatus(info.Header.StatusCreate);
+                    }
+                    if (info.Header.IsMigrated)
+                    {
+                        return Resources.AdrPlus.Migrated;
+                    }
+                    return Helper.GetResourceStatus(AdrStatus.Unknown);
                 })
                 .AddItems(adrFiles.Where(x => x.IsValid))
                 .Run(cancellationToken);
@@ -644,57 +611,15 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldHeaderDisclaimer(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptEditFieldHeaderText(FieldsJson fieldsJson,int maxlength,string sugestion, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
-                .MaxLength(200)
+                .MaxLength(maxlength)
                 .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler(input => [Resources.AdrPlus.DefaultHeaderDisclaimer])
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldHeaderStatus(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .MaxLength(30)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler(input => [Resources.AdrPlus.DefaultTextStatus])
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldHeaderVersion(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .MaxLength(30)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler(input => [Resources.AdrPlus.Version])
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldHeaderRevision(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .MaxLength(30)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler(input => [Resources.AdrPlus.Revision])
+                .SuggestionHandler(input => [sugestion])
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
         }
@@ -745,7 +670,6 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultTitle)
-                .MaxLength(100)
                 .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? defaultTitle : result.Content!);
@@ -786,7 +710,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}: ";
             var resuldefarrdomain = PromptPlus.Controls
                 .WaitCommand(message)
-                .CommandHandler(() => defarrdomain = _adrServices.GetDomains(fileSystemService, Path.Combine(path, adrPlusRepo.FolderAdr), adrPlusRepo).Result)
+                .CommandHandler(() => defarrdomain = _adrServices.GetDomains(fileSystemService, path, adrPlusRepo).Result)
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
             return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!);
@@ -906,7 +830,7 @@ namespace AdrPlus.Infrastructure.UI
             }
             return field.Name switch
             {
-                AppConstants.FieldLanguage=> Resources.AdrPlus.ConfigFieldDescLanguage,
+                AppConstants.FieldLanguage => Resources.AdrPlus.ConfigFieldDescLanguage,
                 AppConstants.FieldFolderAdr => Resources.AdrPlus.ConfigFieldDescFolderRepo,
                 AppConstants.FieldOpenAdr => Resources.AdrPlus.ConfigFieldDescOpenAdr,
                 AppConstants.FieldYesValue => Resources.AdrPlus.ConfigFieldDescYesValue,
@@ -925,10 +849,18 @@ namespace AdrPlus.Infrastructure.UI
                 AppConstants.FieldStatusAccepted => Resources.AdrPlus.ConfigFieldDescStatusAccepted,
                 AppConstants.FieldStatusRejected => Resources.AdrPlus.ConfigFieldDescStatusRejected,
                 AppConstants.FieldStatusSuperseded => Resources.AdrPlus.ConfigFieldDescStatusSuperseded,
-                AppConstants.FieldHeaderDisclaimer => Resources.AdrPlus.ConfigFieldDescHeaderDisclaimer,
-                AppConstants.FieldHeaderStatus => Resources.AdrPlus.FieldTitleHeaderStatus,
+                AppConstants.FieldHeaderDisclaimer => Resources.AdrPlus.FieldTitleHeaderDisclaimer,
+                AppConstants.FieldHeaderTitleFile => Resources.AdrPlus.FieldTitleHeaderTitleFile,
                 AppConstants.FieldHeaderVersion => Resources.AdrPlus.FieldTitleHeaderVersion,
                 AppConstants.FieldHeaderRevision => Resources.AdrPlus.FieldTitleHeaderRevision,
+                AppConstants.FieldHeaderScope => Resources.AdrPlus.FieldTitleHeaderScope,
+                AppConstants.FieldHeaderDomain => Resources.AdrPlus.FieldTitleHeaderDomain,
+                AppConstants.FieldHeaderStatusCreated => Resources.AdrPlus.FieldTitleHeaderStatusCreated,
+                AppConstants.FieldHeaderStatusChanged => Resources.AdrPlus.FieldTitleHeaderStatusChanged,
+                AppConstants.FieldHeaderStatusSuperseded => Resources.AdrPlus.FieldTitleHeaderStatusSuperseded,
+                AppConstants.FieldHeaderTableFields => Resources.AdrPlus.FieldTitleHeaderTableFields,
+                AppConstants.FieldHeaderTableValues => Resources.AdrPlus.FieldTitleHeaderTableValues,
+                AppConstants.FieldHeaderMigrated => Resources.AdrPlus.FieldTitleHeaderMigrated,
                 _ => string.Empty,
             };
         }

@@ -192,14 +192,6 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptEditFielOpenAdr(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to edit the date format and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered date format.</returns>
-        (bool IsAborted, string Content) PromptEditFielDateFormat(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Prompts the user to edit version field length and returns the result along with an abort status.
         /// </summary>
         /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
@@ -290,36 +282,14 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptEditFieldStatus(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to edit the header disclaimer text and returns the result along with an abort status.
+        /// Prompts the user to edit the header  text and returns the result along with an abort status.
         /// </summary>
         /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
+        /// <param name="maxlength">Max length of text</param>
+        /// <param name="sugestion">Sugestion to text</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered disclaimer text.</returns>
-        (bool IsAborted, string Content) PromptEditFieldHeaderDisclaimer(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the header status label and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered status label.</returns>
-        (bool IsAborted, string Content) PromptEditFieldHeaderStatus(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the header version label and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered version label.</returns>
-        (bool IsAborted, string Content) PromptEditFieldHeaderVersion(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the header revision label and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered revision label.</returns>
-        (bool IsAborted, string Content) PromptEditFieldHeaderRevision(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
+        (bool IsAborted, string Content) PromptEditFieldHeaderText(FieldsJson fieldsJson, int maxlength, string sugestion, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select a logical drive from available drives.
@@ -405,7 +375,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="adrPlusRepo">The repository configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected date.</returns>
-        (bool IsAborted, DateTime Content) PrompCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select an ADR from a list of latest ADR files.
@@ -415,7 +385,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="validselect">Validation function that checks whether a selected ADR is valid and returns a message when invalid.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected ADR information.</returns>
-        (bool IsAborted, AdrFileNameComponents? info) PromptSelecLatesAdrs(AdrFileNameComponents[] files, AdrPlusRepoConfig adrPlusRepoConfig, Func<AdrFileNameComponents, (bool, string?)> validselect, CancellationToken cancellationToken = default);
+        (bool IsAborted, AdrFileNameComponents? info) PromptSelecAdrs(AdrFileNameComponents[] files, AdrPlusRepoConfig adrPlusRepoConfig, Func<AdrFileNameComponents, (bool, string?)> validselect, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select an ADR template file for configuration. 

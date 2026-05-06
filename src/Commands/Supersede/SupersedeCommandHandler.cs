@@ -61,17 +61,19 @@ namespace AdrPlus.Commands.Supersede
         /// <returns><see langword="true"/> when the ADR is eligible to be superseded; otherwise <see langword="false"/>.</returns>
         private static bool SelectionCondition(AdrFileNameComponents info)
         {
-            return (info.Header.StatusUpdate == AdrStatus.Accepted && info.Header.StatusChange == AdrStatus.Unknown);
+            return (info.Header.IsValid &&
+                (info.Header.StatusCreate == AdrStatus.Proposed || (info.Header.StatusCreate == AdrStatus.Unknown && info.Header.IsMigrated)) &&
+                (info.Header.StatusUpdate == AdrStatus.Accepted || (info.Header.StatusUpdate == AdrStatus.Unknown && info.Header.IsMigrated)) &&
+                info.Header.StatusChange == AdrStatus.Unknown);
         }
 
         /// <summary>
         /// Builds a localized error message indicating that the ADR's current status does not allow superseding.
         /// </summary>
-        /// <param name="repoconfig">The repository configuration providing the status-to-string mapping.</param>
         /// <returns>A formatted error string naming the required status (<see cref="AdrStatus.Accepted"/>).</returns>
-        private static string MessageNotValidStatusForUpdate(AdrPlusRepoConfig repoconfig)
+        private static string MessageNotValidStatusForUpdate()
         {
-            return string.Format(null, FormatMessages.NotValidStatusForSupersede, $"{repoconfig.StatusMapping[AdrStatus.Accepted]}");
+            return string.Format(null, FormatMessages.NotValidStatusForSupersede, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}");
         }
 
         /// <summary>
@@ -141,11 +143,6 @@ namespace AdrPlus.Commands.Supersede
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                if (repoconfig.LenVersion == 0)
-                {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorVersionNotConfig, configrootPath));
-                }
-
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
                 {
@@ -159,7 +156,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     if (!SelectionCondition(infoadr))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate());
                     }
                 }
 
@@ -359,7 +356,7 @@ namespace AdrPlus.Commands.Supersede
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
                 var curpos = _console.GetCursorPosition();
                 _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
-                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, folderPrompt.Content, repoconfig);
+                var filesadrs = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, repoconfig,false);
                 _console.ClearWait(curpos);
 
                 if (filesadrs.Length == 0)
@@ -367,15 +364,15 @@ namespace AdrPlus.Commands.Supersede
                     throw new FileNotFoundException(Resources.AdrPlus.NotFoundADR);
                 }
 
-                (bool, string?) validselect(AdrFileNameComponents info)
+                static (bool, string?) validselect(AdrFileNameComponents info)
                 {
                     if (!SelectionCondition(info))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig));
+                        return (false, MessageNotValidStatusForUpdate());
                     }
                     return (true, null);
                 }
-                var filenewsup = _console.PromptSelecLatesAdrs(filesadrs, repoconfig, validselect, cancellationToken);
+                var filenewsup = _console.PromptSelecAdrs(filesadrs, repoconfig, validselect, cancellationToken);
                 if (filenewsup.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -383,7 +380,7 @@ namespace AdrPlus.Commands.Supersede
                 parsedArgs[Arguments.FileAdr] = filenewsup.info!.FileName;
 
                 // Get date
-                var dateRefPrompt = _console.PrompCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var dateRefPrompt = _console.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

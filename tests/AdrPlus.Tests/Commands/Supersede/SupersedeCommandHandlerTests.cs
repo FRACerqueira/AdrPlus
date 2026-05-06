@@ -1,4 +1,4 @@
-﻿// ***************************************************************************************
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -397,7 +397,7 @@ public class SupersedeCommandHandlerTests
 
         SetupBasicMocks(parsedArgs, jsonConfig);
 
-        // ADR is Proposed, not Accepted — not eligible for superseding
+        // ADR is Proposed, not Accepted � not eligible for superseding
         var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Proposed, AdrStatus.Unknown);
         _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);
@@ -702,8 +702,8 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((true, (AdrFileNameComponents?)null));
 
         // Act & Assert
@@ -728,7 +728,7 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns([]);
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -753,10 +753,10 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -782,10 +782,10 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, false));

@@ -1,3 +1,6 @@
+---
+# [Brief title of the decision]
+
 ## Deciders
 
 * Deciders: [list everyone involved in the decision] <!-- optional -->

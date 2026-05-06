@@ -35,8 +35,9 @@ namespace AdrPlus.Core
         /// <param name="fileSystemService">The file system service used to access files.</param>
         /// <param name="directoryPath">The directory path to search in.</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
+        /// <param name="includeNotMatched">Indicates whether to include ADR files that do not match the configured naming conventions.</param>
         /// <returns>An array of all <see cref="AdrFileNameComponents"/> found.</returns>
-        Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+        Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false);
 
         /// <summary>
         /// Gets the file path of an ADR with a unique title in a specific domain asynchronously.

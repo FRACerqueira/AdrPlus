@@ -14,6 +14,12 @@ namespace AdrPlus.Core
 {
     internal static class AppConstants
     {
+
+        /// <summary>
+        /// The length of the header section in generated ADR files, used to determine how many lines to read when parsing the header information from an existing ADR file. 
+        /// </summary>
+        public const int LenghtHeader = 12;
+
         /// <summary>
         /// The name of the directory where ADR templates are stored. This directory is used to store template files that define the structure and content of ADRs, allowing users to create new ADRs based on predefined templates.  
         /// </summary>
@@ -246,11 +252,6 @@ namespace AdrPlus.Core
         public const string FieldHeaderDisclaimer = "headerdisclaimer";
 
         /// <summary>
-        /// The configuration key for the status text that can be included in the header of generated ADR files, allowing users to specify custom status information that will be included in the header section of each generated ADR file. 
-        /// </summary>
-        public const string FieldHeaderStatus = "headerstatus";
-
-        /// <summary>
         /// The configuration key for the version text that can be included in the header of generated ADR files, allowing users to specify custom status information that will be included in the header section of each generated ADR file. 
         /// </summary>
         public const string FieldHeaderVersion = "headerversion";
@@ -260,6 +261,51 @@ namespace AdrPlus.Core
         /// The configuration key for the revision text that can be included in the header of generated ADR files, allowing users to specify custom status information that will be included in the header section of each generated ADR file. 
         /// </summary>
         public const string FieldHeaderRevision = "headerrevision";
+
+        /// <summary>
+        /// The configuration key for the title file text that can be included in the header of generated ADR files, allowing users to specify custom title file information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderTitleFile = "headertitlefile";
+
+        /// <summary>
+        /// The configuration key for the domain text that can be included in the header of generated ADR files, allowing users to specify custom domain information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderDomain = "headerdomain";
+
+        /// <summary>
+        /// The configuration key for the scope text that can be included in the header of generated ADR files, allowing users to specify custom scope information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderScope = "headerscope";
+
+        /// <summary>
+        /// The configuration key for the title status created text that can be included in the header of generated ADR files, allowing users to specify custom title status created information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusCreated = "headertitlestatuscreated";
+
+        /// <summary>
+        /// The configuration key for the title status changed text that can be included in the header of generated ADR files, allowing users to specify custom title status changed information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusChanged = "headertitlestatuschanged";
+
+        /// <summary>
+        /// The configuration key for the title status superseded text that can be included in the header of generated ADR files, allowing users to specify custom title status superseded information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusSuperseded = "headertitlestatussuperseded";
+
+        /// <summary>
+        /// The configuration key for the table fields text that can be included in the header of generated ADR files, allowing users to specify custom table fields information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderTableFields = "headertablefields";
+
+        /// <summary>
+        /// The configuration key for the table values text that can be included in the header of generated ADR files, allowing users to specify custom table values information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderTableValues = "headertablevalues";
+
+        /// <summary>
+        /// The configuration key for the migrated text that can be included in the header of generated ADR files, allowing users to specify custom migrated information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderMigrated = "headermigrated";
 
         /// <summary>
         /// A frozen dictionary mapping configuration field names to their corresponding display titles, used for presenting user-friendly titles in the application's user interface when displaying configuration settings.
@@ -287,10 +333,18 @@ namespace AdrPlus.Core
                 { FieldStatusAccepted, Resources.AdrPlus.FieldTitleStatusAccepted },
                 { FieldStatusRejected, Resources.AdrPlus.FieldTitleStatusRejected },
                 { FieldStatusSuperseded, Resources.AdrPlus.FieldTitleStatusSuperseded },
-                { FieldHeaderDisclaimer, Resources.AdrPlus.FieldTitleHeaderDisclaimer },
-                { FieldHeaderStatus, Resources.AdrPlus.FieldTitleHeaderStatus },
+                { FieldHeaderDisclaimer, Resources.AdrPlus.ConfigFieldDescHeaderDisclaimer },
+                { FieldHeaderTitleFile, Resources.AdrPlus.FieldTitleHeaderTitleFile },
                 { FieldHeaderVersion, Resources.AdrPlus.FieldTitleHeaderVersion },
                 { FieldHeaderRevision, Resources.AdrPlus.FieldTitleHeaderRevision },
+                { FieldHeaderScope, Resources.AdrPlus.FieldTitleHeaderScope },
+                { FieldHeaderDomain, Resources.AdrPlus.FieldTitleHeaderDomain },
+                { FieldHeaderStatusCreated, Resources.AdrPlus.FieldTitleHeaderStatusCreated },
+                { FieldHeaderStatusChanged, Resources.AdrPlus.FieldTitleHeaderStatusChanged },
+                { FieldHeaderStatusSuperseded, Resources.AdrPlus.FieldTitleHeaderStatusSuperseded },
+                { FieldHeaderTableFields, Resources.AdrPlus.FieldTitleHeaderTableFields },
+                { FieldHeaderTableValues, Resources.AdrPlus.FieldTitleHeaderTableValues },
+                { FieldHeaderMigrated, Resources.AdrPlus.FieldTitleHeaderMigrated },
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>

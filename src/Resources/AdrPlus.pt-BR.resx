@@ -184,7 +184,7 @@
     <value>Enterprise*;CrossDomain;Project</value>
   </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
-    <value>(Não remova este template, , linhas 1~10. Ele é usado e deve permanecer inalterado para garantir consistência na documentação)</value>
+    <value>Não remova este comentário, linhas e tabela</value>
   </data>
   <data name="DefaultPrefix" xml:space="preserve">
     <value>ADR</value>
@@ -244,10 +244,7 @@
     <value>Texto do status Substituído</value>
   </data>
   <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
-    <value>Comentário do Cabeçalho</value>
-  </data>
-  <data name="DefaultTextStatus" xml:space="preserve">
-    <value>Status</value>
+    <value>Cabeçalho de isenção de responsabilidade</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Versão</value>
@@ -255,14 +252,11 @@
   <data name="Revision" xml:space="preserve">
     <value>Revisão</value>
   </data>
-  <data name="FieldTitleHeaderStatus" xml:space="preserve">
-    <value>Texto de status no cabeçalho</value>
-  </data>
   <data name="FieldTitleHeaderVersion" xml:space="preserve">
     <value>Texto de versão no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderRevision" xml:space="preserve">
-    <value>Texto de revisão no cabeçalho</value>
+    <value>Texto revisão no cabeçalho</value>
   </data>
   <data name="Optional" xml:space="preserve">
     <value>Opcional</value>
@@ -657,17 +651,14 @@
   <data name="ErrMsgAdrHeaderScopeInvalid" xml:space="preserve">
     <value>O arquivo ADR não possui o cabeçalho de escopo esperado</value>
   </data>
-  <data name="ErrMsgAdrHeaderStatusInvalid" xml:space="preserve">
-    <value>O arquivo ADR não possui o cabeçalho de status esperado</value>
-  </data>
   <data name="ErrMsgAdrHeaderStatusCreateLineInvalid" xml:space="preserve">
-    <value>O arquivo ADR não possui a linha de criação de status esperada</value>
+    <value>O arquivo ADR não possui o status de criação esperado</value>
   </data>
   <data name="ErrMsgAdrHeaderStatusUpdateLineInvalid" xml:space="preserve">
     <value>O arquivo ADR não possui a linha de atualização de status esperada</value>
   </data>
   <data name="ErrMsgAdrHeaderStatusChangeLineInvalid" xml:space="preserve">
-    <value>O arquivo ADR não possui a linha de mudança de status esperada</value>
+    <value>O arquivo ADR não possui o status de alteração esperado</value>
   </data>
   <data name="ErrMsgAdrHeaderTitleInvalid" xml:space="preserve">
     <value>O arquivo ADR não possui o cabeçalho de título esperado</value>
@@ -1091,5 +1082,62 @@
   </data>
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
     <value>Assistente para migrar os ADR´s para uso da ferramenta AdrPlus (criação do cabeçalho)</value>
+  </data>
+  <data name="HelpUsageMatchAdr" xml:space="preserve">
+    <value>Número de ARDs que devem atender aos critérios</value>
+  </data>
+  <data name="DefaultHeaderTitleFile" xml:space="preserve">
+    <value>Título do aquivo md</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Criado</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>Modificado</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Valores</value>
+  </data>
+  <data name="Migrated" xml:space="preserve">
+    <value>Migrado</value>
+  </data>
+  <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
+    <value>Texto título do Arquivo no cabeçalho</value>
+  </data>
+  <data name="FieldTitleHeaderScope" xml:space="preserve">
+    <value>Texto escopo no cabeçalho</value>
+  </data>
+  <data name="FieldTitleHeaderDomain" xml:space="preserve">
+    <value>Texto domínio no cabeçalho</value>
+  </data>
+  <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
+    <value>Texto status criado no cabeçalho</value>
+  </data>
+  <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
+    <value>Texto status modificado no cabeçalho</value>
+  </data>
+  <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
+    <value>Texto status substituído </value>
+  </data>
+  <data name="FieldTitleHeaderTableFields" xml:space="preserve">
+    <value>Texto cabeçalho dos campos</value>
+  </data>
+  <data name="FieldTitleHeaderTableValues" xml:space="preserve">
+    <value>Texto cabeçalho de valores</value>
+  </data>
+  <data name="FieldTitleHeaderMigrated" xml:space="preserve">
+    <value>Comentário de migrado</value>
+  </data>
+  <data name="Superseded" xml:space="preserve">
+    <value>Substituído</value>
+  </data>
+  <data name="ErrMsgAdrInvalidHeader" xml:space="preserve">
+    <value>Cabeçalho inválido</value>
+  </data>
+  <data name="ErrMsgAdrHeaderDomainInvalid" xml:space="preserve">
+    <value>O arquivo ADR não possui o cabeçalho de domínio esperado</value>
+  </data>
+  <data name="ErrMsgAdrHeaderStatusSupersededLineInvalid" xml:space="preserve">
+    <value>O arquivo ADR não possui o status de subistituição esperado</value>
   </data>
 </root>

@@ -93,6 +93,36 @@ internal static class CommandHandlerMockHelper
     }
 
     /// <summary>
+    /// Creates an AdrFileNameComponents instance for a migrated ADR with custom properties.
+    /// </summary>
+    /// <param name="fileName">The file name for the ADR.</param>
+    /// <param name="statusCreate">The ADR creation status (typically Unknown for migrated ADRs).</param>
+    /// <param name="statusUpdate">The ADR update status value.</param>
+    /// <param name="isMigrated">Whether the ADR is marked as migrated.</param>
+    /// <returns>A properly configured AdrFileNameComponents instance for a migrated ADR.</returns>
+    public static AdrFileNameComponents CreateMigratedAdrFileNameComponents(
+        string fileName,
+        AdrStatus statusCreate,
+        AdrStatus statusUpdate,
+        bool isMigrated = true)
+    {
+        return new AdrFileNameComponents
+        {
+            FileName = fileName,
+            Number = 1,
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusCreate = statusCreate,
+                StatusUpdate = statusUpdate,
+                StatusChange = AdrStatus.Unknown,
+                IsMigrated = isMigrated
+            }
+        };
+    }
+
+    /// <summary>
     /// Creates an AdrFileNameComponents instance with invalid values for testing error scenarios.
     /// </summary>
     /// <param name="errorMessage">The error message describing why parsing failed.</param>

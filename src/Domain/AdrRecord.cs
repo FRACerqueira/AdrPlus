@@ -109,42 +109,64 @@ namespace AdrPlus.Domain
         }
 
         /// <summary>
-        /// Generates the ADR header section (first 10 lines) based on the configuration and record properties.
-        /// The header includes disclaimer, version, revision, scope/domain, status lines, title, and a separator.
+        /// Generates the ADR header section (first 12 lines) based on the configuration and record properties.
+        /// The header includes disclaimer, title, version, revision, scope, domain and status.
         /// </summary>
         /// <param name="config">The ADR Plus configuration containing header format, date format, and status string mappings.</param>
-        /// <param name="supersedefile">When <see cref="StatusChange"/> is <see cref="AdrStatus.Superseded"/>, the filename of the superseding ADR to append after the status date. Defaults to <see langword="null"/>.</param>
-        /// <returns>A formatted multi-line header string terminated with <c>"---"</c> and a newline.</returns>
-        public string GetHeader(AdrPlusRepoConfig config, string? supersedefile = null)
+        /// <param name="supersedefile">When <see cref="StatusChange"/> is <see cref="AdrStatus.Superseded"/>, the filename of the superseding ADR to append after the status date.</param>
+        /// <param name="migrated">Flag for migrated option</param>
+        /// <returns>A formatted multi-line header string.</returns>
+        public string GetHeader(AdrPlusRepoConfig config, string? supersedefile = null, bool migrated = false)
         {
+            /* template header
+                <!-- Do not remove this comment, lines and table (1-??) -->
+                |Adr-Plus ?|?|
+                |--|--|<!-- Migrated -->
+                |Title File|?| 
+                |Version|?|
+                |Revision|?| 
+                |Scope|?| 
+                |Domain|?| 
+                |Created|?| 
+                |Changed|?| 
+                |Superseded|?| 
+                <!-- Do not remove this comment, lines and table (1-??) -->
+            */
+            var textmigrate = $"<!-- {Resources.AdrPlus.Migrated} -->";
+            if (!migrated)
+            {
+                textmigrate = string.Empty;
+            }
             var result = new StringBuilder();
-            result.AppendLine(null, $"###### {config.HeaderDisclaimer}");
-            result.AppendLine(null, $"##### {config.HeaderVersion}: {Version.ToString($"D{config.LenVersion}", null)}");
+            result.AppendLine(null, $"<!-- {config.HeaderDisclaimer} (1-{AppConstants.LenghtHeader}) -->");
+            result.AppendLine(null, $"|Adr-Plus {config.HeaderTableFields}|{config.HeaderTableValues}|");
+            result.AppendLine(null, $"|--|--|{textmigrate}");
+            result.AppendLine(null, $"|{config.HeaderTitleFile}|{Title}|");
+            result.AppendLine(null, $"|{config.HeaderVersion}|{Version.ToString($"D{config.LenVersion}", null)}|");
             if (Revision.HasValue)
             {
-                result.AppendLine(null, $"##### {config.HeaderRevision}: {Revision.Value.ToString($"D{config.LenRevision}", null)}");
+                result.AppendLine(null, $"|{config.HeaderRevision}|{Revision.Value.ToString($"D{config.LenRevision}", null)}|");
             }
             else
             {
-                result.AppendLine(null, $"##### {config.HeaderRevision}: -");
+                result.AppendLine(null, $"|{config.HeaderRevision}||");
             }
             if (Scope.Length > 0)
             {
-                if (Domain.Length > 0)
-                {
-                    result.AppendLine(null, $"##### {Scope} : {Domain}");
-                }
-                else
-                {
-                    result.AppendLine(null, $"##### {Scope}");
-                }
+                result.AppendLine(null, $"|{config.HeaderScope}|{Scope}|");
             }
             else
             {
-                result.AppendLine(null, $"##### -");
+                result.AppendLine(null, $"|{config.HeaderScope}||");
             }
-            result.AppendLine(null, $"##### {config.HeaderStatus}");
-
+            if (Domain.Length > 0)
+            {
+                result.AppendLine(null, $"|{config.HeaderDomain}|{Domain}|");
+            }
+            else
+            {
+                result.AppendLine(null, $"|{config.HeaderDomain}||");
+            }
             var textstatus = StatusCreate switch
             {
                 AdrStatus.Unknown => string.Empty,
@@ -156,17 +178,17 @@ namespace AdrPlus.Domain
             };
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
+                result.AppendLine(null, $"|{config.HeaderTitleStatusCreated}||");
             }
             else
             {
                 if (CreateRef.HasValue)
                 {
-                    result.AppendLine(null, $"- {textstatus} ({CreateRef!.Value.ToString("yyyy-MM-dd", null)})");
+                    result.AppendLine(null, $"|{config.HeaderTitleStatusCreated}|{textstatus} ({CreateRef!.Value.ToString("yyyy-MM-dd", null)})|");
                 }
                 else
                 {
-                    result.AppendLine(null, $"- {textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})");
+                    result.AppendLine(null, $"|{config.HeaderTitleStatusCreated}|{textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})|");
                 }
             }
             textstatus = StatusUpdate switch
@@ -180,17 +202,17 @@ namespace AdrPlus.Domain
             };
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
+                result.AppendLine(null, $"|{config.HeaderTitleStatusChanged}||");
             }
             else
             {
                 if (UpdateRef.HasValue)
                 {
-                    result.AppendLine(null, $"- {textstatus} ({UpdateRef!.Value.ToString("yyyy-MM-dd", null)})");
+                    result.AppendLine(null, $"|{config.HeaderTitleStatusChanged}|{textstatus} ({UpdateRef!.Value.ToString("yyyy-MM-dd", null)})|");
                 }
                 else
                 {
-                    result.AppendLine(null, $"- {textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})");
+                    result.AppendLine(null, $"|{config.HeaderTitleStatusChanged}|{textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})|");
                 }
             }
             textstatus = StatusChange switch
@@ -208,7 +230,7 @@ namespace AdrPlus.Domain
             }
             if (string.IsNullOrEmpty(textstatus))
             {
-                result.AppendLine(null, $"- {AppConstants.AdrEmptyStatusMarker}");
+                result.AppendLine(null, $"|{config.HeaderTitleStatusSuperseded}||");
             }
             else
             {
@@ -216,27 +238,26 @@ namespace AdrPlus.Domain
                 {
                     if (ChangeRef.HasValue)
                     {
-                        result.AppendLine(null, $"- {textstatus} ({ChangeRef!.Value.ToString("yyyy-MM-dd", null)})");
+                        result.AppendLine(null, $"|{config.HeaderTitleStatusSuperseded}|{textstatus} ({ChangeRef!.Value.ToString("yyyy-MM-dd", null)})|");
                     }
                     else
                     {
-                        result.AppendLine(null, $"- {textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})");
+                        result.AppendLine(null, $"|{config.HeaderTitleStatusSuperseded}|{textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)})|");
                     }
                 }
                 else
                 {
                     if (ChangeRef.HasValue)
                     {
-                        result.AppendLine(null, $"- {textstatus} ({ChangeRef!.Value.ToString("yyyy-MM-dd", null)}) : {supersedefile}");
+                        result.AppendLine(null, $"|{config.HeaderTitleStatusSuperseded}|{textstatus} ({ChangeRef!.Value.ToString("yyyy-MM-dd", null)}) : {supersedefile}|");
                     }
                     else
                     {
-                        result.AppendLine(null, $"- {textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)}) : {supersedefile}");
+                        result.AppendLine(null, $"|{config.HeaderTitleStatusSuperseded}|{textstatus} ({DateTime.UtcNow.ToString("yyyy-MM-dd", null)}) : {supersedefile}|");
                     }
                 }
             }
-            result.AppendLine(null, $"# {Title}");
-            result.AppendLine("---");
+            result.AppendLine(null, $"<!-- {config.HeaderDisclaimer} (1-{AppConstants.LenghtHeader}) -->");
             return result.ToString();
         }
     }

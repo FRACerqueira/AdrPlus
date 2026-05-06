@@ -103,9 +103,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
         FileTemplate,
-        [CommandArgument("-c", "--count")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageCountAdr")]
-        CountAdr,
+        [CommandArgument("-m", "--match")]
+        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageMatchAdr")]
+        MatchAdr,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help,

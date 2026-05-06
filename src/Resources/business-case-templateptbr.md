@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Resumo
 
 * Critérios de avaliação

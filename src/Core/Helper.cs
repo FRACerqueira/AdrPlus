@@ -77,6 +77,20 @@ namespace AdrPlus.Core
 
         #region Parsing
 
+        public static string GetResourceStatus(AdrStatus adrStatus)
+        {
+            return adrStatus switch
+            {
+                AdrStatus.Proposed => Resources.AdrPlus.StatusNew,
+                AdrStatus.Accepted => Resources.AdrPlus.StatusAcc,
+                AdrStatus.Rejected => Resources.AdrPlus.StatusRej,
+                AdrStatus.Superseded => Resources.AdrPlus.StatusSup,
+                AdrStatus.Unknown => Resources.AdrPlus.Unknown,
+                _ => adrStatus.ToString(),
+            };
+        }
+
+
         /// <summary>
         /// Parses a status line extracted from an ADR header.
         /// Expected format: <c>&lt;StatusText&gt; (dd/MM/yyyy)</c>, or <c>\-</c> for an absent/empty status.

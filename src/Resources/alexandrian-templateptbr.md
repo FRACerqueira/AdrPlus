@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Decisores
 
 * Tomadores de decisão: [listar todos os envolvidos na decisão] <!-- opcional -->

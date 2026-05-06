@@ -58,18 +58,20 @@ namespace AdrPlus.Commands.Approve
         /// <returns><see langword="true"/> when the ADR is eligible for approval; otherwise <see langword="false"/>.</returns>
         private static bool SelectionCondition(AdrFileNameComponents info)
         {
-            return (info.Header.StatusUpdate == AdrStatus.Unknown);
+            return (info.Header.IsValid &&
+                (info.Header.StatusCreate == AdrStatus.Proposed || (info.Header.StatusCreate == AdrStatus.Unknown && info.Header.IsMigrated)) && 
+                info.Header.StatusUpdate == AdrStatus.Unknown && 
+                info.Header.StatusChange == AdrStatus.Unknown);
         }
 
         /// <summary>
         /// Builds a localized error message indicating that the ADR's current status does not allow approval.
         /// </summary>
-        /// <param name="repoconfig">The repository configuration providing the status-to-string mapping.</param>
         /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
         /// <returns>A formatted error string naming the current status.</returns>
-        private static string MessageNotValidStatusForUpdate(AdrPlusRepoConfig repoconfig, AdrStatus adrStatus)
+        private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
-            return string.Format(null, FormatMessages.NotValidStatusForApproveAndReject, $"{repoconfig.StatusMapping[adrStatus]}");
+            return string.Format(null, FormatMessages.NotValidStatusForApproveAndReject, $"{Helper.GetResourceStatus(adrStatus)}");
         }
 
         /// <summary>
@@ -138,11 +140,6 @@ namespace AdrPlus.Commands.Approve
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                if (repoconfig.LenVersion == 0)
-                {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorVersionNotConfig, configrootPath));
-                }
-
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
                 {
@@ -156,12 +153,12 @@ namespace AdrPlus.Commands.Approve
                 {
                     if (!SelectionCondition(infoadr))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, infoadr.Header.StatusUpdate));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(infoadr.Header.StatusUpdate));
                     }
                     var filescheckadrs = _adrServices.ReadAllAdrByNumber(infoadr.Number, _filesystem, rootrepo, repoconfig).Result;
                     if (filescheckadrs.Any(adr => adr.Header.StatusChange == AdrStatus.Superseded))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Superseded));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(AdrStatus.Superseded));
                     }
                 }
 
@@ -266,7 +263,7 @@ namespace AdrPlus.Commands.Approve
 
                 var curpos = _console.GetCursorPosition();
                 _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
-                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, folderPrompt.Content, repoconfig);
+                var filesadrs = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, repoconfig,false);
                 _console.ClearWait(curpos);
 
                 if (filesadrs.Length == 0)
@@ -278,24 +275,23 @@ namespace AdrPlus.Commands.Approve
                 {
                     if (!SelectionCondition(info))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig,info.Header.StatusUpdate));
+                        return (false, MessageNotValidStatusForUpdate(info.Header.StatusUpdate));
                     }
                     var filescheckadrs = _adrServices.ReadAllAdrByNumber(info.Number, _filesystem, folderPrompt.Content, repoconfig).Result;
                     if (filescheckadrs.Any(adr => adr.Header.StatusChange == AdrStatus.Superseded))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Superseded));
+                        return (false, MessageNotValidStatusForUpdate(AdrStatus.Superseded));
                     }
-
                     return (true, null);
                 }
-                var filenewver = _console.PromptSelecLatesAdrs(filesadrs, repoconfig, validselect, cancellationToken);
+                var filenewver = _console.PromptSelecAdrs(filesadrs, repoconfig, validselect, cancellationToken);
                 if (filenewver.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                var dateRefPrompt = _console.PrompCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var dateRefPrompt = _console.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

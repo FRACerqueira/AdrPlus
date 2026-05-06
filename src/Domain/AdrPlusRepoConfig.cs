@@ -8,118 +8,174 @@ using System.Text.Json.Serialization;
 namespace AdrPlus.Domain
 {
     /// <summary>
-    /// Represents the configuration for ADR Plus Repository.
+    /// Represents the repository configuration for the ADR Plus system, including folder paths, naming conventions, and header templates.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="AdrPlusRepoConfig"/> class with default values.
+    /// Initialized with the folder path for ADRs and the default Markdown template. All other settings use sensible defaults
+    /// that can be customized via property setters.
     /// </remarks>
-    /// <param name="folderadr">The default folder for ADRs.</param>
-    /// <param name="template">The default template content.</param>
+    /// <param name="folderadr">The folder path where ADR files are stored, e.g., "docs/adr".</param>
+    /// <param name="template">The Markdown template content used for generating new ADRs.</param>
     internal sealed class AdrPlusRepoConfig(string folderadr, string template)
     {
 
         /// <summary>
-        /// Folder for the ADRs in the repository, e.g. "docs/adr".
+        /// Gets or sets the folder path where ADR files are stored, e.g., "docs/adr".
         /// </summary>
         public string FolderAdr { get; set; } = folderadr;
 
         /// <summary>
-        /// Gets the template string used for formatting or processing content ADR.
+        /// Gets or sets the Markdown template content used for generating new ADRs.
         /// </summary>
         public string Template { get; set; } = template;
 
         /// <summary>
-        /// Optional prefix for the filename, e.g. "ADR-0001-My-ADR.md"
+        /// Gets or sets the optional prefix for ADR filenames, e.g., "ADR" for "ADR-0001-My-ADR.md".
         /// </summary>
         public string? Prefix { get; set; } = Resources.AdrPlus.DefaultPrefix;
 
         /// <summary>
-        /// Number of digits for the sequence number, e.g. 4 for "0001". Must be greater than zero.
+        /// Gets or sets the number of digits for the sequence number in the filename, e.g., 4 for "0001".
+        /// Must be at least 3.
         /// </summary>
         public int LenSeq { get; set; } = 4;
 
         /// <summary>
-        /// Number of digits for the version number, e.g. 2 for "v01". Zero suggested for no versioning.
+        /// Gets or sets the number of digits for the version number in the filename, e.g., 2 for "v01".
+        /// Set to 0 to omit version from the filename.
         /// </summary>
         public int LenVersion { get; set; } = 2;
 
         /// <summary>
-        /// Number of digits for the revision number, e.g. 2 for "rev01". Zero suggested for no versioning.
+        /// Gets or sets the number of digits for the revision number in the filename, e.g., 2 for "rev01".
+        /// Set to 0 to omit revision from the filename.
         /// </summary>
         public int LenRevision { get; set; }
 
         /// <summary>
-        /// Number of digits for the scope text, e.g. 1 for "E". Zero suggested for no versioning.
+        /// Gets or sets the number of characters to use for the scope text in the filename, e.g., 1 for "E".
+        /// Set to 0 to omit scope from the filename.
         /// </summary>
         public int LenScope { get; set; }
 
         /// <summary>
-        /// Separator for different parts of the filename.
+        /// Gets or sets the separator character used between different parts of the filename.
+        /// Valid values are "-", "~", or ".".
         /// </summary>
         public char Separator { get; set; } = '-';
 
         /// <summary>
-        /// Case transformation for the Title filename, e.g. "CamelCase", "PascalCase", "SnakeCase", "KebabCase"
+        /// Gets or sets the case transformation to apply to the title portion of the filename,
+        /// e.g., <see cref="CaseFormat.CamelCase"/>, <see cref="CaseFormat.PascalCase"/>, <see cref="CaseFormat.SnakeCase"/>, or <see cref="CaseFormat.KebabCase"/>.
         /// </summary>
         public CaseFormat CaseTransform { get; set; } = CaseFormat.PascalCase;
 
         /// <summary>
-        /// Status for new ADRs, e.g. "Propose". Required for creating a new ADR.
+        /// Gets or sets the status value for newly proposed ADRs, e.g., "Proposed".
+        /// This is required when creating a new ADR.
         /// </summary>  
         public string StatusNew { get; set; } = Resources.AdrPlus.StatusNew;
 
         /// <summary>
-        /// Status for accepted ADRs, e.g. "Accepted". Required for changing status ADR. Valid only if status equal to "statusnew".
+        /// Gets or sets the status value for accepted ADRs, e.g., "Accepted".
+        /// This status is valid only when the current ADR status is <see cref="StatusNew"/>.
         /// </summary>
         public string StatusAcc { get; set; } = Resources.AdrPlus.StatusAcc;
 
         /// <summary>
-        /// Status for rejected ADRs, e.g. "Rejected". Optional status. Valid only if status equal to "statusnew".
+        /// Gets or sets the status value for rejected ADRs, e.g., "Rejected".
+        /// This status is valid only when the current ADR status is <see cref="StatusNew"/>.
         /// </summary>
         public string StatusRej { get; set; } = Resources.AdrPlus.StatusRej;
 
         /// <summary>
-        /// Status for superseded ADRs, e.g. "Superseded". Required for changing status ADR. Valid only if status equal to "statusacc".
+        /// Gets or sets the status value for superseded ADRs, e.g., "Superseded".
+        /// This status is valid only when the current ADR status is <see cref="StatusAcc"/>.
         /// </summary>
         public string StatusSup { get; set; } = Resources.AdrPlus.StatusSup;
 
         /// <summary>
-        /// Semicolon-separated list of scopes, e.g. "Enterprise;Domain;Project"
+        /// Gets or sets the semicolon-separated list of scopes for organizing ADRs, e.g., "Enterprise;Domain;Project".
         /// </summary>
         public string Scopes { get; set; } = string.Empty;
 
         /// <summary>
-        /// Whether to create subfolders for each scope, e.g. "true" or "false"
+        /// Gets or sets a value indicating whether to create subfolders for each scope, e.g., <c>true</c> or <c>false</c>.
         /// </summary>
         public bool FolderByScope { get; set; }
 
         /// <summary>
-        /// Scope for which to skip the domain section in the filename, e.g. "Enterprise". Must be one of the scopes defined in "scopes". Optional.
+        /// Gets or sets the scope for which to skip the domain section in the filename, e.g., "Enterprise".
+        /// Must be one of the scopes defined in <see cref="Scopes"/>. Optional when no domain skipping is needed.
         /// </summary>
         public string SkipDomain { get; set; } = string.Empty;
 
         /// <summary>
-        /// Template for the header of the ADR. Optional.
+        /// Gets or sets the disclaimer text that appears in the ADR header.
         /// </summary>
         public string HeaderDisclaimer { get; set; } = Resources.AdrPlus.DefaultHeaderDisclaimer;
 
         /// <summary>
-        /// Template for the status section of the ADR. Optional. 
+        /// Gets or sets the template text for the file title displayed in the ADR header.
         /// </summary>
-        public string HeaderStatus { get; set; } = Resources.AdrPlus.DefaultTextStatus;
+        public string HeaderTitleFile { get; set; } = Resources.AdrPlus.DefaultHeaderTitleFile;
 
         /// <summary>
-        /// Template for the version section of the ADR. Optional. 
+        /// Gets or sets the template text for the version label displayed in the ADR header.
         /// </summary>
         public string HeaderVersion { get; set; } = Resources.AdrPlus.Version;
 
         /// <summary>
-        /// Template for the revision section of the ADR. Optional.
+        /// Gets or sets the template text for the revision label displayed in the ADR header.
         /// </summary>
         public string HeaderRevision { get; set; } = Resources.AdrPlus.Revision;
 
+
         /// <summary>
-        /// Gets the mapping between ADR status enum values and their string representations.
+        /// Gets or sets the template text for the scope label displayed in the ADR header.
+        /// </summary>
+        public string HeaderScope { get; set; } = Resources.AdrPlus.Scope;
+
+
+        /// <summary>
+        /// Gets or sets the template text for the domain label displayed in the ADR header.
+        /// </summary>
+        public string HeaderDomain { get; set; } = Resources.AdrPlus.Domain;
+
+        /// <summary>
+        /// Gets or sets the template text for the "Created" status label displayed in the ADR header.
+        /// </summary>
+        public string HeaderTitleStatusCreated { get; set; } = Resources.AdrPlus.Created;
+
+        /// <summary>
+        /// Gets or sets the template text for the "Changed" status label displayed in the ADR header.
+        /// </summary>
+        public string HeaderTitleStatusChanged { get; set; } = Resources.AdrPlus.Changed;
+
+
+        /// <summary>
+        /// Gets or sets the template text for the "Superseded" status label displayed in the ADR header.
+        /// </summary>
+        public string HeaderTitleStatusSuperseded { get; set; } = Resources.AdrPlus.StatusSup;
+
+        /// <summary>
+        /// Gets or sets the template text for the table header displaying field names in the ADR.
+        /// </summary>
+        public string HeaderTableFields { get; set; } = Resources.AdrPlus.Fields;
+
+        /// <summary>
+        /// Gets or sets the template text for the table header displaying field values in the ADR.
+        /// </summary>
+        public string HeaderTableValues { get; set; } = Resources.AdrPlus.Values;
+
+
+        /// <summary>
+        /// Gets or sets the template text for the "Migrated" label displayed in the ADR header.
+        /// </summary>
+        public string HeaderMigrated { get; set; } = Resources.AdrPlus.Migrated;
+
+        /// <summary>
+        /// Gets the mapping between ADR status enum values and their configured string representations.
         /// </summary>
         [JsonIgnore]
         public Dictionary<AdrStatus, string> StatusMapping => new()
@@ -132,9 +188,9 @@ namespace AdrPlus.Domain
         };
 
         /// <summary>
-        /// Gets the semicolon-separated <see cref="Scopes"/> value as a trimmed, non-empty string array.
+        /// Gets the <see cref="Scopes"/> value as a trimmed, non-empty string array.
         /// </summary>
-        /// <returns>An array of scope name strings, or an empty array when <see cref="Scopes"/> is null or whitespace.</returns>
+        /// <returns>An array of scope name strings; an empty array if <see cref="Scopes"/> is null or whitespace.</returns>
         public string[] GetScopes()
         {
             if (string.IsNullOrWhiteSpace(Scopes))
@@ -144,11 +200,11 @@ namespace AdrPlus.Domain
         }
 
         /// <summary>
-        /// Gets the semicolon-separated <see cref="SkipDomain"/> value as a trimmed, non-empty string array.
-        /// These are scopes for which the domain segment is omitted from the filename.
+        /// Gets the <see cref="SkipDomain"/> value as a trimmed, non-empty string array.
+        /// These are the scopes for which the domain segment is omitted from the filename.
         /// </summary>
-        /// <returns>An array of scope name strings to skip domain for, or an empty array when <see cref="SkipDomain"/> is null or whitespace.</returns>
-        public string[] Getskipdomains()
+        /// <returns>An array of scope name strings; an empty array if <see cref="SkipDomain"/> is null or whitespace.</returns>
+        public string[] GetSkipDomains()
         {
             if (string.IsNullOrWhiteSpace(SkipDomain))
                 return [];

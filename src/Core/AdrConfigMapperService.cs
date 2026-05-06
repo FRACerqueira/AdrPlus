@@ -104,14 +104,38 @@ namespace AdrPlus.Core
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderDisclaimer, out var headerDisclaimerElement) && headerDisclaimerElement.ValueKind == JsonValueKind.String)
                 config.HeaderDisclaimer = headerDisclaimerElement.GetString()!;
 
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderStatus, out var headerStatusElement) && headerStatusElement.ValueKind == JsonValueKind.String)
-                config.HeaderStatus = headerStatusElement.GetString()!;
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderTitleFile, out var headerTitleFileElement) && headerTitleFileElement.ValueKind == JsonValueKind.String)
+                config.HeaderTitleFile = headerTitleFileElement.GetString()!;
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderVersion, out var headerVersionElement) && headerVersionElement.ValueKind == JsonValueKind.String)
                 config.HeaderVersion = headerVersionElement.GetString()!;
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderRevision, out var headerRevisionElement) && headerRevisionElement.ValueKind == JsonValueKind.String)
                 config.HeaderRevision = headerRevisionElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderScope, out var headerScopeElement) && headerScopeElement.ValueKind == JsonValueKind.String)
+                config.HeaderScope = headerScopeElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderDomain, out var headerDomainElement) && headerDomainElement.ValueKind == JsonValueKind.String)
+                config.HeaderDomain = headerDomainElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderStatusCreated, out var headerStatusCreatedElement) && headerStatusCreatedElement.ValueKind == JsonValueKind.String)
+                config.HeaderTitleStatusCreated = headerStatusCreatedElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderStatusChanged, out var headerStatusChangedElement) && headerStatusChangedElement.ValueKind == JsonValueKind.String)
+                config.HeaderTitleStatusChanged = headerStatusChangedElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderStatusSuperseded, out var headerStatusSupersededElement) && headerStatusSupersededElement.ValueKind == JsonValueKind.String)
+                config.HeaderTitleStatusSuperseded = headerStatusSupersededElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderTableFields, out var headerTableFieldsElement) && headerTableFieldsElement.ValueKind == JsonValueKind.String)
+                config.HeaderTableFields = headerTableFieldsElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderTableValues, out var headerTableValuesElement) && headerTableValuesElement.ValueKind == JsonValueKind.String)
+                config.HeaderTableValues = headerTableValuesElement.GetString()!;
+
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderMigrated, out var headerMigratedElement) && headerMigratedElement.ValueKind == JsonValueKind.String)
+                config.HeaderMigrated = headerMigratedElement.GetString()!;
 
             return config;
         }

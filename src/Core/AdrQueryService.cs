@@ -31,7 +31,7 @@ namespace AdrPlus.Core
             }
 
             var result = new List<AdrFileNameComponents>();
-            var searchPattern = $"{config.Prefix ?? string.Empty}{sequence.ToString($"D{config.LenSeq}", CultureInfo.CurrentCulture)}{config.Separator}*.md";
+            var searchPattern = $"*{sequence.ToString($"D{config.LenSeq}", CultureInfo.CurrentCulture)}*.md";
             var adrfolder = Path.GetFullPath(Path.Combine(rootpath, config.FolderAdr));
             var mdFiles = fileSystemService.GetFiles(adrfolder, searchPattern);
 
@@ -62,7 +62,7 @@ namespace AdrPlus.Core
         }
 
         /// <inheritdoc/>
-        public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false)
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
@@ -83,13 +83,13 @@ namespace AdrPlus.Core
             foreach (var filePath in mdFiles)
             {
                 var parsedComponents = await _fileParser.ParseFileName(filePath, config, fileSystemService);
-                if (!parsedComponents.IsValid)
+                if (!parsedComponents.IsValid && !includeNotMatched)
                 {
                     continue;
                 }
                 result.Add(parsedComponents);
             }
-            return [.. result];
+            return [.. result.OrderBy(x => x.Header.IsMigrated).ThenByDescending(x=> x.Number)];
         }
 
         /// <inheritdoc/>

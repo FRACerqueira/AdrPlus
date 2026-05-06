@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Contexto
 
 Qual é o problema que estamos vendo que está motivando essa decisão ou mudança?

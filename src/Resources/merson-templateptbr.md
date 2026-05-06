@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Decisão 
 Descreva aqui nossa resposta a essas forças, ou seja, a decisão de design que foi tomada. Declare a decisão em frases completas, com voz ativa ("Vamos...").
 

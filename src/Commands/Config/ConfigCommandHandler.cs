@@ -563,13 +563,29 @@ namespace AdrPlus.Commands.Config
                 AppConstants.FieldStatusRejected => HandleEditField(() => 
                     _console.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
                 AppConstants.FieldHeaderDisclaimer => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderDisclaimer(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldHeaderStatus => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                    _console.PromptEditFieldHeaderText(selection,200,Resources.AdrPlus.DefaultHeaderDisclaimer, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTitleFile => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.DefaultHeaderTitleFile, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldHeaderVersion => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderVersion(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                    _console.PromptEditFieldHeaderText(selection,40,Resources.AdrPlus.Version, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldHeaderRevision => HandleEditField(() =>
-                    _console.PromptEditFieldHeaderRevision(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                    _console.PromptEditFieldHeaderText(selection,40, Resources.AdrPlus.Revision, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderScope => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Scope, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderDomain => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Domain, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusCreated => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Created, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusChanged => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Changed, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusSuperseded => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Superseded, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTableFields => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Fields, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTableValues => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Values, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderMigrated => HandleEditField(() =>
+                    _console.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Migrated, cancellationToken), selection, v => v.Trim()),
                 _ => false
             };
         }
@@ -602,7 +618,7 @@ namespace AdrPlus.Commands.Config
         private string[] GetSampleFiles(string modifiedConfig)
         {
             var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty);
-            var skipdomains = repoconfig.Getskipdomains();
+            var skipdomains = repoconfig.GetSkipDomains();
             var scopes = repoconfig.GetScopes();
             var eligibleScope = scopes.Where(x => !skipdomains.Any(s => s == x)).FirstOrDefault() ?? string.Empty;
 

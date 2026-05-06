@@ -80,6 +80,12 @@ namespace AdrPlus.Domain
         /// </summary>
         public bool IsValid { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the ADR file was migrated from an older version without header to the new version with header. 
+        /// </summary>
+        public bool IsMigrated { get; set; }
+
         /// <summary>
         /// Gets or sets the error message if header parsing failed.
         /// </summary>

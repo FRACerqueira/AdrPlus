@@ -8,7 +8,7 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Tests.Helpers;
 
-namespace AdrPlus.Tests.Commands;
+namespace AdrPlus.Tests.Core;
 
 public class AdrStatusServiceTests
 {
@@ -21,7 +21,7 @@ public class AdrStatusServiceTests
     public AdrStatusServiceTests()
     {
         _statusService = new AdrStatusService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}","doc/adr")
+        _config = new AdrPlusRepoConfig("# {0}", "doc/adr")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -35,8 +35,7 @@ public class AdrStatusServiceTests
             StatusSup = "Superseded",
             HeaderDisclaimer = "Architecture Decision Record",
             HeaderVersion = "Version",
-            HeaderRevision = "Revision",
-            HeaderStatus = "Status"
+            HeaderRevision = "Revision"
         };
     }
 

@@ -19,7 +19,7 @@ namespace AdrPlus.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AdrPlus {
@@ -84,6 +84,15 @@ namespace AdrPlus.Resources {
         internal static string CancelledByUser {
             get {
                 return ResourceManager.GetString("CancelledByUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changed.
+        /// </summary>
+        internal static string Changed {
+            get {
+                return ResourceManager.GetString("Changed", resourceCulture);
             }
         }
         
@@ -511,6 +520,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Created.
+        /// </summary>
+        internal static string Created {
+            get {
+                return ResourceManager.GetString("Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         internal static string Date {
@@ -520,11 +538,20 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Do not remove this template, lines 1~10. It is used and must remain unchanged to ensure consistency in documentation).
+        ///   Looks up a localized string similar to Do not remove this comment, lines and table.
         /// </summary>
         internal static string DefaultHeaderDisclaimer {
             get {
                 return ResourceManager.GetString("DefaultHeaderDisclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File title md.
+        /// </summary>
+        internal static string DefaultHeaderTitleFile {
+            get {
+                return ResourceManager.GetString("DefaultHeaderTitleFile", resourceCulture);
             }
         }
         
@@ -543,15 +570,6 @@ namespace AdrPlus.Resources {
         internal static string DefaultScope {
             get {
                 return ResourceManager.GetString("DefaultScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Status.
-        /// </summary>
-        internal static string DefaultTextStatus {
-            get {
-                return ResourceManager.GetString("DefaultTextStatus", resourceCulture);
             }
         }
         
@@ -601,6 +619,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ADR file does not have the expected domain header.
+        /// </summary>
+        internal static string ErrMsgAdrHeaderDomainInvalid {
+            get {
+                return ResourceManager.GetString("ErrMsgAdrHeaderDomainInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error parsing ADR header: {0}.
         /// </summary>
         internal static string ErrMsgAdrHeaderParsingError {
@@ -646,7 +673,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The ADR file does not have the expected status change line.
+        ///   Looks up a localized string similar to The ADR file does not have the expected changed status.
         /// </summary>
         internal static string ErrMsgAdrHeaderStatusChangeLineInvalid {
             get {
@@ -655,7 +682,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The ADR file does not have the expected status create line.
+        ///   Looks up a localized string similar to The ADR file does not have the expected created status.
         /// </summary>
         internal static string ErrMsgAdrHeaderStatusCreateLineInvalid {
             get {
@@ -664,11 +691,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The ADR file does not have the expected status header.
+        ///   Looks up a localized string similar to The ADR file does not have the expected superseded status.
         /// </summary>
-        internal static string ErrMsgAdrHeaderStatusInvalid {
+        internal static string ErrMsgAdrHeaderStatusSupersededLineInvalid {
             get {
-                return ResourceManager.GetString("ErrMsgAdrHeaderStatusInvalid", resourceCulture);
+                return ResourceManager.GetString("ErrMsgAdrHeaderStatusSupersededLineInvalid", resourceCulture);
             }
         }
         
@@ -705,6 +732,15 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgAdrHeaderVersionInvalid {
             get {
                 return ResourceManager.GetString("ErrMsgAdrHeaderVersionInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid header.
+        /// </summary>
+        internal static string ErrMsgAdrInvalidHeader {
+            get {
+                return ResourceManager.GetString("ErrMsgAdrInvalidHeader", resourceCulture);
             }
         }
         
@@ -1303,11 +1339,29 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Header Comment.
+        ///   Looks up a localized string similar to Disclaimer header.
         /// </summary>
         internal static string FieldTitleHeaderDisclaimer {
             get {
                 return ResourceManager.GetString("FieldTitleHeaderDisclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Domain text in header.
+        /// </summary>
+        internal static string FieldTitleHeaderDomain {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderDomain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migrant&apos;s comment.
+        /// </summary>
+        internal static string FieldTitleHeaderMigrated {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderMigrated", resourceCulture);
             }
         }
         
@@ -1321,11 +1375,65 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Status text in header.
+        ///   Looks up a localized string similar to Scope text in header.
         /// </summary>
-        internal static string FieldTitleHeaderStatus {
+        internal static string FieldTitleHeaderScope {
             get {
-                return ResourceManager.GetString("FieldTitleHeaderStatus", resourceCulture);
+                return ResourceManager.GetString("FieldTitleHeaderScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status created text in header.
+        /// </summary>
+        internal static string FieldTitleHeaderStatusChanged {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderStatusChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status Created text in header.
+        /// </summary>
+        internal static string FieldTitleHeaderStatusCreated {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderStatusCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status superseded text in header.
+        /// </summary>
+        internal static string FieldTitleHeaderStatusSuperseded {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderStatusSuperseded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fields text header.
+        /// </summary>
+        internal static string FieldTitleHeaderTableFields {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderTableFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values text header.
+        /// </summary>
+        internal static string FieldTitleHeaderTableValues {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderTableValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Title text in header.
+        /// </summary>
+        internal static string FieldTitleHeaderTitleFile {
+            get {
+                return ResourceManager.GetString("FieldTitleHeaderTitleFile", resourceCulture);
             }
         }
         
@@ -1600,6 +1708,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Number of ARDs that must meet the criteria.
+        /// </summary>
+        internal static string HelpUsageMatchAdr {
+            get {
+                return ResourceManager.GetString("HelpUsageMatchAdr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open ADR after execute command.
         /// </summary>
         internal static string HelpUsageOpenAdr {
@@ -1866,6 +1983,15 @@ namespace AdrPlus.Resources {
         internal static string InvalidRepoStructure {
             get {
                 return ResourceManager.GetString("InvalidRepoStructure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migrated.
+        /// </summary>
+        internal static string Migrated {
+            get {
+                return ResourceManager.GetString("Migrated", resourceCulture);
             }
         }
         
@@ -2230,6 +2356,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Superseded.
+        /// </summary>
+        internal static string Superseded {
+            get {
+                return ResourceManager.GetString("Superseded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template.
         /// </summary>
         internal static string Template {
@@ -2433,6 +2568,15 @@ namespace AdrPlus.Resources {
         internal static string ValidationUnexpectedFields {
             get {
                 return ResourceManager.GetString("ValidationUnexpectedFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values.
+        /// </summary>
+        internal static string Values {
+            get {
+                return ResourceManager.GetString("Values", resourceCulture);
             }
         }
         
