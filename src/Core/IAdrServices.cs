@@ -100,19 +100,6 @@ namespace AdrPlus.Core
         Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
-        /// Reads all ADR files and returns only the entry with the highest version and revision for each unique sequence number.
-        /// The result is ordered descending by sequence number.
-        /// </summary>
-        /// <param name="fileSystemService">The file system service used for file operations.</param>
-        /// <param name="directoryPath">The directory path to search for <c>.md</c> files.</param>
-        /// <param name="config">The ADR Plus configuration containing naming conventions.</param>
-        /// <returns>An array of <see cref="AdrFileNameComponents"/> containing only the latest version and revision for each sequence number.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> or <paramref name="fileSystemService"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="directoryPath"/> is null, empty, or whitespace.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown when <paramref name="directoryPath"/> does not exist.</exception>
-        Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
-
-        /// <summary>
         /// Searches all ADR files in <paramref name="directoryPath"/> for one whose unique title
         /// (title + domain, after case transformation) matches <paramref name="title"/> and <paramref name="domain"/>.
         /// </summary>

@@ -61,9 +61,6 @@ namespace AdrPlus.Commands
         [CommandArgument("-p", "--path")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
         TargetRepo,
-        [CommandArgument("-p", "--path")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoAdrPath")]
-        TargetRepoAdr,
         [CommandArgument("-t", "--title")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]
         TitleAdr,

@@ -11,6 +11,7 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.Text.Json;
 
 namespace AdrPlus.Commands.Migrate
@@ -56,10 +57,10 @@ namespace AdrPlus.Commands.Migrate
                 throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
             }
 
-            var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRepo);
+            var hasWizard = parsedArgs.ContainsKey(Arguments.WizardMigrate);
             if (hasWizard)
             {
-                parsedArgs = MigrateWizard(cancellationToken);
+                parsedArgs = await MigrateWizardAsync(cancellationToken);
             }
 
             if (!parsedArgs.TryGetValue(Arguments.MatchAdr, out var matchAdrValue))
@@ -97,7 +98,7 @@ namespace AdrPlus.Commands.Migrate
 
             var foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
 
-            if (foundfiles.Count(x => x.IsValid && !x.Header.IsValid) != matchAdr)
+            if (foundfiles.Count(x => x.IsValid) != matchAdr)
             { 
                 throw new InvalidOperationException("ErrMsgMatchAdrCount");
             }
@@ -112,30 +113,79 @@ namespace AdrPlus.Commands.Migrate
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A dictionary of parsed arguments pre-populated with <see cref="Arguments.TargetRepo"/>.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
-        private Dictionary<Arguments, string> MigrateWizard(CancellationToken cancellationToken)
+
+        private async Task<Dictionary<Arguments, string>> MigrateWizardAsync(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
-            string[] drives = _fileSystem.GetDrives();
-            var rootPath = drives[0];
-
-            if (drives.Length > 1)
+            while (true)
             {
-                var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
-                if (IsAborted)
+                parsedArgs.Clear();
+
+                string[] drives = _fileSystem.GetDrives();
+                var rootPath = drives[0];
+
+                if (drives.Length > 1)
+                {
+                    var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                    if (IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+                    rootPath = Content;
+                }
+
+                var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateConfig, cancellationToken);
+                if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
-                rootPath = Content;
-            }
 
-            var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateConfig, cancellationToken);
-            if (folderPrompt.IsAborted)
-            {
-                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-            }
+                parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
 
-            parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
-            return parsedArgs;
+                var configPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _validateConfig.GetFileNameRepoConfig()));
+                if (!_fileSystem.FileExists(configPath))
+                {
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                }
+
+                string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
+                var (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsonString);
+                if (!IsValid)
+                {
+                    LogAndWriteErrors(ErrorReport);
+                    throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
+                }
+
+                var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+
+                var foundfiles = await _adrServices.ReadAllAdr(_fileSystem, folderPrompt.Content, repoconfig, true);
+                if (foundfiles.Length == 0)
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
+                }
+                if (!foundfiles.Any(x => x.IsValid))
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
+                }
+
+                var adrselectedPrompt = _console.PromptShowAdrsMigrations(foundfiles, repoconfig, cancellationToken);
+                if (adrselectedPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                parsedArgs[Arguments.MatchAdr] = adrselectedPrompt.CountSelected.ToString(CultureInfo.InvariantCulture);
+
+                var resultCnf = _console.PromptConfirm(Resources.AdrPlus.PromptConfirmMigration, cancellationToken);
+                if (resultCnf.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (resultCnf.ConfirmYes)
+                {
+                    return parsedArgs;
+                }
+            }
         }
 
 

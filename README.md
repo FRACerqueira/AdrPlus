@@ -59,6 +59,8 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - ⚙️ **Config editor** for application and repository settings
+- 📂 **Customizable ADR structure** with user-defined templates and naming conventions
+- 🔄 **Migrate** existing ADRs to the standardized format with a simple command
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**

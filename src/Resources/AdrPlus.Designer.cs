@@ -61,6 +61,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to AdrPlus Format.
+        /// </summary>
+        internal static string AdrPlusFormat {
+            get {
+                return ResourceManager.GetString("AdrPlusFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to and  have configuration enabled.
         /// </summary>
         internal static string AndHaveConfigurationEnabled {
@@ -1807,15 +1816,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to the repository&apos;s ADR folder.
-        /// </summary>
-        internal static string HelpUsageTargetRepoAdrPath {
-            get {
-                return ResourceManager.GetString("HelpUsageTargetRepoAdrPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Path to the repository&apos;s root folder.
         /// </summary>
         internal static string HelpUsageTargetRepoPath {
@@ -1969,6 +1969,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid header format.
+        /// </summary>
+        internal static string InvalidFormatHeader {
+            get {
+                return ResourceManager.GetString("InvalidFormatHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Menu option not implemented : {0}.
         /// </summary>
         internal static string InvalidMenuOption {
@@ -2010,6 +2019,15 @@ namespace AdrPlus.Resources {
         internal static string MsgCommandStarted {
             get {
                 return ResourceManager.GetString("MsgCommandStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File title with unknown structure.
+        /// </summary>
+        internal static string MsgUnknownStructure {
+            get {
+                return ResourceManager.GetString("MsgUnknownStructure", resourceCulture);
             }
         }
         
@@ -2122,6 +2140,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No ADRs were found with valid criteria for migration.
+        /// </summary>
+        internal static string NotFoundValidMigrateADR {
+            get {
+                return ResourceManager.GetString("NotFoundValidMigrateADR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified ADR file is not the latest version. Please select the latest version.
         /// </summary>
         internal static string NotLatestVersion {
@@ -2140,7 +2167,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified ADR file already has a valid status ({0}) for updating.
+        ///   Looks up a localized string similar to The specified ADR file not has a valid status ({0}) for updating.
         /// </summary>
         internal static string NotValidStatusForApproveAndReject {
             get {
@@ -2190,6 +2217,24 @@ namespace AdrPlus.Resources {
         internal static string PressAnyKey {
             get {
                 return ResourceManager.GetString("PressAnyKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADRs to migrate.
+        /// </summary>
+        internal static string PromptAdrToMigrate {
+            get {
+                return ResourceManager.GetString("PromptAdrToMigrate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the ADR migration to these files?.
+        /// </summary>
+        internal static string PromptConfirmMigration {
+            get {
+                return ResourceManager.GetString("PromptConfirmMigration", resourceCulture);
             }
         }
         
@@ -2271,6 +2316,15 @@ namespace AdrPlus.Resources {
         internal static string PromptSelectRepoActions {
             get {
                 return ResourceManager.GetString("PromptSelectRepoActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to migrate.
+        /// </summary>
+        internal static string ReadyToMigrate {
+            get {
+                return ResourceManager.GetString("ReadyToMigrate", resourceCulture);
             }
         }
         
@@ -2590,6 +2644,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View only. Press &lt;enter&gt; to continue.
+        /// </summary>
+        internal static string ViewOnlyPrompt {
+            get {
+                return ResourceManager.GetString("ViewOnlyPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wait, reading ADR´s....
         /// </summary>
         internal static string WaitReadFiles {
@@ -2617,7 +2680,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrApproveDescription {
             get {
@@ -2635,7 +2698,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrInitDescription {
             get {
@@ -2671,7 +2734,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrNewDescription {
             get {
@@ -2689,7 +2752,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrRejectDescription {
             get {
@@ -2707,7 +2770,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrRevisionDescription {
             get {
@@ -2725,7 +2788,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrSupersedeDescription {
             get {
@@ -2743,7 +2806,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrUndoStatusDescription {
             get {
@@ -2761,7 +2824,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardAdrVersionDescription {
             get {
@@ -2779,7 +2842,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardConfigApplicationDescription {
             get {
@@ -2815,7 +2878,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardConfigRepositoryDescription {
             get {
@@ -2833,7 +2896,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardConfigTemplateDescription {
             get {
@@ -2851,7 +2914,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Once selected, press [ESC] if you want to return to the wizard.
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
         internal static string WizardConfigUpgradeDescription {
             get {

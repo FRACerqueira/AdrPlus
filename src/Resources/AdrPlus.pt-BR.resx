@@ -784,7 +784,7 @@
     <value>O arquivo ADR especificado não possui um status válido ({0})</value>
   </data>
   <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
-    <value>O arquivo ADR especificado já possui um status válido ({0}) para atualização</value>
+    <value>O arquivo ADR especificado não possui um status válido ({0}) para atualização</value>
   </data>
   <data name="NotValidStatusForUndo" xml:space="preserve">
     <value>O arquivo ADR especificado não possui um status válido ({0}) para desfazer</value>
@@ -850,49 +850,49 @@
     <value>Iniciar um repositório para ADRs pela primeira vez</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrNewTitle" xml:space="preserve">
     <value>Criar um novo ADR</value>
   </data>
   <data name="WizardAdrNewDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrApproveTitle" xml:space="preserve">
     <value>Aprovar um ADR existente</value>
   </data>
   <data name="WizardAdrApproveDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrRejectTitle" xml:space="preserve">
     <value>Rejeitar um ADR existente</value>
   </data>
   <data name="WizardAdrRejectDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrVersionTitle" xml:space="preserve">
     <value>Criar uma nova versão de um ADR existente</value>
   </data>
   <data name="WizardAdrVersionDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrRevisionTitle" xml:space="preserve">
     <value>Criar uma nova revisão de um ADR existente</value>
   </data>
   <data name="WizardAdrRevisionDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrSupersedeTitle" xml:space="preserve">
     <value>Substituir um ADR existente</value>
   </data>
   <data name="WizardAdrSupersedeDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
     <value>Desfazer aprovar/rejeitar de um ADR existente</value>
   </data>
   <data name="WizardAdrUndoStatusDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardConfigMainMenuTitle" xml:space="preserve">
     <value>Menu principal</value>
@@ -904,19 +904,19 @@
     <value>Configurar esta aplicação</value>
   </data>
   <data name="WizardConfigApplicationDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardConfigTemplateTitle" xml:space="preserve">
     <value>Alterar template padrão de conteúdo ADR</value>
   </data>
   <data name="WizardConfigTemplateDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardConfigRepositoryTitle" xml:space="preserve">
     <value>Configurar template padrão do repositório ADR</value>
   </data>
   <data name="WizardConfigRepositoryDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardHelpMainMenuTitle" xml:space="preserve">
     <value>Menu principal</value>
@@ -1045,13 +1045,10 @@
     <value>Atualizar configurações do repositório</value>
   </data>
   <data name="WizardConfigUpgradeDescription" xml:space="preserve">
-    <value>Ao selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Assistente para atualizar as configurações de ADR de um repositório</value>
-  </data>
-  <data name="HelpUsageTargetRepoAdrPath" xml:space="preserve">
-    <value>Caminho para a pasta ADR do repositório</value>
   </data>
   <data name="HelpUsageRepoTemplate" xml:space="preserve">
     <value>Alterar modelo de ADR para este repositório</value>
@@ -1139,5 +1136,29 @@
   </data>
   <data name="ErrMsgAdrHeaderStatusSupersededLineInvalid" xml:space="preserve">
     <value>O arquivo ADR não possui o status de subistituição esperado</value>
+  </data>
+  <data name="PromptConfirmMigration" xml:space="preserve">
+    <value>Confirmar a migração de ADR para esses arquivos?</value>
+  </data>
+  <data name="NotFoundValidMigrateADR" xml:space="preserve">
+    <value>Não encontrados ADR com critérios validos para migração</value>
+  </data>
+  <data name="PromptAdrToMigrate" xml:space="preserve">
+    <value>ADRs para migrar</value>
+  </data>
+  <data name="MsgUnknownStructure" xml:space="preserve">
+    <value>Título de arquivo com estrutura desconhecida</value>
+  </data>
+  <data name="AdrPlusFormat" xml:space="preserve">
+    <value>Formato AdrPlus</value>
+  </data>
+  <data name="InvalidFormatHeader" xml:space="preserve">
+    <value>Cabeçalho com  formato inválido</value>
+  </data>
+  <data name="ReadyToMigrate" xml:space="preserve">
+    <value>Pronto para migrar</value>
+  </data>
+  <data name="ViewOnlyPrompt" xml:space="preserve">
+    <value>Somente visualização. Pressione &lt;enter&gt; para continuar</value>
   </data>
 </root>

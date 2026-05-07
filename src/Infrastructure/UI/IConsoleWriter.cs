@@ -15,6 +15,8 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal interface IConsoleWriter
     {
+        (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Checks if the current operation was aborted by the user pressing Ctrl+C.
         /// </summary>

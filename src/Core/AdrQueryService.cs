@@ -47,21 +47,6 @@ namespace AdrPlus.Core
         }
 
         /// <inheritdoc/>
-        public async Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-        {
-            var allAdrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);
-            return [.. allAdrFiles
-               .GroupBy(adr => $"{adr.Number}{adr.Header.StatusUpdate}")
-               .Select(group => group
-                   .OrderByDescending(adr => adr.Version)
-                   .ThenByDescending(adr => adr.Revision ?? 0)
-                   .First())
-               .OrderByDescending(adr => adr.Number)
-               .ThenByDescending(adr => adr.Version)
-               .ThenByDescending(adr => adr.Revision ?? 0)];
-        }
-
-        /// <inheritdoc/>
         public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false)
         {
             ArgumentNullException.ThrowIfNull(config);
@@ -89,7 +74,7 @@ namespace AdrPlus.Core
                 }
                 result.Add(parsedComponents);
             }
-            return [.. result.OrderBy(x => x.Header.IsMigrated).ThenByDescending(x=> x.Number)];
+            return [.. result.OrderByDescending(x => x.Header.IsValid).ThenBy(x => x.Header.IsMigrated).ThenByDescending(x=> x.Number)];
         }
 
         /// <inheritdoc/>

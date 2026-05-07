@@ -21,15 +21,6 @@ namespace AdrPlus.Core
         Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
-        /// Reads the latest ADR files asynchronously.
-        /// </summary>
-        /// <param name="fileSystemService">The file system service used to access files.</param>
-        /// <param name="directoryPath">The directory path to search in.</param>
-        /// <param name="config">The ADR Plus repository configuration.</param>
-        /// <returns>An array of <see cref="AdrFileNameComponents"/> representing the latest ADR files.</returns>
-        Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
-
-        /// <summary>
         /// Reads all ADR files asynchronously.
         /// </summary>
         /// <param name="fileSystemService">The file system service used to access files.</param>

@@ -683,7 +683,7 @@ public class ConfigCommandHandlerTests
             "GetSampleFiles",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-        var samples = (string[])method?.Invoke(_handler, new object[] { jsonContent })!;
+        var samples = (string[])method?.Invoke(_handler, [jsonContent])!;
 
         // Assert
         samples.Should().NotBeEmpty();
@@ -713,7 +713,7 @@ public class ConfigCommandHandlerTests
             "GetSampleFiles",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-        var samples = (string[])method?.Invoke(_handler, new object[] { jsonContent })!;
+        var samples = (string[])method?.Invoke(_handler, [jsonContent])!;
 
         // Assert - samples follow ADRNNNN-TITLE.md pattern with .md extension
         samples.Should().AllSatisfy(s => s.Should().StartWith("ADR"));
@@ -736,8 +736,8 @@ public class ConfigCommandHandlerTests
             "CreateSampleModel",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 
-        var model = (AdrRecord)method?.Invoke(null, new object[] 
-        { 
+        var model = (AdrRecord)method?.Invoke(null,
+        [
             1, // number
             1, // version
             1, // revision
@@ -747,7 +747,7 @@ public class ConfigCommandHandlerTests
             string.Empty, // scope
             string.Empty, // domainSuffix
             repoConfig // repoConfig
-        })!;
+        ])!;
 
         // Assert
         model.StatusCreate.Should().Be(AdrStatus.Proposed);
@@ -771,8 +771,8 @@ public class ConfigCommandHandlerTests
             "CreateSampleModel",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 
-        var model = (AdrRecord)method?.Invoke(null, new object[] 
-        { 
+        var model = (AdrRecord)method?.Invoke(null,
+        [
             3, // number
             1, // version
             1, // revision
@@ -782,7 +782,7 @@ public class ConfigCommandHandlerTests
             string.Empty, // scope
             "K", // domainSuffix
             repoConfig // repoConfig
-        })!;
+        ])!;
 
         // Assert
         model.StatusCreate.Should().Be(AdrStatus.Superseded);
@@ -806,8 +806,8 @@ public class ConfigCommandHandlerTests
             "CreateSampleModel",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 
-        var model = (AdrRecord)method?.Invoke(null, new object[] 
-        { 
+        var model = (AdrRecord)method?.Invoke(null,
+        [
             2, // number
             1, // version
             1, // revision
@@ -817,7 +817,7 @@ public class ConfigCommandHandlerTests
             "architecture", // scope
             "K", // domainSuffix
             repoConfig // repoConfig
-        })!;
+        ])!;
 
         // Assert
         model.Scope.Should().Be("architecture");
@@ -847,7 +847,7 @@ public class ConfigCommandHandlerTests
             "DisplaySampleFiles",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-        method?.Invoke(_handler, new object[] { jsonContent });
+        method?.Invoke(_handler, [jsonContent]);
 
         // Assert - console.WriteInfo should be called for header and samples
         _mockConsole.Received(1).WriteInfo(Resources.AdrPlus.ConfigInfoFileNameSample);

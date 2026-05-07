@@ -30,7 +30,6 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
-
             //normalize the path of the executing assembly to ensure it works correctly even if the app is run from a different directory
             var assembly = Assembly.GetExecutingAssembly()!;
             var basepath = Path.GetDirectoryName(assembly.Location)!;

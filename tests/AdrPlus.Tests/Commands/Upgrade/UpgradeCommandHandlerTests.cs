@@ -103,7 +103,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoTemplate, string.Empty },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -126,7 +126,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, "2" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -147,7 +147,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, "2" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var configPath = ConfigFilePath;
         var jsonConfig = """{"Invalid": "config"}""";
@@ -177,7 +177,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoTemplate, string.Empty },
             { Arguments.FileTemplate, templatePath },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -206,7 +206,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoTemplate, string.Empty },
             { Arguments.FileTemplate, missingTemplate },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -229,7 +229,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoTemplate, string.Empty },
             { Arguments.FileTemplate, invalidTemplate },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -251,7 +251,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.FileTemplate, templatePath },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -277,7 +277,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, version.ToString() },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -305,7 +305,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, version.ToString() },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -325,7 +325,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, string.Empty },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -345,7 +345,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, "1" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 1}""";
         var configPath = ConfigFilePath;
@@ -372,7 +372,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoRevision, revision.ToString() },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -400,7 +400,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoRevision, revision.ToString() },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -420,7 +420,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoRevision, "1" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenRevision": 1, "FolderAdr": "adr"}""";
         var configPath = ConfigFilePath;
@@ -449,7 +449,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, scopeValue.ToString() },
             { Arguments.RepoScopeItems, scopeItems },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -478,7 +478,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, scope.ToString() },
             { Arguments.RepoScopeItems, "Item1" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -498,7 +498,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoScope, "1" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -520,7 +520,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, "2" },
             { Arguments.RepoScopeItems, scopeItems },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -541,7 +541,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, "1" },
             { Arguments.RepoScopeItems, "Enterprise" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenScope": 1, "Scopes": "Enterprise"}""";
         var configPath = ConfigFilePath;
@@ -564,7 +564,7 @@ public class UpgradeCommandHandlerTests
             { Arguments.RepoScope, "1" },
             { Arguments.RepoScopeItems, scopeItems },
             { Arguments.RepoWithFolders, string.Empty },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -590,7 +590,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, "5" },
             { Arguments.RepoScopeItems, scopeItems },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -622,7 +622,7 @@ public class UpgradeCommandHandlerTests
             { Arguments.RepoScope, "1" },
             { Arguments.RepoScopeItems, scopeItems },
             { Arguments.RepoWithFolders, string.Empty },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -647,7 +647,7 @@ public class UpgradeCommandHandlerTests
         {
             { Arguments.RepoScope, "1" },
             { Arguments.RepoScopeItems, scopeItems },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var jsonConfig = GetValidRepoConfig();
         var configPath = ConfigFilePath;
@@ -923,7 +923,7 @@ public class UpgradeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.RepoVersion, "2" },
-            { Arguments.TargetRepoAdr, RepositoryPath }
+            { Arguments.TargetRepo, RepositoryPath }
         };
         var cts = new CancellationTokenSource();
         cts.Cancel();

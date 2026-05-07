@@ -9,6 +9,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using PromptPlusLibrary;
 using System.Globalization;
+using System.Text;
 
 namespace AdrPlus.Infrastructure.UI
 {
@@ -647,6 +648,45 @@ namespace AdrPlus.Infrastructure.UI
                 RepoActions.Scope => Resources.AdrPlus.Scope,
                 _ => actions.ToString(),
             };
+        }
+
+        public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
+            var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message)
+                .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
+                .AddItems(adrs)
+                .ExtraInfo(x => 
+                 {
+                     if (!x.IsValid)
+                     {
+                         return Resources.AdrPlus.MsgUnknownStructure;
+                     }
+                     else if (x.Header.IsMigrated)
+                     {
+                         return Resources.AdrPlus.Migrated;
+                     }
+                     else if (x.Header.StatusCreate != AdrStatus.Unknown)
+                     {
+                         if (x.Header.IsValid)
+                         {
+                             return Resources.AdrPlus.AdrPlusFormat;
+                         }
+                         else
+                         {
+                             return Resources.AdrPlus.InvalidFormatHeader;
+                         }
+                     }
+                     else if (x.Header.StatusCreate == AdrStatus.Unknown)
+                     {
+                        return Resources.AdrPlus.ReadyToMigrate;
+                     }
+                     return string.Empty;
+                 })
+                .PredicateSelected(x => (false, Resources.AdrPlus.ViewOnlyPrompt))
+                .Default(adrs.Where(x => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated), false)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : result.Content!.Length);
         }
 
         /// <inheritdoc/>

@@ -255,35 +255,6 @@ public class AdrServiceTests
 
     #endregion
 
-    #region ReadLatestAdrFiles Tests
-
-    [Fact]
-    public async Task ReadLatestAdrFiles_WithValidInputs_DelegatesAndReturnsResult()
-    {
-        // Arrange
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        const string directoryPath = "/path/to/adr";
-        var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
-
-        var expectedComponents = new[]
-        {
-            new AdrFileNameComponents { Number = 2, Version = 1, FileName = "ADR-0002-Decision.md" },
-            new AdrFileNameComponents { Number = 1, Version = 2, FileName = "ADR-0001-v02-Decision.md" }
-        };
-
-        _queryService.ReadLatestAdrFiles(fileSystemService, directoryPath, config)
-            .Returns(Task.FromResult(expectedComponents));
-
-        // Act
-        var result = await _adrService.ReadLatestAdrFiles(fileSystemService, directoryPath, config);
-
-        // Assert
-        result.Should().BeEquivalentTo(expectedComponents);
-        await _queryService.Received(1).ReadLatestAdrFiles(fileSystemService, directoryPath, config);
-    }
-
-    #endregion
-
     #region GetFileByUniqueTitle Tests
 
     [Fact]

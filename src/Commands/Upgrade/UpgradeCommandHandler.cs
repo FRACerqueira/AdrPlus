@@ -39,7 +39,7 @@ namespace AdrPlus.Commands.Upgrade
              Arguments.RepoScopeItems,
              Arguments.RepoWithFolders,
              Arguments.FileTemplate,
-             Arguments.TargetRepoAdr,
+             Arguments.TargetRepo,
              Arguments.Help];
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
@@ -71,7 +71,7 @@ namespace AdrPlus.Commands.Upgrade
                 parsedArgs = UpgradeWizard(cancellationToken);
             }
 
-            parsedArgs.TryGetValue(Arguments.TargetRepoAdr, out var targetPathRepoconfig);
+            parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPathRepoconfig);
             targetPathRepoconfig ??= string.Empty;
 
             var configPath = Path.GetFullPath(Path.Combine(targetPathRepoconfig, _validateconfig.GetFileNameRepoConfig()));
@@ -334,7 +334,7 @@ namespace AdrPlus.Commands.Upgrade
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
-                parsedArgs[Arguments.TargetRepoAdr] = folderPrompt.Content;
+                parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
 
                 if (options.Content.Contains(RepoActions.Template))
                 {
