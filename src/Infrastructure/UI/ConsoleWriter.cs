@@ -9,7 +9,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using PromptPlusLibrary;
 using System.Globalization;
-using System.Text;
 
 namespace AdrPlus.Infrastructure.UI
 {
@@ -129,7 +128,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
-            PromptPlus.Config.PageSize = 5;
+            PromptPlus.Config.PageSize = 8;
 
             if (!string.IsNullOrWhiteSpace(config.YesValue))
             {
@@ -653,7 +652,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
-            var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message)
+            var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
                 .AddItems(adrs)
                 .ExtraInfo(x => 
@@ -664,7 +663,14 @@ namespace AdrPlus.Infrastructure.UI
                      }
                      else if (x.Header.IsMigrated)
                      {
-                         return Resources.AdrPlus.Migrated;
+                         if (x.Header.IsValid)
+                         {
+                             return Resources.AdrPlus.Migrated;
+                         }
+                         else
+                         {
+                             return Resources.AdrPlus.InvalidFormatHeader;
+                         }
                      }
                      else if (x.Header.StatusCreate != AdrStatus.Unknown)
                      {
@@ -677,13 +683,16 @@ namespace AdrPlus.Infrastructure.UI
                              return Resources.AdrPlus.InvalidFormatHeader;
                          }
                      }
-                     else if (x.Header.StatusCreate == AdrStatus.Unknown)
+                     else if (x.Header.StatusCreate == AdrStatus.Unknown && !x.Header.IsMigrated && !x.Header.IsValid)
                      {
-                        return Resources.AdrPlus.ReadyToMigrate;
+                         return Resources.AdrPlus.ReadyToMigrate;
                      }
-                     return string.Empty;
+                     else
+                     {
+                         return Resources.AdrPlus.MsgUnknownStructure;
+                     }
                  })
-                .PredicateSelected(x => (false, Resources.AdrPlus.ViewOnlyPrompt))
+                .PredicateSelected(x => false)
                 .Default(adrs.Where(x => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated), false)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : result.Content!.Length);

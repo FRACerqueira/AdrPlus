@@ -4,7 +4,6 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
-using System.Runtime.InteropServices;
 
 namespace AdrPlus.Tests.Domain;
 

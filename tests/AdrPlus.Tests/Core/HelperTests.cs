@@ -5,7 +5,6 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
-using System.Globalization;
 using System.Text.Json;
 
 namespace AdrPlus.Tests.Core;

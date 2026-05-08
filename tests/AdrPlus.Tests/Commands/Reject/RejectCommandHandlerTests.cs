@@ -392,7 +392,7 @@ public class RejectCommandHandlerTests
         _mockAdrServices.ParseFileName(TestPathData.ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);
         _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { adrInfo });
+            .Returns([adrInfo]);
         _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Rejected, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
@@ -463,7 +463,7 @@ public class RejectCommandHandlerTests
         };
 
         _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { supersededAdrInfo });
+            .Returns([supersededAdrInfo]);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -620,7 +620,7 @@ public class RejectCommandHandlerTests
         _mockConsole.ClearWait(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { eligibleAdr });
+            .Returns([eligibleAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, eligibleAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
@@ -680,7 +680,7 @@ public class RejectCommandHandlerTests
         _mockConsole.ClearWait(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { eligibleAdr });
+            .Returns([eligibleAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, eligibleAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
@@ -751,7 +751,7 @@ public class RejectCommandHandlerTests
         _mockConsole.ClearWait(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { proposedAdr });
+            .Returns([proposedAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, proposedAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
@@ -852,7 +852,7 @@ public class RejectCommandHandlerTests
         _mockConsole.ClearWait(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns(new[] { eligibleAdr });
+            .Returns([eligibleAdr]);
         // User aborts at ADR selection (returns cancelled=true)
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((true, eligibleAdr));

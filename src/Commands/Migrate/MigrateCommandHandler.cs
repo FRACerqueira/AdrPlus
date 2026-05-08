@@ -33,7 +33,6 @@ namespace AdrPlus.Commands.Migrate
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardMigrate,
              Arguments.TargetRepo,
-             Arguments.MatchAdr,
              Arguments.Help];
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
@@ -47,7 +46,7 @@ namespace AdrPlus.Commands.Migrate
                     ValidCommandArgs,
                     [
                         "adrplus migrate --wizard",
-                        "adrplus migrate --path \"path/to/repository/\" --match 10",
+                        "adrplus migrate --path \"path/to/repository/\"",
                     ]));
                 return;
             }
@@ -58,18 +57,12 @@ namespace AdrPlus.Commands.Migrate
             }
 
             var hasWizard = parsedArgs.ContainsKey(Arguments.WizardMigrate);
+            AdrFileNameComponents[] foundfiles = [];
             if (hasWizard)
             {
-                parsedArgs = await MigrateWizardAsync(cancellationToken);
-            }
-
-            if (!parsedArgs.TryGetValue(Arguments.MatchAdr, out var matchAdrValue))
-            {
-                throw new ArgumentException("ErrMsgMatchAdrRequired");
-            }
-            if (!int.TryParse(matchAdrValue, out int matchAdr))
-            {
-                throw new ArgumentException("ErrMsgInvalidMatchAdrValue");
+                var (ParsedArgs, Adrfiles) = await MigrateWizardAsync(cancellationToken);
+                parsedArgs = ParsedArgs;
+                foundfiles = Adrfiles;
             }
 
             parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
@@ -96,14 +89,65 @@ namespace AdrPlus.Commands.Migrate
 
             var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-            var foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
+            if (!hasWizard)
+            {
+                foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
 
-            if (foundfiles.Count(x => x.IsValid) != matchAdr)
-            { 
-                throw new InvalidOperationException("ErrMsgMatchAdrCount");
+                if (foundfiles.Length == 0)
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
+                }
+                if (!foundfiles.Any(x => x.IsValid))
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
+                }
             }
 
-            throw new NotImplementedException("teste");
+            var result = await MigrateRepositoryAsync(foundfiles, repoconfig, cancellationToken);
+            foreach (var item in result)
+            {
+                LogMessages.LogCommandSuccessful(_logger, item);
+                _console.WriteSuccess(item);
+            }
+        }
+
+        private async Task<IEnumerable<string>> MigrateRepositoryAsync(AdrFileNameComponents[] adrfiles, AdrPlusRepoConfig repoConfig, CancellationToken cancellationToken)
+        {
+            var result = new List<string>();    
+            foreach (var file in adrfiles)
+            {
+                if (!file.IsValid)
+                {
+                    continue;
+                }
+                if (file.Header.StatusCreate == AdrStatus.Unknown && !file.Header.IsMigrated && !file.Header.IsValid)
+                {
+                    // Create ADR record and file
+                    var content = await _fileSystem.ReadAllTextAsync(file.FileName, cancellationToken);
+                    var seqfile = file.Number.ToString($"D{repoConfig.LenSeq}", CultureInfo.CurrentCulture);
+                    var adrRecord = new AdrRecord
+                    {
+                        Number = file.Number,
+                        Title = Helper.Humanize(Path.GetFileNameWithoutExtension(file.FileName).Replace(seqfile, string.Empty).Trim()),
+                        Scope = string.Empty,
+                        Domain = string.Empty,
+                        StatusCreate = AdrStatus.Unknown,
+                        StatusChange = AdrStatus.Unknown,
+                        StatusUpdate = AdrStatus.Unknown,
+                        CreateRef = null,
+                        ChangeRef = null,
+                        UpdateRef = null,
+                        Superseded = null,
+                        Version = 0,
+                        Revision = null,
+                        Template = string.Empty
+                    };
+                    var newcontent = $"{adrRecord.GetHeader(repoConfig,null,true)}{content}";
+                    await _fileSystem.WriteAllTextAsync(file.FileName, newcontent, cancellationToken);
+                    result.Add($"{Resources.AdrPlus.Migrated} : {file.FileName}");
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -114,7 +158,7 @@ namespace AdrPlus.Commands.Migrate
         /// <returns>A dictionary of parsed arguments pre-populated with <see cref="Arguments.TargetRepo"/>.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
 
-        private async Task<Dictionary<Arguments, string>> MigrateWizardAsync(CancellationToken cancellationToken)
+        private async Task<(Dictionary<Arguments, string> ParsedArgs, AdrFileNameComponents[] Adrfiles)> MigrateWizardAsync(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
             while (true)
@@ -174,8 +218,6 @@ namespace AdrPlus.Commands.Migrate
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                parsedArgs[Arguments.MatchAdr] = adrselectedPrompt.CountSelected.ToString(CultureInfo.InvariantCulture);
-
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.PromptConfirmMigration, cancellationToken);
                 if (resultCnf.IsAborted)
                 {
@@ -183,7 +225,7 @@ namespace AdrPlus.Commands.Migrate
                 }
                 if (resultCnf.ConfirmYes)
                 {
-                    return parsedArgs;
+                    return (parsedArgs, foundfiles);
                 }
             }
         }

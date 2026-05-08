@@ -1080,9 +1080,6 @@
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
     <value>Wizard for migrating ADRs to use the AdrPlus tool (header creation)</value>
   </data>
-  <data name="HelpUsageMatchAdr" xml:space="preserve">
-    <value>Number of ARDs that must meet the criteria</value>
-  </data>
   <data name="DefaultHeaderTitleFile" xml:space="preserve">
     <value>File title md</value>
   </data>
@@ -1160,5 +1157,17 @@
   </data>
   <data name="ViewOnlyPrompt" xml:space="preserve">
     <value>View only. Press &lt;enter&gt; to continue</value>
+  </data>
+  <data name="WizardConfigMigratedTitle" xml:space="preserve">
+    <value>Migrate existing ADRs to the Adrs Plus format</value>
+  </data>
+  <data name="WizardConfigMigratedDescription" xml:space="preserve">
+    <value>After selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="WizardHelpMigrateTitle" xml:space="preserve">
+    <value>Migrate command help</value>
+  </data>
+  <data name="WizardHelpMigrateDescription" xml:space="preserve">
+    <value>Show help information</value>
   </data>
 </root>

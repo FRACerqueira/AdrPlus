@@ -6,13 +6,11 @@
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
-using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace AdrPlus.Core
 {
-    internal sealed partial class AdrFileParserService : IAdrFileParser
+    internal sealed class AdrFileParserService : IAdrFileParser
     {
         /// <inheritdoc/>
         public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
@@ -48,16 +46,15 @@ namespace AdrPlus.Core
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
                     return (result, string.Empty);
                 }
-
+                if (lines[1].TrimEnd().EndsWith(" -->|", ordinal) && lines[1].Contains("<!-- ", ordinal))
+                {
+                    result.IsMigrated = true;
+                }
                 //table header separator
                 if (!lines[2].StartsWith("|--|--|", ordinal))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
                     return (result, string.Empty);
-                }
-                if (lines[2].StartsWith("|--|--|<!-- ", ordinal) && lines[2].TrimEnd().EndsWith(" -->", ordinal))
-                { 
-                    result.IsMigrated = true;
                 }
 
                 //title header
@@ -346,7 +343,7 @@ namespace AdrPlus.Core
                             if (part.Length > config.LenSeq)
                             {
                                 var titlePart = part[config.LenSeq..];
-                                result.Title = Humanizar(titlePart);
+                                result.Title = Helper.Humanize(titlePart);
                             }
                             else
                             {
@@ -508,38 +505,5 @@ namespace AdrPlus.Core
             }
             return result;
         }
-
-
-        private static string Humanizar(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            string texto = input;
-
-            // 1. Detectar e converter PascalCase ou camelCase
-            // Insere espaço antes de letras maiúsculas (exceto no início)
-            texto = RegexConvertPascalAndCamelCase().Replace(texto, " $1");
-
-            // 2. Converter snake_case e kebab-case para espaços
-            texto = texto.Replace("_", " ").Replace("-", " ");
-
-            // 3. Normalizar múltiplos espaços
-            texto = RegexSpaces().Replace(texto, " ").Trim();
-
-            // 4. Capitalizar primeira letra
-            if (texto.Length > 0)
-            {
-                texto = char.ToUpper(texto[0],CultureInfo.CurrentCulture) + texto[1..].ToLower(CultureInfo.CurrentCulture);
-            }
-
-            return texto;
-        }
-
-        [GeneratedRegex("(?<!^)([A-Z])")]
-        private static partial Regex RegexConvertPascalAndCamelCase();
-
-        [GeneratedRegex(@"\s+")]
-        private static partial Regex RegexSpaces();
     }
 }

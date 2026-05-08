@@ -868,8 +868,8 @@ namespace AdrPlus.Tests.Core
             var lines = new[]
             {
                 "<!-- Test Disclaimer -->",
-                "|Adr-Plus |Field |Value |",
-                "|--|--|<!-- Migrated -->",
+                "|Adr-Plus |Field |Value <!-- Migrated -->|",
+                "|--|--|",
                 "|Title |Test ADR Title |Test |",
                 "|Version |1 |1 |",
                 "|Revision |1 |1 |",
@@ -1691,6 +1691,205 @@ namespace AdrPlus.Tests.Core
             // Assert
             Assert.False(result.IsValid);
             Assert.NotEmpty(result.ErrorMessage);
+        }
+
+        #endregion
+
+        #region Gap Coverage - Edge Cases and Boundary Conditions
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithHeaderOnlyNoContent_ReturnsEmptyContent()
+        {
+            // Arrange - Exactly 12 lines (minimum header with no extra content)
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                "<!-- Test Disclaimer -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                "|Title |Test ADR Title |Test |",
+                "|Version |1 |1 |",
+                "|Revision |1 |1 |",
+                "|Scope |Enterprise |Enterprise |",
+                "|Domain |TestDomain |TestDomain |",
+                "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
+                "|StatusUpdate | | |",
+                "|StatusSuperseded | | |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.Empty(content);
+        }
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithLargeVersionAndRevision_ParsesCorrectly()
+        {
+            // Arrange - Large numeric values for version and revision
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                "<!-- Test Disclaimer -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                "|Title |Test ADR Title |Test |",
+                "|Version |999 |999 |",
+                "|Revision |888 |888 |",
+                "|Scope |Enterprise |Enterprise |",
+                "|Domain |TestDomain |TestDomain |",
+                "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
+                "|StatusUpdate | | |",
+                "|StatusSuperseded | | |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.Equal(999, header.Version);
+            Assert.Equal(888, header.Revision);
+        }
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithStatusCreateEmptyAndStatusUpdateFilled_ParsesCorrectly()
+        {
+            // Arrange - Unusual scenario: StatusCreate empty but StatusUpdate has value
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                "<!-- Test Disclaimer -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                "|Title |Test ADR Title |Test |",
+                "|Version |1 |1 |",
+                "|Revision |1 |1 |",
+                "|Scope |Enterprise |Enterprise |",
+                "|Domain |TestDomain |TestDomain |",
+                "|StatusCreate | | |",
+                "|StatusUpdate |Accepted (2025-04-18) |Accepted (2025-04-18) |",
+                "|StatusSuperseded | | |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.Equal(AdrStatus.Unknown, header.StatusCreate);
+            Assert.Equal(AdrStatus.Accepted, header.StatusUpdate);
+            Assert.Null(header.DateCreate);
+            Assert.NotNull(header.DateUpdate);
+        }
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithBothStatusUpdateAndSuperseded_ParsesStatusPrecedence()
+        {
+            // Arrange - Both StatusUpdate and StatusSuperseded filled
+            // The parser uses StatusChange for Superseded, and StatusUpdate for regular updates
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                "<!-- Test Disclaimer -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                "|Title |Test ADR Title |Test |",
+                "|Version |1 |1 |",
+                "|Revision |1 |1 |",
+                "|Scope |Enterprise |Enterprise |",
+                "|Domain |TestDomain |TestDomain |",
+                "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
+                "|StatusUpdate |Accepted (2025-04-18) |Accepted (2025-04-18) |",
+                "|StatusSuperseded |Superseded (2025-04-19): 0002-NewDecision.md |Superseded (2025-04-19): 0002-NewDecision.md |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.Equal(AdrStatus.Proposed, header.StatusCreate);
+            Assert.Equal(AdrStatus.Accepted, header.StatusUpdate);
+            Assert.Equal(AdrStatus.Superseded, header.StatusChange);
+            Assert.Equal("0002-NewDecision.md", header.FileSuperSedes);
+        }
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithAllFieldsAtMaxLength_ParsesSuccessfully()
+        {
+            // Arrange - Very long values for all text fields
+            var longDisclaimer = "A".PadRight(100);
+            var longTitle = "B".PadRight(150);
+            var longDomain = "C".PadRight(200);
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                $"<!-- {longDisclaimer} -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                $"|Title |{longTitle} |Test |",
+                "|Version |10 |10 |",
+                "|Revision |20 |20 |",
+                "|Scope |Enterprise |Enterprise |",
+                $"|Domain |{longDomain} |{longDomain} |",
+                "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
+                "|StatusUpdate | | |",
+                "|StatusSuperseded | | |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.NotEmpty(header.Disclaimer);
+            Assert.NotEmpty(header.Title);
+            Assert.NotEmpty(header.Domain);
+            Assert.Equal(longDomain.Trim(), header.Domain);
+        }
+
+        [Fact]
+        public async Task ParseAdrHeaderAndContentAsync_WithNumberValuesAsStrings_ParsesCorrectly()
+        {
+            // Arrange - Leading whitespace in numeric fields should be trimmed
+            var filePath = "test.md";
+            var lines = new[]
+            {
+                "<!-- Test Disclaimer -->",
+                "|Adr-Plus |Field |Value |",
+                "|--|--|--|",
+                "|Title |Test ADR Title |Test |",
+                "|Version | 5 | 5 |",
+                "|Revision | 3 | 3 |",
+                "|Scope |Enterprise |Enterprise |",
+                "|Domain |TestDomain |TestDomain |",
+                "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
+                "|StatusUpdate | | |",
+                "|StatusSuperseded | | |",
+                "<!-- End Header -->"
+            };
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+
+            // Act
+            var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(header.IsValid);
+            Assert.Equal(5, header.Version);
+            Assert.Equal(3, header.Revision);
         }
 
         #endregion

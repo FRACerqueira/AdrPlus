@@ -235,7 +235,7 @@ namespace AdrPlus.Commands.Upgrade
             }
             if (changeversion)
             {
-                repoconfig.LenVersion = lenrevisionvalue;
+                repoconfig.LenVersion = lenversionvalue;
             }
             if (changerevision)
             {

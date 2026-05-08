@@ -120,8 +120,8 @@ namespace AdrPlus.Domain
         {
             /* template header
                 <!-- Do not remove this comment, lines and table (1-??) -->
-                |Adr-Plus ?|?|
-                |--|--|<!-- Migrated -->
+                |Adr-Plus ?|?<!-- Migrated -->|
+                |--|--|
                 |Title File|?| 
                 |Version|?|
                 |Revision|?| 
@@ -139,10 +139,17 @@ namespace AdrPlus.Domain
             }
             var result = new StringBuilder();
             result.AppendLine(null, $"<!-- {config.HeaderDisclaimer} (1-{AppConstants.LenghtHeader}) -->");
-            result.AppendLine(null, $"|Adr-Plus {config.HeaderTableFields}|{config.HeaderTableValues}|");
-            result.AppendLine(null, $"|--|--|{textmigrate}");
+            result.AppendLine(null, $"|Adr-Plus {config.HeaderTableFields}|{config.HeaderTableValues} {config.HeaderMigrated} {textmigrate}|");
+            result.AppendLine(null, $"|--|--|");
             result.AppendLine(null, $"|{config.HeaderTitleFile}|{Title}|");
-            result.AppendLine(null, $"|{config.HeaderVersion}|{Version.ToString($"D{config.LenVersion}", null)}|");
+            if (!migrated)
+            {
+                result.AppendLine(null, $"|{config.HeaderVersion}|{Version.ToString($"D{config.LenVersion}", null)}|");
+            }
+            else
+            {
+                result.AppendLine(null, $"|{config.HeaderVersion}||");
+            }
             if (Revision.HasValue)
             {
                 result.AppendLine(null, $"|{config.HeaderRevision}|{Revision.Value.ToString($"D{config.LenRevision}", null)}|");

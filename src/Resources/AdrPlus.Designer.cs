@@ -1717,15 +1717,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of ARDs that must meet the criteria.
-        /// </summary>
-        internal static string HelpUsageMatchAdr {
-            get {
-                return ResourceManager.GetString("HelpUsageMatchAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Open ADR after execute command.
         /// </summary>
         internal static string HelpUsageOpenAdr {
@@ -2880,6 +2871,24 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
         /// </summary>
+        internal static string WizardConfigMigratedDescription {
+            get {
+                return ResourceManager.GetString("WizardConfigMigratedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migrate existing ADRs to the Adrs Plus format.
+        /// </summary>
+        internal static string WizardConfigMigratedTitle {
+            get {
+                return ResourceManager.GetString("WizardConfigMigratedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
+        /// </summary>
         internal static string WizardConfigRepositoryDescription {
             get {
                 return ResourceManager.GetString("WizardConfigRepositoryDescription", resourceCulture);
@@ -3072,6 +3081,24 @@ namespace AdrPlus.Resources {
         internal static string WizardHelpMainMenuTitle {
             get {
                 return ResourceManager.GetString("WizardHelpMainMenuTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show help information.
+        /// </summary>
+        internal static string WizardHelpMigrateDescription {
+            get {
+                return ResourceManager.GetString("WizardHelpMigrateDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Migrate command help.
+        /// </summary>
+        internal static string WizardHelpMigrateTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpMigrateTitle", resourceCulture);
             }
         }
         

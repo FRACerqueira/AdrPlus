@@ -1080,9 +1080,6 @@
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
     <value>Assistente para migrar os ADR´s para uso da ferramenta AdrPlus (criação do cabeçalho)</value>
   </data>
-  <data name="HelpUsageMatchAdr" xml:space="preserve">
-    <value>Número de ARDs que devem atender aos critérios</value>
-  </data>
   <data name="DefaultHeaderTitleFile" xml:space="preserve">
     <value>Título do aquivo md</value>
   </data>
@@ -1160,5 +1157,17 @@
   </data>
   <data name="ViewOnlyPrompt" xml:space="preserve">
     <value>Somente visualização. Pressione &lt;enter&gt; para continuar</value>
+  </data>
+  <data name="WizardConfigMigratedTitle" xml:space="preserve">
+    <value>Migrar ADRs existentes para o formato Adrs Plus</value>
+  </data>
+  <data name="WizardConfigMigratedDescription" xml:space="preserve">
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+  </data>
+  <data name="WizardHelpMigrateTitle" xml:space="preserve">
+    <value>Ajuda do comando migrate</value>
+  </data>
+  <data name="WizardHelpMigrateDescription" xml:space="preserve">
+    <value>Exibe informações de ajuda</value>
   </data>
 </root>

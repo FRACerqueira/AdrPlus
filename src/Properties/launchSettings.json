@@ -2,7 +2,7 @@
   "profiles": {
     "AdrPlus": {
       "commandName": "Project",
-      "commandLineArgs": "migrate --wizard"
+      "commandLineArgs": "wizard"
     },
     "WSL": {
       "commandName": "WSL2",

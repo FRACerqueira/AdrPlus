@@ -100,9 +100,6 @@ namespace AdrPlus.Commands
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
         FileTemplate,
-        [CommandArgument("-m", "--match")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageMatchAdr")]
-        MatchAdr,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help,
