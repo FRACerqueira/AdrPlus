@@ -132,9 +132,6 @@
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
     <value>'folderRepo' must be a relative path. Absolute paths are not allowed: '{0}'</value>
   </data>
-  <data name="ErrMsgDateFormatInvalid" xml:space="preserve">
-    <value>'dateformat' is invalid: '{0}'. Unable to validate date format</value>
-  </data>
   <data name="Usage" xml:space="preserve">
     <value>Usage</value>
   </data>
@@ -354,9 +351,6 @@
   <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
     <value>Invalid Culture  {0}</value>
   </data>
-  <data name="ValidationDateFormatInvalidFormat" xml:space="preserve">
-    <value>Format date invalid {0}</value>
-  </data>
   <data name="ValidationFieldMaxCharValue" xml:space="preserve">
     <value>The field '{0}' must have a maximum of 1 character</value>
   </data>
@@ -450,17 +444,8 @@
   <data name="ConfigFieldDescYesValue" xml:space="preserve">
     <value>Character used to represent 'Yes' in prompts</value>
   </data>
-  <data name="ConfigInfoCurrentValue" xml:space="preserve">
-    <value>Current value: {0}</value>
-  </data>
   <data name="ConfigInfoFileNameSample" xml:space="preserve">
     <value>File name examples:</value>
-  </data>
-  <data name="ConfigInfoPropertyEditor" xml:space="preserve">
-    <value>Edit configuration property</value>
-  </data>
-  <data name="ConfigInfoSelectedField" xml:space="preserve">
-    <value>Selected field: {0}</value>
   </data>
   <data name="ConfigPromptChooseNewValue" xml:space="preserve">
     <value>Choose a new value</value>
@@ -528,8 +513,8 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>Invalid date format. Expected format: {0}</value>
   </data>
-  <data name="NewAdrErrorFailedToOpen" xml:space="preserve">
-    <value>Failed to open ADR file. Error code: {0}</value>
+  <data name="ErrorExternalCommand" xml:space="preserve">
+    <value>External command executed but failed: {0}</value>
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Error in configuration file: {0}</value>
@@ -549,8 +534,8 @@
   <data name="NewAdrPromptSelectDrive" xml:space="preserve">
     <value>Select drive</value>
   </data>
-  <data name="NewAdrSuccessExternalCommand" xml:space="preserve">
-    <value>Successfully executed: {0}</value>
+  <data name="SuccessExternalCommand" xml:space="preserve">
+    <value>External command executed successfully: {0}</value>
   </data>
   <data name="SelectRepo" xml:space="preserve">
     <value>Selected repository</value>
@@ -564,7 +549,7 @@
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>Reading registered domains...</value>
   </data>
-  <data name="PromptSelectAdrRepositoryPath" xml:space="preserve">
+  <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>Select repository path</value>
   </data>
   <data name="PromptSelectAdrScope" xml:space="preserve">
@@ -606,8 +591,8 @@
   <data name="HelpUsageScopeAdr" xml:space="preserve">
     <value>Scope of ADR</value>
   </data>
-  <data name="HelpUsageOpenAdr" xml:space="preserve">
-    <value>Open ADR after execute command</value>
+  <data name="HelpUsageOpenFile" xml:space="preserve">
+    <value>Open file after execute command</value>
   </data>
   <data name="HelpUsageDateRefAdr" xml:space="preserve">
     <value>Reference date of ADR</value>
@@ -624,9 +609,6 @@
   <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
     <value>ADR sequence {0} not found in {1}</value>
   </data>
-  <data name="ErrorVersionNotconfig" xml:space="preserve">
-    <value>Version number not configured for repository {0}</value>
-  </data>
   <data name="ErrMsgAdrTooShort" xml:space="preserve">
     <value>The ADR file is too short</value>
   </data>
@@ -639,14 +621,8 @@
   <data name="ErrMsgAdrHeaderVersionInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected version header</value>
   </data>
-  <data name="ErrMsgAdrHeaderVersionFormatInvalid" xml:space="preserve">
-    <value>The version line does not have the expected format</value>
-  </data>
   <data name="ErrMsgAdrHeaderRevisionInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected revision header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderRevisionFormatInvalid" xml:space="preserve">
-    <value>The revision line does not have the expected format.</value>
   </data>
   <data name="ErrMsgAdrHeaderScopeInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected scope header</value>
@@ -654,17 +630,11 @@
   <data name="ErrMsgAdrHeaderStatusCreateLineInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected created status</value>
   </data>
-  <data name="ErrMsgAdrHeaderStatusUpdateLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected status update line</value>
-  </data>
   <data name="ErrMsgAdrHeaderStatusChangeLineInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected changed status</value>
   </data>
   <data name="ErrMsgAdrHeaderTitleInvalid" xml:space="preserve">
     <value>The ADR file does not have the expected title header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderSeparatorInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected separator line</value>
   </data>
   <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
     <value>Status line does not have the expected format</value>
@@ -753,9 +723,6 @@
   <data name="WhenNotWizard" xml:space="preserve">
     <value>when not wizard</value>
   </data>
-  <data name="AndHaveConfigurationEnabled" xml:space="preserve">
-    <value>and  have configuration enabled</value>
-  </data>
   <data name="HelpUsageWizardConfigApp" xml:space="preserve">
     <value>Application Settings Wizard (if file argument is not provided)</value>
   </data>
@@ -771,17 +738,11 @@
   <data name="ExceptionFileNotFound" xml:space="preserve">
     <value>File not found: {0}</value>
   </data>
-  <data name="FileMustBeOverFolder" xml:space="preserve">
-    <value>File must be over folder {0}</value>
-  </data>
   <data name="NotLatestVersion" xml:space="preserve">
     <value>The specified ADR file is not the latest version. Please select the latest version</value>
   </data>
   <data name="NotValidStatusForUpdate" xml:space="preserve">
     <value>The specified ADR file does not have a valid status({0}) for update or superseded</value>
-  </data>
-  <data name="NotValidStatusForAdr" xml:space="preserve">
-    <value>The specified ADR file does not have a valid status({0})</value>
   </data>
   <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
     <value>The specified ADR file not has a valid status ({0}) for updating</value>
@@ -1144,7 +1105,7 @@
     <value>ADRs to migrate</value>
   </data>
   <data name="MsgUnknownStructure" xml:space="preserve">
-    <value>File title with unknown structure</value>
+    <value>Unknown structure</value>
   </data>
   <data name="AdrPlusFormat" xml:space="preserve">
     <value>AdrPlus Format</value>
@@ -1169,5 +1130,71 @@
   </data>
   <data name="WizardHelpMigrateDescription" xml:space="preserve">
     <value>Show help information</value>
+  </data>
+  <data name="CmdDescExplorer" xml:space="preserve">
+    <value>ADR file explorer ,viewer and report</value>
+  </data>
+  <data name="HelpUsageFileReport" xml:space="preserve">
+    <value>File path name (md file) for the explorer report</value>
+  </data>
+  <data name="HelpUsageWizardExplorer" xml:space="preserve">
+    <value>Wizard to explorer ADR files (supress all other arguments)</value>
+  </data>
+  <data name="PromptConfirmExplorer" xml:space="preserve">
+    <value>Confirm the explorer with this parameters?</value>
+  </data>
+  <data name="ListFieldReport" xml:space="preserve">
+    <value>1)File,2)Folder,3)Format,4)Current Status,5)Status Created,6)Status Updated,7)Scope,8)Domain</value>
+  </data>
+  <data name="ErrFileReportEmpty" xml:space="preserve">
+    <value>Path to file name report is empty</value>
+  </data>
+  <data name="ReportTitle" xml:space="preserve">
+    <value>ADR-PLUS : Report</value>
+  </data>
+  <data name="Folder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="CurrentStatus" xml:space="preserve">
+    <value>Current Status</value>
+  </data>
+  <data name="StatusCreated" xml:space="preserve">
+    <value>Initial status</value>
+  </data>
+  <data name="StatusUpdated" xml:space="preserve">
+    <value>Updated status</value>
+  </data>
+  <data name="PromptFieldsReport" xml:space="preserve">
+    <value>Fields to show</value>
+  </data>
+  <data name="PromptShowOrCreateReport" xml:space="preserve">
+    <value>Do you want to show ADRs or create report?</value>
+  </data>
+  <data name="ShowAdrs" xml:space="preserve">
+    <value>Show ADRs</value>
+  </data>
+  <data name="CreateReport" xml:space="preserve">
+    <value>Create a report</value>
+  </data>
+  <data name="PromptFileNameReport" xml:space="preserve">
+    <value>Name file report (without extension)</value>
+  </data>
+  <data name="PromptSelectFolderForReport" xml:space="preserve">
+    <value>Select folder for report</value>
+  </data>
+  <data name="PromptOpenReportAfterCreate" xml:space="preserve">
+    <value>Open report after create?</value>
+  </data>
+  <data name="PromptOpenAdrAfterSelection" xml:space="preserve">
+    <value>Open ADR after selection?</value>
+  </data>
+  <data name="FileReportSummary" xml:space="preserve">
+    <value>Name file report </value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Open file</value>
   </data>
 </root>

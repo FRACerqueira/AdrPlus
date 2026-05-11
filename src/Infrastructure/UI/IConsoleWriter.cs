@@ -15,7 +15,28 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal interface IConsoleWriter
     {
+        /// <summary>
+        /// Prompts the user to select ADR migrations to display and returns the result of the selection.
+        /// </summary>
+        /// <param name="adrs">An array of ADR file name components representing the available ADR migrations to choose from.</param>
+        /// <param name="adrPlusRepo">The repository configuration used to resolve ADR migration details.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>A tuple containing a boolean indicating whether the operation was aborted and an integer representing the
+        /// number of selected ADR migrations.</returns>
         (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the current position of the cursor in the console.  
+        /// </summary>
+        /// <returns>A tuple containing the left and top positions of the cursor.</returns>
+        (int left, int top) CursorPosition();
+
+        /// <summary>
+        /// Moves the cursor to a new position in the console.
+        /// </summary>
+        /// <param name="left">The left position to move the cursor to.</param>
+        /// <param name="top">The top position to move the cursor to.</param>
+        void MovePosition(int left,int top);
 
         /// <summary>
         /// Checks if the current operation was aborted by the user pressing Ctrl+C.
@@ -305,22 +326,21 @@ namespace AdrPlus.Infrastructure.UI
         /// <summary>
         /// Prompts the user to select the repository folder.
         /// </summary>
+        /// <param name="message">The message to display to the user.</param>
         /// <param name="checknitCmd">Whether to check for init command requirements.</param>
         /// <param name="root">The root directory path to start browsing from.</param>
         /// <param name="fileSystemService">The file system service to use for directory operations.</param>
         /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
-        (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
-
+        (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to select the repository ADR folder.
+        /// Prompts the user to select a folder.
         /// </summary>
         /// <param name="root">The root directory path to start browsing from.</param>
         /// <param name="fileSystemService">The file system service to use for directory operations.</param>
         /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
-        /// <param name="repoConfig">The repository configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
         (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);

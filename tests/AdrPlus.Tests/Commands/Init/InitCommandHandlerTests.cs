@@ -258,7 +258,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, selectedPath));
         _mockFileSystem.DirectoryExists(selectedPath).Returns(true);
         _mockFileSystem.DirectoryExists(repoPath).Returns(false);
@@ -277,7 +277,7 @@ public class InitCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).PromptSelectFolderRepositoryPath(false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
         _mockConsole.Received().WriteSuccess(Arg.Any<string>());
     }
@@ -300,7 +300,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive));
-        _mockConsole.PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, selectedPath));
         _mockFileSystem.DirectoryExists(selectedPath).Returns(true);
         _mockFileSystem.DirectoryExists(repoPath).Returns(false);
@@ -320,7 +320,7 @@ public class InitCommandHandlerTests
 
         // Assert
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
     }
 
@@ -354,7 +354,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -887,7 +887,7 @@ public class InitCommandHandlerTests
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive)); // IsAborted = false, returns selected drive
         // Folder selection is aborted
-        _mockConsole.PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty)); // IsAborted = true
 
         // Act & Assert
@@ -913,7 +913,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.DirectoryExists(repoPath).Returns(false);
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         // Folder selection succeeds
-        _mockConsole.PromptSelectFolderRepositoryPath(false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, InitRepositoryPath)); // IsAborted = false, returns selected folder
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
@@ -930,7 +930,7 @@ public class InitCommandHandlerTests
 
         // Assert - Drive prompt should NOT be called
         _mockConsole.DidNotReceive().PromptSelectLogicalDrive(Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).PromptSelectFolderRepositoryPath(false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -957,7 +957,7 @@ public class InitCommandHandlerTests
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive));
         // Folder selection succeeds
-        _mockConsole.PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, selectedFolder));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
@@ -979,7 +979,7 @@ public class InitCommandHandlerTests
 
         // Assert - Both prompts should be called, repo initialized at selected location
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("api")));
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("web")));
@@ -1010,7 +1010,7 @@ public class InitCommandHandlerTests
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive));
         // Folder selection: user selects the repo folder
-        _mockConsole.PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(),false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, selectedFolder));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
@@ -1032,7 +1032,7 @@ public class InitCommandHandlerTests
 
         // Assert - Full structure created at wizard-selected location
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(),false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("decisions")));
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("backend")));
@@ -1057,7 +1057,7 @@ public class InitCommandHandlerTests
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive)); // IsAborted = false
         // Folder selection is cancelled
-        _mockConsole.PromptSelectFolderRepositoryPath(false, selectedDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), false, Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty)); // IsAborted = true
 
         // Act & Assert

@@ -9,6 +9,8 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using PromptPlusLibrary;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AdrPlus.Infrastructure.UI
 {
@@ -18,6 +20,17 @@ namespace AdrPlus.Infrastructure.UI
     internal sealed class ConsoleWriter(IAdrServices adrServices) : IConsoleWriter
     {
         private readonly IAdrServices _adrServices = adrServices;
+
+        /// <inheritdoc/>
+        public (int left, int top) CursorPosition()
+        { 
+            return PromptPlus.Console.GetCursorPosition();
+        }
+
+        public void MovePosition(int left, int top)
+        { 
+            PromptPlus.Console.SetCursorPosition(left, top);
+        }
 
         /// <inheritdoc/>
         public bool IsAbortedByCtrlC()
@@ -198,7 +211,8 @@ namespace AdrPlus.Infrastructure.UI
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .AddGroupedItems(Resources.AdrPlus.Fields, fields.Where(x => x.IsEnabled), false)
+                .AddItems(fields.Where(x => x.IsEnabled), false)
+                .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{AppConstants.GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
@@ -216,13 +230,14 @@ namespace AdrPlus.Infrastructure.UI
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .AddGroupedItems(Resources.AdrPlus.Fields, fields.Where(x => x.IsEnabled), false)
+                .AddItems(fields.Where(x => x.IsEnabled), false)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{AppConstants.GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
                 .EqualItems((a, b) => a.Name == b.Name)
                 .MaxWidth(25)
+                .HideTipGroup()
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? null : result.Content);
         }
@@ -654,6 +669,8 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
             var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
+                .OnlyView()
+                .Filter(FilterMode.Contains)
                 .AddItems(adrs)
                 .ExtraInfo(x => 
                  {
@@ -790,14 +807,14 @@ namespace AdrPlus.Infrastructure.UI
 
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryPath(bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryPath}: ";
+            var pronptmessage = $"{message}: ";
             var result = PromptPlus.Controls
-                .FileSelect(message)
+                .FileSelect(pronptmessage)
                 .OnlyFolders()
                 .DefaultHistory()
-                .EnabledHistory("AdrPlusRepoPathHistory")
+                .EnabledHistory($"AdrPlusSelectFolderPath_{BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(message)))}")
                 .PredicateSelected(input =>
                 {
                     if (!checknitCmd)

@@ -44,223 +44,230 @@ namespace AdrPlus.Commands.Upgrade
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
-            var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
-            if (parsedArgs.ContainsKey(Arguments.Help))
+            try
             {
-                _console.WriteHelp(_adrServices.GetHelpText(
-                    "upgrade",
-                    ValidCommandArgs,
-                    [
-                        "adrplus upgrade --wizard",
+                ArgumentNullException.ThrowIfNull(args);
+                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
+                if (parsedArgs.ContainsKey(Arguments.Help))
+                {
+                    _console.WriteHelp(_adrServices.GetHelpText(
+                        "upgrade",
+                        ValidCommandArgs,
+                        [
+                            "adrplus upgrade --wizard",
                         "adrplus upgrade --template --path \"path/to/repository/folder-ADR\" --file \"path/to/template\"",
                         "adrplus upgrade --version 2 --path \"path/to/repository/folder-ADR\"",
                         "adrplus upgrade --scope 1 --path \\\"path/to/repository/folder-ADR\" --items \"list;of;scope\" --createfolders",
-                    ]));
-                return;
-            }
-
-            if (!_validateconfig.HasTemplateRepoFile())
-            {
-                throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-            }
-
-            var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRepo);
-            if (hasWizard)
-            {
-                parsedArgs = UpgradeWizard(cancellationToken);
-            }
-
-            parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPathRepoconfig);
-            targetPathRepoconfig ??= string.Empty;
-
-            var configPath = Path.GetFullPath(Path.Combine(targetPathRepoconfig, _validateconfig.GetFileNameRepoConfig()));
-            if (!_filesystem.FileExists(configPath))
-            {
-                throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
-            }
-
-            string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
-            var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
-            if (!IsValid)
-            {
-                LogAndWriteErrors(ErrorReport);
-                throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, configPath));
-            }
-            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-
-            var changetemplate = parsedArgs.ContainsKey(Arguments.RepoTemplate);
-            var filetemplate = string.Empty;
-            if (changetemplate)
-            {
-                if (parsedArgs.TryGetValue(Arguments.FileTemplate, out filetemplate))
-                {
-                    filetemplate = Path.GetFullPath(filetemplate);
-                    if (!_filesystem.FileExists(filetemplate))
-                    {
-                        throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, filetemplate));
-                    }
-                    if (string.IsNullOrEmpty(Path.GetExtension(filetemplate)) || !Path.GetExtension(filetemplate).Equals(".md", StringComparison.OrdinalIgnoreCase))
-                    {
-                        throw new InvalidOperationException(Resources.AdrPlus.FileTemplateMusbeMd);
-                    }
-                    filetemplate = await _filesystem.ReadAllTextAsync(filetemplate, cancellationToken);  
+                        ]));
+                    return;
                 }
-                else
-                {
-                    filetemplate = await _validateconfig.GetConfigAdrTemplateAsync(cancellationToken);
-                }
-            }
-            else
-            {
-                if (parsedArgs.ContainsKey(Arguments.FileTemplate))
-                { 
-                    throw new ArgumentException(Resources.AdrPlus.ErrMsgFileTemplateNotFound);
-                }
-            }
 
-            var changeversion = parsedArgs.ContainsKey(Arguments.RepoVersion);
-            var lenversionvalue = -1;
-            if (changeversion)
-            {
-                if (parsedArgs.TryGetValue(Arguments.RepoVersion, out string? value))
+                if (!_validateconfig.HasTemplateRepoFile())
                 {
-                    if (int.TryParse(value, out int result) && result >= 2 && result <= 3)
+                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
+                }
+
+                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRepo);
+                if (hasWizard)
+                {
+                    parsedArgs = UpgradeWizard(cancellationToken);
+                }
+
+                parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPathRepoconfig);
+                targetPathRepoconfig ??= string.Empty;
+
+                var configPath = Path.GetFullPath(Path.Combine(targetPathRepoconfig, _validateconfig.GetFileNameRepoConfig()));
+                if (!_filesystem.FileExists(configPath))
+                {
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                }
+
+                string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
+                var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
+                if (!IsValid)
+                {
+                    LogAndWriteErrors(ErrorReport);
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, configPath));
+                }
+                var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+
+                var changetemplate = parsedArgs.ContainsKey(Arguments.RepoTemplate);
+                var filetemplate = string.Empty;
+                if (changetemplate)
+                {
+                    if (parsedArgs.TryGetValue(Arguments.FileTemplate, out filetemplate))
                     {
-                        lenversionvalue = result;
-
+                        filetemplate = Path.GetFullPath(filetemplate);
+                        if (!_filesystem.FileExists(filetemplate))
+                        {
+                            throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, filetemplate));
+                        }
+                        if (string.IsNullOrEmpty(Path.GetExtension(filetemplate)) || !Path.GetExtension(filetemplate).Equals(".md", StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new InvalidOperationException(Resources.AdrPlus.FileTemplateMusbeMd);
+                        }
+                        filetemplate = await _filesystem.ReadAllTextAsync(filetemplate, cancellationToken);
                     }
                     else
                     {
-                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueMustBeIntegerAndRangeVersion);
-                    }
-                    if (lenversionvalue < repoconfig.LenVersion)
-                    {
-                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueMustBeGreaterThanCurrent);
-                    }
-                    else if (lenversionvalue == repoconfig.LenVersion)
-                    { 
-                        changeversion = false;
-                        lenversionvalue = -1;
+                        filetemplate = await _validateconfig.GetConfigAdrTemplateAsync(cancellationToken);
                     }
                 }
                 else
-                { 
-                    throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueNotFound);
-                }
-            }
-
-            var changerevision = parsedArgs.ContainsKey(Arguments.RepoRevision);
-            var lenrevisionvalue = -1;
-            if (changerevision)
-            {
-                if (repoconfig.LenRevision > 0)
                 {
-                    throw new InvalidOperationException(Resources.AdrPlus.ErrMsgRepoRevisionAlreadySet);
-                }
-                if (parsedArgs.TryGetValue(Arguments.RepoRevision, out string? value))
-                {
-                    if (int.TryParse(value, out int result) && result >= 1 && result <= 3)
+                    if (parsedArgs.ContainsKey(Arguments.FileTemplate))
                     {
-                        lenrevisionvalue = result;
+                        throw new ArgumentException(Resources.AdrPlus.ErrMsgFileTemplateNotFound);
+                    }
+                }
+
+                var changeversion = parsedArgs.ContainsKey(Arguments.RepoVersion);
+                var lenversionvalue = -1;
+                if (changeversion)
+                {
+                    if (parsedArgs.TryGetValue(Arguments.RepoVersion, out string? value))
+                    {
+                        if (int.TryParse(value, out int result) && result >= 2 && result <= 3)
+                        {
+                            lenversionvalue = result;
+
+                        }
+                        else
+                        {
+                            throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueMustBeIntegerAndRangeVersion);
+                        }
+                        if (lenversionvalue < repoconfig.LenVersion)
+                        {
+                            throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueMustBeGreaterThanCurrent);
+                        }
+                        else if (lenversionvalue == repoconfig.LenVersion)
+                        {
+                            changeversion = false;
+                            lenversionvalue = -1;
+                        }
                     }
                     else
                     {
-                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoRevisionValueMustBeIntegerAndRangeRevision);
+                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoVersionValueNotFound);
                     }
                 }
-                else
-                {
-                    throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoRevisionValueNotFound);
-                }
-            }
 
-            var changescope = parsedArgs.ContainsKey(Arguments.RepoScope);
-            var lenscopevalue = -1;
-            var scopeitems = Array.Empty<string>();
-            var skipitems = Array.Empty<string>();
-
-            var withfolders = parsedArgs.ContainsKey(Arguments.RepoWithFolders);
-            if (changescope)
-            {
-                if (repoconfig.LenScope > 0)
+                var changerevision = parsedArgs.ContainsKey(Arguments.RepoRevision);
+                var lenrevisionvalue = -1;
+                if (changerevision)
                 {
-                    throw new InvalidOperationException(Resources.AdrPlus.ErrMsgRepoScopeAlreadySet);
-                }
-                if (parsedArgs.TryGetValue(Arguments.RepoScope, out string? value))
-                {
-                    if (int.TryParse(value, out int result) && result >= 1  && result <=5)
+                    if (repoconfig.LenRevision > 0)
                     {
-                        lenscopevalue = result;
+                        throw new InvalidOperationException(Resources.AdrPlus.ErrMsgRepoRevisionAlreadySet);
+                    }
+                    if (parsedArgs.TryGetValue(Arguments.RepoRevision, out string? value))
+                    {
+                        if (int.TryParse(value, out int result) && result >= 1 && result <= 3)
+                        {
+                            lenrevisionvalue = result;
+                        }
+                        else
+                        {
+                            throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoRevisionValueMustBeIntegerAndRangeRevision);
+                        }
                     }
                     else
                     {
-                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeValueMustBeIntegerAndRangeScope);
+                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoRevisionValueNotFound);
                     }
                 }
-                else
-                { 
-                    throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeValueNotFound);
-                }
 
-                if (!parsedArgs.TryGetValue(Arguments.RepoScopeItems, out var reposcopeitems))
+                var changescope = parsedArgs.ContainsKey(Arguments.RepoScope);
+                var lenscopevalue = -1;
+                var scopeitems = Array.Empty<string>();
+                var skipitems = Array.Empty<string>();
+
+                var withfolders = parsedArgs.ContainsKey(Arguments.RepoWithFolders);
+                if (changescope)
                 {
-                    throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeitemsValueNotFound);
-                }
+                    if (repoconfig.LenScope > 0)
+                    {
+                        throw new InvalidOperationException(Resources.AdrPlus.ErrMsgRepoScopeAlreadySet);
+                    }
+                    if (parsedArgs.TryGetValue(Arguments.RepoScope, out string? value))
+                    {
+                        if (int.TryParse(value, out int result) && result >= 1 && result <= 5)
+                        {
+                            lenscopevalue = result;
+                        }
+                        else
+                        {
+                            throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeValueMustBeIntegerAndRangeScope);
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeValueNotFound);
+                    }
 
-                scopeitems = [.. reposcopeitems
+                    if (!parsedArgs.TryGetValue(Arguments.RepoScopeItems, out var reposcopeitems))
+                    {
+                        throw new ArgumentException(Resources.AdrPlus.ErrMsgRepoScopeitemsValueNotFound);
+                    }
+
+                    scopeitems = [.. reposcopeitems
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Replace("*","").Trim())];
-                skipitems = [.. reposcopeitems
+                    skipitems = [.. reposcopeitems
                      .Split(';', StringSplitOptions.RemoveEmptyEntries)
                      .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
-                     .Select(s => s.Replace("*", "").Trim())]; 
-                var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var minlen = scopeitems.Min(s => s.Length);
-                foreach (var scope in scopeitems)
-                {
-                    if (!uniqueScopes.Add(scope))
+                     .Select(s => s.Replace("*", "").Trim())];
+                    var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    var minlen = scopeitems.Min(s => s.Length);
+                    foreach (var scope in scopeitems)
                     {
-                        throw new ArgumentException(Resources.AdrPlus.ErrMsgScopesDuplicateEntries);
+                        if (!uniqueScopes.Add(scope))
+                        {
+                            throw new ArgumentException(Resources.AdrPlus.ErrMsgScopesDuplicateEntries);
+                        }
+                    }
+                    if (lenscopevalue > minlen)
+                    {
+                        lenscopevalue = minlen;
                     }
                 }
-                if (lenscopevalue > minlen)
+                if (changetemplate)
                 {
-                    lenscopevalue = minlen;
+                    repoconfig.Template = filetemplate;
+                }
+                if (changeversion)
+                {
+                    repoconfig.LenVersion = lenversionvalue;
+                }
+                if (changerevision)
+                {
+                    repoconfig.LenRevision = lenrevisionvalue;
+                }
+                if (changescope)
+                {
+                    repoconfig.LenScope = lenscopevalue;
+                    repoconfig.Scopes = string.Join(';', scopeitems);
+                    repoconfig.SkipDomain = string.Join(';', skipitems);
+                    repoconfig.FolderByScope = withfolders;
+                }
+
+                await _filesystem.WriteAllTextAsync(configPath, JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions), cancellationToken);
+                var resultrepo = new List<string>()
+                {
+                    configPath
+                };
+                CreateScopeDirectories(repoconfig, Path.GetDirectoryName(configPath)!, resultrepo);
+                foreach (var item in resultrepo)
+                {
+                    LogMessages.LogCommandSuccessful(_logger, item);
+                    _console.WriteSuccess(item);
                 }
             }
-            if (changetemplate)
-            { 
-                repoconfig.Template = filetemplate;
-            }
-            if (changeversion)
+            catch (Exception ex)
             {
-                repoconfig.LenVersion = lenversionvalue;
+                LogMessages.LogCommandException(_logger, ex);
+                throw;
             }
-            if (changerevision)
-            {
-                repoconfig.LenRevision = lenrevisionvalue;
-            }
-            if (changescope)
-            {
-                repoconfig.LenScope = lenscopevalue;
-                repoconfig.Scopes = string.Join(';', scopeitems);
-                repoconfig.SkipDomain = string.Join(';', skipitems);
-                repoconfig.FolderByScope = withfolders;
-            }
-
-            await _filesystem.WriteAllTextAsync(configPath, JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions), cancellationToken);
-            var resultrepo = new List<string>() 
-            { 
-                configPath
-            };
-            CreateScopeDirectories(repoconfig, Path.GetDirectoryName(configPath)!, resultrepo);
-            foreach (var item in resultrepo)
-            {
-                LogMessages.LogCommandSuccessful(_logger, item);
-                _console.WriteSuccess(item);
-            }
-
         }
 
 

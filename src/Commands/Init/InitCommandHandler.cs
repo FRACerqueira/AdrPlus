@@ -59,9 +59,9 @@ namespace AdrPlus.Commands.Init
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
@@ -132,7 +132,7 @@ namespace AdrPlus.Commands.Init
                 rootPath = Content;
             }
 
-            var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateconfig, cancellationToken);
+            var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateconfig, cancellationToken);
             if (folderPrompt.IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

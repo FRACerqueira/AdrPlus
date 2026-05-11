@@ -26,7 +26,7 @@ public class AdrHeaderTests
         header.StatusUpdate.Should().Be(AdrStatus.Unknown);
         header.DateUpdate.Should().BeNull();
         header.StatusChange.Should().Be(AdrStatus.Unknown);
-        header.FileSuperSedes.Should().Be(string.Empty);
+        header.NumberSuperSedes.Should().Be(string.Empty);
         header.DateChange.Should().BeNull();
         header.Title.Should().Be(string.Empty);
         header.IsValid.Should().BeFalse();
@@ -54,7 +54,7 @@ public class AdrHeaderTests
             StatusUpdate = AdrStatus.Accepted,
             DateUpdate = updateDate,
             StatusChange = AdrStatus.Superseded,
-            FileSuperSedes = "ADR-0002.md",
+            NumberSuperSedes = "ADR-0002.md",
             DateChange = changeDate,
             Title = "Use New Database",
             IsValid = true,
@@ -73,7 +73,7 @@ public class AdrHeaderTests
         header.StatusUpdate.Should().Be(AdrStatus.Accepted);
         header.DateUpdate.Should().Be(updateDate);
         header.StatusChange.Should().Be(AdrStatus.Superseded);
-        header.FileSuperSedes.Should().Be("ADR-0002.md");
+        header.NumberSuperSedes.Should().Be("ADR-0002.md");
         header.DateChange.Should().Be(changeDate);
         header.Title.Should().Be("Use New Database");
         header.IsValid.Should().BeTrue();
@@ -182,7 +182,7 @@ public class AdrHeaderTests
             Title = "Use New Database - v2.0",
             Scope = "Enterprise-Wide API",
             Domain = "Backend_Service.v1",
-            FileSuperSedes = "ADR-0001_superseded.md"
+            NumberSuperSedes = "ADR-0001_superseded.md"
         };
 
         // Act & Assert
@@ -190,7 +190,7 @@ public class AdrHeaderTests
         header.Title.Should().Contain("-");
         header.Scope.Should().Contain("-");
         header.Domain.Should().Contain("_");
-        header.FileSuperSedes.Should().Contain("_");
+        header.NumberSuperSedes.Should().Contain("_");
     }
 
     [Fact]
@@ -354,7 +354,7 @@ public class AdrHeaderTests
             StatusUpdate = AdrStatus.Accepted,
             DateUpdate = date.AddDays(1),
             StatusChange = AdrStatus.Superseded,
-            FileSuperSedes = "ADR-0002.md",
+            NumberSuperSedes = "ADR-0002.md",
             DateChange = date.AddDays(2),
             Title = "Title",
             IsValid = true,
@@ -374,7 +374,7 @@ public class AdrHeaderTests
             StatusUpdate = AdrStatus.Accepted,
             DateUpdate = date.AddDays(1),
             StatusChange = AdrStatus.Superseded,
-            FileSuperSedes = "ADR-0002.md",
+            NumberSuperSedes = "ADR-0002.md",
             DateChange = date.AddDays(2),
             Title = "Title",
             IsValid = true,

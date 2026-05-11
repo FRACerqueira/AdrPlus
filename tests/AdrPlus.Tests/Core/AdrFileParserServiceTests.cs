@@ -125,7 +125,7 @@ namespace AdrPlus.Tests.Core
             // Assert
             Assert.True(header.IsValid);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-New-Decision.md", header.FileSuperSedes);
+            Assert.Equal("0002-New-Decision.md", header.NumberSuperSedes);
             Assert.NotNull(header.DateChange);
             Assert.Equal(new DateTime(2025, 04, 19), header.DateChange.Value.Date);
         }
@@ -968,7 +968,7 @@ namespace AdrPlus.Tests.Core
             // Assert
             Assert.True(header.IsValid);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-New-Decision.md", header.FileSuperSedes);
+            Assert.Equal("0002-New-Decision.md", header.NumberSuperSedes);
         }
 
         #endregion
@@ -1822,7 +1822,7 @@ namespace AdrPlus.Tests.Core
             Assert.Equal(AdrStatus.Proposed, header.StatusCreate);
             Assert.Equal(AdrStatus.Accepted, header.StatusUpdate);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-NewDecision.md", header.FileSuperSedes);
+            Assert.Equal("0002-NewDecision.md", header.NumberSuperSedes);
         }
 
         [Fact]

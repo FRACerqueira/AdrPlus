@@ -719,7 +719,7 @@ public class CommandMetadataServiceTests
 
         // Act
         var parsedArgs = _service.ParseArgs(args, supportedArgs);
-        var helpText = _service.GetHelpText("help", supportedArgs, new[] { "example" });
+        var helpText = _service.GetHelpText("help", supportedArgs, ["example"]);
 
         // Assert
         parsedArgs.Should().ContainKey(Arguments.Help);

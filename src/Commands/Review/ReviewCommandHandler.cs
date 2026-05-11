@@ -51,7 +51,7 @@ namespace AdrPlus.Commands.Review
             [Arguments.WizardReview,
              Arguments.FileAdr,
              Arguments.DateRefAdr,
-             Arguments.OpenAdr,
+             Arguments.OpenFile,
              Arguments.EmptyAdr,
              Arguments.Help];
 
@@ -100,9 +100,9 @@ namespace AdrPlus.Commands.Review
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
@@ -124,7 +124,7 @@ namespace AdrPlus.Commands.Review
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardReview);
                 if (hasWizard)
                 {
-                    parsedArgs = await ReviewAdrWizard(parsedArgs.ContainsKey(Arguments.OpenAdr), cancellationToken);
+                    parsedArgs = await ReviewAdrWizard(parsedArgs.ContainsKey(Arguments.OpenFile), cancellationToken);
                 }
 
                 var fileadr = Path.GetFullPath(parsedArgs[Arguments.FileAdr]);
@@ -341,7 +341,7 @@ namespace AdrPlus.Commands.Review
         /// <param name="filePath">The fully qualified path of the ADR file to open.</param>
         private void OpenAdrFileIfRequested(Dictionary<Arguments, string> parsedArgs, string filePath)
         {
-            if (string.IsNullOrWhiteSpace(_config.ComandOpenAdr) || !parsedArgs.ContainsKey(Arguments.OpenAdr))
+            if (!parsedArgs.ContainsKey(Arguments.OpenFile))
             {
                 return;
             }
@@ -352,12 +352,13 @@ namespace AdrPlus.Commands.Review
 
             if (string.IsNullOrEmpty(result))
             {
-                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.NewAdrSuccessExternalCommand), _config.ComandOpenAdr);
-                LogAndWriteSuccess(msg);
+                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.SuccessExternalCommand), command);
+                LogMessages.LogCommandSuccessful(_logger, msg);
+                _console.WriteSuccess(msg);
             }
             else
             {
-                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.NewAdrErrorFailedToOpen), result);
+                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrorExternalCommand), result);
                 LogAndWriteError(msg);
             }
         }
@@ -367,7 +368,7 @@ namespace AdrPlus.Commands.Review
         /// a drive, repository folder, eligible ADR, and reference date.
         /// The wizard loops until the user confirms the selection.
         /// </summary>
-        /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenAdr"/> flag is pre-populated in the result.</param>
+        /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenFile"/> flag is pre-populated in the result.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A dictionary of parsed arguments ready for <see cref="ExecuteAsync"/>.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
@@ -392,7 +393,7 @@ namespace AdrPlus.Commands.Review
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig,  cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -464,7 +465,7 @@ namespace AdrPlus.Commands.Review
                 parsedArgs[Arguments.DateRefAdr] = $"{dateRefPrompt.Content.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
                 if (isOpenAdr)
                 {
-                    parsedArgs[Arguments.OpenAdr] = string.Empty;
+                    parsedArgs[Arguments.OpenFile] = string.Empty;
                 }
 
 
@@ -478,8 +479,11 @@ namespace AdrPlus.Commands.Review
                     parsedArgs[Arguments.EmptyAdr] = string.Empty;
                 }
 
+                var (Left, Top) = _console.CursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                _console.MovePosition(Left, Top);
+
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

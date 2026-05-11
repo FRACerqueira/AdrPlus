@@ -28,6 +28,7 @@ public class HelpCommandHandlerTests
         _mockConsole = Substitute.For<IConsoleWriter>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
+        var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
         _mockAdrServices = Substitute.For<IAdrServices>();
         
         _mockCommandRouter = new CommandRouter(
@@ -36,7 +37,7 @@ public class HelpCommandHandlerTests
             _mockConsole,
             _mockAdrServices);
 
-        _handler = new HelpCommandHandler(_mockConsole, _mockCommandRouter, _mockAdrServices);
+        _handler = new HelpCommandHandler(mockHelpLogger, _mockConsole, _mockCommandRouter, _mockAdrServices);
     }
 
     #region Constructor Tests
@@ -49,11 +50,11 @@ public class HelpCommandHandlerTests
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
         var adrServices = Substitute.For<IAdrServices>();
+        var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
         var commandRouter = new CommandRouter(mockServiceProvider, mockLogger, console, adrServices);
 
         // Act
-        var handler = new HelpCommandHandler(console, commandRouter, adrServices);
-
+        var handler = new HelpCommandHandler(mockHelpLogger, console, commandRouter, adrServices);
         // Assert
         handler.Should().NotBeNull();
     }
@@ -383,7 +384,7 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert
-        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.Contains("#")));
+        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.Contains('#')));
     }
 
     [Fact]

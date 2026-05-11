@@ -4,9 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Extensions;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace AdrPlus.Tests.Extensions
 {

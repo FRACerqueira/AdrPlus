@@ -103,19 +103,18 @@ adrplus config --application
 ```
 
 This creates/edits `adrplus.json` with:
-- **Language**: UI language (`en-US`, `pt-BR`, etc.)
-- **FolderRepo**: Where to store ADRs (default: `doc/adr`)
-- **OpenAdr**: Command to open files after creation (e.g., `code {0}` for VS Code)
+- **Language**: UI language for prompts and messages (`en-US`, `pt-BR`, etc.)
+- **YesValue**: Default confirmation value for positive responses (leave empty for language default)
+- **NoValue**: Default confirmation value for negative responses (leave empty for language default)
+- **ComandOpenAdr**: Command to open files after creation (e.g., `code {0}` for VS Code)
 
 Example `adrplus.json`:
 ```json
 {
-  "DefaultSettings": {
-    "Language": "en-US",
-    "YesValue": "",
-    "NoValue": "",
-    "OpenAdr": "code {0}"
-  }
+  "Language": "en-US",
+  "YesValue": "",
+  "NoValue": "",
+  "ComandOpenAdr": "code {0}"
 }
 ```
 
@@ -131,8 +130,8 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 ```json
 {
-  "folderadr": "doc/adr","
-  "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
+  "folderadr": "doc/adr",
+  "template": "---\r\n## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
@@ -147,10 +146,18 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "scopes": "",
   "folderbyscope": false,
   "skipdomain": "",
-  "headerdisclaimer": "(Do not remove this template. It is required and must remain unchanged to ensure documentation consistency)",
-  "headerstatus": "Status",
+  "headerdisclaimer": "Do not remove this comment, lines and table",
+  "headertitlefile": "ADR",
   "headerversion": "Version",
-  "headerrevision": "Revision"
+  "headerrevision": "Revision",
+  "headerscope": "Scope",
+  "headerdomain": "Domain",
+  "headertitlestatuscreated": "Created",
+  "headertitlestatuschanged": "Changed",
+  "headertitlestatussuperseded": "Superseded",
+  "headertablefields": "Field",
+  "headertablevalues": "Value",
+  "headermigrated": "Migrated"
 }
 ```
 
@@ -162,14 +169,53 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). | N/A (auto-generated) |
 | `prefix` | Prefix for ADR identifiers | `ADR` → `ADR-0001` |
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
-| `lenversion` | Digits for major version | `2` → `01`, `02`, etc. |
+| `lenversion` | Digits for major version (0 disables) | `2` → `01`, `02`, etc. |
 | `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `01` |
-| `separator` | Character between name parts | `-` |
-| `casetransform` | Case style for names | `PascalCase` |
+| `lenscope` | Number of characters for scope abbreviation (0 disables) | `1` → `B`, `F`, etc. |
+| `separator` | Character between name parts | `-`, `~`, or `.` |
+| `casetransform` | Case style for names | `PascalCase`, `CamelCase`, `SnakeCase`, `KebabCase` |
+| `scopes` | Semicolon-separated list of allowed scopes | `backend;frontend;data` |
+| `folderbyscope` | Create separate folders per scope | `true` or `false` |
+| `skipdomain` | Scopes that skip domain in filenames | `data;platform` |
 | `statusnew` | Label for new ADRs | `Proposed` |
 | `statusacc` | Label for approved ADRs | `Accepted` |
 | `statusrej` | Label for rejected ADRs | `Rejected` |
 | `statussup` | Label for superseded ADRs | `Superseded` |
+| `headerdisclaimer` | Disclaimer text in ADR header | N/A (template metadata) |
+| `headertitlefile` | Header label for ADR file name | `ADR` |
+| `headerscope` | Header label for scope field | `Scope` |
+| `headerdomain` | Header label for domain field | `Domain` |
+| `headertitlestatuscreated` | Header label for "Created" status | `Created` |
+| `headertitlestatuschanged` | Header label for "Changed" status | `Changed` |
+| `headertitlestatussuperseded` | Header label for "Superseded" status | `Superseded` |
+| `headertablefields` | Table header for field names | `Field` |
+| `headertablevalues` | Table header for field values | `Value` |
+| `headermigrated` | Header label for "Migrated" indicator | `Migrated` |
+
+#### Understanding key configuration concepts
+
+Before initializing your repository, let's understand some important concepts:
+
+- **Scopes**: Define organizational boundaries for your ADRs (e.g., "backend", "frontend", "data"). When enabled (`lenscope > 0`), scopes help organize decisions by domain or team responsibility.
+
+- **Folder by Scope**: When `folderbyscope` is `true`, ADRs are organized into separate folders for each scope. When `false`, all ADRs stay in a flat structure under the `folderadr` folder.
+
+- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "data" scope might skip the domain to keep filenames shorter. List multiple scopes separated by semicolons.
+
+- **Case Transform**: The style applied to the title portion of generated filenames:
+  - `PascalCase`: `UsePostgreSQLAsDatabase`
+  - `CamelCase`: `usePostgreSQLAsDatabase`
+  - `SnakeCase`: `use_postgresql_as_database`
+  - `KebabCase`: `use-postgresql-as-database`
+
+- **Separator**: The character separating different parts of the filename:
+  - `-` (hyphen): Recommended, most readable
+  - `~` (tilde): Alternative style
+  - `.` (period): Alternative style
+
+- **Version vs. Revision**: 
+  - **Version**: A major change to an ADR (e.g., `v01`, `v02`) that represents a significant decision update.
+  - **Revision**: A minor change to an ADR (e.g., `r01`, `r02`) that represents clarifications or documentation improvements.
 
 ---
 
@@ -182,7 +228,7 @@ adrplus init
 ```
 
 This command:
-- Creates the folder specified in `folderrepo` (e.g., `doc/adr`)
+- Creates the folder specified in `folderadr` (e.g., `doc/adr`)
 - Creates the `adr-config.adrplus` configuration file in the repository root
 - Prepares your repository for ADR management
 
@@ -230,16 +276,21 @@ adrplus new --title "Use PostgreSQL as primary database"
 AdrPlus automatically creates a Markdown file with a template:
 
 ```markdown
-###### (Do not remove this template. It is used and must remain unchanged to ensure consistency in documentation)
-##### Version: 01
-##### Revision: -
-##### -
-##### Status
-- Proposed (YYYY-MM-DD)
-- \-
-- \-
-# Use PostgreSQL as Primary Database
+<!-- Do not remove this comment, lines and table (1-12) -->
+|Adr-Plus Fields|Values|
+|--|--|
+|File title|Use PostgreSQL as Primary Database|
+|Version|01|
+|Revision||
+|Scope||
+|Domain||
+|Created|Proposed (2026-05-06)|
+|Changed||
+|Superseded||
+<!-- Do not remove this comment, lines and table (1-12) -->
 ---
+# Use PostgreSQL as Primary Database
+
 ## Context
 
 Describe the context and the problem to be solved.
@@ -270,16 +321,21 @@ Open the created ADR file and fill in the sections:
 Example completed ADR:
 
 ```markdown
-###### (Do not remove this template. It is used and must remain unchanged to ensure consistency in documentation)
-##### Version: 01
-##### Revision: -
-##### -
-##### Status
-- Proposed (YYYY-MM-DD)
-- \-
-- \-
-# Use PostgreSQL as Primary Database
+<!-- Do not remove this comment, lines and table (1-12) -->
+|Adr-Plus Fields|Values|
+|--|--|
+|File title|Use PostgreSQL as Primary Database|
+|Version|01|
+|Revision||
+|Scope||
+|Domain||
+|Created|Proposed (2026-05-06)|
+|Changed||
+|Superseded||
+<!-- Do not remove this comment, lines and table (1-12) -->
 ---
+# Use PostgreSQL as Primary Database
+
 ## Context
 
 Our application needs a reliable, scalable relational database. We're evaluating options between PostgreSQL, MySQL, and AWS RDS Aurora.
@@ -496,13 +552,13 @@ adrplus upgrade --revision 2 --path "doc/adr"
 
 Before upgrade:
 ```
-ADR-0001-UsePostgresql.md
+ADR-0001-UsePostgresql-V01.md 
 ```
 
 After enabling revisions:
 ```
-ADR-0001-UsePostgresql-R01.md     (first revision)
-ADR-0001-UsePostgresql-R02.md     (second revision)
+ADR-0001-UsePostgresql-V01R01.md     (first revision)
+ADR-0001-UsePostgresql-V01R02.md     (second revision)
 ```
 
 #### Add Scope Support
@@ -543,10 +599,10 @@ doc/
 
 ADR files created after this upgrade:
 ```
-backend/ADR-0002-UseRedisCache-Backend.md
-frontend/ADR-0003-UseVueJs-Frontend.md
-data/ADR-0004-UseElasticsearch.md         (no scope suffix - skipped)
-infra/ADR-0005-UseDockerContainers-Infra.md
+backend/ADR-0002-UseRedisCache-V01-Backend.md
+frontend/ADR-0003-UseVueJs-V01-Frontend.md
+data/ADR-0004-UseElasticsearch-V01.md (no scope suffix - skipped)
+infra/ADR-0005-UseDockerContainers-V01-Infra.md
 ```
 
 ### Complete Upgrade Example

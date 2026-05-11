@@ -4,7 +4,9 @@
 // ***************************************************************************************
 
 using AdrPlus.Core;
+using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Logging;
 
 namespace AdrPlus.Commands.Help
 {
@@ -18,11 +20,13 @@ namespace AdrPlus.Commands.Help
     /// <param name="console">The console writer for displaying help information.</param>
     /// <param name="commandRouter">The command router used to delegate to a specific command's help output.</param>
     /// <param name="adrServices">The ADR services for accessing command metadata and argument parsing.</param>
-    internal sealed class HelpCommandHandler(IConsoleWriter console, CommandRouter commandRouter, IAdrServices adrServices) : ICommandHandler
+    internal sealed class HelpCommandHandler(ILogger<HelpCommandHandler> logger,IConsoleWriter console, CommandRouter commandRouter, IAdrServices adrServices) : ICommandHandler
     {
+        private readonly ILogger<HelpCommandHandler> _logger = logger;
         private readonly IConsoleWriter _console = console;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IAdrServices _adrServices = adrServices;
+
 
         /// <summary>
         /// Executes the <c>help</c> command asynchronously.
@@ -36,18 +40,26 @@ namespace AdrPlus.Commands.Help
         /// <exception cref="ArgumentException">Thrown when more than one argument is provided.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
-            if (args.Length == 0)
+            try
             {
-                GenerateHelpAllCommands();
+                ArgumentNullException.ThrowIfNull(args);
+                if (args.Length == 0)
+                {
+                    GenerateHelpAllCommands();
+                }
+                else if (args.Length > 1)
+                {
+                    throw new ArgumentException(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
+                }
+                else if (args.Length == 1)
+                {
+                    await _commandRouter.RouteAsync(args[0], [], cancellationToken);
+                }
             }
-            else if (args.Length > 1)
+            catch (Exception ex)
             {
-                throw new ArgumentException(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
-            }
-            else if (args.Length == 1)
-            {
-                await _commandRouter.RouteAsync(args[0], [], cancellationToken);
+                LogMessages.LogCommandException(_logger, ex);
+                throw;
             }
         }
 

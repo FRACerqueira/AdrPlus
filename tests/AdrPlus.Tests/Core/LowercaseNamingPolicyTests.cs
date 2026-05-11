@@ -4,8 +4,6 @@
 // ***************************************************************************************
 
 using AdrPlus.Core;
-using FluentAssertions;
-using Xunit;
 
 namespace AdrPlus.Tests.Core
 {

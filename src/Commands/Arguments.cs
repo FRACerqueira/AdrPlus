@@ -40,6 +40,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardMigrate")]
         WizardMigrate,
+        [CommandArgument("-w", "--wizard")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardExplorer")]
+        WizardExplorer,
         [CommandArgument("-a", "--application")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigApp")]
         WizardConfigApplication,
@@ -71,8 +74,8 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageScopeAdr")]
         ScopeAdr,
         [CommandArgument("-o", "--open")]
-        [HelpUsage(UsageArgumments.Optional, "HelpUsageOpenAdr")]
-        OpenAdr,
+        [HelpUsage(UsageArgumments.Optional, "HelpUsageOpenFile")]
+        OpenFile,
         [CommandArgument("-e", "--empty")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageEmptyAdr")]
         EmptyAdr,
@@ -100,6 +103,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
         FileTemplate,
+        [CommandArgument("-f", "--file")]
+        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageFileReport")]
+        FileReport,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help,

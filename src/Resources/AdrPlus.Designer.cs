@@ -70,15 +70,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to and  have configuration enabled.
-        /// </summary>
-        internal static string AndHaveConfigurationEnabled {
-            get {
-                return ResourceManager.GetString("AndHaveConfigurationEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Arguments.
         /// </summary>
         internal static string Arguments {
@@ -120,6 +111,15 @@ namespace AdrPlus.Resources {
         internal static string CmdDescConfig {
             get {
                 return ResourceManager.GetString("CmdDescConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADR file explorer ,viewer and report.
+        /// </summary>
+        internal static string CmdDescExplorer {
+            get {
+                return ResourceManager.GetString("CmdDescExplorer", resourceCulture);
             }
         }
         
@@ -448,38 +448,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Current value: {0}.
-        /// </summary>
-        internal static string ConfigInfoCurrentValue {
-            get {
-                return ResourceManager.GetString("ConfigInfoCurrentValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to File name examples:.
         /// </summary>
         internal static string ConfigInfoFileNameSample {
             get {
                 return ResourceManager.GetString("ConfigInfoFileNameSample", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Edit configuration property.
-        /// </summary>
-        internal static string ConfigInfoPropertyEditor {
-            get {
-                return ResourceManager.GetString("ConfigInfoPropertyEditor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected field: {0}.
-        /// </summary>
-        internal static string ConfigInfoSelectedField {
-            get {
-                return ResourceManager.GetString("ConfigInfoSelectedField", resourceCulture);
             }
         }
         
@@ -534,6 +507,24 @@ namespace AdrPlus.Resources {
         internal static string Created {
             get {
                 return ResourceManager.GetString("Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a report.
+        /// </summary>
+        internal static string CreateReport {
+            get {
+                return ResourceManager.GetString("CreateReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Status.
+        /// </summary>
+        internal static string CurrentStatus {
+            get {
+                return ResourceManager.GetString("CurrentStatus", resourceCulture);
             }
         }
         
@@ -610,6 +601,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Path to file name report is empty.
+        /// </summary>
+        internal static string ErrFileReportEmpty {
+            get {
+                return ResourceManager.GetString("ErrFileReportEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ADR file is empty.
         /// </summary>
         internal static string ErrMsgAdrFileEmpty {
@@ -646,15 +646,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The revision line does not have the expected format..
-        /// </summary>
-        internal static string ErrMsgAdrHeaderRevisionFormatInvalid {
-            get {
-                return ResourceManager.GetString("ErrMsgAdrHeaderRevisionFormatInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The ADR file does not have the expected revision header.
         /// </summary>
         internal static string ErrMsgAdrHeaderRevisionInvalid {
@@ -669,15 +660,6 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgAdrHeaderScopeInvalid {
             get {
                 return ResourceManager.GetString("ErrMsgAdrHeaderScopeInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The ADR file does not have the expected separator line.
-        /// </summary>
-        internal static string ErrMsgAdrHeaderSeparatorInvalid {
-            get {
-                return ResourceManager.GetString("ErrMsgAdrHeaderSeparatorInvalid", resourceCulture);
             }
         }
         
@@ -709,29 +691,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The ADR file does not have the expected status update line.
-        /// </summary>
-        internal static string ErrMsgAdrHeaderStatusUpdateLineInvalid {
-            get {
-                return ResourceManager.GetString("ErrMsgAdrHeaderStatusUpdateLineInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The ADR file does not have the expected title header.
         /// </summary>
         internal static string ErrMsgAdrHeaderTitleInvalid {
             get {
                 return ResourceManager.GetString("ErrMsgAdrHeaderTitleInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The version line does not have the expected format.
-        /// </summary>
-        internal static string ErrMsgAdrHeaderVersionFormatInvalid {
-            get {
-                return ResourceManager.GetString("ErrMsgAdrHeaderVersionFormatInvalid", resourceCulture);
             }
         }
         
@@ -849,15 +813,6 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgCritical {
             get {
                 return ResourceManager.GetString("ErrMsgCritical", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;dateformat&apos; is invalid: &apos;{0}&apos;. Unable to validate date format.
-        /// </summary>
-        internal static string ErrMsgDateFormatInvalid {
-            get {
-                return ResourceManager.GetString("ErrMsgDateFormatInvalid", resourceCulture);
             }
         }
         
@@ -1069,6 +1024,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to External command executed but failed: {0}.
+        /// </summary>
+        internal static string ErrorExternalCommand {
+            get {
+                return ResourceManager.GetString("ErrorExternalCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filename does not start with expected prefix: {0}.
         /// </summary>
         internal static string ErrorFilenameNoPrefix {
@@ -1182,15 +1146,6 @@ namespace AdrPlus.Resources {
         internal static string ErrorUnexpectedPartInFilename {
             get {
                 return ResourceManager.GetString("ErrorUnexpectedPartInFilename", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version number not configured for repository {0}.
-        /// </summary>
-        internal static string ErrorVersionNotconfig {
-            get {
-                return ResourceManager.GetString("ErrorVersionNotconfig", resourceCulture);
             }
         }
         
@@ -1618,11 +1573,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File must be over folder {0}.
+        ///   Looks up a localized string similar to Name file report .
         /// </summary>
-        internal static string FileMustBeOverFolder {
+        internal static string FileReportSummary {
             get {
-                return ResourceManager.GetString("FileMustBeOverFolder", resourceCulture);
+                return ResourceManager.GetString("FileReportSummary", resourceCulture);
             }
         }
         
@@ -1632,6 +1587,24 @@ namespace AdrPlus.Resources {
         internal static string FileTemplateMusbeMd {
             get {
                 return ResourceManager.GetString("FileTemplateMusbeMd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Folder.
+        /// </summary>
+        internal static string Folder {
+            get {
+                return ResourceManager.GetString("Folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format.
+        /// </summary>
+        internal static string Format {
+            get {
+                return ResourceManager.GetString("Format", resourceCulture);
             }
         }
         
@@ -1690,6 +1663,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File path name (md file) for the explorer report.
+        /// </summary>
+        internal static string HelpUsageFileReport {
+            get {
+                return ResourceManager.GetString("HelpUsageFileReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path to the template file. If omitted, it will be the application template.
         /// </summary>
         internal static string HelpUsageFileTemplate {
@@ -1717,11 +1699,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open ADR after execute command.
+        ///   Looks up a localized string similar to Open file after execute command.
         /// </summary>
-        internal static string HelpUsageOpenAdr {
+        internal static string HelpUsageOpenFile {
             get {
-                return ResourceManager.GetString("HelpUsageOpenAdr", resourceCulture);
+                return ResourceManager.GetString("HelpUsageOpenFile", resourceCulture);
             }
         }
         
@@ -1861,6 +1843,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wizard to explorer ADR files (supress all other arguments).
+        /// </summary>
+        internal static string HelpUsageWizardExplorer {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardExplorer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wizard to configure the file repository (supress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardInit {
@@ -1987,6 +1978,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1)File,2)Folder,3)Format,4)Current Status,5)Status Created,6)Status Updated,7)Scope,8)Domain.
+        /// </summary>
+        internal static string ListFieldReport {
+            get {
+                return ResourceManager.GetString("ListFieldReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Migrated.
         /// </summary>
         internal static string Migrated {
@@ -2014,20 +2014,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File title with unknown structure.
+        ///   Looks up a localized string similar to Unknown structure.
         /// </summary>
         internal static string MsgUnknownStructure {
             get {
                 return ResourceManager.GetString("MsgUnknownStructure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to open ADR file. Error code: {0}.
-        /// </summary>
-        internal static string NewAdrErrorFailedToOpen {
-            get {
-                return ResourceManager.GetString("NewAdrErrorFailedToOpen", resourceCulture);
             }
         }
         
@@ -2095,15 +2086,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully executed: {0}.
-        /// </summary>
-        internal static string NewAdrSuccessExternalCommand {
-            get {
-                return ResourceManager.GetString("NewAdrSuccessExternalCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Choose an ADR.
         /// </summary>
         internal static string NewVerChooseAdr {
@@ -2149,15 +2131,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified ADR file does not have a valid status({0}).
-        /// </summary>
-        internal static string NotValidStatusForAdr {
-            get {
-                return ResourceManager.GetString("NotValidStatusForAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The specified ADR file not has a valid status ({0}) for updating.
         /// </summary>
         internal static string NotValidStatusForApproveAndReject {
@@ -2194,6 +2167,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open file.
+        /// </summary>
+        internal static string OpenFile {
+            get {
+                return ResourceManager.GetString("OpenFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Optional.
         /// </summary>
         internal static string Optional {
@@ -2217,6 +2199,15 @@ namespace AdrPlus.Resources {
         internal static string PromptAdrToMigrate {
             get {
                 return ResourceManager.GetString("PromptAdrToMigrate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm the explorer with this parameters?.
+        /// </summary>
+        internal static string PromptConfirmExplorer {
+            get {
+                return ResourceManager.GetString("PromptConfirmExplorer", resourceCulture);
             }
         }
         
@@ -2257,6 +2248,42 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fields to show.
+        /// </summary>
+        internal static string PromptFieldsReport {
+            get {
+                return ResourceManager.GetString("PromptFieldsReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name file report (without extension).
+        /// </summary>
+        internal static string PromptFileNameReport {
+            get {
+                return ResourceManager.GetString("PromptFileNameReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open ADR after selection?.
+        /// </summary>
+        internal static string PromptOpenAdrAfterSelection {
+            get {
+                return ResourceManager.GetString("PromptOpenAdrAfterSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open report after create?.
+        /// </summary>
+        internal static string PromptOpenReportAfterCreate {
+            get {
+                return ResourceManager.GetString("PromptOpenReportAfterCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reading registered domains....
         /// </summary>
         internal static string PromptReadingRegisteredDomains {
@@ -2271,15 +2298,6 @@ namespace AdrPlus.Resources {
         internal static string PromptSelectAdrRepositoryAdr {
             get {
                 return ResourceManager.GetString("PromptSelectAdrRepositoryAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select repository path.
-        /// </summary>
-        internal static string PromptSelectAdrRepositoryPath {
-            get {
-                return ResourceManager.GetString("PromptSelectAdrRepositoryPath", resourceCulture);
             }
         }
         
@@ -2302,6 +2320,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select folder for report.
+        /// </summary>
+        internal static string PromptSelectFolderForReport {
+            get {
+                return ResourceManager.GetString("PromptSelectFolderForReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select options to upgrade.
         /// </summary>
         internal static string PromptSelectRepoActions {
@@ -2311,11 +2338,38 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select repository path.
+        /// </summary>
+        internal static string PromptSelectRepositoryPath {
+            get {
+                return ResourceManager.GetString("PromptSelectRepositoryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to show ADRs or create report?.
+        /// </summary>
+        internal static string PromptShowOrCreateReport {
+            get {
+                return ResourceManager.GetString("PromptShowOrCreateReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready to migrate.
         /// </summary>
         internal static string ReadyToMigrate {
             get {
                 return ResourceManager.GetString("ReadyToMigrate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADR-PLUS : Report.
+        /// </summary>
+        internal static string ReportTitle {
+            get {
+                return ResourceManager.GetString("ReportTitle", resourceCulture);
             }
         }
         
@@ -2365,11 +2419,29 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show ADRs.
+        /// </summary>
+        internal static string ShowAdrs {
+            get {
+                return ResourceManager.GetString("ShowAdrs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Accepted.
         /// </summary>
         internal static string StatusAcc {
             get {
                 return ResourceManager.GetString("StatusAcc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial status.
+        /// </summary>
+        internal static string StatusCreated {
+            get {
+                return ResourceManager.GetString("StatusCreated", resourceCulture);
             }
         }
         
@@ -2397,6 +2469,24 @@ namespace AdrPlus.Resources {
         internal static string StatusSup {
             get {
                 return ResourceManager.GetString("StatusSup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updated status.
+        /// </summary>
+        internal static string StatusUpdated {
+            get {
+                return ResourceManager.GetString("StatusUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External command executed successfully: {0}.
+        /// </summary>
+        internal static string SuccessExternalCommand {
+            get {
+                return ResourceManager.GetString("SuccessExternalCommand", resourceCulture);
             }
         }
         
@@ -2460,15 +2550,6 @@ namespace AdrPlus.Resources {
         internal static string Usage {
             get {
                 return ResourceManager.GetString("Usage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Format date invalid {0}.
-        /// </summary>
-        internal static string ValidationDateFormatInvalidFormat {
-            get {
-                return ResourceManager.GetString("ValidationDateFormatInvalidFormat", resourceCulture);
             }
         }
         

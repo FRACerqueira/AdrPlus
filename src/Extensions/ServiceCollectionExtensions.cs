@@ -22,6 +22,7 @@ using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
 using AdrPlus.Commands.Upgrade;
 using AdrPlus.Commands.Migrate;
+using AdrPlus.Commands.Explorer;
 
 namespace AdrPlus.Extensions
 {
@@ -48,6 +49,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ICommandMetadataService, CommandMetadataService>();
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
+            services.AddSingleton<ExplorerCommandHandler>();
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
             services.AddSingleton<MigrateCommandHandler>();

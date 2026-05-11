@@ -37,77 +37,85 @@ namespace AdrPlus.Commands.Migrate
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
-            var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
-            if (parsedArgs.ContainsKey(Arguments.Help))
+            try
             {
-                _console.WriteHelp(_adrServices.GetHelpText(
-                    "migrate",
-                    ValidCommandArgs,
-                    [
-                        "adrplus migrate --wizard",
+                ArgumentNullException.ThrowIfNull(args);
+                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
+                if (parsedArgs.ContainsKey(Arguments.Help))
+                {
+                    _console.WriteHelp(_adrServices.GetHelpText(
+                        "migrate",
+                        ValidCommandArgs,
+                        [
+                            "adrplus migrate --wizard",
                         "adrplus migrate --path \"path/to/repository/\"",
-                    ]));
-                return;
-            }
-
-            if (!_validateConfig.HasTemplateRepoFile())
-            {
-                throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-            }
-
-            var hasWizard = parsedArgs.ContainsKey(Arguments.WizardMigrate);
-            AdrFileNameComponents[] foundfiles = [];
-            if (hasWizard)
-            {
-                var (ParsedArgs, Adrfiles) = await MigrateWizardAsync(cancellationToken);
-                parsedArgs = ParsedArgs;
-                foundfiles = Adrfiles;
-            }
-
-            parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
-            targetPath ??= string.Empty;
-
-            if (!_fileSystem.DirectoryExists(targetPath))
-            {
-                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
-            }
-
-            var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
-            if (!_fileSystem.FileExists(configPath))
-            {
-                throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
-            }
-
-            string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
-            var (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsonString);
-            if (!IsValid)
-            {
-                LogAndWriteErrors(ErrorReport);
-                throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
-            }
-
-            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-
-            if (!hasWizard)
-            {
-                foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
-
-                if (foundfiles.Length == 0)
-                {
-                    throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
+                        ]));
+                    return;
                 }
-                if (!foundfiles.Any(x => x.IsValid))
+
+                if (!_validateConfig.HasTemplateRepoFile())
                 {
-                    throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
+                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
+                }
+
+                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardMigrate);
+                AdrFileNameComponents[] foundfiles = [];
+                if (hasWizard)
+                {
+                    var (ArgsWizard, Adrfiles) = await MigrateWizardAsync(cancellationToken);
+                    parsedArgs = ArgsWizard;
+                    foundfiles = Adrfiles;
+                }
+
+                parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
+                targetPath ??= string.Empty;
+
+                if (!_fileSystem.DirectoryExists(targetPath))
+                {
+                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
+                }
+
+                var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
+                if (!_fileSystem.FileExists(configPath))
+                {
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                }
+
+                string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
+                var (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsonString);
+                if (!IsValid)
+                {
+                    LogAndWriteErrors(ErrorReport);
+                    throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
+                }
+
+                var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+
+                if (!hasWizard)
+                {
+                    foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
+
+                    if (foundfiles.Length == 0)
+                    {
+                        throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
+                    }
+                    if (!foundfiles.Any(x => x.IsValid))
+                    {
+                        throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
+                    }
+                }
+
+                var result = await MigrateRepositoryAsync(foundfiles, repoconfig, cancellationToken);
+                foreach (var item in result)
+                {
+                    LogMessages.LogCommandSuccessful(_logger, item);
+                    _console.WriteSuccess(item);
                 }
             }
-
-            var result = await MigrateRepositoryAsync(foundfiles, repoconfig, cancellationToken);
-            foreach (var item in result)
+            catch (Exception ex)
             {
-                LogMessages.LogCommandSuccessful(_logger, item);
-                _console.WriteSuccess(item);
+                LogMessages.LogCommandException(_logger, ex);
+                throw;
             }
         }
 
@@ -158,7 +166,7 @@ namespace AdrPlus.Commands.Migrate
         /// <returns>A dictionary of parsed arguments pre-populated with <see cref="Arguments.TargetRepo"/>.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
 
-        private async Task<(Dictionary<Arguments, string> ParsedArgs, AdrFileNameComponents[] Adrfiles)> MigrateWizardAsync(CancellationToken cancellationToken)
+        private async Task<(Dictionary<Arguments, string> ArgsWizard, AdrFileNameComponents[] Adrfiles)> MigrateWizardAsync(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
             while (true)
@@ -178,7 +186,7 @@ namespace AdrPlus.Commands.Migrate
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateConfig, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateConfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

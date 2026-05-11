@@ -66,9 +66,9 @@ namespace AdrPlus.Commands.Wizard
         /// <exception cref="NotImplementedException">Thrown when an unrecognized top-level menu option is selected.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help) && args.Length != 0)
                 {
@@ -427,6 +427,13 @@ namespace AdrPlus.Commands.Wizard
                     Title = Resources.AdrPlus.WizardGroupCommandHelpTitle,
                     Description = Resources.AdrPlus.WizardGroupCommandHelpDescription,
                     EnabledWhenNotConfigured = true
+                },
+                new ItemMenuWizard
+                {
+                    Id = "4",
+                    Title = "Explorer & Report",
+                    Description = "Explorer",
+                    EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard
                 {

@@ -26,6 +26,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
 - [Commands](#commands)
 - [Rules for adr commands](#rules-by-adr-commands)
@@ -271,26 +272,31 @@ adrplus config --application
 
 ```json
 {
-  "DefaultSettings": {
-    "Language": "en-US",
-    "YesValue": "",
-    "NoValue": "",
-    "OpenAdr": "code {0}",
-  }
+  "Language": "en-US",
+  "YesValue": "",
+  "NoValue": "",
+  "ComandOpenAdr": "code {0}"
 }
 ```
+
 | Key | Description |
 |-----|-------------|
-|`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`).|
-|`YesValue`| Default confirmation value for positive responses.|
-|`NoValue`| Default confirmation value for negative responses.|
-|`OpenAdr`| Opens the ADR file after creation/update when supported.|
+|`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
+|`YesValue`| Default confirmation value for positive responses (for example: `Y`, `yes`, `sim`). Leave empty to use the default for the configured language. |
+|`NoValue`| Default confirmation value for negative responses (for example: `N`, `no`, `não`). Leave empty to use the default for the configured language. |
+|`ComandOpenAdr`| Command to open an ADR file after creation/update when supported. See examples below. |
 
-- VS Code users can set `OpenAdr` to `code {0}` to automatically open the created/updated ADR file in the editor.
-- Visual Studio users can set `OpenAdr` to `devenv.exe {0}` to open the file in the associated application.
-- For other IDEs/editors, adjust the command accordingly (for example: `rider {0}` to open in JetBrains Rider).
-- If you prefer to keep it simple, set `OpenAdr` to an empty string `""` to disable automatic opening of ADR files.
-- _**Note: the command must be available as a global PATH variable in the system to work properly.**_
+##### Examples for `ComandOpenAdr`
+
+- **VS Code**: `code {0}` — Opens the file in VS Code.
+- **Visual Studio**: `devenv.exe {0}` — Opens the file in the associated application (Windows only).
+- **JetBrains Rider**: `rider {0}` — Opens the file in Rider.
+- **Sublime Text**: `subl {0}` — Opens the file in Sublime Text.
+- **Vim**: `vim {0}` — Opens the file in Vim.
+- **Nano**: `nano {0}` — Opens the file in Nano.
+- **Disabled**: `""` (empty string) — Disables automatic opening of ADR files.
+
+> **Note**: The command must be available as a global PATH variable in your system to work properly. Test it manually in your terminal before configuring it here.
 
 
 ### `adr-config.adrplus` example
@@ -305,7 +311,7 @@ adrplus config --repository
 
 ```json
 {
-  "folderadr": "doc/adr","
+  "folderadr": "doc/adr",
   "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
   "prefix": "ADR",
   "lenseq": 4,
@@ -321,10 +327,18 @@ adrplus config --repository
   "scopes": "",
   "folderbyscope": false,
   "skipdomain": "",
-  "headerdisclaimer": "(Do not remove this template. It is required and must remain unchanged to ensure documentation consistency)",
-  "headerstatus": "Status",
+  "headerdisclaimer": "Do not remove this comment, lines and table",
+  "headertitlefile": "ADR",
   "headerversion": "Version",
-  "headerrevision": "Revision"
+  "headerrevision": "Revision",
+  "headerscope": "Scope",
+  "headerdomain": "Domain",
+  "headertitlestatuscreated": "Created",
+  "headertitlestatuschanged": "Changed",
+  "headertitlestatussuperseded": "Superseded",
+  "headertablefields": "Fields",
+  "headertablevalues": "Values",
+  "headermigrated": "Migrated"
 }
 ```
 
@@ -337,30 +351,63 @@ adrplus config --repository
 | `lenversion` | Number of digits for major version formatting (for example: `2` => `01`). |
 | `lenrevision` | Number of digits for revision formatting (for example: `2` => `01`; `0` disables revision numbering). |
 | `lenscope` | Maximum scope segment length used in generated names (when scope is enabled, value > 0). |
-| `separator` | Separator character used in generated file names. |
-| `casetransform` | Case style applied to generated name segments (for example: `PascalCase`). |
+| `separator` | Separator character used in generated file names (valid values: `-`, `~`, or `.`). |
+| `casetransform` | Case style applied to generated name segments (for example: `PascalCase`, `CamelCase`, `SnakeCase`, or `KebabCase`). |
 | `statusnew` | Label used for newly created ADRs. |
 | `statusacc` | Label used for accepted ADRs. |
 | `statusrej` | Label used for rejected ADRs. |
 | `statussup` | Label used for superseded ADRs. |
-| `scopes` | Allowed scopes list (can be empty when lenscope = 0). |
-| `folderbyscope` | If `true`, ADR files are grouped by scope folders. |
-| `skipdomain` | Optional terms from the list of scopes to be ignored in the generated nomenclature. |
+| `scopes` | Semicolon-separated list of allowed scopes for organizing ADRs (for example: `Enterprise;Domain;Project`; can be empty when `lenscope = 0`). |
+| `folderbyscope` | If `true`, ADR files are grouped by scope folders; if `false`, all ADRs remain in the flat `folderadr` directory. |
+| `skipdomain` | Semicolon-separated list of scope names for which the domain segment should be omitted from the generated filename (must be a subset of `scopes`). |
 | `headerdisclaimer` | Disclaimer header added to ADR template output. |
-| `headerstatus` | Header label for ADR status field. |
+| `headertitlefile` | Header label for the ADR file name field in the header. |
 | `headerversion` | Header label for ADR version field. |
 | `headerrevision` | Header label for ADR revision field. |
+| `headerscope` | Header label for ADR scope field. |
+| `headerdomain` | Header label for ADR domain field. |
+| `headertitlestatuscreated` | Header label for the "Created" status indicator. |
+| `headertitlestatuschanged` | Header label for the "Changed" status indicator. |
+| `headertitlestatussuperseded` | Header label for the "Superseded" status indicator. |
+| `headertablefields` | Table header label for displaying field names in the ADR. |
+| `headertablevalues` | Table header label for displaying field values in the ADR. |
+| `headermigrated` | Header label for the "Migrated" indicator (used for ADRs migrated via the `migrate` command). |
 
 ### Suggested settings per team profile
 
+#### Understanding configuration concepts
+
+Before selecting a team profile, understand these key concepts:
+
+- **Scopes**: Define organizational boundaries for your ADRs (e.g., "Enterprise", "Backend", "Frontend"). Scopes help organize decisions by domain or team responsibility. When enabled (`lenscope > 0`), the scope appears in the ADR filename.
+
+- **Folder by Scope**: When enabled, ADRs are organized into separate folders for each scope (e.g., `doc/adr/enterprise/`, `doc/adr/backend/`). When disabled, all ADRs stay in a flat structure under the configured `folderadr` folder.
+
+- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "Corporate" scope might skip the domain to keep filenames shorter. You can list multiple scopes separated by semicolons.
+
+- **Case Transform**: The style applied to the title portion of generated filenames:
+  - `PascalCase`: `UsePostgreSQLAsDatabase`
+  - `CamelCase`: `usePostgreSQLAsDatabase`
+  - `SnakeCase`: `use_postgresql_as_database`
+  - `KebabCase`: `use-postgresql-as-database`
+
+- **Separator**: The character separating different parts of the filename:
+  - `-` (hyphen): `ADR-0001-v01-r01-Use-PostgreSQL.md`
+  - `~` (tilde): `ADR~0001~v01~r01~Use~PostgreSQL.md`
+  - `.` (period): `ADR.0001.v01.r01.Use.PostgreSQL.md`
+
+- **Version vs. Revision**: 
+  - **Version**: A major change to an ADR (e.g., `v01`, `v02`) that typically represents a significant decision update.
+  - **Revision**: A minor change to an ADR (e.g., `r01`, `r02`) that represents clarifications or documentation improvements.
+
 #### 1) Monorepo (multiple apps/domains or enterprise architecture)
 
-Use scopes and folder grouping to keep ADRs organized by area:
+Use scopes and folder grouping to keep ADRs organized by area. Each team or domain maintains its own ADR sequence.
 
 ```json
 {
-  "scopes": "enterprise,project,backend,frontend,mobile,data",
-  "skipdomain": "enterprise,project",
+  "scopes": "enterprise;project;backend;frontend;mobile;data",
+  "skipdomain": "enterprise;project",
   "folderbyscope": true,
   "lenscope": 1,
   "separator": "-",
@@ -368,9 +415,14 @@ Use scopes and folder grouping to keep ADRs organized by area:
 }
 ```
 
+**Example filenames generated**:
+- `doc/adr/enterprise/ADR-0001-v01-UnifyAuthenticationStrategy.md`
+- `doc/adr/backend/ADR-0001-v01-UsePostgreSQL.md`
+- `doc/adr/frontend/ADR-0001-v01-AdoptReactFramework.md`
+
 #### 2) Simple repository
 
-Use a simple flat structure with no scope folder split:
+Use a simple flat structure with no scope folder split. Ideal for smaller projects or single-domain repositories.
 
 ```json
 {
@@ -382,9 +434,13 @@ Use a simple flat structure with no scope folder split:
 }
 ```
 
+**Example filenames generated**:
+- `doc/adr/ADR-0001-v01-UsePostgreSQL.md`
+- `doc/adr/ADR-0002-v01-AdoptReactFramework.md`
+
 #### 3) Product team with frequent revisions
 
-Keep revision metadata visible and standardized:
+Keep revision metadata visible and standardized. Useful for teams that frequently update ADR documentation or maintain multiple versions.
 
 ```json
 {
@@ -393,6 +449,31 @@ Keep revision metadata visible and standardized:
   "lenrevision": 2
 }
 ```
+
+**Example filenames generated**:
+- `doc/adr/ADR-0001-V01R01-DecisionTitle.md` (created)
+- `doc/adr/ADR-0001-V01R02-DecisionTitle.md` (after revision)
+- `doc/adr/ADR-0001-V02R01-DecisionTitle.md` (after version bump)
+
+#### 4) Enterprise with department scopes
+
+Organize ADRs by department with custom headers and folder structure.
+
+```json
+{
+  "scopes": "infrastructure;database;platform;security",
+  "skipdomain": "platform",
+  "folderbyscope": true,
+  "lenscope": 3,
+  "separator": "-",
+  "casetransform": "KebabCase"
+}
+```
+
+**Example filenames generated**:
+- `doc/adr/inf/ADR-0001-use-docker-containers.md` (infrastructure/Docker decision)
+- `doc/adr/dat/ADR-0001-adopt-postgresql.md` (database/PostgreSQL decision)
+
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.
 

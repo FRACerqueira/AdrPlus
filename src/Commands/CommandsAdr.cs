@@ -5,6 +5,7 @@
 
 using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
+using AdrPlus.Commands.Explorer;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.Migrate;
@@ -39,6 +40,11 @@ namespace AdrPlus.Commands
         /// </summary>
         [Command("config", typeof(ConfigCommandHandler), "CmdDescConfig")]
         Config,
+        /// <summary>
+        /// Launches the file viewer explorer for the ADR repository with option to create Markdown file.
+        /// </summary>
+        [Command("explorer", typeof(ExplorerCommandHandler), "CmdDescExplorer")]
+        Explorer,
         /// <summary>
         /// Migrate repository's settings.
         /// </summary>

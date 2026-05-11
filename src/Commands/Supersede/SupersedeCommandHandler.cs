@@ -49,7 +49,7 @@ namespace AdrPlus.Commands.Supersede
             [Arguments.WizardSupersede,
              Arguments.FileAdr,
              Arguments.DateRefAdr,
-             Arguments.OpenAdr,
+             Arguments.OpenFile,
              Arguments.Help];
 
         /// <summary>
@@ -92,9 +92,9 @@ namespace AdrPlus.Commands.Supersede
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
@@ -116,7 +116,7 @@ namespace AdrPlus.Commands.Supersede
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardSupersede);
                 if (hasWizard)
                 {
-                    parsedArgs = await SupersedeAdrWizard(parsedArgs.ContainsKey(Arguments.OpenAdr), cancellationToken);
+                    parsedArgs = await SupersedeAdrWizard(parsedArgs.ContainsKey(Arguments.OpenFile), cancellationToken);
                 }
 
                 var fileadr = Path.GetFullPath(parsedArgs[Arguments.FileAdr]);
@@ -271,12 +271,13 @@ namespace AdrPlus.Commands.Supersede
         /// <summary>
         /// Opens the ADR file in the configured external editor when the <c>--open</c> argument was provided
         /// and <see cref="AdrPlusConfig.ComandOpenAdr"/> is non-empty.
+        /// Logs and displays the result (success or error) to the console.
         /// </summary>
         /// <param name="parsedArgs">The parsed command arguments used to check for the open flag.</param>
         /// <param name="filePath">The fully qualified path of the ADR file to open.</param>
         private void OpenAdrFileIfRequested(Dictionary<Arguments, string> parsedArgs, string filePath)
         {
-            if (string.IsNullOrWhiteSpace(_config.ComandOpenAdr) || !parsedArgs.ContainsKey(Arguments.OpenAdr))
+            if (!parsedArgs.ContainsKey(Arguments.OpenFile))
             {
                 return;
             }
@@ -287,15 +288,14 @@ namespace AdrPlus.Commands.Supersede
 
             if (string.IsNullOrEmpty(result))
             {
-                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.NewAdrSuccessExternalCommand), _config.ComandOpenAdr);
+                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.SuccessExternalCommand), command);
                 LogMessages.LogCommandSuccessful(_logger, msg);
                 _console.WriteSuccess(msg);
             }
             else
             {
-                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.NewAdrErrorFailedToOpen), result);
-                LogMessages.LogCommandFailure(_logger, msg);
-                _console.WriteError(msg);
+                var msg = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrorExternalCommand), result);
+                LogAndWriteErrors([msg]);
             }
         }
 
@@ -304,7 +304,7 @@ namespace AdrPlus.Commands.Supersede
         /// a drive, repository folder, eligible ADR, and reference date.
         /// The wizard loops until the user confirms the selection.
         /// </summary>
-        /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenAdr"/> flag is pre-populated in the result.</param>
+        /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenFile"/> flag is pre-populated in the result.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A dictionary of parsed arguments ready for <see cref="ExecuteAsync"/>.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
@@ -319,7 +319,7 @@ namespace AdrPlus.Commands.Supersede
                 parsedArgs.Clear();
                 if (isOpenAdr)
                 {
-                    parsedArgs[Arguments.OpenAdr] = string.Empty;
+                    parsedArgs[Arguments.OpenFile] = string.Empty;
                 }
 
                 // Select drive
@@ -336,7 +336,7 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, cancellationToken);
+                var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -389,8 +389,11 @@ namespace AdrPlus.Commands.Supersede
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
                 // Display summary and confirm
+                var (Left, Top) = _console.CursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                _console.MovePosition(Left, Top);
+
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

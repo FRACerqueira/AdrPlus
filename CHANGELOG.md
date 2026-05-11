@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.1.0] ~ [0.2.0] — 2026-04-17 ~ 2026-04-23
+## [0.1.0] ~ [0.3.0] — 2026-04-17 ~ 2026-05-08
 
 ### Added
 
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `reject` command — mark an ADR as rejected.
 - `undo` command — revert the last status change of an ADR.
 - `upgrade` command — upgrade an ADR to the latest version of the template.
+- `migrate` command — migrate ADRs between template formats and repository structures.
 - `config` command — interactive editor for application and repository settings.
 - `wizard` command — interactive guided wizard for all operations.
 - `help` command — display contextual help for any command.

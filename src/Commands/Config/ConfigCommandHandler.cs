@@ -63,9 +63,9 @@ namespace AdrPlus.Commands.Config
         /// <exception cref="OperationCanceledException">Thrown when the user cancels a wizard prompt.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
@@ -357,10 +357,9 @@ namespace AdrPlus.Commands.Config
             while (true)
             {
                 var fields = BuildRepoFieldsFromJson(modifiedConfig);
+                var (Left, Top) = _console.CursorPosition();
                 DisplaySampleFiles(modifiedConfig);
-
                 var (IsAborted, Content) = _console.PromptConfigJsonRepoSelect(defaultselect, fields, cancellationToken);
-
                 if (IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
@@ -378,7 +377,7 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
                 }
-
+                _console.MovePosition(Left, Top);
                 modifiedConfig = UpdateJsonFieldRepo(modifiedConfig, field.Name, field.Value, field.Type);
                 modifiedConfig = _validateConfig.EnsureFieldsRepoStructure(modifiedConfig);
             }
@@ -450,10 +449,10 @@ namespace AdrPlus.Commands.Config
         /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         private void DisplaySampleFiles(string modifiedConfig)
         {
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoFileNameSample);
+            _console.WriteSummary(Resources.AdrPlus.ConfigInfoFileNameSample);
             foreach (var sample in GetSampleFiles(modifiedConfig))
             {
-                _console.WriteInfo($"- {sample}");
+                _console.WriteSummary($"- {sample}");
             }
         }
 
@@ -470,15 +469,7 @@ namespace AdrPlus.Commands.Config
         private (bool IsAborted, FieldsJson EditField) EditFieldApp(string fieldName, FieldsJson[] fields, CancellationToken cancellationToken)
         {
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
-
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoPropertyEditor);
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoSelectedField, AppConstants.GetTitleField(selection.Name)));
-
             var isaborted = ProcessFieldEdit(selection.Name, selection, fields, -1, cancellationToken);
-
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoCurrentValue, selection.Name, selection.Value));
-            _console.WriteInfo(string.Empty);
-
             return (isaborted, selection);
         }
 
@@ -498,15 +489,7 @@ namespace AdrPlus.Commands.Config
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
             var fieldscope = fields.First(f => f.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
             int lenscope = int.TryParse(fieldscope.Value, out var parsedValue) ? parsedValue : 0;
-
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoPropertyEditor);
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoSelectedField, AppConstants.GetTitleField(selection.Name)));
-
             var isaborted = ProcessFieldEdit(selection.Name, selection, fields, lenscope, cancellationToken);
-
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoCurrentValue, selection.Name, selection.Value));
-            _console.WriteInfo(string.Empty);
-
             return (isaborted, selection);
         }
 

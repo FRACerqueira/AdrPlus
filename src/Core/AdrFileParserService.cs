@@ -274,7 +274,7 @@ namespace AdrPlus.Core
                         return (result, string.Empty);
                     }
                     var fileSuperSedes = linestatus[(indexfile + 1)..].Trim();
-                    result.FileSuperSedes = fileSuperSedes;
+                    result.NumberSuperSedes = fileSuperSedes;
                 }
 
                 //disclaimer
