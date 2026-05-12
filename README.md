@@ -162,15 +162,15 @@ Using this for the first time? Follow the step-by-step guide to set up and creat
 
 # 2. Initialize a new ADR repository in the current directory
     
-        adrplus init
+        adrplus init --wizard
 
 # 3. Create your first ADR
 
-    adrplus new
+    adrplus new --wizard
 
 # 4. Approve it
 
-    adrplus approve
+    adrplus approve --wizard
 
 # 5. List available commands
 
