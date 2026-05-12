@@ -38,7 +38,7 @@ namespace AdrPlus.Core
             foreach (var filePath in mdFiles)
             {
                 var aux = await _fileParser.ParseFileName(filePath, config, fileSystemService);
-                if (aux.IsValid && aux.Header.IsValid)
+                if (aux.IsValid && aux.Header.IsValid && aux.Number == sequence)
                 {
                     result.Add(aux);
                 }

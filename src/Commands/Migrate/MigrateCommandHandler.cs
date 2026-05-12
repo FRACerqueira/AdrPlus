@@ -136,7 +136,7 @@ namespace AdrPlus.Commands.Migrate
                     var adrRecord = new AdrRecord
                     {
                         Number = file.Number,
-                        Title = Helper.Humanize(Path.GetFileNameWithoutExtension(file.FileName).Replace(seqfile, string.Empty).Trim()),
+                        Title = file.Title.Trim(),
                         Scope = string.Empty,
                         Domain = string.Empty,
                         StatusCreate = AdrStatus.Unknown,

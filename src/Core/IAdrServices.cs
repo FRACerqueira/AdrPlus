@@ -32,15 +32,15 @@ namespace AdrPlus.Core
         /// setting <c>StatusChange</c> and <c>DateChange</c>, appending the superseding filename reference, and writing the updated content back to disk.
         /// </summary>
         /// <param name="fullpath">The full file-system path to the ADR file being superseded.</param>
-        /// <param name="filename">The filename of the new ADR that supersedes this one.</param>
+        /// <param name="seqsupersede">The sequence number of the new ADR that supersedes this one.</param>
         /// <param name="dref">The date reference to record as the change date.</param>
         /// <param name="config">The repository configuration used for formatting.</param>
         /// <param name="fileSystemService">The file system service used for reading and writing files.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple: <c>IsValid = true</c> on success; otherwise <c>IsValid = false</c> and <c>Error</c> contains the reason.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> or <paramref name="fileSystemService"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when <paramref name="fullpath"/> or <paramref name="filename"/> is null, empty, or whitespace.</exception>
-        Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string filename, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
+        /// <exception cref="ArgumentException">Thrown when <paramref name="fullpath"/> or <paramref name="seqsupersede"/> is null, empty, or whitespace.</exception>
+        Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string seqsupersede, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates the status of an ADR file by reading its header, setting <c>StatusChange</c> and <c>DateChange</c>,

@@ -125,7 +125,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0010-use-postgre-sql-V01R00-SUP0009.md");
+        fileName.Should().Be("ADR-0010-use-postgre-sql-V01R00-0009.md");
     }
 
     [Fact]

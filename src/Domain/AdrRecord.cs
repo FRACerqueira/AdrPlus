@@ -103,7 +103,7 @@ namespace AdrPlus.Domain
                     scopeSuffix += $"{config.Separator}{Domain.ToCase(config.CaseTransform)}";
                 }
             }
-            var supersede = (Superseded ?? 0) > 0 ? $"{config.Separator}SUP{Superseded!.Value.ToString($"D{config.LenSeq}", null)}" : string.Empty;
+            var supersede = (Superseded ?? 0) > 0 ? $"{config.Separator}{Superseded!.Value.ToString($"D{config.LenSeq}", null)}" : string.Empty;
             var fileName = $"{baseFileName}{ver}{rev}{scopeSuffix}{supersede}.md";
             return fileName;
         }

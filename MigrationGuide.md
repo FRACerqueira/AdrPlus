@@ -144,7 +144,7 @@ We have decided to use PostgreSQL...
 - [x] **Test with one ADR first**: Use `--wizard` mode to preview before committing
 
 - [x] **Ensure all ADR files follow naming convention**: 
-  - Expected format: `prefix-number-title.md` (e.g., `0001-UsePostgreSQL.md`)
+  - Expected format: `prefix-number-title.md` (e.g., `0001-UsePostgreSQL.md` or `0001UsePostgreSQL.md`)
   - Invalid files will be skipped during migration
 
 - [x] **Close IDE if files are open**: Migration modifies files; avoid file locking issues
@@ -203,8 +203,8 @@ Review the migration summary and confirm
 #### Migration Complete (samples files)
 
 ```
-Migrated: doc/adr/0001-UsePostgreSQL.md
-Migrated: doc/adr/0002-UseReactFramework.md
+Migrated: doc/adr/0001UsePostgreSQL.md
+Migrated: doc/adr/0002UseReactFramework.md
 ```
 
 ---
@@ -316,7 +316,7 @@ After verifying, commit the migration:
   - **Solution**: Verify files are in `doc/adr/` or the configured folder
 
 - [x] Files don't match the naming convention
-  - **Solution**: Check filename format matches your config (e.g., `ADR-0001-*.md`)
+  - **Solution**: Check filename format matches your config (e.g., `ADR0001-*.md`)
 
 - [x] All ADRs already migrated
   - **Solution**: This is normal if you've run migration before; all files have valid headers
@@ -367,7 +367,7 @@ After verifying, commit the migration:
 **Causes & Solutions**:
 
 - [x] Content was truncated or mixed up
-  - **Solution**: Restore from Git backup: `git checkout doc/adr/ADR-XXXX.md`
+  - **Solution**: Restore from Git backup: `git checkout doc/adr/ADRXXXX.md`
 
 - [x] Encoding issues (special characters displayed incorrectly)
   - **Solution**: Ensure files use UTF-8 encoding
@@ -410,7 +410,7 @@ git status
 
 - ✅ **Verify each step**: After migration, open files to confirm format
   ```bash
-  code doc/adr/ADR-0001-*.md
+  code doc/adr/ADR0001-*.md
   ```
 
 - ✅ **Commit migration separately**: Keep migration in its own commit
@@ -446,8 +446,8 @@ After successful migration:
 3. **Explore ADR management**:
    ```bash
    adrplus approve --wizard
-   adrplus review --wizard
    adrplus supersede --wizard
+   adrplus version --wizard
    ```
 
 4. **Share with your team**: Document the new ADR format and workflow
@@ -516,16 +516,16 @@ Review the 5 ADRs to migrate, then confirm with `Y`.
 
 ```
 ✓ Migrated: doc/adr/0001UsePostgreSQL.md
-✓ Migrated: doc/adr/0002-UseReactFramework.md
-✓ Migrated: doc/adr/0003-UseDocker.md
-✓ Migrated: doc/adr/0004-UseLowercaseNaming.md
-✓ Migrated: doc/adr/0005-UseServiceCollection.md
+✓ Migrated: doc/adr/0002UseReactFramework.md
+✓ Migrated: doc/adr/0003UseDocker.md
+✓ Migrated: doc/adr/0004UseLowercaseNaming.md
+✓ Migrated: doc/adr/0005UseServiceCollection.md
 ```
 
 ### Step 5: Verify
 
 ```bash
-code doc/adr/ADR-0001-UsePostgreSQL.md  # Open to verify
+code doc/adr/0001UsePostgreSQL.md  # Open to verify
 ```
 
 ### Step 6: Commit

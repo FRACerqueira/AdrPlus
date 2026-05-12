@@ -357,7 +357,7 @@ namespace AdrPlus.Commands.Config
             while (true)
             {
                 var fields = BuildRepoFieldsFromJson(modifiedConfig);
-                var (Left, Top) = _console.CursorPosition();
+                var (_, Top) = _console.CursorPosition();
                 DisplaySampleFiles(modifiedConfig);
                 var (IsAborted, Content) = _console.PromptConfigJsonRepoSelect(defaultselect, fields, cancellationToken);
                 if (IsAborted)
@@ -377,7 +377,7 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
                 }
-                _console.MovePosition(Left, Top);
+                _console.MovePosition(0, Top);
                 modifiedConfig = UpdateJsonFieldRepo(modifiedConfig, field.Name, field.Value, field.Type);
                 modifiedConfig = _validateConfig.EnsureFieldsRepoStructure(modifiedConfig);
             }

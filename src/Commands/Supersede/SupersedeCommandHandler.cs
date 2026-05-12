@@ -188,8 +188,8 @@ namespace AdrPlus.Commands.Supersede
                     Superseded = infoadr.Number,
                     Template = repoconfig.Template,
                 };
-
-                var (updok, upderror) = await _adrServices.StatusChangeSupersedeAdrAsync(infoadr.FileName, adrRecord.GetFileName(repoconfig), dateAdr, repoconfig, _filesystem, cancellationToken);
+                var numbersupersede = infoadr.Number.ToString($"D{repoconfig.LenSeq}", null);
+                var (updok, upderror) = await _adrServices.StatusChangeSupersedeAdrAsync(infoadr.FileName, numbersupersede, dateAdr, repoconfig, _filesystem, cancellationToken);
                 if (!updok)
                 {
                     throw new InvalidDataException(upderror);
@@ -389,10 +389,10 @@ namespace AdrPlus.Commands.Supersede
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
                 // Display summary and confirm
-                var (Left, Top) = _console.CursorPosition();
+                var (_, Top) = _console.CursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _console.MovePosition(Left, Top);
+                _console.MovePosition(0, Top);
 
                 if (resultCnf.IsAborted)
                 {

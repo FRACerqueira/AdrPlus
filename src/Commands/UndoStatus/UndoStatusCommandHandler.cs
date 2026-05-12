@@ -276,10 +276,10 @@ namespace AdrPlus.Commands.UndoStatus
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
                 // Display summary and confirm
-                var (Left, Top) = _console.CursorPosition();
+                var (_, Top) = _console.CursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName));
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _console.MovePosition(Left, Top);
+                _console.MovePosition(0, Top);
 
                 if (resultCnf.IsAborted)
                 {

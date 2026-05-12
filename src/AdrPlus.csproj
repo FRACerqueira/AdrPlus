@@ -9,7 +9,6 @@
 		<Version>0.3.0</Version>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<AssemblyName>adrplus</AssemblyName>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Authors>Fernando Cerqueira</Authors>
 		<Copyright>Copyright © 2025 Fernando Cerqueira</Copyright>
 		<PackageProjectUrl>https://github.com/FRACerqueira/AdrPlus</PackageProjectUrl>
@@ -88,9 +87,5 @@
     <None Update="adrplus.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="bin\Debug\net10.0\doc\adr\" />
   </ItemGroup>
 </Project>

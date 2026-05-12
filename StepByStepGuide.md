@@ -167,10 +167,10 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 |-----|---------|---------|
 | `folderadr` | Folder where ADR files are stored. | `doc/adr` |
 | `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). | N/A (auto-generated) |
-| `prefix` | Prefix for ADR identifiers | `ADR` → `ADR-0001` |
+| `prefix` | Prefix for ADR identifiers | `ADR` → `ADR0001` |
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
-| `lenversion` | Digits for major version (0 disables) | `2` → `01`, `02`, etc. |
-| `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `01` |
+| `lenversion` | Digits for major version (0 disables) | `2` → `V01`, `V02`, etc. |
+| `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `R01`, `R02` |
 | `lenscope` | Number of characters for scope abbreviation (0 disables) | `1` → `B`, `F`, etc. |
 | `separator` | Character between name parts | `-`, `~`, or `.` |
 | `casetransform` | Case style for names | `PascalCase`, `CamelCase`, `SnakeCase`, `KebabCase` |
@@ -214,8 +214,8 @@ Before initializing your repository, let's understand some important concepts:
   - `.` (period): Alternative style
 
 - **Version vs. Revision**: 
-  - **Version**: A major change to an ADR (e.g., `v01`, `v02`) that represents a significant decision update.
-  - **Revision**: A minor change to an ADR (e.g., `r01`, `r02`) that represents clarifications or documentation improvements.
+  - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that represents a significant decision update.
+  - **Revision**: A minor change to an ADR (e.g., `R01`, `R02'`) that represents clarifications or documentation improvements.
 
 ---
 
@@ -224,7 +224,7 @@ Before initializing your repository, let's understand some important concepts:
 Now initialize the ADR repository structure in your project:
 
 ```bash
-adrplus init
+adrplus init --wizard
 ```
 
 This command:
@@ -249,7 +249,7 @@ Now you're ready to create your first ADR!
 ### Option 1: Interactive Creation (Recommended)
 
 ```bash
-adrplus new
+adrplus new --wizard
 ```
 
 The wizard will prompt you for:
@@ -260,7 +260,7 @@ The wizard will prompt you for:
 
 The tool will then:
 - Generate a unique number (e.g., `0001`)
-- Create the file: `doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md`
+- Create the file: `doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md`
 - Open the file in your configured editor (if set)
 
 ### Option 2: Direct Creation from Command Line
@@ -289,24 +289,78 @@ AdrPlus automatically creates a Markdown file with a template:
 |Superseded||
 <!-- Do not remove this comment, lines and table (1-12) -->
 ---
-# Use PostgreSQL as Primary Database
+# [Brief title of the decision]
 
-## Context
+## Deciders
 
-Describe the context and the problem to be solved.
+* Deciders: [list everyone involved in the decision] <!-- optional -->
 
-## Decision
+Technical Story: [description | ticket/issue URL] <!-- optional -->
 
-Explain the decision made.
+## Context and Problem Statement
 
-## Consequences
+[Describe the context and problem statement, e.g., in free form using two to three sentences. You may want to articulate the problem in form of a question.]
 
-List the impacts, benefits, and possible risks.
+## Decision Drivers <!-- optional -->
 
-## Alternatives Considered
+* [driver 1, e.g., a force, facing concern, …]
+* [driver 2, e.g., a force, facing concern, …]
+* … <!-- numbers of drivers can vary -->
 
-- Alternative 1 (Pros/Cons)
-- Alternative 2 (Pros/Cons)
+## Considered Options
+
+* [option 1]
+* [option 2]
+* [option 3]
+* … <!-- numbers of options can vary -->
+
+## Decision Outcome
+
+Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force force | … | comes out best (see below)].
+
+### Positive Consequences <!-- optional -->
+
+* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, …]
+* …
+
+### Negative Consequences <!-- optional -->
+
+* [e.g., compromising quality attribute, follow-up decisions required, …]
+* …
+
+## Pros and Cons of the Options <!-- optional -->
+
+### [option 1]
+
+[example | description | pointer to more information | …] <!-- optional -->
+
+* Good, because [argument a]
+* Good, because [argument b]
+* Bad, because [argument c]
+* … <!-- numbers of pros and cons can vary -->
+
+### [option 2]
+
+[example | description | pointer to more information | …] <!-- optional -->
+
+* Good, because [argument a]
+* Good, because [argument b]
+* Bad, because [argument c]
+* … <!-- numbers of pros and cons can vary -->
+
+### [option 3]
+
+[example | description | pointer to more information | …] <!-- optional -->
+
+* Good, because [argument a]
+* Good, because [argument b]
+* Bad, because [argument c]
+* … <!-- numbers of pros and cons can vary -->
+
+## Links <!-- optional -->
+
+* [Link type] [Link to ADR] <!-- example: Refined by [ADR-0005](0005-example.md) -->
+* … <!-- numbers of links can vary -->
 ```
 
 ### Edit Your ADR
@@ -372,7 +426,7 @@ We have decided to use PostgreSQL as our primary database because:
 Once you've finished writing your ADR, approve it:
 
 ```bash
-adrplus approve
+adrplus approve --wizard
 ```
 
 The wizard will:
@@ -383,7 +437,18 @@ The wizard will:
 The approved ADR file will now show:
 
 ```markdown
-Status: Accepted
+<!-- Do not remove this comment, lines and table (1-12) -->
+|Adr-Plus Fields|Values|
+|--|--|
+|File title|Use PostgreSQL as Primary Database|
+|Version|01|
+|Revision||
+|Scope||
+|Domain||
+|Created|Proposed (2026-05-06)|
+|Changed|Accepted (2026-05-07)|
+|Superseded||
+<!-- Do not remove this comment, lines and table (1-12) -->
 ```
 
 ### Direct Approval (Without Wizard)
@@ -391,7 +456,7 @@ Status: Accepted
 If you know the file path:
 
 ```bash
-adrplus approve --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
+adrplus approve --file "./doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md"
 ```
 
 ---
@@ -427,7 +492,8 @@ The Explorer command provides:
 If you decide an ADR is not suitable:
 
 ```bash
-adrplus reject --file "./doc/adr/ADR-0002-SomeDecision.md"
+adrplus reject --wizard
+adrplus reject --file "./doc/adr/ADR0002-SomeDecision-V01.md"
 ```
 
 ### Undo Status Change
@@ -435,7 +501,8 @@ adrplus reject --file "./doc/adr/ADR-0002-SomeDecision.md"
 Revert the last status change:
 
 ```bash
-adrplus undo --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
+adrplus undo --wizard
+adrplus undo --file "./doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md"
 ```
 
 ### Version an ADR (Major Change)
@@ -443,30 +510,37 @@ adrplus undo --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
 Create a new version when making significant updates:
 
 ```bash
-adrplus version --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
+adrplus version --wizard
+adrplus version --file "./doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md"
 ```
 
-Creates: `ADR-0001-UsePostgresqlAsPrimaryDatabase-V02.md`
+Creates: `ADR0001-UsePostgresqlAsPrimaryDatabase-V02.md`
 
 ### Review an ADR (Minor Change)
 
 Create a revision for minor updates:
 
 ```bash
-adrplus review --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
+adrplus review --wizard
+adrplus review --file "./doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md"
 ```
 
-Creates: `ADR-0001-UsePostgresqlAsPrimaryDatabase-R01.md`
+Creates: `ADR0001-UsePostgresqlAsPrimaryDatabase-V01R01.md`
 
 ### Supersede an ADR (Replace with New One)
 
 When a decision is replaced by a new one, supersede it:
 
 ```bash
-adrplus supersede --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
+adrplus supersede --wizard
+adrplus supersede --file "./doc/adr/ADR0001-UsePostgresqlAsPrimaryDatabase-V01.md"
 ```
 
-This creates a new ADR (e.g., `ADR-0002`) and marks the old one as `Superseded`.
+This creates a new ADR (e.g., `ADR0002`) and marks the old one as `Superseded`.
+
+```bash
+./doc/adr/ADR0002-UsePostgresqlAsPrimaryDatabase-V01-0001.md"
+```
 
 ### View Help
 
@@ -574,13 +648,13 @@ adrplus upgrade --revision 2 --path "doc/adr"
 
 Before upgrade:
 ```
-ADR-0001-UsePostgresql-V01.md 
+ADR0001-UsePostgresql-V01.md 
 ```
 
 After enabling revisions:
 ```
-ADR-0001-UsePostgresql-V01R01.md     (first revision)
-ADR-0001-UsePostgresql-V01R02.md     (second revision)
+ADR0001-UsePostgresql-V01R01.md     (first revision)
+ADR0001-UsePostgresql-V01R02.md     (second revision)
 ```
 
 #### Add Scope Support
@@ -621,10 +695,10 @@ doc/
 
 ADR files created after this upgrade:
 ```
-backend/ADR-0002-UseRedisCache-V01-Backend.md
-frontend/ADR-0003-UseVueJs-V01-Frontend.md
-data/ADR-0004-UseElasticsearch-V01.md (no scope suffix - skipped)
-infra/ADR-0005-UseDockerContainers-V01-Infra.md
+/backend/ADR0002-UseRedisCache-V01-Backend.md
+/frontend/ADR0003-UseVueJs-V01-Frontend.md
+/data/ADR0004-UseElasticsearch-V01.md (no scope suffix - skipped)
+/infra/ADR0005-UseDockerContainers-V01-Infra.md
 ```
 
 ### Complete Upgrade Example

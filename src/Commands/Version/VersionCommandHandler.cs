@@ -454,7 +454,7 @@ namespace AdrPlus.Commands.Version
                     }
                     if (filescheckadrs.Any(adr => adr.Header.StatusUpdate == AdrStatus.Unknown && !adr.Header.IsMigrated))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(AdrStatus.Proposed));
+                        return (false, MessageNotValidStatusForUpdate(AdrStatus.Proposed));
                     }
                     return (true, null);
                 }
@@ -497,10 +497,10 @@ namespace AdrPlus.Commands.Version
                 }
 
                 // Display summary and confirm
-                var (Left, Top) = _console.CursorPosition();
+                var (_, Top) = _console.CursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _console.MovePosition(Left, Top);
+                _console.MovePosition(0, Top);
 
                 if (resultCnf.IsAborted)
                 {

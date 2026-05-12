@@ -345,11 +345,17 @@ namespace AdrPlus.Core
                                 var titlePart = part[config.LenSeq..];
                                 result.Title = Helper.Humanize(titlePart);
                             }
-                            else
+                            else if (parts.Length == 1)
                             {
                                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                                 return result;
                             }
+                            currentIndex++;
+                        }
+                        else if (int.TryParse(part, out var numberseq))
+                        {
+                            result.Prefix = config.Prefix;
+                            result.Number = numberseq;
                             currentIndex++;
                         }
                         else
@@ -362,12 +368,44 @@ namespace AdrPlus.Core
                     {
                         result.Prefix = config.Prefix;
                         var numberString = part[config.Prefix.Length..];
-                        if (!int.TryParse(numberString, out var number))
+                        if (numberString.Length > 0)
                         {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, numberString);
-                            return result;
+                            if (!int.TryParse(numberString, out var number))
+                            {
+                                if (currentIndex == parts.Length - 1)
+                                {
+                                    string partnumbers = "";
+                                    string partitle = "";
+                                    part = part[config.Prefix.Length..];
+                                    foreach (char c in part)
+                                    {
+                                        if (char.IsDigit(c))
+                                            partnumbers += c;
+                                        else
+                                            partitle += c;
+                                    }
+                                    if (int.TryParse(partnumbers, out number) && partnumbers.Length == config.LenSeq)
+                                    {
+                                        result.Number = number;
+                                        result.Title = Helper.Humanize(partitle);
+                                    }
+                                    else
+                                    {
+                                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                                        return result;
+                                    }
+                                }
+                                else
+                                {
+                                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                                    return result;
+                                }
+                            }
+                            else
+                            {
+                                result.Number = number;
+                            }
                         }
-                        result.Number = number;
                         currentIndex++;
                     }
                 }
@@ -382,12 +420,67 @@ namespace AdrPlus.Core
                     result.Number = number;
                     currentIndex++;
                 }
+                if (result.Number == 0)
+                {
+                    part = parts[currentIndex];
+                    if (!int.TryParse(part, out var number))
+                    {
+                        if (currentIndex == parts.Length - 1)
+                        {
+                            string partnumbers = "";
+                            string partitle = "";
+                            foreach (char c in part)
+                            {
+                                if (char.IsDigit(c))
+                                    partnumbers += c;
+                                else
+                                    partitle += c;
+                            }
+                            if (int.TryParse(partnumbers, out number) && partnumbers.Length == config.LenSeq)
+                            {
+                                result.Number = number;
+                                result.Title = Helper.Humanize(partitle);
+                            }
+                            else
+                            {
+                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                                return result;
+                            }
+                            currentIndex++;
+                        }
+                        else
+                        {
+                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.Number = number;
+                        currentIndex++;
+                    }
+                }
 
                 if (result.Title.Length == 0)
                 {
                     part = parts[currentIndex];
-                    result.Title = part;
+                    var auxtitle = new StringBuilder();
+                    auxtitle.Append(part.ToCase(config.CaseTransform));
                     currentIndex++;
+                    while (currentIndex < parts.Length)
+                    {
+                        part = parts[currentIndex];
+                        if (!part.StartsWith('V'))
+                        {
+                            auxtitle.Append(part.ToCase(config.CaseTransform));
+                            currentIndex++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    result.Title = Helper.Humanize(auxtitle.ToString());
                 }
 
                 if (currentIndex < parts.Length && config.LenVersion > 0)
@@ -468,22 +561,14 @@ namespace AdrPlus.Core
                 if (currentIndex < parts.Length)
                 {
                     part = parts[currentIndex];
-                    if (part.StartsWith("SUP", ordinalIgnoreCase))
+                    if (int.TryParse(part, out var supersedednumber))
                     {
                         if (part.Length <= 3)
                         {
                             result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidSupersededNumberFormatMsg, string.Empty);
                             return result;
                         }
-
-                        var numberString = part[3..];
-                        if (!int.TryParse(numberString, out var number))
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidSupersededNumberFormatMsg, numberString);
-                            return result;
-                        }
-
-                        result.SupersededValue = number;
+                        result.SupersededValue = supersedednumber;
                         currentIndex++;
                     }
                     else

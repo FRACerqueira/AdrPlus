@@ -3159,6 +3159,24 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Show help information.
         /// </summary>
+        internal static string WizardHelpExplorerDescription {
+            get {
+                return ResourceManager.GetString("WizardHelpExplorerDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Explorer command help.
+        /// </summary>
+        internal static string WizardHelpExplorerTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpExplorerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show help information.
+        /// </summary>
         internal static string WizardHelpInitDescription {
             get {
                 return ResourceManager.GetString("WizardHelpInitDescription", resourceCulture);

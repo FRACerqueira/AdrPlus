@@ -113,7 +113,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |TestDomain |TestDomain |",
                 "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
                 "|StatusUpdate |Accepted (2025-04-18) |Accepted (2025-04-18) |",
-                "|StatusSuperseded |Superseded (2025-04-19): 0002-New-Decision.md |Superseded (2025-04-19): 0002-New-Decision.md |",
+                "|StatusSuperseded |Superseded (2025-04-19): 0002 |",
                 "<!-- End Header -->",
                 "This is the content of the ADR."
             };
@@ -125,7 +125,7 @@ namespace AdrPlus.Tests.Core
             // Assert
             Assert.True(header.IsValid);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-New-Decision.md", header.NumberSuperSedes);
+            Assert.Equal("0002", header.NumberSuperSedes);
             Assert.NotNull(header.DateChange);
             Assert.Equal(new DateTime(2025, 04, 19), header.DateChange.Value.Date);
         }
@@ -715,7 +715,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |TestDomain |TestDomain |",
                 "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
                 "|StatusUpdate |Accepted (2025-04-18) |Accepted (2025-04-18) |",
-                "|StatusSuperseded |Superseded (2025-04-19): 0003-Other-Decision.md |Superseded (2025-04-19): 0003-Other-Decision.md |",
+                "|StatusSuperseded |Superseded (2025-04-19): 0003 |",
                 "<!-- End Header -->",
                 "Content"
             };
@@ -927,7 +927,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |TestDomain |TestDomain |",
                 "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
                 "|StatusUpdate | | |",
-                "|StatusSuperseded |Superseded (2025-04-19) |Superseded (2025-04-19) |",
+                "|StatusSuperseded |Superseded (2025-04-19) |",
                 "<!-- End Header -->"
             };
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
@@ -957,7 +957,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |TestDomain |TestDomain |",
                 "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
                 "|StatusUpdate | | |",
-                "|StatusSuperseded |Superseded (2025-04-19): 0002-New-Decision.md |Superseded (2025-04-19): 0002-New-Decision.md |",
+                "|StatusSuperseded |Superseded (2025-04-19): 0002 |",
                 "<!-- End Header -->"
             };
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
@@ -968,7 +968,7 @@ namespace AdrPlus.Tests.Core
             // Assert
             Assert.True(header.IsValid);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-New-Decision.md", header.NumberSuperSedes);
+            Assert.Equal("0002", header.NumberSuperSedes);
         }
 
         #endregion
@@ -1065,7 +1065,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |SupersededDomain |SupersededDomain |",
                 "|StatusCreate |Proposed (2025-04-10) |Proposed (2025-04-10) |",
                 "|StatusUpdate |Accepted (2025-04-15) |Accepted (2025-04-15) |",
-                $"|StatusSuperseded |Superseded ({dateString}): {supersededRef} |Superseded ({dateString}): {supersededRef} |",
+                $"|StatusSuperseded |Superseded ({dateString}): {supersededRef} |",
                 "<!-- End Header -->",
                 "Content explaining supersession"
             ];
@@ -1120,7 +1120,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001-OldDecision.md";
-            var lines = BuildTableHeaderLinesWithSuperseded("2025-04-20", "0003-NewDecision.md");
+            var lines = BuildTableHeaderLinesWithSuperseded("2025-04-20", "0003.md");
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
 
             // Act
@@ -1505,7 +1505,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithSupersededNoNumber_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain-SUP.md";
+            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain-AC.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
@@ -1574,8 +1574,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, configWithPrefix, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         #endregion
@@ -1594,8 +1594,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         [Fact]
@@ -1624,8 +1624,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         [Fact]
@@ -1654,8 +1654,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         [Fact]
@@ -1669,8 +1669,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         [Fact]
@@ -1689,8 +1689,8 @@ namespace AdrPlus.Tests.Core
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
 
             // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
+            Assert.False(result.Header.IsValid);
+            Assert.NotEmpty(result.Header.ErrorMessage);
         }
 
         #endregion
@@ -1809,7 +1809,7 @@ namespace AdrPlus.Tests.Core
                 "|Domain |TestDomain |TestDomain |",
                 "|StatusCreate |Proposed (2025-04-17) |Proposed (2025-04-17) |",
                 "|StatusUpdate |Accepted (2025-04-18) |Accepted (2025-04-18) |",
-                "|StatusSuperseded |Superseded (2025-04-19): 0002-NewDecision.md |Superseded (2025-04-19): 0002-NewDecision.md |",
+                "|StatusSuperseded |Superseded (2025-04-19): 0002 |",
                 "<!-- End Header -->"
             };
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
@@ -1822,7 +1822,7 @@ namespace AdrPlus.Tests.Core
             Assert.Equal(AdrStatus.Proposed, header.StatusCreate);
             Assert.Equal(AdrStatus.Accepted, header.StatusUpdate);
             Assert.Equal(AdrStatus.Superseded, header.StatusChange);
-            Assert.Equal("0002-NewDecision.md", header.NumberSuperSedes);
+            Assert.Equal("0002", header.NumberSuperSedes);
         }
 
         [Fact]

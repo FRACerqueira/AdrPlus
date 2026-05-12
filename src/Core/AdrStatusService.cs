@@ -38,10 +38,10 @@ namespace AdrPlus.Core
             return (true, string.Empty);
         }
 
-        public async Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string filename, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
+        public async Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string seqsupersede, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(fullpath);
-            ArgumentException.ThrowIfNullOrWhiteSpace(filename);
+            ArgumentException.ThrowIfNullOrWhiteSpace(seqsupersede);
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
             var parsefile = await _fileParser.ParseFileName(fullpath, config, fileSystemService);
@@ -56,7 +56,7 @@ namespace AdrPlus.Core
             parsefile.Header.StatusChange = AdrStatus.Superseded;
             parsefile.Header.DateChange = dref;
             var record = Helper.CreateAdrRecord(parsefile, config);
-            var contentfile = $"{record.GetHeader(config, filename)}{record.Template}";
+            var contentfile = $"{record.GetHeader(config, seqsupersede)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
             return (true, string.Empty);
         }

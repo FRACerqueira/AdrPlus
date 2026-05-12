@@ -204,18 +204,23 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 # Approve or reject a specific ADR file
 
-    adrplus approve --file "./doc/adr/0001-use-postgresql.md"
-    adrplus reject --file "./doc/adr/0002-legacy-cache.md"
-
-# Create review/version/supersede flows
-
-    adrplus review --file "./doc/adr/0001-use-postgresql.md"
-    adrplus version --file "./doc/adr/0001-use-postgresql.md"
-    adrplus supersede --file "./doc/adr/0001-use-postgresql.md"
+    adrplus approve --file "./doc/adr/0001-usepostgresql.md"
+    adrplus reject --file "./doc/adr/0002-legacycache.md"
 
 # Undo last status change
 
-    adrplus undo --file "./doc/adr/0001-use-postgresql.md"
+    adrplus undo --file "./doc/adr/0001-usepostgresql.md"
+
+# Create supersede flows
+
+    adrplus approve --file "./doc/adr/0001-usepostgresql.md"
+    adrplus supersede --file "./doc/adr/0001-usepostgresql.md"
+
+# Create review/version flows
+
+    adrplus review --file "./doc/adr/0001-usepostgresql.md"
+    adrplus version --file "./doc/adr/0001-usepostgresql.md"
+
 ```
 
 Use `adrplus help <command>` to check the available parameters for each command.
@@ -318,7 +323,7 @@ adrplus config --repository
 ```json
 {
   "folderadr": "doc/adr",
-  "template": "## Context\r\n\r\nDescribe the context and the problem to be solved.\r\n\r\n## Decision\r\n\r\nExplain the decision made.\r\n\r\n## Consequences\r\n\r\nList the impacts, benefits, and possible risks.\r\n\r\n## Alternatives Considered\r\n\r\n- Alternative 1 (Pros/Cons)\r\n- Alternative 2 (Pros/Cons)",
+  "template": "...",
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
@@ -398,13 +403,13 @@ Before selecting a team profile, understand these key concepts:
   - `KebabCase`: `use-postgresql-as-database`
 
 - **Separator**: The character separating different parts of the filename:
-  - `-` (hyphen): `ADR-0001-v01-r01-Use-PostgreSQL.md`
-  - `~` (tilde): `ADR~0001~v01~r01~Use~PostgreSQL.md`
-  - `.` (period): `ADR.0001.v01.r01.Use.PostgreSQL.md`
+  - `-` (hyphen): `ADR0001-UsePostgreSQL-V01R01.md`
+  - `~` (tilde): `ADR0001~UsePostgreSQL~V01R01.md`
+  - `.` (period): `ADR0001.UsePostgreSQL.V01R01.md`
 
 - **Version vs. Revision**: 
-  - **Version**: A major change to an ADR (e.g., `v01`, `v02`) that typically represents a significant decision update.
-  - **Revision**: A minor change to an ADR (e.g., `r01`, `r02`) that represents clarifications or documentation improvements.
+  - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
+  - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
 #### 1) Monorepo (multiple apps/domains or enterprise architecture)
 
@@ -413,18 +418,20 @@ Use scopes and folder grouping to keep ADRs organized by area. Each team or doma
 ```json
 {
   "scopes": "enterprise;project;backend;frontend;mobile;data",
-  "skipdomain": "enterprise;project",
+  "skipdomain": "enterprise",
   "folderbyscope": true,
   "lenscope": 1,
   "separator": "-",
-  "casetransform": "PascalCase"
+  "casetransform": "PascalCase",
+  "lenversion": 2,
+  "lenrevision": 2
 }
 ```
 
 **Example filenames generated**:
-- `doc/adr/enterprise/ADR-0001-v01-UnifyAuthenticationStrategy.md`
-- `doc/adr/backend/ADR-0001-v01-UsePostgreSQL.md`
-- `doc/adr/frontend/ADR-0001-v01-AdoptReactFramework.md`
+- `doc/adr/enterprise/ADR0001-UnifyAuthenticationStrategy-V01R01-E.md`
+- `doc/adr/backend/ADR0001-UsePostgreSQL-V01R01-B-MyBackEndScope.md`
+- `doc/adr/frontend/ADR0001-AdoptReactFramework-V01R01-F-MyFrontEndScope.md`
 
 #### 2) Simple repository
 
@@ -436,13 +443,15 @@ Use a simple flat structure with no scope folder split. Ideal for smaller projec
   "folderbyscope": false,
   "lenscope": 0,
   "separator": "-",
-  "casetransform": "PascalCase"
+  "casetransform": "PascalCase",
+  "lenversion": 2,
+  "lenrevision": 0
 }
 ```
 
 **Example filenames generated**:
-- `doc/adr/ADR-0001-v01-UsePostgreSQL.md`
-- `doc/adr/ADR-0002-v01-AdoptReactFramework.md`
+- `doc/adr/ADR0001-UsePostgreSQL-V01.md`
+- `doc/adr/ADR0002-AdoptReactFramework-V01.md`
 
 #### 3) Product team with frequent revisions
 
@@ -457,9 +466,10 @@ Keep revision metadata visible and standardized. Useful for teams that frequentl
 ```
 
 **Example filenames generated**:
-- `doc/adr/ADR-0001-V01R01-DecisionTitle.md` (created)
-- `doc/adr/ADR-0001-V01R02-DecisionTitle.md` (after revision)
-- `doc/adr/ADR-0001-V02R01-DecisionTitle.md` (after version bump)
+- `doc/adr/ADR0001-DecisionTitle-V01R01.md` (created)
+- `doc/adr/ADR0001-DecisionTitle-V01R02.md` (after revision)
+- `doc/adr/ADR0001-DecisionTitle-V02R01.md` (after version bump)
+- `doc/adr/ADR0002-DecisionTitle-V01R01-0001.md` (after superseded bump)
 
 #### 4) Enterprise with department scopes
 
@@ -472,13 +482,15 @@ Organize ADRs by department with custom headers and folder structure.
   "folderbyscope": true,
   "lenscope": 3,
   "separator": "-",
-  "casetransform": "KebabCase"
+  "casetransform": "KebabCase",
+  "lenversion": 2,
+  "lenrevision": 0
 }
 ```
 
 **Example filenames generated**:
-- `doc/adr/inf/ADR-0001-use-docker-containers.md` (infrastructure/Docker decision)
-- `doc/adr/dat/ADR-0001-adopt-postgresql.md` (database/PostgreSQL decision)
+- `doc/adr/infrastructure/ADR0001-UseDockerContainers-V01-Inf.md` (infrastructure/Docker decision)
+- `doc/adr/database/ADR0001-AdoptPostgresql-V01-Dat.md` (database/PostgreSQL decision)
 
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.

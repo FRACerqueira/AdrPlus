@@ -471,10 +471,10 @@ namespace AdrPlus.Commands.NewAdr
                 }
 
                 // Display summary and confirm
-                var (Left, Top) = _console.CursorPosition();
+                var (_, Top) = _console.CursorPosition();
                 DisplayWizardSummary(parsedArgs, defDateRef);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _console.MovePosition(Left, Top);
+                _console.MovePosition(0, Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

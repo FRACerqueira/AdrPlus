@@ -1206,4 +1206,10 @@
   <data name="FilesExplored" xml:space="preserve">
     <value>Files explored</value>
   </data>
+  <data name="WizardHelpExplorerTitle" xml:space="preserve">
+    <value>Explorer command help</value>
+  </data>
+  <data name="WizardHelpExplorerDescription" xml:space="preserve">
+    <value>Show help information</value>
+  </data>
 </root>
