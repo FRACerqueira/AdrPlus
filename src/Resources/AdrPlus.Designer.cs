@@ -1582,6 +1582,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Files explored.
+        /// </summary>
+        internal static string FilesExplored {
+            get {
+                return ResourceManager.GetString("FilesExplored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file template must be a &quot;.md&quot; extension file.
         /// </summary>
         internal static string FileTemplateMusbeMd {
@@ -3090,6 +3099,24 @@ namespace AdrPlus.Resources {
         internal static string WizardGroupExitTitle {
             get {
                 return ResourceManager.GetString("WizardGroupExitTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates reports and displays ARDs metadata.
+        /// </summary>
+        internal static string WizardGroupExplorerReportDescription {
+            get {
+                return ResourceManager.GetString("WizardGroupExplorerReportDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report and explorer.
+        /// </summary>
+        internal static string WizardGroupExplorerReportTitle {
+            get {
+                return ResourceManager.GetString("WizardGroupExplorerReportTitle", resourceCulture);
             }
         }
         

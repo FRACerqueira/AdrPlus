@@ -10,6 +10,7 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog.Sinks.File;
 
 
 namespace AdrPlus.Commands.Wizard
@@ -79,6 +80,10 @@ namespace AdrPlus.Commands.Wizard
                     return;
                 }
                 var currentMenu = await LoadOrInitializeStartMenuAsync(cancellationToken);
+                if (currentMenu.Id![0] == '4')
+                {
+                    currentMenu = new ItemMenuWizard();
+                }
                 while (true)
                 {
                     _console.ShowBanner(AppConstants.BannerText);
@@ -136,6 +141,26 @@ namespace AdrPlus.Commands.Wizard
                             try
                             {
                                 currentMenu = await HandleHelpMenuAsync(isRepoConfigured, cancellationToken);
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                if (_console.IsAbortedByCtrlC())
+                                {
+                                    throw;
+                                }
+                            }
+                            catch
+                            {
+                                // If an exception occurs , skip excepion.
+                            }
+                            break;
+                        case '4':
+                            try
+                            {
+                                currentMenu = new ItemMenuWizard();
+                                _console.EnabledEscToAbort(true);
+                                await _commandRouter.RouteAsync(GetCommandAlias(CommandsAdr.Explorer), ["-w"], cancellationToken);
+                                _console.EnabledEscToAbort(false);
                             }
                             catch (OperationCanceledException)
                             {
@@ -431,8 +456,8 @@ namespace AdrPlus.Commands.Wizard
                 new ItemMenuWizard
                 {
                     Id = "4",
-                    Title = "Explorer & Report",
-                    Description = "Explorer",
+                    Title = Resources.AdrPlus.WizardGroupExplorerReportTitle,
+                    Description = Resources.AdrPlus.WizardGroupExplorerReportDescription,
                     EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard

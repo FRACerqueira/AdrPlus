@@ -11,7 +11,6 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PromptPlusLibrary;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -237,15 +236,15 @@ namespace AdrPlus.Commands.Explorer
                 if (fields.Any(x => x.StartsWith('2')))
                 {
                     report.Append('|');
-                    report.Append(FmtFolder(field, folderadr));
+                    report.Append(Helper.FmtFolder(field, folderadr));
                 }
                 if (fields.Any(x => x.StartsWith('3')))
                 {
                     report.Append('|');
-                    report.Append(FmtFormat(field));
+                    report.Append(Helper.FmtFormat(field));
                 }
                 report.Append('|');
-                report.Append(FmtStatus(field, repoconfig));
+                report.Append(Helper.FmtStatus(field, repoconfig));
                 if (fields.Any(x => x.StartsWith('5')))
                 {
                     report.Append('|');
@@ -272,142 +271,14 @@ namespace AdrPlus.Commands.Explorer
             return targetreport;
         }
 
-        private static string FmtStatus(AdrFileNameComponents arg,AdrPlusRepoConfig adrPlusRepoConfig)
+        private string ShowSelectExplorerAdr(AdrFileNameComponents[] foundfiles,string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
-            if (!arg.IsValid || !arg.Header.IsValid)
+            (bool IsAborted, string FileSelectd) = _console.PromptTableExplorer(foundfiles,fields,folderrepoadr,adrPlusRepoConfig);
+            if (IsAborted)
             {
-                return Resources.AdrPlus.Unknown;
+                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
             }
-            var value = arg.Header;
-            if (value.StatusChange != AdrStatus.Unknown)
-            {
-                if (value.DateChange.HasValue)
-                {
-                    if (value.NumberSuperSedes.Length > 0)
-                    {
-                        return $"{value.DateChange.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusChange)}:{value.NumberSuperSedes.PadLeft(adrPlusRepoConfig.LenSeq,'0')}";
-                    }
-                    return $"{value.DateChange.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusChange)}";
-                }
-                return Helper.GetResourceStatus(value.StatusChange);
-            }
-            if (value.StatusUpdate != AdrStatus.Unknown)
-            {
-                if (value.DateUpdate.HasValue)
-                {
-                    return $"{value.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusUpdate)}";
-                }
-                return Helper.GetResourceStatus(value.StatusUpdate);
-            }
-            if (value.StatusCreate != AdrStatus.Unknown)
-            {
-                if (value.DateCreate.HasValue)
-                {
-                    return $"{value.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusCreate)}";
-                }
-                return Helper.GetResourceStatus(value.StatusCreate);
-            }
-            return Resources.AdrPlus.Unknown;
-        }
-
-        private static string FmtFormat(AdrFileNameComponents arg)
-        {
-            if (!arg.IsValid)
-            {
-                return Resources.AdrPlus.MsgUnknownStructure;
-            }
-            var info = arg.Header;
-            if (info.IsMigrated)
-            {
-                if (info.IsValid)
-                {
-                    return Resources.AdrPlus.Migrated;
-                }
-                else
-                {
-                    return Resources.AdrPlus.InvalidFormatHeader;
-                }
-            }
-            else if (info.StatusCreate != AdrStatus.Unknown)
-            {
-                if (info.IsValid)
-                {
-                    return Resources.AdrPlus.AdrPlusFormat;
-                }
-                else
-                {
-                    return Resources.AdrPlus.InvalidFormatHeader;
-                }
-            }
-            else if (info.StatusCreate == AdrStatus.Unknown && !info.IsMigrated && !info.IsValid)
-            {
-                return Resources.AdrPlus.ReadyToMigrate;
-            }
-            else
-            {
-                return Resources.AdrPlus.MsgUnknownStructure;
-            }
-        }
-
-        private static string FmtFolder(AdrFileNameComponents arg, string folderrepoadr)
-        {
-            return arg.FileName
-                .Replace(folderrepoadr, string.Empty)
-                .Replace(Path.GetFileName(arg.FileName), string.Empty)
-                .TrimStart(Path.DirectorySeparatorChar)
-                .TrimEnd(Path.DirectorySeparatorChar);
-        }
-
-        private static string ShowSelectExplorerAdr(AdrFileNameComponents[] foundfiles,string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
-        {
-            var onstart = true;
-            var table = PromptPlus.Controls.TableSelect<AdrFileNameComponents>("Your ARDS: ")
-                .Interaction(foundfiles ,(item,ctx) => 
-                {
-                    ctx.AddItem(item);
-                    if (onstart)
-                    {
-                        onstart = false;
-                        ctx.TextSelector((item) => Path.GetFileName(item.FileName));
-                        ctx.AddColumn("File", 40, (item) => Path.GetFileName(item.FileName), maxslidinglines: 3);
-                        if (fields.Any(x => x.StartsWith('2')))
-                        {
-                            ctx.AddColumn("Folder", 20, (item) => FmtFolder(item, folderrepoadr), maxslidinglines: 2);
-                        }
-                        if (fields.Any(x => x.StartsWith('3')))
-                        {
-                            ctx.AddColumn("Format", 20, (item) => FmtFormat(item), maxslidinglines: 2);
-                        }
-                        ctx.AddColumn("Current Status", 30, (item) => FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
-                        if (fields.Any(x => x.StartsWith('5')))
-                        {
-                            ctx.AddColumn("Status Created", 25, (item) => item.Header.DateCreate==null?string.Empty: $"{item.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusCreate}");
-                        }
-                        if (fields.Any(x => x.StartsWith('6')))
-                        {
-                            ctx.AddColumn("Status Updated", 25, (item) => item.Header.DateUpdate == null ? string.Empty : $"{item.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusUpdate}");
-                        }
-                        if (fields.Any(x => x.StartsWith('7')))
-                        {
-                            ctx.AddColumn("Scope", 20, (item) => item.Scope ?? string.Empty, maxslidinglines: 2);
-                        }
-                        if (fields.Any(x => x.StartsWith('8')))
-                        {
-                            ctx.AddColumn("Domain", 20, (item) => item.Domain ?? string.Empty, maxslidinglines: 2);
-                        }
-                        ctx.Filter(FilterMode.Contains, true);
-                        ctx.ChangeDescription((item, _, _) =>
-                        {
-                            return Path.GetDirectoryName(item.FileName) ?? string.Empty;
-                        });
-                    }
-                })
-                .Run();
-            return table switch
-            {
-                { IsAborted: true } => throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser),
-                _ => table.Content.FileName
-            };
+            return FileSelectd;
         }
 
         private async Task<(Dictionary<Arguments, string> WizardArgs, string[] Fields)> ExplorerWizardAsync(CancellationToken cancellationToken)
@@ -450,49 +321,21 @@ namespace AdrPlus.Commands.Explorer
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
-                string[] fieldsresources = Resources.AdrPlus.ListFieldReport.Split(',');
-
-
-                var fields = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsReport}: ")
-                    .Interaction(fieldsresources, (item, ctx) =>
-                     {
-                         //1)File, 2)Folder, 3)Format, 4)Current Status, 5)Status Created, 6)Status Updated, 7)Scope, 8)Domain
-                         if (item.StartsWith('1') || item.StartsWith('4'))
-                         {
-                             ctx.AddItem(item, true, true);
-                         }
-                         else
-                         {
-                             ctx.AddItem(item);
-                         }
-                     })
-                     .EnabledHistory("AdrPlusExplorerFields")
-                     .DefaultHistory()
-                     .TextSelector(item => item[2..])
-                     .Run(cancellationToken);
-                if (fields.IsAborted)
+                var fieldsseleted = _console.PromptFieldsExplorer(cancellationToken);
+                if (fieldsseleted.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                var explorerreport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
-                    .OffValue($"{Resources.AdrPlus.ShowAdrs}")
-                    .OnValue($"{Resources.AdrPlus.CreateReport}")
-                    .EnabledHistory("AdrPlusExplorerShowOrReport")
-                    .Default(false, true)
-                    .Run(cancellationToken);
+                var explorerreport = _console.PromptOptionShowOrCreateReport(cancellationToken);
                 if (explorerreport.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
-                if (explorerreport.Content!.Value)
+                if (explorerreport.IsCreatingReport)
                 {
-                    var filename = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileNameReport}: ")
-                        .Default("AdrPlusReport")
-                        .PredicateSelected((value) => string.IsNullOrWhiteSpace(value) ? (false, Resources.AdrPlus.ExceptionFilenameEmpty) : (true, string.Empty))
-                        .EnabledHistory("AdrPlusExplorerReportFileName")
-                        .Run(cancellationToken);
-                    if (filename.IsAborted)
+                    var (IsAborted, Filename) = _console.PromptInputFileReport(cancellationToken);
+                    if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
@@ -502,17 +345,16 @@ namespace AdrPlus.Commands.Explorer
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
 
-                    parsedArgs.Add(Arguments.FileReport, Path.GetFullPath(Path.Combine(folderreport.Content, $"{filename.Content}.md")));
+                    parsedArgs.Add(Arguments.FileReport, Path.GetFullPath(Path.Combine(folderreport.Content, $"{Filename}.md")));
 
                     if (_config.Value.ComandOpenAdr.Length > 0)
                     {
-                        var openfile = PromptPlus.Controls.Confirm($"{Resources.AdrPlus.PromptOpenReportAfterCreate}: ")
-                            .Run(cancellationToken);
+                        var openfile = _console.PromptConfirm($"{Resources.AdrPlus.PromptOpenReportAfterCreate}: ", cancellationToken);
                         if (openfile.IsAborted)
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                         }
-                        if (openfile.Content!.Value.IsYesResponseKey())
+                        if (openfile.ConfirmYes)
                         {
                             parsedArgs.Add(Arguments.OpenFile, string.Empty);
                         }
@@ -522,13 +364,12 @@ namespace AdrPlus.Commands.Explorer
                 {
                     if (_config.Value.ComandOpenAdr.Length > 0)
                     {
-                        var openfile = PromptPlus.Controls.Confirm($"{Resources.AdrPlus.PromptOpenAdrAfterSelection}: ")
-                            .Run(cancellationToken);
-                        if (openfile.IsAborted)
+                        var (IsAborted, ConfirmYes) = _console.PromptConfirm($"{Resources.AdrPlus.PromptOpenAdrAfterSelection}: ", cancellationToken);
+                        if (IsAborted)
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                         }
-                        if (openfile.Content!.Value.IsYesResponseKey())
+                        if (ConfirmYes)
                         {
                             parsedArgs.Add(Arguments.OpenFile, string.Empty);
                         }
@@ -537,7 +378,7 @@ namespace AdrPlus.Commands.Explorer
 
                 // Display summary and confirm
                 var (Left, Top) = _console.CursorPosition();
-                DisplayWizardSummary(parsedArgs, fields.Content);
+                DisplayWizardSummary(parsedArgs, fieldsseleted.FieldsExplorer);
                 var resultCnf = _console.PromptConfirm(Resources.AdrPlus.PromptConfirmExplorer, cancellationToken);
                 _console.MovePosition(Left, Top);
                 if (resultCnf.IsAborted)
@@ -547,7 +388,7 @@ namespace AdrPlus.Commands.Explorer
 
                 if (resultCnf.ConfirmYes)
                 {
-                    return (parsedArgs, fields.Content);
+                    return (parsedArgs, fieldsseleted.FieldsExplorer);
                 }
             }
         }

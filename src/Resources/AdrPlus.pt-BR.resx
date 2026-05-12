@@ -1144,7 +1144,7 @@
     <value>Confirmar o explorador com estes parâmetros?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
-    <value>1) Arquivo, 2) Pasta, 3) Formato, 4) Status atual, 5) Status criação, 6) Status atualização, 7) Escopo, 8) Domínio</value>
+    <value>1)Arquivo,2)Pasta,3)Formato,4)Status atual,5)Status criação,6)Status atualização,7)Escopo,8)Domínio</value>
   </data>
   <data name="ErrFileReportEmpty" xml:space="preserve">
     <value>O caminho para o arquivo de relatório está vazio</value>
@@ -1196,5 +1196,14 @@
   </data>
   <data name="OpenFile" xml:space="preserve">
     <value>Abrir arquivo</value>
+  </data>
+  <data name="WizardGroupExplorerReportTitle" xml:space="preserve">
+    <value>Relatório e explorador</value>
+  </data>
+  <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
+    <value>Cria relatório e mostra metadados das ARDs  </value>
+  </data>
+  <data name="FilesExplored" xml:space="preserve">
+    <value>Arquivos explorados</value>
   </data>
 </root>

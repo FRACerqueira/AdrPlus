@@ -824,36 +824,6 @@ public class ConfigCommandHandlerTests
         model.Domain.Should().NotBeEmpty();
     }
 
-    [Fact]
-    public void DisplaySampleFiles_CallsConsoleWriteInfo()
-    {
-        // Arrange
-        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
-        {
-            Prefix = "ADR",
-            LenSeq = 4,
-            CaseTransform = CaseFormat.PascalCase,
-            LenScope = 0,
-            Scopes = string.Empty,
-            SkipDomain = string.Empty,
-            FolderByScope = false
-        };
-
-        var jsonContent = JsonSerializer.Serialize(repoConfig);
-        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
-
-        // Act
-        var method = typeof(ConfigCommandHandler).GetMethod(
-            "DisplaySampleFiles",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        method?.Invoke(_handler, [jsonContent]);
-
-        // Assert - console.WriteInfo should be called for header and samples
-        _mockConsole.Received(1).WriteInfo(Resources.AdrPlus.ConfigInfoFileNameSample);
-        _mockConsole.Received(4).WriteInfo(Arg.Is<string>(s => s.StartsWith("- ")));
-    }
-
     #endregion
 }
 

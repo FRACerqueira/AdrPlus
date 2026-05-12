@@ -80,7 +80,7 @@ namespace AdrPlus.Commands.Config
                     return;
                 }
 
-                if (parsedArgs.ContainsKey(Arguments.WizardConfigRepository) && _validateConfig.HasTemplateRepoFile())
+                if (parsedArgs.ContainsKey(Arguments.WizardConfigRepository) && _validateConfig.HasTemplateRepoFile() && !parsedArgs.ContainsKey(Arguments.FileConfig))
                 {
                     var (IsAborted, ConfirmYes) = _console.PromptConfirm(Resources.AdrPlus.ConfigPromptOverwriteConfig, cancellationToken);
                     if (IsAborted)

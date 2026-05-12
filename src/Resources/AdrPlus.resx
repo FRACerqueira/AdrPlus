@@ -1197,4 +1197,13 @@
   <data name="OpenFile" xml:space="preserve">
     <value>Open file</value>
   </data>
+  <data name="WizardGroupExplorerReportTitle" xml:space="preserve">
+    <value>Report and explorer</value>
+  </data>
+  <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
+    <value>Creates reports and displays ARDs metadata</value>
+  </data>
+  <data name="FilesExplored" xml:space="preserve">
+    <value>Files explored</value>
+  </data>
 </root>

@@ -585,12 +585,110 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
+        public (bool IsAborted, string Filename) PromptInputFileReport(CancellationToken cancellationToken)
+        {
+           var inputfilename = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileNameReport}: ")
+                    .Default("AdrPlusReport")
+                    .PredicateSelected((value) => string.IsNullOrWhiteSpace(value) ? (false, Resources.AdrPlus.ExceptionFilenameEmpty) : (true, string.Empty))
+                    .EnabledHistory("AdrPlusExplorerReportFileName")
+                    .Run(cancellationToken);
+            return (inputfilename.IsAborted, inputfilename.IsAborted ? string.Empty : inputfilename.Content!);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, bool IsCreatingReport) PromptOptionShowOrCreateReport(CancellationToken cancellationToken)
+        {
+            var explorerreport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
+                .OffValue($"{Resources.AdrPlus.ShowAdrs}")
+                .OnValue($"{Resources.AdrPlus.CreateReport}")
+                .EnabledHistory("AdrPlusExplorerShowOrReport")
+                .Default(false, true)
+                .Run(cancellationToken);
+            return (explorerreport.IsAborted, !explorerreport.IsAborted && (bool)explorerreport.Content!);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string[] FieldsExplorer) PromptFieldsExplorer(CancellationToken cancellationToken)
+        {
+            string[] fieldsresources = Resources.AdrPlus.ListFieldReport.Split(',');
+            var fields = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsReport}: ")
+                .Interaction(fieldsresources, (item, ctx) =>
+                {
+                    //1)File, 2)Folder, 3)Format, 4)Current Status, 5)Status Created, 6)Status Updated, 7)Scope, 8)Domain
+                    if (item.StartsWith('1') || item.StartsWith('4'))
+                    {
+                        ctx.AddItem(item, true, true);
+                    }
+                    else
+                    {
+                        ctx.AddItem(item);
+                    }
+                })
+                 .EnabledHistory("AdrPlusExplorerFields")
+                 .DefaultHistory()
+                 .TextSelector(item => item[2..])
+                 .Run(cancellationToken);
+            return (fields.IsAborted, fields.IsAborted ? [] : fields.Content!);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string FileSelectd) PromptTableExplorer(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
+        {
+            var onstart = true;
+            var table = PromptPlus.Controls.TableSelect<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}: ")
+                .Interaction(foundfiles, (item, ctx) =>
+                {
+                    ctx.AddItem(item);
+                    if (onstart)
+                    {
+                        onstart = false;
+                        ctx.TextSelector((item) => Path.GetFileName(item.FileName));
+                        ctx.AddColumn(Resources.AdrPlus.File, 40, (item) => Path.GetFileName(item.FileName), maxslidinglines: 3);
+                        if (fields.Any(x => x.StartsWith('2')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Folder, 20, (item) => Helper.FmtFolder(item, folderrepoadr), maxslidinglines: 2);
+                        }
+                        if (fields.Any(x => x.StartsWith('3')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Format, 20, (item) => Helper.FmtFormat(item), maxslidinglines: 2);
+                        }
+                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 30, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
+                        if (fields.Any(x => x.StartsWith('5')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.StatusCreated, 25, (item) => item.Header.DateCreate == null ? string.Empty : $"{item.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusCreate}");
+                        }
+                        if (fields.Any(x => x.StartsWith('6')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.StatusUpdated, 25, (item) => item.Header.DateUpdate == null ? string.Empty : $"{item.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusUpdate}");
+                        }
+                        if (fields.Any(x => x.StartsWith('7')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Scope, 20, (item) => item.Scope ?? string.Empty, maxslidinglines: 2);
+                        }
+                        if (fields.Any(x => x.StartsWith('8')))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Domain, 20, (item) => item.Domain ?? string.Empty, maxslidinglines: 2);
+                        }
+                        ctx.Filter(FilterMode.Contains, true);
+                        ctx.ChangeDescription((item, _, _) =>
+                        {
+                            return Path.GetDirectoryName(item.FileName) ?? string.Empty;
+                        });
+                    }
+                })
+                .Run();
+                return (table.IsAborted, table.IsAborted ? string.Empty : table.Content.FileName);
+        }
+
+        /// <inheritdoc/>
         public (bool IsAborted, ItemMenuWizard? Content) PromptSelectMenu(bool IsHasconfig, ItemMenuWizard[] itemMenus,ItemMenuWizard defaultvalue,  CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.SelectAnOption}: ";
             var result = PromptPlus.Controls
                 .Select<ItemMenuWizard>(message,"")
                 .Default(defaultvalue)
+                .EnabledHistory("AdrPlusMainMenuWizardSelection")
                 .Interaction(itemMenus, (item,opc) => 
                 {
                     if (item.EnabledWhenNotConfigured || IsHasconfig)

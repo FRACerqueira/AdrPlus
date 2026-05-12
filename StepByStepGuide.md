@@ -400,6 +400,28 @@ adrplus approve --file "./doc/adr/ADR-0001-UsePostgresqlAsPrimaryDatabase.md"
 
 Now that you've created your first ADR, you can explore other features:
 
+### Explorer - View and Manage ADR Repository
+
+Browse and explore all ADR files in your repository with an interactive file viewer:
+
+```bash
+adrplus explorer --wizard
+```
+
+#### What the Explorer Does
+
+The Explorer command provides:
+
+- **File Browsing**: Navigate through all ADR files in your repository with an intuitive interface
+- **ADR Overview**: View key information about each ADR
+  - Choose which fields to include in your report such as status, version, revision, created date, changed date, and more
+- **Search and Filter**: Easily find and filter ADRs ([F4 key]) by name, status, or other criteria to locate specific decisions
+- **View Details**: Open and inspect ADR content directly from the explorer without switching applications
+- **Generate Reports**: Create customizable reports with selected fields from your ADRs
+  - Choose which fields to include in your report such as status, version, revision, created date, changed date, and more
+  - Export reports in Markdown formats for analysis, stakeholder communication, and documentation
+  - Analyze trends and patterns in your architectural decisions
+
 ### Reject an ADR
 
 If you decide an ADR is not suitable:

@@ -33,6 +33,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
+- 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application and repository settings
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format with a simple command
@@ -42,7 +43,6 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🖥️ Cross-platform (Windows, macOS, Linux)
 
 ---
-
 
 ## License
 

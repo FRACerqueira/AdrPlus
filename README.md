@@ -59,6 +59,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
+- 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application and repository settings
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format with a simple command
@@ -189,6 +190,10 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus config --template --file "path/to/file-template.md"
     adrplus config --repository --file "path/to/file-config"
 
+# Launch the ADR file viewer explorer
+
+    adrplus explorer --path "path/to/repository"
+
 # Initialize ADR structure (only for the first time you set up the repository)
 
     adrplus init --path "path/to/repository"
@@ -224,6 +229,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `help`      | Display help information for all commands or a specific command              |
 | `wizard`    | Launch the interactive wizard for guided operations                          |
 | `config`    | Application configuration editor, repository, and default ADR template       |
+| `explorer`  | Launch the file viewer explorer and report for the ADR repository            |
 | `migrate`   | Migrate existing ADRs to use the tool (create header)                        |
 | `init`      | Initialize the ADR repository folder structure                               |
 | `upgrade`   | Upgrade repository's settings                                                |

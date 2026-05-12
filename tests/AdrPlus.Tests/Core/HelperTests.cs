@@ -760,6 +760,521 @@ public class HelperTests
 
     #endregion
 
+    #region FmtStatus Tests
+
+    [Fact]
+    public void FmtStatus_WithStatusChange_ReturnsFormattedStatusWithDate()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Superseded,
+                DateChange = new DateTime(2024, 2, 1)
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template") { LenSeq = 4 };
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Contain("2024-02-01");
+        result.Should().Contain("Superseded");
+    }
+
+    [Fact]
+    public void FmtStatus_WithStatusChangeAndNumberSuperSedes_ReturnsFormattedStatusWithSupersedesNumber()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Superseded,
+                DateChange = new DateTime(2024, 2, 1),
+                NumberSuperSedes = "2"
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template") { LenSeq = 4 };
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Contain("2024-02-01");
+        result.Should().Contain("Superseded");
+        result.Should().Contain("0002");
+    }
+
+    [Fact]
+    public void FmtStatus_WithStatusUpdate_ReturnsFormattedUpdateStatus()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Unknown,
+                StatusUpdate = AdrStatus.Accepted,
+                DateUpdate = new DateTime(2024, 1, 15)
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template");
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Contain("2024-01-15");
+        result.Should().Contain("Accepted");
+    }
+
+    [Fact]
+    public void FmtStatus_WithStatusCreate_ReturnsFormattedCreateStatus()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Unknown,
+                StatusUpdate = AdrStatus.Unknown,
+                StatusCreate = AdrStatus.Proposed,
+                DateCreate = new DateTime(2024, 1, 1)
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template");
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Contain("2024-01-01");
+        result.Should().Contain("Proposed");
+    }
+
+    [Fact]
+    public void FmtStatus_WithInvalidAdrFile_ReturnsUnknown()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents { IsValid = false };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template");
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Be("Unknown");
+    }
+
+    [Fact]
+    public void FmtStatus_WithAllStatusesUnknown_ReturnsUnknown()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Unknown,
+                StatusUpdate = AdrStatus.Unknown,
+                StatusCreate = AdrStatus.Unknown
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template");
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Be("Unknown");
+    }
+
+    [Fact]
+    public void FmtStatus_WithStatusChangeButNullDate_ReturnsStatusWithoutDate()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusChange = AdrStatus.Superseded,
+                DateChange = null
+            }
+        };
+        var config = new AdrPlusRepoConfig("docs/adr", "Template");
+
+        // Act
+        var result = Helper.FmtStatus(adrFile, config);
+
+        // Assert
+        result.Should().Contain("Superseded");
+        result.Should().NotContain("-");
+    }
+
+    #endregion
+
+    #region FmtFormat Tests
+
+    [Fact]
+    public void FmtFormat_WithInvalidAdrFile_ReturnsMsgUnknownStructure()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents { IsValid = false };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Be("Unknown structure");
+    }
+
+    [Fact]
+    public void FmtFormat_WithMigratedAndValidHeader_ReturnsMigrated()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                IsMigrated = true
+            }
+        };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Contain("Migrated");
+    }
+
+    [Fact]
+    public void FmtFormat_WithMigratedButInvalidHeader_ReturnsInvalidFormatHeader()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = false,
+                IsMigrated = true
+            }
+        };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Contain("Invalid");
+    }
+
+    [Fact]
+    public void FmtFormat_WithValidAdrPlusFormat_ReturnsAdrPlusFormat()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                IsMigrated = false,
+                StatusCreate = AdrStatus.Proposed
+            }
+        };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Contain("AdrPlus");
+    }
+
+    [Fact]
+    public void FmtFormat_WithInvalidAdrPlusFormat_ReturnsInvalidFormatHeader()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = false,
+                IsMigrated = false,
+                StatusCreate = AdrStatus.Proposed
+            }
+        };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Contain("Invalid");
+    }
+
+    [Fact]
+    public void FmtFormat_WithReadyToMigrate_ReturnsReadyToMigrate()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            IsValid = true,
+            Header = new AdrHeader
+            {
+                IsValid = false,
+                IsMigrated = false,
+                StatusCreate = AdrStatus.Unknown
+            }
+        };
+
+        // Act
+        var result = Helper.FmtFormat(adrFile);
+
+        // Assert
+        result.Should().Contain("Ready");
+    }
+
+    #endregion
+
+    #region FmtFolder Tests
+
+    [Fact]
+    public void FmtFolder_WithNestedPath_ExtractsCorrectFolder()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            FileName = "docs/adr/backend/ADR-0001-test.md"
+        };
+        var folderRepoAdr = "docs/adr";
+
+        // Act
+        var result = Helper.FmtFolder(adrFile, folderRepoAdr);
+
+        // Assert
+        result.Should().Be("backend");
+    }
+
+    [Fact]
+    public void FmtFolder_WithFlatPath_ReturnsEmptyString()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            FileName = "docs/adr/ADR-0001-test.md"
+        };
+        var folderRepoAdr = "docs/adr";
+
+        // Act
+        var result = Helper.FmtFolder(adrFile, folderRepoAdr);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void FmtFolder_WithMultipleLevelsFolders_ExtractsImmediateFolder()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            FileName = "docs/adr/backend/services/ADR-0001-test.md"
+        };
+        var folderRepoAdr = "docs/adr";
+
+        // Act
+        var result = Helper.FmtFolder(adrFile, folderRepoAdr);
+
+        // Assert
+        result.Should().Be("backend/services");
+    }
+
+    [Fact]
+    public void FmtFolder_WithWindowsPath_ExtractsCorrectFolder()
+    {
+        // Arrange
+        var adrFile = new AdrFileNameComponents
+        {
+            FileName = @"docs\adr\backend\ADR-0001-test.md"
+        };
+        var folderRepoAdr = @"docs\adr";
+
+        // Act
+        var result = Helper.FmtFolder(adrFile, folderRepoAdr);
+
+        // Assert
+        result.Should().Be("backend");
+    }
+
+    #endregion
+
+    #region Humanize Tests
+
+    [Fact]
+    public void Humanize_WithPascalCase_ConvertsToHumanFormat()
+    {
+        // Arrange
+        var input = "UsePostgreSQLAsDatabase";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be("Use postgre s q l as database");
+    }
+
+    [Fact]
+    public void Humanize_WithCamelCase_ConvertsToHumanFormat()
+    {
+        // Arrange
+        var input = "usePostgreSQLAsDatabase";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().StartWith("Use");
+        result.Should().Contain("database");
+    }
+
+    [Fact]
+    public void Humanize_WithSnakeCase_ConvertsToHumanFormat()
+    {
+        // Arrange
+        var input = "use_postgresql_as_database";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be("Use postgresql as database");
+    }
+
+    [Fact]
+    public void Humanize_WithKebabCase_ConvertsToHumanFormat()
+    {
+        // Arrange
+        var input = "use-postgresql-as-database";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be("Use postgresql as database");
+    }
+
+    [Fact]
+    public void Humanize_WithMixedCase_ConvertsToHumanFormat()
+    {
+        // Arrange
+        var input = "use_PostgreSQL-AsDatabase";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().NotBeNullOrEmpty();
+        result.Should().StartWith("Use");
+    }
+
+    [Fact]
+    public void Humanize_WithNullInput_ReturnsEmptyString()
+    {
+        // Arrange
+        string? input = null;
+
+        // Act
+        var result = Helper.Humanize(input!);
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Fact]
+    public void Humanize_WithEmptyString_ReturnsEmptyString()
+    {
+        // Arrange
+        var input = string.Empty;
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Fact]
+    public void Humanize_WithWhitespaceString_ReturnsEmptyString()
+    {
+        // Arrange
+        var input = "   ";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Fact]
+    public void Humanize_WithMultipleSpaces_NormalizesToSingleSpace()
+    {
+        // Arrange
+        var input = "use   postgresql   database";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().NotContain("   ");
+        result.Should().Be("Use postgresql database");
+    }
+
+    [Fact]
+    public void Humanize_WithSingleWord_CapitalizesFirstLetter()
+    {
+        // Arrange
+        var input = "database";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Be("Database");
+    }
+
+    [Fact]
+    public void Humanize_WithNumbers_PreservesAndFormats()
+    {
+        // Arrange
+        var input = "use_postgresql_v2_database";
+
+        // Act
+        var result = Helper.Humanize(input);
+
+        // Assert
+        result.Should().Contain("v2");
+        result.Should().StartWith("Use");
+    }
+
+    #endregion
+
     #region GetResourceStatus Tests
 
     [Fact]
