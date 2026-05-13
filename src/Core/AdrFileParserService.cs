@@ -6,6 +6,8 @@
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
+using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace AdrPlus.Core
@@ -64,7 +66,7 @@ namespace AdrPlus.Core
                     return (result, string.Empty);
                 }
                 var indexstart = lines[3].IndexOf('|', 1);
-                if (indexstart == -1) 
+                if (indexstart == -1)
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
                     return (result, string.Empty);
@@ -100,7 +102,7 @@ namespace AdrPlus.Core
                 {
                     result.Version = version;
                 }
-                else if(versionText.Length > 0)
+                else if (versionText.Length > 0)
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
                     return (result, string.Empty);
@@ -306,289 +308,167 @@ namespace AdrPlus.Core
             {
                 FileName = filePath
             };
-            try
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameEmpty;
-                    return result;
-                }
-                if (!filePath.EndsWith(".md", ordinalIgnoreCase))
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
-                    return result;
-                }
-
-                var nameWithoutExtension = Path.GetFileName(filePath)[..^3];
-                var separator = config.Separator;
-                var parts = nameWithoutExtension.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length < 1)
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                    return result;
-                }
-
-                var currentIndex = 0;
-                var part = parts[currentIndex];
-                if (!string.IsNullOrWhiteSpace(config.Prefix))
-                {
-                    if (!part.StartsWith(config.Prefix, ordinalIgnoreCase))
-                    {
-                        var tryNumberString = part[..config.LenSeq];
-                        if (int.TryParse(tryNumberString, out var number))
-                        {
-                            result.Prefix = config.Prefix;
-                            result.Number = number;
-                            if (part.Length > config.LenSeq)
-                            {
-                                var titlePart = part[config.LenSeq..];
-                                result.Title = Helper.Humanize(titlePart);
-                            }
-                            else if (parts.Length == 1)
-                            {
-                                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                                return result;
-                            }
-                            currentIndex++;
-                        }
-                        else if (int.TryParse(part, out var numberseq))
-                        {
-                            result.Prefix = config.Prefix;
-                            result.Number = numberseq;
-                            currentIndex++;
-                        }
-                        else
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorFilenameNoPrefixFormat, config.Prefix);
-                            return result;
-                        }
-                    }
-                    else
-                    {
-                        result.Prefix = config.Prefix;
-                        var numberString = part[config.Prefix.Length..];
-                        if (numberString.Length > 0)
-                        {
-                            if (!int.TryParse(numberString, out var number))
-                            {
-                                if (currentIndex == parts.Length - 1)
-                                {
-                                    string partnumbers = "";
-                                    string partitle = "";
-                                    part = part[config.Prefix.Length..];
-                                    foreach (char c in part)
-                                    {
-                                        if (char.IsDigit(c))
-                                            partnumbers += c;
-                                        else
-                                            partitle += c;
-                                    }
-                                    if (int.TryParse(partnumbers, out number) && partnumbers.Length == config.LenSeq)
-                                    {
-                                        result.Number = number;
-                                        result.Title = Helper.Humanize(partitle);
-                                    }
-                                    else
-                                    {
-                                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                                        return result;
-                                    }
-                                }
-                                else
-                                {
-                                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                                    return result;
-                                }
-                            }
-                            else
-                            {
-                                result.Number = number;
-                            }
-                        }
-                        currentIndex++;
-                    }
-                }
-                else
-                {
-                    if (!int.TryParse(part, out var number))
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                        result.IsValid = false;
-                        return result;
-                    }
-                    result.Number = number;
-                    currentIndex++;
-                }
-                if (result.Number == 0)
-                {
-                    part = parts[currentIndex];
-                    if (!int.TryParse(part, out var number))
-                    {
-                        if (currentIndex == parts.Length - 1)
-                        {
-                            string partnumbers = "";
-                            string partitle = "";
-                            foreach (char c in part)
-                            {
-                                if (char.IsDigit(c))
-                                    partnumbers += c;
-                                else
-                                    partitle += c;
-                            }
-                            if (int.TryParse(partnumbers, out number) && partnumbers.Length == config.LenSeq)
-                            {
-                                result.Number = number;
-                                result.Title = Helper.Humanize(partitle);
-                            }
-                            else
-                            {
-                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                                return result;
-                            }
-                            currentIndex++;
-                        }
-                        else
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                            return result;
-                        }
-                    }
-                    else
-                    {
-                        result.Number = number;
-                        currentIndex++;
-                    }
-                }
-
-                if (result.Title.Length == 0)
-                {
-                    part = parts[currentIndex];
-                    var auxtitle = new StringBuilder();
-                    auxtitle.Append(part.ToCase(config.CaseTransform));
-                    currentIndex++;
-                    while (currentIndex < parts.Length)
-                    {
-                        part = parts[currentIndex];
-                        if (!part.StartsWith('V'))
-                        {
-                            auxtitle.Append(part.ToCase(config.CaseTransform));
-                            currentIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    result.Title = Helper.Humanize(auxtitle.ToString());
-                }
-
-                if (currentIndex < parts.Length && config.LenVersion > 0)
-                {
-                    part = parts[currentIndex];
-                    if (part.StartsWith('V'))
-                    {
-                        var versionString = part[1..];
-
-                        var revisionIndex = versionString.IndexOf('R', ordinalIgnoreCase);
-                        if (revisionIndex > 0)
-                        {
-                            var versionPart = versionString[..revisionIndex];
-                            if (int.TryParse(versionPart, out var version))
-                            {
-                                result.Version = version;
-                            }
-                            else
-                            {
-                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, versionPart);
-                                return result;
-                            }
-
-                            if (config.LenRevision > 0)
-                            {
-                                var revisionPart = versionString[(revisionIndex + 1)..];
-                                if (int.TryParse(revisionPart, out var revision))
-                                {
-                                    result.Revision = revision;
-                                }
-                                else
-                                {
-                                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, revisionPart);
-                                    return result;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (int.TryParse(versionString, out var version))
-                            {
-                                result.Version = version;
-                            }
-                            else
-                            {
-                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, versionString);
-                                return result;
-                            }
-                        }
-                        currentIndex++;
-                    }
-                }
-
-                if (currentIndex < parts.Length && config.LenScope > 0)
-                {
-                    part = parts[currentIndex];
-                    var matchingScope = config.GetScopes()
-                        .FirstOrDefault(s => s.StartsWith(part, ordinalIgnoreCase));
-
-                    if (matchingScope == null)
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidScopeFormatMsg, part);
-                        return result;
-                    }
-                    else
-                    {
-                        result.Scope = matchingScope;
-                        currentIndex++;
-                        if (currentIndex < parts.Length && !config.GetSkipDomains().Contains(matchingScope))
-                        {
-                            var domainPart = parts[currentIndex];
-                            result.Domain = domainPart;
-                            currentIndex++;
-                        }
-                    }
-                }
-
-                if (currentIndex < parts.Length)
-                {
-                    part = parts[currentIndex];
-                    if (int.TryParse(part, out var supersedednumber))
-                    {
-                        if (part.Length <= 3)
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidSupersededNumberFormatMsg, string.Empty);
-                            return result;
-                        }
-                        result.SupersededValue = supersedednumber;
-                        currentIndex++;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorUnexpectedPartInFilenameMsg, part);
-                        return result;
-                    }
-                }
-
+                result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameEmpty;
+                return result;
+            }
+            if (!filePath.EndsWith(".md", ordinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
+                return result;
+            }
+            //try parse with configured ADRLUS format
+            var parseResult = ParseAdrPlusFileNameAsync(filePath, config);
+            if (parseResult.Success)
+            {
                 var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
                 result.Header = header;
                 result.ContentAdr = content;
                 result.IsValid = true;
             }
-            catch (Exception ex)
-            {
-                result.IsValid = false;
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorParsingFilenameMsg, ex.Message);
-            }
+            result.ErrorMessage = parseResult.Result.ErrorMessage;
             return result;
+        }
+
+        private static (bool Success, AdrFileNameComponents Result) ParseAdrPlusFileNameAsync(string filePath, AdrPlusRepoConfig config)
+        {
+            const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
+            var result = new AdrFileNameComponents
+            {
+                FileName = filePath
+            };
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            var separator = $"{config.Separator}";
+            var supersedeSeparator = $"{config.Separator}{config.Separator}";
+            var supersedeParts = nameWithoutExtension.Split(supersedeSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var parts = new List<string>();
+            var supersedeNumber = string.Empty;
+            if (supersedeParts.Length > 2)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (supersedeParts.Length == 2 && int.TryParse(supersedeParts[1], out _))
+            {
+                supersedeNumber = supersedeParts[1];
+            }
+            var index = supersedeParts[0].IndexOf(separator, ordinalIgnoreCase);
+            if (index < 0)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            parts.Add(supersedeParts[0][..index]);
+            parts.AddRange(supersedeParts[0][(index + separator.Length)..].Split(separator, StringSplitOptions.RemoveEmptyEntries));
+            if (parts.Count > 2)
+            {
+                string part1 = parts[1..].Aggregate((a, b) => $"{a}{config.Separator}{b}");
+                parts.Clear();
+                parts.Add(supersedeParts[0][..index]);
+                parts.Add(part1);
+            }
+            var currentIndex = 0;
+            string part = parts[currentIndex] ?? string.Empty;
+            //prefix
+            result.Prefix = config.Prefix ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(config.Prefix) && !part.StartsWith(config.Prefix, ordinalIgnoreCase))
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorFilenameNoPrefixFormat, config.Prefix);
+                return (false, result);
+            }
+
+            if (!string.IsNullOrWhiteSpace(config.Prefix) && part.StartsWith(result.Prefix, ordinalIgnoreCase))
+            {
+                part = part[config.Prefix.Length..];
+            }
+            //sequence number
+            if (part.Length < config.LenSeq)
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                return (false, result);
+            }
+            var tryNumberString = part[..config.LenSeq];
+            if (!int.TryParse(tryNumberString, out var numberseq))
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
+                return (false, result);
+            }
+            result.Number = numberseq;
+            part = part[config.LenSeq..];
+
+            //version
+            if (part.Length < config.LenVersion + 1)
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, part);
+                return (false, result);
+            }
+            if (!part.StartsWith('V') && !part.StartsWith('v'))
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, part);
+                return (false, result);
+            }
+            string tryversionNumberString = part[1..];
+            if (!int.TryParse(tryversionNumberString, out var numberver))
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, tryversionNumberString);
+                return (false, result);
+            }
+            result.Version = numberver;
+            part = part[(config.LenVersion + 1)..];
+            //revision
+            if (config.LenRevision > 0 && part.Length < config.LenRevision + 1)
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, part);
+                return (false, result);
+            }
+            if (config.LenRevision > 0)
+            {
+                if (!part.StartsWith('R') && !part.StartsWith('r'))
+                {
+                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, part);
+                    return (false, result);
+                }
+                string tryrevisionNumberString = part[1..];
+                if (!int.TryParse(tryrevisionNumberString, out var numberrev))
+                {
+                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, tryrevisionNumberString);
+                    return (false, result);
+                }
+                result.Revision = numberrev;
+                part = part[(config.LenRevision + 1)..];
+            }
+            //scope
+            if (config.LenScope > 0 && part.Length < config.LenScope)
+            {
+                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidScopeFormatMsg, part);
+                return (false, result);
+            }
+            if (config.LenScope > 0)
+            {
+                result.Scope = part[(config.LenScope)..];
+                part = part[(config.LenScope)..];
+            }
+            if (part.Length != 0)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            //title and domain
+            currentIndex = 1;
+            part = parts[currentIndex];
+            index = part.IndexOf('@');
+            if (index != -1)
+            {
+                result.Title = Helper.Humanize(part[..index]);
+                result.Domain = Helper.Humanize(part[(index + 1)..]);
+            }
+            else
+            {
+                result.Title = Helper.Humanize(part);
+            }
+            result.SupersededValue = string.IsNullOrEmpty(supersedeNumber) ? null : int.Parse(supersedeNumber, CultureInfo.InvariantCulture);
+            return (true, result);
         }
     }
 }

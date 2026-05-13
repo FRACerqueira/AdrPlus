@@ -25,6 +25,12 @@ namespace AdrPlus.Domain
         public string FolderAdr { get; set; } = folderadr;
 
         /// <summary>
+        /// Gets or sets the pattern used for migrating ADR files.
+        /// </summary>
+        public string MigratePattern { get; set; } = string.Empty;
+
+
+        /// <summary>
         /// Gets or sets the Markdown template content used for generating new ADRs.
         /// </summary>
         public string Template { get; set; } = template;
@@ -35,10 +41,10 @@ namespace AdrPlus.Domain
         public string? Prefix { get; set; } = Resources.AdrPlus.DefaultPrefix;
 
         /// <summary>
-        /// Gets or sets the number of digits for the sequence number in the filename, e.g., 4 for "0001".
+        /// Gets or sets the number of digits for the sequence number in the filename, e.g., 3 for "001".
         /// Must be at least 3.
         /// </summary>
-        public int LenSeq { get; set; } = 4;
+        public int LenSeq { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets the number of digits for the version number in the filename, e.g., 2 for "v01".

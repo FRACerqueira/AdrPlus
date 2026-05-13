@@ -724,10 +724,10 @@
     <value>when not wizard</value>
   </data>
   <data name="HelpUsageWizardConfigApp" xml:space="preserve">
-    <value>Application Settings Wizard (if file argument is not provided)</value>
+    <value>Application settings wizard (if file argument is not provided)</value>
   </data>
   <data name="HelpUsageWizardConfigRepo" xml:space="preserve">
-    <value>Repository Settings Wizard (if file argument is not provided)</value>
+    <value>Repository settings wizard (if file argument is not provided)</value>
   </data>
   <data name="ErrMsgAdrStatusLineSupersedeFormatInvalid" xml:space="preserve">
     <value>Status missing filename format: {0}</value>
@@ -763,7 +763,7 @@
     <value>Select  an option</value>
   </data>
   <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
-    <value>Adr Template Settings Wizard  (if file argument is not provided)</value>
+    <value>ADR template settings wizard  (if file argument is not provided)</value>
   </data>
   <data name="InvalidMenuOption" xml:space="preserve">
     <value>Menu option not implemented : {0}</value>
@@ -1211,5 +1211,14 @@
   </data>
   <data name="WizardHelpExplorerDescription" xml:space="preserve">
     <value>Show help information</value>
+  </data>
+  <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
+    <value>Migrate pattern</value>
+  </data>
+  <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
+    <value>Migration settings wizard (if file argument is not provided)</value>
+  </data>
+  <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
+    <value>Wrong migration pattern</value>
   </data>
 </root>

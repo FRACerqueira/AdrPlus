@@ -28,6 +28,11 @@ namespace AdrPlus.Core
                 config.FolderAdr = folderadrElement.GetString()!;
             }
 
+            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldMigrationPattern, out var migrationPatternElement) && migrationPatternElement.ValueKind == JsonValueKind.String)
+            {
+                config.MigratePattern = migrationPatternElement.GetString()!;
+            }
+
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldPrefix, out var prefixElement) && prefixElement.ValueKind == JsonValueKind.String)
             { 
                 config.Prefix = prefixElement.GetString()!;

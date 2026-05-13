@@ -91,20 +91,22 @@ namespace AdrPlus.Domain
         /// <returns>A formatted filename string following the ADR naming convention (e.g. <c>ADR-0001-MyTitle-V01R00-ENT-MyDomain-SUP0002.md</c>).</returns>
         public string GetFileName(AdrPlusRepoConfig config)
         {
-            var baseFileName = $"{config.Prefix ?? string.Empty}{Number.ToString($"D{config.LenSeq}", null)}{config.Separator}{Title.ToCase(config.CaseTransform)}";
-            var ver = $"{config.Separator}V{Version.ToString($"D{config.LenVersion}", null)}";
+            var baseFileName = $"{config.Prefix ?? string.Empty}{Number.ToString($"D{config.LenSeq}", null)}";
+            var ver = $"V{Version.ToString($"D{config.LenVersion}", null)}";
             var rev = config.LenRevision > 0 ? $"R{Revision!.Value.ToString($"D{config.LenRevision}", null)}" : string.Empty;
             var scopeSuffix = string.Empty;
+            var domaintext = string.Empty;
             if (!string.IsNullOrWhiteSpace(Scope) && config.LenScope > 0)
             {
-                scopeSuffix = $"{config.Separator}{Scope[..config.LenScope].ToCase(config.CaseTransform)}";
+                scopeSuffix = Scope[..config.LenScope];
                 if (Domain.Length > 0)
                 {
-                    scopeSuffix += $"{config.Separator}{Domain.ToCase(config.CaseTransform)}";
+                    domaintext = $"@{Domain.ToCase(config.CaseTransform)}";
                 }
             }
-            var supersede = (Superseded ?? 0) > 0 ? $"{config.Separator}{Superseded!.Value.ToString($"D{config.LenSeq}", null)}" : string.Empty;
-            var fileName = $"{baseFileName}{ver}{rev}{scopeSuffix}{supersede}.md";
+            var title = Title.ToCase(config.CaseTransform);
+            var supersede = (Superseded ?? 0) > 0 ? $"{config.Separator}{config.Separator}{Superseded!.Value.ToString($"D{config.LenSeq}", null)}" : string.Empty;
+            var fileName = $"{baseFileName}{ver}{rev}{scopeSuffix}{config.Separator}{title}{domaintext}{supersede}.md";
             return fileName;
         }
 

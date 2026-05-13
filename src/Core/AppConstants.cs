@@ -156,6 +156,12 @@ namespace AdrPlus.Core
         /// </summary>
         public const string FieldOpenAdr = "comandopenadr";
 
+
+        /// <summary>
+        /// The name of the configuration migration pattern preferences. 
+        /// </summary>
+        public const string FieldMigrationPattern = "migrationpattern";
+
         /// <summary>
         /// The name of the configuration file used by the application to store folder and preferences. 
         /// </summary>

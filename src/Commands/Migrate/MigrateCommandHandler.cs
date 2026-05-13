@@ -48,7 +48,7 @@ namespace AdrPlus.Commands.Migrate
                         ValidCommandArgs,
                         [
                             "adrplus migrate --wizard",
-                        "adrplus migrate --path \"path/to/repository/\"",
+                            "adrplus migrate --path \"path/to/repository/\"",
                         ]));
                     return;
                 }
@@ -88,7 +88,6 @@ namespace AdrPlus.Commands.Migrate
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
-
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 if (!hasWizard)
@@ -132,7 +131,6 @@ namespace AdrPlus.Commands.Migrate
                 {
                     // Create ADR record and file
                     var content = await _fileSystem.ReadAllTextAsync(file.FileName, cancellationToken);
-                    var seqfile = file.Number.ToString($"D{repoConfig.LenSeq}", CultureInfo.CurrentCulture);
                     var adrRecord = new AdrRecord
                     {
                         Number = file.Number,

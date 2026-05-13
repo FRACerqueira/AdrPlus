@@ -349,6 +349,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migrate pattern.
+        /// </summary>
+        internal static string ConfigFieldDescMigrationPattern {
+            get {
+                return ResourceManager.GetString("ConfigFieldDescMigrationPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Character used to represent &apos;No&apos; in prompts.
         /// </summary>
         internal static string ConfigFieldDescNoValue {
@@ -993,6 +1002,15 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgTemplateRepoFileNotFound {
             get {
                 return ResourceManager.GetString("ErrMsgTemplateRepoFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong migration pattern.
+        /// </summary>
+        internal static string ErrMsgWrongMigrationPattern {
+            get {
+                return ResourceManager.GetString("ErrMsgWrongMigrationPattern", resourceCulture);
             }
         }
         
@@ -1825,7 +1843,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Application Settings Wizard (if file argument is not provided).
+        ///   Looks up a localized string similar to Application settings wizard (if file argument is not provided).
         /// </summary>
         internal static string HelpUsageWizardConfigApp {
             get {
@@ -1834,7 +1852,16 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Repository Settings Wizard (if file argument is not provided).
+        ///   Looks up a localized string similar to Migration settings wizard (if file argument is not provided).
+        /// </summary>
+        internal static string HelpUsageWizardConfigMigration {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardConfigMigration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository settings wizard (if file argument is not provided).
         /// </summary>
         internal static string HelpUsageWizardConfigRepo {
             get {
@@ -1843,7 +1870,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adr Template Settings Wizard  (if file argument is not provided).
+        ///   Looks up a localized string similar to ADR template settings wizard  (if file argument is not provided).
         /// </summary>
         internal static string HelpUsageWizardConfigTemplate {
             get {

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace AdrPlus.Core
 {
@@ -408,6 +409,7 @@ namespace AdrPlus.Core
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
                     { AppConstants.FieldFolderAdr, JsonValueKind.String },
+                    { AppConstants.FieldMigrationPattern, JsonValueKind.String },
                     { AppConstants.FieldTemplate, JsonValueKind.String },
                     { AppConstants.FieldPrefix, JsonValueKind.String },
                     { AppConstants.FieldLenSeq, JsonValueKind.Number },
@@ -444,6 +446,20 @@ namespace AdrPlus.Core
                     {
                         errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredFieldFormat, field.Key));
                         continue;
+                    }
+                    // Validate type - special handling for migrationpattern 
+                    if (field.Key.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase)) 
+                    {
+                        var content = property.GetString() ?? string.Empty;
+                        if (content.Length > 0)
+                        {
+                            //N99:99V99:99R99:99:E99:99T99
+                            var patternResult = PatternParser.ParsePattern(content);
+                            if (patternResult == null)
+                            {
+                                errors.Add(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
+                            }
+                        }
                     }
 
                     // Validate type - special handling for boolean
@@ -733,6 +749,10 @@ namespace AdrPlus.Core
             {
                 errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTableValues));
             }
+
+            // Migration pattern can be empty
+            property = root.GetProperty(AppConstants.FieldMigrationPattern);
+            valuestring = property.GetString() ?? string.Empty;
 
             property = root.GetProperty(AppConstants.FieldFolderAdr);
             valuestring = property.GetString() ?? string.Empty;

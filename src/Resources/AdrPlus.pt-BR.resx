@@ -1212,4 +1212,13 @@
   <data name="WizardHelpExplorerDescription" xml:space="preserve">
     <value>Exibe informações de ajuda</value>
   </data>
+  <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
+    <value>Padrão migrate</value>
+  </data>
+  <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
+    <value>Assistente de configurações de migração (caso o argumento de arquivo não seja fornecido)</value>
+  </data>
+  <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
+    <value>Padrão de migração incorreto</value>
+  </data>
 </root>

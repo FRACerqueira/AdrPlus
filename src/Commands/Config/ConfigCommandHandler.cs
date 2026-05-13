@@ -11,9 +11,13 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PromptPlusLibrary;
 using System.Globalization;
+using System.Net.Http.Json;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus.Commands.Config
 {
@@ -47,7 +51,13 @@ namespace AdrPlus.Commands.Config
         private readonly AdrPlusConfig _config = config.Value;
 
 
-        private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardConfigApplication, Arguments.WizardConfigRepository,Arguments.WizardConfigTemplate,Arguments.FileConfig, Arguments.Help];
+        private static readonly Arguments[] ValidCommandArgs = [
+            Arguments.WizardConfigApplication, 
+            Arguments.WizardConfigRepository,
+            Arguments.WizardConfigTemplate,
+            Arguments.WizardConfigMigration,
+            Arguments.FileConfig, 
+            Arguments.Help];
 
         /// <summary>
         /// Executes the <c>config</c> command asynchronously to create or edit configuration files.
@@ -75,6 +85,7 @@ namespace AdrPlus.Commands.Config
                         [
                             "adrplus config --application",
                             "adrplus config --repository",
+                            "adrplus config --migration",
                             "adrplus config --template -file \"path/to/file-config\""
                         ]));
                     return;
@@ -102,6 +113,10 @@ namespace AdrPlus.Commands.Config
                 {
                     await ProcessRepoConfigAsync(fileConfigPath,cancellationToken);
                 }
+                if (parsedArgs.ContainsKey(Arguments.WizardConfigMigration))
+                {
+                    await ProcessMigrationConfigAsync(fileConfigPath, cancellationToken);
+                }
                 else if (parsedArgs.ContainsKey(Arguments.WizardConfigApplication))
                 {
                     await ProcessAppConfigAsync(fileConfigPath, cancellationToken);
@@ -119,6 +134,297 @@ namespace AdrPlus.Commands.Config
             {
                 LogMessages.LogCommandException(_logger, ex);
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Processes the migration configuration 
+        /// </summary>
+        /// <param name="fileConfigPath">Optional path to an external configuration file. Empty string triggers the wizard.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
+        private async Task ProcessMigrationConfigAsync(string fileConfigPath, CancellationToken cancellationToken)
+        {
+            string? jsoncontent;
+            if (!string.IsNullOrEmpty(fileConfigPath))
+            {
+                if (!_fileSystem.FileExists(fileConfigPath))
+                {
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfigPath));
+                }
+                jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
+            }
+            else
+            {
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
+            }
+            if (string.IsNullOrEmpty(fileConfigPath))
+            {
+                jsoncontent = WizardMigrationConfig(jsoncontent, cancellationToken);
+            }
+            var (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsoncontent);
+            if (!IsValid)
+            {
+                LogAndWriteErrors(ErrorReport);
+                throw new InvalidDataException(Resources.AdrPlus.InvalidRepoStructure);
+            }
+            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsoncontent, AppConstants.RepoSerializerOptions)!;
+            var patternResult = PatternParser.ParsePattern(repoconfig.MigratePattern);
+            if (patternResult == null)
+            {
+                throw new InvalidDataException(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
+            }
+            var filePath = _validateConfig.GetDefaultConfigRepoFilePath();
+            await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
+            LogMessages.LogCommandSuccessful(_logger, filePath);
+            _console.WriteSuccess(filePath);
+        }
+
+        private string WizardMigrationConfig(string content, CancellationToken cancellationToken)
+        {
+            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(content, AppConstants.RepoSerializerOptions)!;
+            while (true)
+            {
+                var elementsPrompt = PromptPlus.Controls.MultiSelect<string>("Select the elements that exist in the ADR file title: ")
+                    .AddItem("Number", true, true)
+                    .AddItem("Version")
+                    .AddItem("Revision")
+                    .AddItem("Scope")
+                    .AddItem("Title", true, true)
+                    .Run(cancellationToken);
+                if (elementsPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                var samplefile = PromptPlus.Controls.Input("Enter a sample ADR filename to validate the pattern: ")
+                    .MaxLength(100)
+                    .Run(cancellationToken);
+
+                var filename = Path.GetFileNameWithoutExtension(samplefile.Content);
+
+                var maxlen = filename.Length;
+                var largestep = 5;
+                if (maxlen < largestep)
+                {
+                    largestep = maxlen;
+                }
+                
+                var poscursor = _console.GetCursorPosition();
+                _console.WriteSummary($"Sample filename: {filename}");
+                double defaulvalue = 0;
+                var elementnumber = PromptPlus.Controls.Slider("Select a position for the 'Number' element at filename: ")
+                    .ChangeDescription((item) =>
+                        {
+                            var result = filename[(int)item..];
+                            if (result.Length > 20)
+                            {
+                                result = result[..20] + "...";
+                            }
+                            return $"Sample result: {result}";
+                        })
+                    .Range(0, maxlen)
+                    .Default(defaulvalue)
+                    .Step(1)
+                    .LargeStep(largestep)
+                    .Layout(SliderLayout.UpDown)
+                    .Run(cancellationToken);
+
+                defaulvalue = elementnumber.Content!.Value + 1;
+                if (defaulvalue > maxlen-1)
+                {
+                    defaulvalue = maxlen-1;
+                }
+
+                var elementlennumber = PromptPlus.Controls.Slider("Select a length for the 'Number' element at filename: ")
+                    .ChangeDescription((item) =>
+                        {
+                            var result = filename[(int)elementnumber.Content!..][..(int)item];
+                            return $"Sample result: {result}";
+                        })
+                    .Range(1, 6)
+                    .Default(4)
+                    .Step(1)
+                    .LargeStep(1)
+                    .Layout(SliderLayout.UpDown)
+                    .Run(cancellationToken);
+
+                _console.WriteSummary($"Number : {filename[(int)elementnumber.Content!..][..(int)elementlennumber.Content!.Value]}");
+
+
+                defaulvalue += elementlennumber.Content!.Value;
+                if (defaulvalue > maxlen - 1)
+                {
+                    defaulvalue = maxlen - 1;
+                }
+
+                if (elementsPrompt.Content.Any(x => x.StartsWith('V')))
+                {
+                    var elementversion = PromptPlus.Controls.Slider("Select a position for the 'Version' element at filename: ")
+                        .ChangeDescription((item) =>
+                            {
+                                var result = filename[(int)item..];
+                                if (result.Length > 20)
+                                {
+                                    result = result[..20] + "...";
+                                }
+                                return $"Sample result: {result}";
+                            })
+                         .Range(0, maxlen)
+                         .Default(defaulvalue)
+                         .Step(1)
+                         .LargeStep(largestep)
+                         .Layout(SliderLayout.UpDown)
+                         .Run(cancellationToken);
+
+                    defaulvalue = elementversion.Content!.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenversion = PromptPlus.Controls.Slider("Select a length for the 'Version' element at filename: ")
+                        .ChangeDescription((item) =>
+                            {
+                                var result = filename[(int)elementversion.Content!..][..(int)item];
+                                return $"Sample result: {result}";
+                            })
+                        .Range(2, 3)
+                        .Step(1)
+                        .LargeStep(1)
+                        .Layout(SliderLayout.UpDown)
+                        .Run(cancellationToken);
+
+                    _console.WriteSummary($"Version : {filename[(int)elementversion.Content!..][..(int)elementlenversion.Content!.Value]}");
+
+                    defaulvalue += elementlenversion.Content!.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+                }
+                if (elementsPrompt.Content.Any(x => x.StartsWith('R')))
+                {
+                    var elementrevision = PromptPlus.Controls.Slider("Select a position for the 'Revision' element at filename: ")
+                        .ChangeDescription((item) =>
+                            {
+                                var result = filename[(int)item..];
+                                if (result.Length > 20)
+                                {
+                                    result = result[..20] + "...";
+                                }
+                                return $"Sample result: {result}";
+                            })
+                        .Range(0, maxlen)
+                        .Default(defaulvalue)
+                        .Step(1)
+                        .LargeStep(largestep)
+                        .Layout(SliderLayout.UpDown)
+                        .Run(cancellationToken);
+
+                    defaulvalue = elementrevision.Content!.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenrevision = PromptPlus.Controls.Slider("Select a length for the 'Revision' element at filename: ")
+                        .ChangeDescription((item) =>
+                        {
+                            var result = filename[(int)elementrevision.Content!..][..(int)item];
+                            return $"Sample result: {result}";
+                        })
+                        .Range(1, 3)
+                        .Default(2)
+                        .Step(1)
+                        .LargeStep(1)
+                        .Layout(SliderLayout.UpDown)
+                        .Run(cancellationToken);
+
+                    _console.WriteSummary($"Revision : {filename[(int)elementrevision.Content!..][..(int)elementlenrevision.Content!.Value]}");
+
+                    defaulvalue += elementlenrevision.Content!.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+                }
+                if (elementsPrompt.Content.Any(x => x.StartsWith('S')))
+                {
+                    var elementscope = PromptPlus.Controls.Slider("Select a position for the 'Scope' element at filename: ")
+                        .ChangeDescription((item) =>
+                        {
+                            var result = filename[(int)item..];
+                            if (result.Length > 20)
+                            {
+                                result = result[..20] + "...";
+                            }
+                            return $"Sample result: {result}";
+                        })
+                        .Range(0, maxlen)
+                        .Default(defaulvalue)
+                        .Step(1)
+                        .LargeStep(largestep)
+                        .Layout(SliderLayout.UpDown)
+                        .Run(cancellationToken);
+
+                    defaulvalue = elementscope.Content!.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenscope = PromptPlus.Controls.Slider("Select a length for the 'Scope' element at filename: ")
+                        .ChangeDescription((item) =>
+                            {
+                                var result = filename[(int)elementscope.Content!..][..(int)item];
+                                return $"Sample result: {result}";
+                            })
+                        .Range(1, 5)
+                        .Step(1)
+                        .LargeStep(1)
+                        .Layout(SliderLayout.UpDown)
+                        .Run(cancellationToken);
+
+                    _console.WriteSummary($"Scope : {filename[(int)elementscope.Content!..][..(int)elementlenscope.Content!.Value]}");
+
+                    defaulvalue += elementlenscope.Content!.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                }
+
+                var elementtitle = PromptPlus.Controls.Slider("Select a position for the 'Title' element at filename: ")
+                    .ChangeDescription((item) =>
+                        {
+                            var result = filename[(int)item..];
+                            if (result.Length > 20)
+                            {
+                                result = result[..20] + "...";
+                            }
+                            return $"Sample result: {result}";
+                        })
+                    .Range(0, maxlen)
+                    .Default(defaulvalue)
+                    .Step(1)
+                    .LargeStep(largestep)
+                    .Layout(SliderLayout.UpDown)
+                    .Run(cancellationToken);
+
+                _console.WriteSummary($"Title : {filename[(int)elementtitle.Content!..]}");
+                var resultCnf = _console.PromptConfirm("Confirm your parameters?", cancellationToken);
+                if (resultCnf.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (resultCnf.ConfirmYes)
+                {
+                    return JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                }
+                _console.MovePosition(0, poscursor.top);
             }
         }
 
@@ -404,6 +710,10 @@ namespace AdrPlus.Commands.Config
                 {
                     enabled = false;
                 }
+                else if (property.Name.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase))
+                {
+                    enabled = false;
+                }
                 var value = GetJsonValueAsString(property.Value);
                 fields.Add(new FieldsJson
                 {
@@ -607,10 +917,10 @@ namespace AdrPlus.Commands.Config
 
             var models = new[]
             {
-                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, "X", skipdomains.FirstOrDefault() ?? string.Empty, string.Empty, repoconfig),
-                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, "Y", eligibleScope, "K", repoconfig),
-                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, "Y", eligibleScope, "K", repoconfig),
-                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, "Y", eligibleScope, "K", repoconfig),
+                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, "TitleX", skipdomains.FirstOrDefault() ?? string.Empty, string.Empty, repoconfig),
+                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, "TitleY", eligibleScope, "DomainK", repoconfig),
+                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, "TitleY", eligibleScope, "DomainK", repoconfig),
+                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, "TitleY", eligibleScope, "DomainK", repoconfig),
             };
 
             return [.. models.Select(m => m.GetFileName(repoconfig))];

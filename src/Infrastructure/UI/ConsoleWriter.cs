@@ -996,6 +996,7 @@ namespace AdrPlus.Infrastructure.UI
             {
                 AppConstants.FieldLanguage => Resources.AdrPlus.ConfigFieldDescLanguage,
                 AppConstants.FieldFolderAdr => Resources.AdrPlus.ConfigFieldDescFolderRepo,
+                AppConstants.FieldMigrationPattern => Resources.AdrPlus.ConfigFieldDescMigrationPattern,
                 AppConstants.FieldOpenAdr => Resources.AdrPlus.ConfigFieldDescOpenAdr,
                 AppConstants.FieldYesValue => Resources.AdrPlus.ConfigFieldDescYesValue,
                 AppConstants.FieldNoValue => Resources.AdrPlus.ConfigFieldDescNoValue,

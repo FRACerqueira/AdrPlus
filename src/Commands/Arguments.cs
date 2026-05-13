@@ -49,6 +49,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-t", "--template")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigTemplate")]
         WizardConfigTemplate,
+        [CommandArgument("-m", "--migrate")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigMigration")]
+        WizardConfigMigration,
         [CommandArgument("-r", "--repository")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigRepo")]
         WizardConfigRepository,
