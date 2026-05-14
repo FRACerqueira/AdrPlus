@@ -27,7 +27,7 @@ namespace AdrPlus.Domain
         /// <summary>
         /// Gets or sets the pattern used for migrating ADR files.
         /// </summary>
-        public string MigratePattern { get; set; } = string.Empty;
+        public string MigrationPattern { get; set; } = string.Empty;
 
 
         /// <summary>

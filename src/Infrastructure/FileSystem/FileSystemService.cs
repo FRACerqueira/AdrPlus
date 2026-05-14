@@ -117,7 +117,7 @@ namespace AdrPlus.Infrastructure.FileSystem
         {
             var assemblyName = Assembly.GetEntryAssembly()?.GetName().Name ?? AppConstants.NameApp;
             var uniqueFile = $"{assemblyName}.{fileKey}.txt";
-            var folderPath = Path.Combine(GetFolderPath(SpecialFolder.UserProfile), AppConstants.Folderhistory);
+            var folderPath = Path.Combine(GetFolderPath(SpecialFolder.UserProfile), "AdrPlus.History");
             return Path.Combine(folderPath, uniqueFile);
         }
     }

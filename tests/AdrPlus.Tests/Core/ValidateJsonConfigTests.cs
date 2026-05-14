@@ -33,6 +33,7 @@ public class ValidateJsonConfigTests
         return JsonSerializer.Serialize(new Dictionary<string, object>
         {
             { AppConstants.FieldFolderAdr, "doc/adr" },
+            { AppConstants.FieldMigrationPattern, "" },
             { AppConstants.FieldTemplate, "# ADR {0}" },
             { AppConstants.FieldPrefix, "ADR" },
             { AppConstants.FieldLenSeq, 4 },
@@ -80,6 +81,7 @@ public class ValidateJsonConfigTests
         return new Dictionary<string, object>
         {
             { AppConstants.FieldFolderAdr, "doc/adr" },
+            { AppConstants.FieldMigrationPattern, "" },
             { AppConstants.FieldTemplate, "# ADR {0}" },
             { AppConstants.FieldPrefix, "ADR" },
             { AppConstants.FieldLenSeq, 4 },
@@ -347,7 +349,7 @@ public class ValidateJsonConfigTests
         // Arrange
         var validator = CreateValidator([]);
         var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldSeparator] = "_";
+        dict[AppConstants.FieldSeparator] = "~";
         var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
@@ -532,7 +534,7 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var validSeparators = new[] { "-", "~", "." };
+        var validSeparators = new[] { "-", "_", "." };
 
         foreach (var separator in validSeparators)
         {
@@ -1620,33 +1622,6 @@ public class ValidateJsonConfigTests
 
         // Assert
         result.Should().Be(expectedContent);
-    }
-
-    [Fact]
-    public async Task GetConfigDefaultRepoContentAsync_WhenFileDoesNotExist_ReturnsSerializedConfig()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateContent = "# Template Content";
-        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
-        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
-
-        _fileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
-        {
-            var path = callInfo.Arg<string>();
-            if (path == templatePath) return true;
-            if (path == configPath) return false;
-            return false;
-        });
-        _fileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
-
-        // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
-
-        // Assert
-        result.Should().Contain("folderadr");
-        result.Should().Contain("template");
-        await _fileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

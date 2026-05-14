@@ -7,13 +7,14 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using System.Globalization;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace AdrPlus.Core
 {
     internal sealed class AdrFileParserService : IAdrFileParser
     {
+        private const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
+
         /// <inheritdoc/>
         public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
@@ -303,7 +304,6 @@ namespace AdrPlus.Core
         /// <inheritdoc/>
         public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
-            const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
             var result = new AdrFileNameComponents
             {
                 FileName = filePath
@@ -326,14 +326,68 @@ namespace AdrPlus.Core
                 result.Header = header;
                 result.ContentAdr = content;
                 result.IsValid = true;
+                return result;
+            }
+            if (config.MigrationPattern.Length > 0 && MigratePatternParser.ParsePattern(config.MigrationPattern) != null)
+            {
+                var (Success, resultMigration) = ParseMigrationFileNameAsync(filePath, config);
+                if (Success)
+                {
+                    result = resultMigration;
+                    var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
+                    result.Header = header;
+                    result.ContentAdr = content;
+                    result.IsValid = true;
+                    return result;
+                }
+                // Handle migration pattern logic here
             }
             result.ErrorMessage = parseResult.Result.ErrorMessage;
             return result;
         }
+        private static (bool Success, AdrFileNameComponents Result) ParseMigrationFileNameAsync(string filePath, AdrPlusRepoConfig config)
+        {
+            var result = new AdrFileNameComponents
+            {
+                FileName = filePath
+            };
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            var pattern = MigratePatternParser.ParsePattern(config.MigrationPattern)!;
+            if (!pattern.TryGetValue("P", out var valueprefix) && nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("N", out var valueseq) && nameWithoutExtension.Length < valueseq.Position + valueseq.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("V", out var valueversion) && nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("R", out var valuerevison) && nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("T", out var valuetitle) && nameWithoutExtension.Length < valuetitle.Position)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Prefix = valueprefix.Length > 0 ? nameWithoutExtension.Substring(valueprefix.Position, valueprefix.Length) : string.Empty;
+            result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length),CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
+            result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
+            result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
+            result.Title = valuetitle.Length > 0 ? Helper.Humanize(nameWithoutExtension[valuetitle.Position..]) : string.Empty;
+            return (true, result);
+        }
 
         private static (bool Success, AdrFileNameComponents Result) ParseAdrPlusFileNameAsync(string filePath, AdrPlusRepoConfig config)
         {
-            const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
             var result = new AdrFileNameComponents
             {
                 FileName = filePath
@@ -408,7 +462,7 @@ namespace AdrPlus.Core
                 result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, part);
                 return (false, result);
             }
-            string tryversionNumberString = part[1..];
+            string tryversionNumberString = part[1..][..config.LenVersion];
             if (!int.TryParse(tryversionNumberString, out var numberver))
             {
                 result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, tryversionNumberString);
@@ -429,7 +483,7 @@ namespace AdrPlus.Core
                     result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, part);
                     return (false, result);
                 }
-                string tryrevisionNumberString = part[1..];
+                string tryrevisionNumberString = part[1..][..config.LenRevision];
                 if (!int.TryParse(tryrevisionNumberString, out var numberrev))
                 {
                     result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, tryrevisionNumberString);
@@ -446,7 +500,7 @@ namespace AdrPlus.Core
             }
             if (config.LenScope > 0)
             {
-                result.Scope = part[(config.LenScope)..];
+                result.Scope = part[..config.LenScope];
                 part = part[(config.LenScope)..];
             }
             if (part.Length != 0)

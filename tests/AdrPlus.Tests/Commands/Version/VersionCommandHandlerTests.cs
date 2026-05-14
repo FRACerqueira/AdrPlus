@@ -24,7 +24,7 @@ public class VersionCommandHandlerTests
 {
     private readonly ILogger<VersionCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -34,7 +34,7 @@ public class VersionCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<VersionCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -89,7 +89,7 @@ public class VersionCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class VersionCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class VersionCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class VersionCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteError(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
     }
 
     #endregion
@@ -397,7 +397,7 @@ public class VersionCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
 
@@ -709,11 +709,11 @@ public class VersionCommandHandlerTests
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.GetCursorPosition().Returns((0, 0));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptGetCursorPosition().Returns((0, 0));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false)
             .Returns(Task.FromResult(Array.Empty<AdrFileNameComponents>()));
-        _mockConsole.ClearWait(Arg.Any<(int, int)>());
+        _mockConsole.PromptClearWaitText(Arg.Any<(int, int)>());
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -953,7 +953,7 @@ public class VersionCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -1011,7 +1011,7 @@ public class VersionCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
      #endregion

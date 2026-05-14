@@ -868,13 +868,13 @@
     <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardConfigTemplateTitle" xml:space="preserve">
-    <value>Alterar template padrão de conteúdo ADR</value>
+    <value>Configurar o modelo de conteúdo ADR padrão</value>
   </data>
   <data name="WizardConfigTemplateDescription" xml:space="preserve">
     <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="WizardConfigRepositoryTitle" xml:space="preserve">
-    <value>Configurar template padrão do repositório ADR</value>
+    <value>Configurar padrão do repositório ADR</value>
   </data>
   <data name="WizardConfigRepositoryDescription" xml:space="preserve">
     <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
@@ -1120,7 +1120,7 @@
     <value>Somente visualização. Pressione &lt;enter&gt; para continuar</value>
   </data>
   <data name="WizardConfigMigratedTitle" xml:space="preserve">
-    <value>Migrar ADRs existentes para o formato Adrs Plus</value>
+    <value>Migrar os ADRs existentes para compatibilidade do Adrs Plus</value>
   </data>
   <data name="WizardConfigMigratedDescription" xml:space="preserve">
     <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
@@ -1220,5 +1220,71 @@
   </data>
   <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
     <value>Padrão de migração incorreto</value>
+  </data>
+  <data name="ConfigPromptOverwriteMigration" xml:space="preserve">
+    <value>Somente o padrão de migração será sobrescrito. Deseja sobrescrevê-lo?</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Número</value>
+  </data>
+  <data name="PromptFieldsMigrationTitle" xml:space="preserve">
+    <value>Selecione os elementos que existem no título do arquivo ADR</value>
+  </data>
+  <data name="Prefix" xml:space="preserve">
+    <value>Prefixo</value>
+  </data>
+  <data name="ErrorLenFileSampleMigration" xml:space="preserve">
+    <value>O nome do arquivo deve ter pelo menos {0} caracteres</value>
+  </data>
+  <data name="PromptFileSampleMigration" xml:space="preserve">
+    <value>Insira um exemplo de nome de arquivo ADR para validar o padrão</value>
+  </data>
+  <data name="SummarySampleFilename" xml:space="preserve">
+    <value>Exemplo de nome de arquivo</value>
+  </data>
+  <data name="PromptPrefixPosition" xml:space="preserve">
+    <value>Selecione uma posição para o elemento 'Prefixo' em nome do arquivo</value>
+  </data>
+  <data name="SampleResult" xml:space="preserve">
+    <value>Resultado da amostra</value>
+  </data>
+  <data name="PromptPrefixLength" xml:space="preserve">
+    <value>Selecione um comprimento para o elemento 'Prefixo' no nome do arquivo</value>
+  </data>
+  <data name="PromptNumberPosition" xml:space="preserve">
+    <value>Selecione uma posição para o elemento 'Número' no nome do arquivo</value>
+  </data>
+  <data name="PromptNumberLength" xml:space="preserve">
+    <value>Selecione um comprimento para o elemento 'Número' no nome do arquivo</value>
+  </data>
+  <data name="PromptVersionPosition" xml:space="preserve">
+    <value>Selecione uma posição para o elemento 'Versão' em nome do arquivo</value>
+  </data>
+  <data name="PromptVersionLength" xml:space="preserve">
+    <value>Selecione um comprimento para o elemento 'Versão' no nome do arquivo</value>
+  </data>
+  <data name="PromptRevisionPosition" xml:space="preserve">
+    <value>Selecione uma posição para o elemento 'Revisão' no nome do arquivo</value>
+  </data>
+  <data name="PromptRevisionLength" xml:space="preserve">
+    <value>Selecione um comprimento para o elemento 'Revisão' no nome do arquivo</value>
+  </data>
+  <data name="PromptTitlePosition" xml:space="preserve">
+    <value>Selecione uma posição para o elemento 'Título' em nome do arquivo</value>
+  </data>
+  <data name="PromptConfirmParamMigration" xml:space="preserve">
+    <value>Confirmar seus parâmetros?</value>
+  </data>
+  <data name="WizardConfigMigration" xml:space="preserve">
+    <value>Configurar a migração de ADR</value>
+  </data>
+  <data name="WizardConfigMigrationDescription" xml:space="preserve">
+    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
+  </data>
+  <data name="ErrMsgInvalidRepoConfigMigrationPattern" xml:space="preserve">
+    <value>Configuração de padrões de migração vazia : {0}</value>
+  </data>
+  <data name="AlredyAdrPlusCreated" xml:space="preserve">
+    <value>Já existem ADRs que foram criadas usando esta ferramenta</value>
   </data>
 </root>

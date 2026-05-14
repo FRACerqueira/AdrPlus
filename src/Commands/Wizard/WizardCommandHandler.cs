@@ -10,8 +10,6 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Serilog.Sinks.File;
-using static System.Net.WebRequestMethods;
 
 
 namespace AdrPlus.Commands.Wizard
@@ -29,7 +27,7 @@ namespace AdrPlus.Commands.Wizard
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="fileSystem">The file system service for persisting wizard history.</param>
     /// <param name="validateconfig">The service for checking whether the repository template is configured.</param>
-    /// <param name="console">The console writer for displaying menus, banners, and prompts.</param>
+    /// <param name="prompt">The console writer for displaying menus, banners, and prompts.</param>
     /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
     internal sealed partial class WizardCommandHandler(
         CommandRouter commandRouter,
@@ -37,12 +35,12 @@ namespace AdrPlus.Commands.Wizard
         ILogger<WizardCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<WizardCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IConfiguration _configuration = configuration;
         private readonly CommandRouter _commandRouter = commandRouter;
@@ -74,7 +72,7 @@ namespace AdrPlus.Commands.Wizard
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help) && args.Length != 0)
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "wizard",
                         ValidCommandArgs,
                             ["adrplus wizard"]));
@@ -87,9 +85,10 @@ namespace AdrPlus.Commands.Wizard
                 }
                 while (true)
                 {
-                    _console.ShowBanner(AppConstants.BannerText);
-                    _console.ShowWellcome(_configuration[AppConstants.CfgNameVersionApp] ?? string.Empty);
-                    _console.WriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "wizard"));
+                    _prompt.PromptEnabledEscToAbort(false);
+                    _prompt.PromptShowBanner(AppConstants.BannerText);
+                    _prompt.PromptShowWellcome(_configuration[AppConstants.CfgNameVersionApp] ?? string.Empty);
+                    _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "wizard"));
 
                     var isRepoConfigured = _validateconfig.HasTemplateRepoFile();
 
@@ -111,7 +110,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_console.IsAbortedByCtrlC())
+                                if (_prompt.PromptIsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -128,7 +127,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_console.IsAbortedByCtrlC())
+                                if (_prompt.PromptIsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -145,7 +144,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_console.IsAbortedByCtrlC())
+                                if (_prompt.PromptIsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -159,13 +158,13 @@ namespace AdrPlus.Commands.Wizard
                             try
                             {
                                 currentMenu = new ItemMenuWizard();
-                                _console.EnabledEscToAbort(true);
+                                _prompt.PromptEnabledEscToAbort(true);
                                 await _commandRouter.RouteAsync(GetCommandAlias(CommandsAdr.Explorer), ["-w"], cancellationToken);
-                                _console.EnabledEscToAbort(false);
+                                _prompt.PromptEnabledEscToAbort(false);
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_console.IsAbortedByCtrlC())
+                                if (_prompt.PromptIsAbortedByCtrlC())
                                 {
                                     throw;
                                 }
@@ -181,7 +180,7 @@ namespace AdrPlus.Commands.Wizard
                     }
                     if (!string.IsNullOrEmpty(currentMenu.Id))
                     {
-                        if (_console.PressAnyKeyToContinue($"{Resources.AdrPlus.PressAnyKey}...", cancellationToken))
+                        if (_prompt.PromptPressAnyKeyToContinue($"{Resources.AdrPlus.PressAnyKey}...", cancellationToken))
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
                         }
@@ -230,7 +229,7 @@ namespace AdrPlus.Commands.Wizard
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the prompt.</exception>
         private async Task<ItemMenuWizard> HandleMainMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
-            var (isAborted, itemSelected) = _console.PromptSelectMenu(isRepoConfigured, GetGroupMenu(), new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetGroupMenu(), new ItemMenuWizard(), cancellationToken);
             if (isAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -256,7 +255,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleConfigurationMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(ConfigMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _console.PromptSelectMenu(isRepoConfigured, GetMenuConfigurations(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuConfigurations(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -271,15 +270,15 @@ namespace AdrPlus.Commands.Wizard
             await _filesystem.SaveHistoryAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken);
 
             var commandAlias = GetCommandAlias(CommandsAdr.Config);
-            if (itemSelected!.Id == "1.04")
+            if (itemSelected!.Id == "1.05")
             {
                 commandAlias = GetCommandAlias(CommandsAdr.Init);
             }
-            else if (itemSelected!.Id == "1.05")
+            else if (itemSelected!.Id == "1.06")
             {
                 commandAlias = GetCommandAlias(CommandsAdr.Migrate);
             }
-            else if (itemSelected!.Id == "1.06")
+            else if (itemSelected!.Id == "1.07")
             {
                 commandAlias = GetCommandAlias(CommandsAdr.Upgrade);
             }
@@ -287,20 +286,21 @@ namespace AdrPlus.Commands.Wizard
             {
                 "1.01" => ["-a"],
                 "1.02" => ["-t"],
-                "1.03" => ["-r"],
-                "1.04" => ["-w"],
+                "1.03" => ["-m"],
+                "1.04" => ["-r"],
                 "1.05" => ["-w"],
                 "1.06" => ["-w"],
+                "1.07" => ["-w"],
                 _ => throw await CreateInvalidMenuExceptionAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken),
             };
             try
             {
-                _console.EnabledEscToAbort(true);
+                _prompt.PromptEnabledEscToAbort(true);
                 await _commandRouter.RouteAsync(commandAlias, args, cancellationToken);
             }
             finally
             {
-                _console.EnabledEscToAbort(false);
+                _prompt.PromptEnabledEscToAbort(false);
             }
             return itemSelected;
         }
@@ -318,7 +318,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleAdrMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(AdrMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _console.PromptSelectMenu(isRepoConfigured, GetMenuAdr(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuAdr(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -348,12 +348,12 @@ namespace AdrPlus.Commands.Wizard
             };
             try
             {
-                _console.EnabledEscToAbort(true);
+                _prompt.PromptEnabledEscToAbort(true);
                 await _commandRouter.RouteAsync(GetCommandAlias(command), args, cancellationToken);
             }
             finally
             {
-                _console.EnabledEscToAbort(false);
+                _prompt.PromptEnabledEscToAbort(false);
             }
             return itemSelected;
         }
@@ -370,7 +370,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleHelpMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(HelpMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _console.PromptSelectMenu(isRepoConfigured, GetMenuHelp(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuHelp(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -572,27 +572,34 @@ namespace AdrPlus.Commands.Wizard
                 new ItemMenuWizard
                 {
                     Id = "1.03",
+                    Title = Resources.AdrPlus.WizardConfigMigration,
+                    Description = Resources.AdrPlus.WizardConfigMigrationDescription,
+                    EnabledWhenNotConfigured = true
+                },
+                new ItemMenuWizard
+                {
+                    Id = "1.04",
                     Title = Resources.AdrPlus.WizardConfigRepositoryTitle,
                     Description = Resources.AdrPlus.WizardConfigRepositoryDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "1.04",
+                    Id = "1.05",
                     Title = Resources.AdrPlus.WizardAdrInitTitle,
                     Description = Resources.AdrPlus.WizardAdrInitDescription,
                     EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard
                 {
-                    Id = "1.05",
+                    Id = "1.06",
                     Title = Resources.AdrPlus.WizardConfigMigratedTitle,
                     Description = Resources.AdrPlus.WizardConfigMigratedDescription,
                     EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard
                 {
-                    Id = "1.06",
+                    Id = "1.07",
                     Title = Resources.AdrPlus.WizardConfigUpgradeTitle,
                     Description = Resources.AdrPlus.WizardConfigUpgradeDescription,
                     EnabledWhenNotConfigured = false

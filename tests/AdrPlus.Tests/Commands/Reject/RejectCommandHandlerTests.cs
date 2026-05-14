@@ -23,7 +23,7 @@ public class RejectCommandHandlerTests
 {
     private readonly ILogger<RejectCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -33,7 +33,7 @@ public class RejectCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<RejectCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -87,7 +87,7 @@ public class RejectCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -140,7 +140,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class RejectCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -557,7 +557,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -611,20 +611,20 @@ public class RejectCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockAdrServices
             .ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false)
             .Returns(x => Task.FromResult(new[] { eligibleAdr }));
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns([eligibleAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, eligibleAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
-        _mockConsole.WriteSummary(Arg.Any<string>());
+        _mockConsole.PromptWriteSummary(Arg.Any<string>());
         // First call: user doesn't confirm (ConfirmYes=false), second call: user confirms (ConfirmYes=true)
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(x => (false, false), x => (false, true));
@@ -649,7 +649,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -671,20 +671,20 @@ public class RejectCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockAdrServices
             .ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false)
             .Returns(x => Task.FromResult(new[] { eligibleAdr }));
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns([eligibleAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, eligibleAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
-        _mockConsole.WriteSummary(Arg.Any<string>());
+        _mockConsole.PromptWriteSummary(Arg.Any<string>());
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));  // Confirm yes
         // Mock file system to indicate selected file exists
@@ -708,7 +708,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -742,20 +742,20 @@ public class RejectCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockAdrServices
             .ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false)
             .Returns(x => Task.FromResult(new[] { proposedAdr }));
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns([proposedAdr]);
         _mockConsole.PromptSelecAdrs(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, proposedAdr));
         // Mock WriteSummary to simulate console output (void method, no validation needed)
-        _mockConsole.WriteSummary(Arg.Any<string>());
+        _mockConsole.PromptWriteSummary(Arg.Any<string>());
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
         // Mock file system to indicate selected file exists
@@ -779,7 +779,7 @@ public class RejectCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -843,13 +843,13 @@ public class RejectCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockAdrServices
             .ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false)
             .Returns(x => Task.FromResult(new[] { eligibleAdr }));
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockAdrServices
             .ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns([eligibleAdr]);

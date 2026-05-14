@@ -210,7 +210,7 @@ Before initializing your repository, let's understand some important concepts:
 
 - **Separator**: The character separating different parts of the filename:
   - `-` (hyphen): Recommended, most readable
-  - `~` (tilde): Alternative style
+  - `_` (underscore): Alternative style
   - `.` (period): Alternative style
 
 - **Version vs. Revision**: 

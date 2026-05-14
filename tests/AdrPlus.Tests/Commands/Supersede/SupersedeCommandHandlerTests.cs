@@ -24,7 +24,7 @@ public class SupersedeCommandHandlerTests
 {
     private readonly ILogger<SupersedeCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -34,7 +34,7 @@ public class SupersedeCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<SupersedeCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -88,7 +88,7 @@ public class SupersedeCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -170,7 +170,7 @@ public class SupersedeCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: one success for supersede update, one for new file creation
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -316,7 +316,7 @@ public class SupersedeCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     [Fact]
@@ -595,7 +595,7 @@ public class SupersedeCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: 2 from supersede+file creation, 1 from open success = 3 total
-        _mockConsole.Received(3).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(3).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -639,7 +639,7 @@ public class SupersedeCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteError(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
     }
 
     #endregion
@@ -844,7 +844,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -871,7 +871,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -902,7 +902,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -929,7 +929,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion

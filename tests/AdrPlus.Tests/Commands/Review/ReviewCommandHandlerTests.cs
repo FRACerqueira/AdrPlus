@@ -23,7 +23,7 @@ public class ReviewCommandHandlerTests
 {
     private readonly ILogger<ReviewCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -33,7 +33,7 @@ public class ReviewCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<ReviewCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -87,7 +87,7 @@ public class ReviewCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class ReviewCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     [Fact]
@@ -493,7 +493,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -517,7 +517,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -636,7 +636,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - verify file write was called (template will be embedded in content)
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -661,7 +661,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - file should be written with original content
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -697,7 +697,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - verify file path includes scope folder
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -729,7 +729,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - verify file write occurred
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -788,7 +788,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -817,7 +817,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - new revision should be 3 (2 + 1)
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -842,7 +842,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - new revision should be 1 (0 + 1)
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -905,7 +905,7 @@ public class ReviewCommandHandlerTests
 
         // Assert: two WriteSuccess calls — one for the created file, one for the open command
         mocks.Console.ReceivedCalls()
-            .Where(c => c.GetMethodInfo().Name == nameof(IConsoleWriter.WriteSuccess))
+            .Where(c => c.GetMethodInfo().Name == nameof(IPromptConsole.PromptWriteSuccess))
             .Should().HaveCountGreaterOrEqualTo(2);
     }
 
@@ -942,7 +942,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         mocks.Console.ReceivedCalls()
-            .Where(c => c.GetMethodInfo().Name == nameof(IConsoleWriter.WriteError))
+            .Where(c => c.GetMethodInfo().Name == nameof(IPromptConsole.PromptWriteError))
             .Should().HaveCount(1);
     }
 
@@ -1234,7 +1234,7 @@ public class ReviewCommandHandlerTests
 
         // Assert - Should create file successfully with higher revision
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -1262,7 +1262,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -1344,7 +1344,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -1371,7 +1371,7 @@ public class ReviewCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -1402,14 +1402,14 @@ public class ReviewCommandHandlerTests
 
     private sealed record IsolatedMocks(
         IFileSystemService FileSystem,
-        IConsoleWriter Console,
+        IPromptConsole Console,
         IValidateJsonConfig ValidateConfig,
         IAdrServices AdrServices);
 
     private (ReviewCommandHandler Handler, IsolatedMocks Mocks) CreateIsolatedHandlerWithOpenCommand(string openCommand)
     {
         var fs = Substitute.For<IFileSystemService>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var validate = Substitute.For<IValidateJsonConfig>();
         var adrSvc = Substitute.For<IAdrServices>();
 

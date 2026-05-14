@@ -8,6 +8,7 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using PromptPlusLibrary;
+using System.Collections.Frozen;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,35 +18,318 @@ namespace AdrPlus.Infrastructure.UI
     /// <summary>
     /// Console writer implementation using PromptPlus library.
     /// </summary>
-    internal sealed class ConsoleWriter(IAdrServices adrServices) : IConsoleWriter
+    internal sealed class PromptConsole(IAdrServices adrServices) : IPromptConsole
     {
+        /// <summary>
+        /// Console color for help messages.
+        /// </summary>
+        private const string ColorHelp = "skyblue2";
+
+        /// <summary>
+        /// Console color for welcome template messages.
+        /// </summary>
+        private const string ColorWelcomeTemplate = "yellow";
+
+        /// <summary>
+        /// Console color for the welcome banner.
+        /// </summary>
+        private static Color ColorWelcomeBanner => Color.DarkOrange;
+
+        /// <summary>
+        /// Console color for error messages.
+        /// </summary>
+        private const string ColorError = "red";
+
+        /// <summary>
+        /// Console color for informational messages.
+        /// </summary>
+        private const string ColorInfo = "grey";
+
+        /// <summary>
+        /// Console color for command results.
+        /// </summary>
+        private const string ColorResult = "white";
+
+        /// <summary>
+        /// Console color for warning messages.
+        /// </summary>
+        private const string ColorWarning = "gold1";
+
+        /// <summary>
+        /// Console color for summary messages.
+        /// </summary>  
+        private const string ColorSummary = "navajowhite1";
+
         private readonly IAdrServices _adrServices = adrServices;
 
+
         /// <inheritdoc/>
-        public (int left, int top) CursorPosition()
+        public void ClearHistoryMigration()
+        {
+            PromptPlus.Controls.History("AdrPlusMigrationFields").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationSampleFile").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationPrefixPosition").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationPrefixLength").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationNumberPosition").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationNumberLength").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationVersionPosition").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationVersionLength").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationRevisionPosition").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationRevisionLength").Remove();
+            PromptPlus.Controls.History("AdrPlusMigrationTitlePosition").Remove();
+        }
+
+        public (bool IsAborted, int Value) PromptSelectTitlePosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptTitlePosition}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[(int)item..];
+                    if (result.Length > 20)
+                    {
+                        result = result[..20] + "...";
+                    }
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                 .Range(0, maxValue)
+                 .Default(defaultValue, true)
+                 .Step(1)
+                 .LargeStep(5)
+                 .Layout(SliderLayout.UpDown)
+                 .EnabledHistory("AdrPlusMigrationTitlePosition")
+                 .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+        public (bool IsAborted, int Value) PromptSelectRevisionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionPosition}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[(int)item..];
+                    if (result.Length > 20)
+                    {
+                        result = result[..20] + "...";
+                    }
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                 .Range(0, maxValue)
+                 .Default(defaultValue, true)
+                 .Step(1)
+                 .LargeStep(5)
+                 .Layout(SliderLayout.UpDown)
+                 .EnabledHistory("AdrPlusMigrationRevisionPosition")
+                 .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+        public (bool IsAborted, int Value) PromptSelectRevisionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionLength}: ")
+               .ChangeDescription((item) =>
+               {
+                   var result = filename[position..][..(int)item];
+                   return $"{Resources.AdrPlus.SampleResult}: {result}";
+               })
+               .Default(defaultValue, true)
+               .EnabledHistory("AdrPlusMigrationRevisionLength")
+               .Range(2, maxValue)
+               .Step(1)
+               .LargeStep(1)
+               .Layout(SliderLayout.UpDown)
+               .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+        public (bool IsAborted, int Value) PromptSelectVersionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionPosition}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[(int)item..];
+                    if (result.Length > 20)
+                    {
+                        result = result[..20] + "...";
+                    }
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                 .Range(0, maxValue)
+                 .Default(defaultValue, true)
+                 .Step(1)
+                 .LargeStep(5)
+                 .Layout(SliderLayout.UpDown)
+                 .EnabledHistory("AdrPlusMigrationVersionPosition")
+                 .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+        public (bool IsAborted, int Value) PromptSelectVersionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionLength}: ")
+               .ChangeDescription((item) =>
+               {
+                   var result = filename[position..][..(int)item];
+                   return $"{Resources.AdrPlus.SampleResult}: {result}";
+               })
+               .Default(defaultValue, true)
+               .EnabledHistory("AdrPlusMigrationVersionLength")
+               .Range(2, maxValue)
+               .Step(1)
+               .LargeStep(1)
+               .Layout(SliderLayout.UpDown)
+               .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, int Value) PromptSelectNumberPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberPosition}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[(int)item..];
+                    if (result.Length > 20)
+                    {
+                        result = result[..20] + "...";
+                    }
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                 .Range(0, maxValue)
+                 .Default(defaultValue, true)
+                 .Step(1)
+                 .LargeStep(5)
+                 .Layout(SliderLayout.UpDown)
+                 .EnabledHistory("AdrPlusMigrationNumberPosition")
+                 .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, int Value) PromptSelectNumberLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberLength}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[position..][..(int)item];
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                .Default(defaultValue, true)
+                .EnabledHistory("AdrPlusMigrationNumberLength")
+                .Range(3, maxValue)
+                .Step(1)
+                .LargeStep(1)
+                .Layout(SliderLayout.UpDown)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string[] FieldsFromFileAdr) PromptFieldsFromFileAdr(CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsMigrationTitle}: ")
+                .AddItem(Resources.AdrPlus.Prefix)
+                .AddItem(Resources.AdrPlus.Number, true, true)
+                .AddItem(Resources.AdrPlus.Version)
+                .AddItem(Resources.AdrPlus.Revision)
+                .AddItem(Resources.AdrPlus.Title, true, true)
+                .EnabledHistory("AdrPlusMigrationFields")
+                .DefaultHistory()
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? [] : result.Content!);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, int Value,string PrefixValue) PromptSelectPrefixLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
+        {
+           var prefixValue = string.Empty;
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixLength}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[position..][..(int)item];
+                    prefixValue = result;
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                .Default(3, true)
+                .EnabledHistory("AdrPlusMigrationPrefixLength")
+                .Range(1, maxValue)
+                .Step(1)
+                .LargeStep(1)
+                .Layout(SliderLayout.UpDown)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value, prefixValue);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, int Value) PromptSelectPrefixPosition(string filename, int maxValue,int defaultValue, CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixPosition}: ")
+                .ChangeDescription((item) =>
+                {
+                    var result = filename[(int)item..];
+                    if (result.Length > 20)
+                    {
+                        result = result[..20] + "...";
+                    }
+                    return $"{Resources.AdrPlus.SampleResult}: {result}";
+                })
+                 .Range(0, maxValue)
+                 .Default(defaultValue, true)
+                 .Step(1)
+                 .LargeStep(5)
+                 .Layout(SliderLayout.UpDown)
+                 .EnabledHistory("AdrPlusMigrationPrefixPosition")
+                 .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
+        }
+
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string SampleFileMigration) PromptSampleFileMigration(CancellationToken cancellationToken)
+        {
+            var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileSampleMigration}: ")
+                .MaxLength(100)
+                .EnabledHistory("AdrPlusMigrationSampleFile")
+                .Default("", true)
+                .PredicateSelected((input) =>
+                {
+                    if (input.Length < 10)
+                    {
+                        return (false, string.Format(null, FormatMessages.ErrorLenFileSampleMigration, 10));
+                    }
+                    return (true, string.Empty);
+                })
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!);
+        }
+
+        /// <inheritdoc/>
+        public (int left, int top) PromptCursorPosition()
         { 
             return PromptPlus.Console.GetCursorPosition();
         }
 
-        public void MovePosition(int left, int top)
+        public void PromptMovePosition(int left, int top)
         { 
             PromptPlus.Console.SetCursorPosition(left, top);
         }
 
         /// <inheritdoc/>
-        public bool IsAbortedByCtrlC()
+        public bool PromptIsAbortedByCtrlC()
         { 
             return PromptPlus.AbortedByCtrlC;
         }
 
         /// <inheritdoc/>
-        public void EnabledEscToAbort(bool enabled)
+        public void PromptEnabledEscToAbort(bool enabled)
         { 
             PromptPlus.Config.EnabledAbortKey = enabled;
         }
 
         /// <inheritdoc/>
-        public bool PressAnyKeyToContinue(string message, CancellationToken cancellationToken)
+        public bool PromptPressAnyKeyToContinue(string message, CancellationToken cancellationToken)
         {
             PromptPlus.Console.WriteLine("");
             PromptPlus.Controls.KeyPress(message)
@@ -55,86 +339,86 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (int left, int top) GetCursorPosition()
+        public (int left, int top) PromptGetCursorPosition()
         {
             return PromptPlus.Console.GetCursorPosition();
         }
 
         /// <inheritdoc/>
-        public void WriteWait(string message)
+        public void PromptWriteWait(string message)
         {
-            PromptPlus.Console.Write($"[{AppConstants.ColorWarning}]{message}[/]");
+            PromptPlus.Console.Write($"[{ColorWarning}]{message}[/]");
         }
 
-        public void ClearWait((int left, int top) position)
+        public void PromptClearWaitText((int left, int top) position)
         {
             PromptPlus.Console.ClearLine();
             PromptPlus.Console.SetCursorPosition(position.left, position.top);
         }
 
         /// <inheritdoc/>
-        public void WriteSummary(string message)
+        public void PromptWriteSummary(string message)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorSummary}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorSummary}]{message}[/]");
         }
 
 
         /// <inheritdoc/>
-        public void WriteInfo(string message)
+        public void PromptWriteInfo(string message)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorInfo}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorInfo}]{message}[/]");
         }
 
         /// <inheritdoc/>
-        public void WriteSuccess(string message)
+        public void PromptWriteSuccess(string message)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorResult}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorResult}]{message}[/]");
         }
 
         /// <inheritdoc/>
-        public void WriteError(string message)
+        public void PromptWriteError(string message)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorError}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]");
         }
 
         /// <inheritdoc/>
-        public void WriteHelp(string helpText)
+        public void PromptWriteHelp(string helpText)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorHelp}]{helpText}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorHelp}]{helpText}[/]");
         }
 
         /// <inheritdoc/>
-        public void WriteStartCommand(string text)
+        public void PromptWriteStartCommand(string text)
         {
-            PromptPlus.Console.WriteLine(text, AppConstants.ColorWelcomeBanner);
+            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
             PromptPlus.Console.WriteLine("");
         }
 
         /// <inheritdoc/>
-        public void WriteFinishedCommand(string text)
+        public void PromptWriteFinishedCommand(string text)
         {
             PromptPlus.Console.WriteLine("");
-            PromptPlus.Console.WriteLine(text, AppConstants.ColorWelcomeBanner);
+            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
         }
 
         /// <summary>
         /// Displays an error message to the console using a static method.
         /// </summary>
         /// <param name="message">The error message to display.</param>
-        public static void ShowError(string message)
+        public static void PromptShowError(string message)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorError}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]");
         }
 
         /// <inheritdoc/>
-        public void ShowWellcome(string appVersion)
+        public void PromptShowWellcome(string appVersion)
         {
-            PromptPlus.Console.WriteLine($"[{AppConstants.ColorInfo}]{string.Format(null, FormatMessages.WelcomeFormat, appVersion)}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorInfo}]{string.Format(null, FormatMessages.WelcomeFormat, appVersion)}[/]");
             PromptPlus.Console.WriteLine("");
         }
 
         /// <inheritdoc/>
-        public void ConfigurePrompt(AdrPlusConfig config)
+        public void PromptConfigure(AdrPlusConfig config)
         {
             var cultureInfo = new CultureInfo(config.Language);
             PromptPlus.Config.DefaultCulture = cultureInfo;
@@ -153,7 +437,7 @@ namespace AdrPlus.Infrastructure.UI
             }
         }
 
-        public void EnsureCulture(AdrPlusConfig config)
+        public void PromptEnsureCulture(AdrPlusConfig config)
         {
             var cultureInfo = new CultureInfo(config.Language);
 
@@ -173,11 +457,11 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public void ShowBanner(string bannerText)
+        public void PromptShowBanner(string bannerText)
         {
            PromptPlus.Console.Clear();
            PromptPlus.Widgets
-                .Banner(bannerText, AppConstants.ColorWelcomeBanner)
+                .Banner(bannerText, ColorWelcomeBanner)
                 .Border(BannerDashOptions.DoubleBorderDown)
                 .Show();
         }
@@ -213,7 +497,7 @@ namespace AdrPlus.Infrastructure.UI
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .AddItems(fields.Where(x => x.IsEnabled), false)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .TextSelector(field => $"{AppConstants.GetTitleField(field.Name)} ")
+                .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
                 .EqualItems((a, b) => a.Name == b.Name)
@@ -221,6 +505,58 @@ namespace AdrPlus.Infrastructure.UI
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? null : result.Content);
         }
+
+        /// <summary>
+        /// Gets the display title for a given configuration field name, returning a user-friendly title from resources if available, or the original field name if no title is defined. 
+        /// </summary>
+        /// <param name="name">
+        /// The configuration field name for which to retrieve the display title. This should correspond to one of the defined configuration keys in AppConstants, such as "folderrepo", "dateformat", etc. 
+        /// </param>
+        /// <returns>The display title for the specified configuration field name.</returns>
+        private static string GetTitleField(string name)
+        {
+            return TitleFields.TryGetValue(name.ToLowerInvariant(), out var title) ? title : name;
+        }
+
+        /// <summary>
+        /// A frozen dictionary mapping configuration field names to their corresponding display titles, used for presenting user-friendly titles in the application's user interface when displaying configuration settings.
+        /// Uses FrozenDictionary for optimal read performance.
+        /// </summary>
+        private static FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
+        {
+                { AppConstants.FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
+                { AppConstants.FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
+                { AppConstants.FieldYesValue, Resources.AdrPlus.FieldTitleYesValue },
+                { AppConstants.FieldNoValue, Resources.AdrPlus.FieldTitleNoValue },
+                { AppConstants.FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
+                { AppConstants.FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
+                { AppConstants.FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
+                { AppConstants.FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },
+                { AppConstants.FieldLenVersion, Resources.AdrPlus.FieldTitleLenVersion },
+                { AppConstants.FieldLenRevision, Resources.AdrPlus.FieldTitleLenRevision },
+                { AppConstants.FieldLenScope, Resources.AdrPlus.FieldTitleLenScope },
+                { AppConstants.FieldScopes, Resources.AdrPlus.FieldTitleScopes },
+                { AppConstants.FieldFolderByScope, Resources.AdrPlus.FieldTitleFolderByScope },
+                { AppConstants.FieldSkipDomain, Resources.AdrPlus.FieldTitleSkipDomain },
+                { AppConstants.FieldSeparator, Resources.AdrPlus.FieldTitleSeparator },
+                { AppConstants.FieldCaseTransform, Resources.AdrPlus.FieldTitleCaseTransform },
+                { AppConstants.FieldStatusNew, Resources.AdrPlus.FieldTitleStatusNew },
+                { AppConstants.FieldStatusAccepted, Resources.AdrPlus.FieldTitleStatusAccepted },
+                { AppConstants.FieldStatusRejected, Resources.AdrPlus.FieldTitleStatusRejected },
+                { AppConstants.FieldStatusSuperseded, Resources.AdrPlus.FieldTitleStatusSuperseded },
+                { AppConstants.FieldHeaderDisclaimer, Resources.AdrPlus.ConfigFieldDescHeaderDisclaimer },
+                { AppConstants.FieldHeaderTitleFile, Resources.AdrPlus.FieldTitleHeaderTitleFile },
+                { AppConstants.FieldHeaderVersion, Resources.AdrPlus.FieldTitleHeaderVersion },
+                { AppConstants.FieldHeaderRevision, Resources.AdrPlus.FieldTitleHeaderRevision },
+                { AppConstants.FieldHeaderScope, Resources.AdrPlus.FieldTitleHeaderScope },
+                { AppConstants.FieldHeaderDomain, Resources.AdrPlus.FieldTitleHeaderDomain },
+                { AppConstants.FieldHeaderStatusCreated, Resources.AdrPlus.FieldTitleHeaderStatusCreated },
+                { AppConstants.FieldHeaderStatusChanged, Resources.AdrPlus.FieldTitleHeaderStatusChanged },
+                { AppConstants.FieldHeaderStatusSuperseded, Resources.AdrPlus.FieldTitleHeaderStatusSuperseded },
+                { AppConstants.FieldHeaderTableFields, Resources.AdrPlus.FieldTitleHeaderTableFields },
+                { AppConstants.FieldHeaderTableValues, Resources.AdrPlus.FieldTitleHeaderTableValues },
+                { AppConstants.FieldHeaderMigrated, Resources.AdrPlus.FieldTitleHeaderMigrated },
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         /// <inheritdoc/>
         public (bool IsAborted, FieldsJson? Content) PromptConfigJsonRepoSelect(FieldsJson defaultvalue, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
@@ -232,7 +568,7 @@ namespace AdrPlus.Infrastructure.UI
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .AddItems(fields.Where(x => x.IsEnabled), false)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .TextSelector(field => $"{AppConstants.GetTitleField(field.Name)} ")
+                .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
                 .EqualItems((a, b) => a.Name == b.Name)
@@ -713,7 +1049,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, string Content) PromptEditFieldSeparator(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
-            var opcsep = new[] { "-", ".", "~" };
+            var opcsep = new[] { "-", "_", "." };
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -748,18 +1084,6 @@ namespace AdrPlus.Infrastructure.UI
                 .EnabledHistory("AdrPlusRepoActionsSelection")
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? [] : result.Content!);
-        }
-
-        private static string TextForRepoActions(RepoActions actions)
-        {
-            return actions switch
-            {
-                RepoActions.Template => Resources.AdrPlus.Template,
-                RepoActions.Version => Resources.AdrPlus.Version,
-                RepoActions.Revision => Resources.AdrPlus.Revision,
-                RepoActions.Scope => Resources.AdrPlus.Scope,
-                _ => actions.ToString(),
-            };
         }
 
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
@@ -868,7 +1192,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusConfig config, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
             var defarrdomain = Array.Empty<string>();
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}: ";
@@ -1027,6 +1351,18 @@ namespace AdrPlus.Infrastructure.UI
                 AppConstants.FieldHeaderTableValues => Resources.AdrPlus.FieldTitleHeaderTableValues,
                 AppConstants.FieldHeaderMigrated => Resources.AdrPlus.FieldTitleHeaderMigrated,
                 _ => string.Empty,
+            };
+        }
+
+        private static string TextForRepoActions(RepoActions actions)
+        {
+            return actions switch
+            {
+                RepoActions.Template => Resources.AdrPlus.Template,
+                RepoActions.Version => Resources.AdrPlus.Version,
+                RepoActions.Revision => Resources.AdrPlus.Revision,
+                RepoActions.Scope => Resources.AdrPlus.Scope,
+                _ => actions.ToString(),
             };
         }
     }

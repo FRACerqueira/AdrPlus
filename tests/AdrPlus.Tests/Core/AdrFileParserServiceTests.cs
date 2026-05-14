@@ -1554,20 +1554,19 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithPrefixMissingInFileName_ReturnsError()
         {
             // Arrange
-            var filePath = "001-TestTitle.md";
+            var filePath = "ADR001V01-TestTitle.md";
             var configWithPrefix = new AdrPlusRepoConfig("", "")
             {
                 Prefix = "ADR",
                 LenSeq = 3,
                 LenRevision = 0,
-                LenVersion = 0,
+                LenVersion = 2,
                 LenScope = 0,
                 Separator = '-',
                 StatusNew = "Proposed",
                 StatusAcc = "Accepted",
                 StatusRej = "Rejected",
                 StatusSup = "Superseded",
-                Scopes = "Enterprise;Project"
             };
 
             // Act
@@ -1586,7 +1585,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithInvalidHeaderInFile_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain.md";
+            var filePath = "ADR001V01R02E-TestTitle@Domain.md";
             var invalidHeaderLines = new[] { "Invalid header content" };
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(invalidHeaderLines);
 
@@ -1602,7 +1601,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithMissingDisclaimerInHeader_ReturnsError()
         {
             // Arrange - Test that missing disclaimer in file header is caught
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain.md";
+            var filePath = "ADR001V01R02E-TestTitle@Domain.md";
             var headerLines = new[]
             {
                 "Missing disclaimer line",
@@ -1632,7 +1631,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithInvalidHeaderFormat_ReturnsError()
         {
             // Arrange - Test that invalid table header format is caught
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain.md";
+            var filePath = "ADR001V01R02E-TestTitleV01R02@Domain.md";
             var headerLines = new[]
             {
                 "<!-- Test Disclaimer -->",
@@ -1662,7 +1661,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithEmptyFileContent_ReturnsError()
         {
             // Arrange - Test that empty file content is caught
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain.md";
+            var filePath = "ADR001V01R02E-TestTitle@Domain.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(Array.Empty<string>());
 
             // Act
@@ -1677,7 +1676,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithTooShortFileContent_ReturnsError()
         {
             // Arrange - Test that file with insufficient lines is caught
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain.md";
+            var filePath = "ADR001V01R02E-TestTitle@Domain.md";
             var headerLines = new[]
             {
                 "<!-- Test Disclaimer -->",

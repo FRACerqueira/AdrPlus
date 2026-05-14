@@ -4,6 +4,11 @@
 // ***************************************************************************************
 
 using AdrPlus.Core;
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
@@ -11,24 +16,30 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 using System.Text.Json;
 
 namespace AdrPlus.Commands.Migrate
 {
+    /// <summary>
+    /// Handles the <c>migrate</c> command, which migrates existing ADR files in a repository to the new format 
+    /// </summary>
+    /// <param name="logger">The logger for recording command execution and errors.</param>
+    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
+    /// <param name="fileSystem">The file system service for I/O operations.</param>
+    /// <param name="validateConfig">The service for validating and loading JSON configuration files.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
+    /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class MigrateCommandHandler(
         ILogger<MigrateCommandHandler> logger,
-        IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateConfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<MigrateCommandHandler> _logger = logger;
-        private readonly IOptions<AdrPlusConfig> _config = config;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IValidateJsonConfig _validateConfig = validateConfig;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardMigrate,
@@ -43,7 +54,7 @@ namespace AdrPlus.Commands.Migrate
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "migrate",
                         ValidCommandArgs,
                         [
@@ -51,11 +62,6 @@ namespace AdrPlus.Commands.Migrate
                             "adrplus migrate --path \"path/to/repository/\"",
                         ]));
                     return;
-                }
-
-                if (!_validateConfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
                 }
 
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardMigrate);
@@ -75,6 +81,11 @@ namespace AdrPlus.Commands.Migrate
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
                 }
 
+                if (!_validateConfig.HasTemplateRepoFile())
+                {
+                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
+                }
+
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {
@@ -89,14 +100,26 @@ namespace AdrPlus.Commands.Migrate
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+                if (repoconfig.MigrationPattern.Length == 0)
+                {
+                    repoconfig.MigrationPattern = await _validateConfig.LoadPatternsConfigMigration(cancellationToken);
+                    if (repoconfig.MigrationPattern.Length > 0)
+                    {
+                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                        await _fileSystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
+                    }
+                }
 
                 if (!hasWizard)
                 {
                     foundfiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, true);
-
                     if (foundfiles.Length == 0)
                     {
                         throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
+                    }
+                    if (foundfiles.Any(x => x.IsValid && x.Header.IsValid && !x.Header.IsMigrated))
+                    {
+                        throw new InvalidDataException(Resources.AdrPlus.AlredyAdrPlusCreated);
                     }
                     if (!foundfiles.Any(x => x.IsValid))
                     {
@@ -108,7 +131,7 @@ namespace AdrPlus.Commands.Migrate
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
-                    _console.WriteSuccess(item);
+                    _prompt.PromptWriteSuccess(item);
                 }
             }
             catch (Exception ex)
@@ -176,7 +199,7 @@ namespace AdrPlus.Commands.Migrate
 
                 if (drives.Length > 1)
                 {
-                    var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                    var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -184,7 +207,7 @@ namespace AdrPlus.Commands.Migrate
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateConfig, cancellationToken);
+                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateConfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -207,24 +230,32 @@ namespace AdrPlus.Commands.Migrate
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+                if (repoconfig.MigrationPattern.Length == 0)
+                {
+                    repoconfig.MigrationPattern = await _validateConfig.LoadPatternsConfigMigration(cancellationToken);
+                }
 
                 var foundfiles = await _adrServices.ReadAllAdr(_fileSystem, folderPrompt.Content, repoconfig, true);
                 if (foundfiles.Length == 0)
                 {
                     throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
                 }
+                if (foundfiles.Any(x => x.IsValid && x.Header.IsValid && !x.Header.IsMigrated))
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.AlredyAdrPlusCreated);
+                }
                 if (!foundfiles.Any(x => x.IsValid))
                 {
                     throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
                 }
 
-                var adrselectedPrompt = _console.PromptShowAdrsMigrations(foundfiles, repoconfig, cancellationToken);
+                var adrselectedPrompt = _prompt.PromptShowAdrsMigrations(foundfiles, repoconfig, cancellationToken);
                 if (adrselectedPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                var resultCnf = _console.PromptConfirm(Resources.AdrPlus.PromptConfirmMigration, cancellationToken);
+                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmMigration, cancellationToken);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -236,7 +267,6 @@ namespace AdrPlus.Commands.Migrate
             }
         }
 
-
         /// <summary>
         /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
         /// </summary>
@@ -246,7 +276,7 @@ namespace AdrPlus.Commands.Migrate
             foreach (var error in errors)
             {
                 LogMessages.LogCommandFailure(_logger, error);
-                _console.WriteError(error);
+                _prompt.PromptWriteError(error);
             }
         }
     }

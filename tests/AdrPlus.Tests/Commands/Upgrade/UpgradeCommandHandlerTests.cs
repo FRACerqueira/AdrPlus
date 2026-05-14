@@ -24,7 +24,7 @@ public class UpgradeCommandHandlerTests
 {
     private readonly ILogger<UpgradeCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -34,7 +34,7 @@ public class UpgradeCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<UpgradeCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -45,7 +45,6 @@ public class UpgradeCommandHandlerTests
 
         _handler = new UpgradeCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
@@ -60,7 +59,6 @@ public class UpgradeCommandHandlerTests
         // Arrange & Act
         var handler = new UpgradeCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
@@ -88,7 +86,7 @@ public class UpgradeCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -160,7 +158,7 @@ public class UpgradeCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     #endregion
@@ -193,7 +191,7 @@ public class UpgradeCommandHandlerTests
             configPath,
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -292,7 +290,7 @@ public class UpgradeCommandHandlerTests
             configPath,
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Theory]
@@ -387,7 +385,7 @@ public class UpgradeCommandHandlerTests
             configPath,
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Theory]
@@ -464,7 +462,7 @@ public class UpgradeCommandHandlerTests
             configPath,
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Theory]

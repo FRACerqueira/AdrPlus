@@ -6,11 +6,11 @@
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
+using AdrPlus.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 namespace AdrPlus.Core
 {
@@ -374,7 +374,7 @@ namespace AdrPlus.Core
                 return templateFileName;
             }
 
-            if (!appculture.StartsWith(AppConstants.PtCulturePrefix, StringComparison.OrdinalIgnoreCase))
+            if (!appculture.StartsWith("pt-", StringComparison.OrdinalIgnoreCase))
             {
                 return templateFileName;
             }
@@ -453,8 +453,7 @@ namespace AdrPlus.Core
                         var content = property.GetString() ?? string.Empty;
                         if (content.Length > 0)
                         {
-                            //N99:99V99:99R99:99:E99:99T99
-                            var patternResult = PatternParser.ParsePattern(content);
+                            var patternResult = MigratePatternParser.ParsePattern(content);
                             if (patternResult == null)
                             {
                                 errors.Add(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
@@ -623,7 +622,7 @@ namespace AdrPlus.Core
 
 
             property = root.GetProperty(AppConstants.FieldSeparator);
-            var validSeparators = new[] { "-", "~", "." };
+            var validSeparators = new[] { "-", "_", "." };
             var valuestring = property.GetString() ?? string.Empty;
             if (!validSeparators.Contains(valuestring))
             {
@@ -779,11 +778,25 @@ namespace AdrPlus.Core
                 var template = await GetConfigAdrTemplateAsync(cancellationToken);
                 var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(pathadr, template), AppConstants.RepoSerializerOptions);
                 var normalized = NormalizeJsonKeysToLowerInvariant(aux);
-                await _fileSystem.WriteAllTextAsync(fullpath, normalized, cancellationToken);
                 return normalized;
             }
+
             return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
         }
+
+        public async Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken)
+        {
+            var defaultjsonrepoconfig = await _fileSystem.ReadAllTextAsync(GetDefaultConfigRepoFilePath(), cancellationToken);
+            var (isValid, _) = ValidateRepoStructure(defaultjsonrepoconfig);
+            if (!isValid)
+            {
+                return string.Empty;
+            }
+            var defaultrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(defaultjsonrepoconfig, AppConstants.RepoSerializerOptions)!;
+            return defaultrepoconfig.MigrationPattern;
+        }
+
+
 
         /// <summary>
         /// Validates that a JSON string matches the expected structure of <c>AdrPlus.json</c>,

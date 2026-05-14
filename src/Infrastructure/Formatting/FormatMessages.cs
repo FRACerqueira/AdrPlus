@@ -24,6 +24,8 @@ namespace AdrPlus.Infrastructure.Formatting
             return Cache.GetOrAdd(cacheKey, _ => CompositeFormat.Parse(resourceAccessor()));
         }
 
+        public static CompositeFormat ErrMsgInvalidRepoConfigMigrationPattern => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfigMigrationPattern);
+        public static CompositeFormat ErrorLenFileSampleMigration => Get(() => Resources.AdrPlus.ErrorLenFileSampleMigration);
         public static CompositeFormat ErrorCannotDetermineRootPath => Get(() => Resources.AdrPlus.ErrorCannotDetermineRootPath);
         public static CompositeFormat InvalidMenuOption => Get(() => Resources.AdrPlus.InvalidMenuOption);
         public static CompositeFormat NotValidStatusForSupersede => Get(() => Resources.AdrPlus.NotValidStatusForSupersede);

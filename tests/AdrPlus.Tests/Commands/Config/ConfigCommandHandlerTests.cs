@@ -11,7 +11,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
@@ -25,10 +24,9 @@ public class ConfigCommandHandlerTests
 {
     private readonly ILogger<ConfigCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
-    private readonly IOptions<AdrPlusConfig> _mockConfig;
     private readonly AdrPlusConfig _config;
     private readonly ConfigCommandHandler _handler;
 
@@ -36,10 +34,9 @@ public class ConfigCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<ConfigCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
-        _mockConfig = Substitute.For<IOptions<AdrPlusConfig>>();
 
         _config = new AdrPlusConfig
         {
@@ -50,7 +47,6 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            Options.Create(_config),
             _mockAdrServices);
     }
 
@@ -65,7 +61,6 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            Options.Create(_config),
             _mockAdrServices);
 
         // Assert
@@ -90,7 +85,7 @@ public class ConfigCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -121,7 +116,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]
@@ -171,7 +166,7 @@ public class ConfigCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Language field");
+        _mockConsole.Received(1).PromptWriteError("Missing Language field");
     }
 
     [Fact]
@@ -256,7 +251,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]
@@ -409,7 +404,7 @@ public class ConfigCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     #endregion
@@ -440,7 +435,7 @@ public class ConfigCommandHandlerTests
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -507,7 +502,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, templateContent, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]

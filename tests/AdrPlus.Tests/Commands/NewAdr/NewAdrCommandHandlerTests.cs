@@ -24,7 +24,7 @@ public class NewAdrCommandHandlerTests
 {
     private readonly ILogger<NewAdrCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -49,7 +49,7 @@ public class NewAdrCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<NewAdrCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -105,7 +105,7 @@ public class NewAdrCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     [Fact]
@@ -242,8 +242,8 @@ public class NewAdrCommandHandlerTests
             .Should().ThrowAsync<InvalidDataException>();
 
         // Assert
-        _mockConsole.Received(1).WriteError("Error one");
-        _mockConsole.Received(1).WriteError("Error two");
+        _mockConsole.Received(1).PromptWriteError("Error one");
+        _mockConsole.Received(1).PromptWriteError("Error two");
     }
 
     #endregion
@@ -426,7 +426,7 @@ public class NewAdrCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -582,7 +582,7 @@ public class NewAdrCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: one success for ADR created, one for open success
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -614,7 +614,7 @@ public class NewAdrCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteError(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
     }
 
     [Fact]
@@ -717,10 +717,10 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
@@ -744,10 +744,10 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
@@ -773,10 +773,10 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
@@ -804,17 +804,17 @@ public class NewAdrCommandHandlerTests
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
-        _mockConsole.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), _config, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockConsole.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, [], (Exception?)null));
 
         // Act & Assert
@@ -903,7 +903,7 @@ public class NewAdrCommandHandlerTests
             .Should().ThrowAsync<OperationCanceledException>();
 
         // Assert: WriteInfo called for each summary field (repo, date, title, and empty separator = 4 calls)
-        _mockConsole.Received(4).WriteInfo(Arg.Any<string>());
+        _mockConsole.Received(4).PromptWriteInfo(Arg.Any<string>());
     }
 
     [Fact]
@@ -943,9 +943,9 @@ public class NewAdrCommandHandlerTests
 
         // Setup console wait-state mocks for GetFileByUniqueTitle and GetNextNumber operations
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.WriteWait(Arg.Any<string>());
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        _mockConsole.PromptClearWaitText(cursorPos);
 
         var repoConfig = new AdrPlusRepoConfig("", "")
         {
@@ -973,10 +973,10 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.Contains(ConfigFileName))).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockConsole.WriteWait(Arg.Any<string>());
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
-        _mockConsole.GetCursorPosition().Returns(cursorPos);
-        _mockConsole.ClearWait(cursorPos);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())

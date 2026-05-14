@@ -7,8 +7,6 @@ using AdrPlus.Commands;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using AdrPlus.Infrastructure.UI;
-using NSubstitute;
 
 namespace AdrPlus.Tests.Helpers;
 

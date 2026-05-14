@@ -10,7 +10,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 
 namespace AdrPlus.Tests.Helpers;
 
@@ -22,7 +21,7 @@ internal class ExplorerCommandHandlerFixture
 {
     private ILogger<ExplorerCommandHandler>? _mockLogger;
     private IFileSystemService? _mockFileSystem;
-    private IConsoleWriter? _mockConsole;
+    private IPromptConsole? _mockConsole;
     private IValidateJsonConfig? _mockValidateConfig;
     private IAdrServices? _mockAdrServices;
     private AdrPlusConfig? _config;
@@ -55,11 +54,11 @@ internal class ExplorerCommandHandlerFixture
     /// <summary>
     /// Gets the mock console writer, creating it if necessary.
     /// </summary>
-    public IConsoleWriter MockConsole
+    public IPromptConsole MockConsole
     {
         get
         {
-            _mockConsole ??= Substitute.For<IConsoleWriter>();
+            _mockConsole ??= Substitute.For<IPromptConsole>();
             return _mockConsole;
         }
     }

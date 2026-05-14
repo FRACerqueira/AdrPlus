@@ -16,7 +16,7 @@ namespace AdrPlus.Domain
         /// <summary>
         /// Language for showing messages, e.g. "en-us", "pt-br". Optional.
         /// </summary>
-        public string Language { get; init; } = AppConstants.GetNeutralLanguage();
+        public string Language { get; init; } = AppConstants.GetNeutralLanguage;
 
         /// <summary>
         /// Gets the command used to open an ADR.

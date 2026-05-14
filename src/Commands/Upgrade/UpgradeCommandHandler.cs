@@ -16,18 +16,24 @@ using System.Text.Json;
 
 namespace AdrPlus.Commands.Upgrade
 {
+    /// <summary>
+    /// Handles the <c>upgrade</c> command, which allows users to upgrade an existing ADR repository to a newer configuration version, 
+    /// </summary>
+    /// <param name="logger">The logger for recording command execution and errors.</param>
+    /// <param name="fileSystem">The file system service for I/O operations.</param>
+    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
+    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.    </param>
     internal sealed class UpgradeCommandHandler(
         ILogger<UpgradeCommandHandler> logger,
-        IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<UpgradeCommandHandler> _logger = logger;
-        private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
@@ -50,7 +56,7 @@ namespace AdrPlus.Commands.Upgrade
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "upgrade",
                         ValidCommandArgs,
                         [
@@ -90,7 +96,15 @@ namespace AdrPlus.Commands.Upgrade
                     throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, configPath));
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-
+                if (repoconfig.MigrationPattern.Length == 0)
+                {
+                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
+                    if (repoconfig.MigrationPattern.Length > 0)
+                    {
+                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                        await _filesystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
+                    }
+                }
                 var changetemplate = parsedArgs.ContainsKey(Arguments.RepoTemplate);
                 var filetemplate = string.Empty;
                 if (changetemplate)
@@ -260,7 +274,7 @@ namespace AdrPlus.Commands.Upgrade
                 foreach (var item in resultrepo)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
-                    _console.WriteSuccess(item);
+                    _prompt.PromptWriteSuccess(item);
                 }
             }
             catch (Exception ex)
@@ -307,7 +321,7 @@ namespace AdrPlus.Commands.Upgrade
             foreach (var error in errors)
             {
                 LogMessages.LogCommandFailure(_logger, error);
-                _console.WriteError(error);
+                _prompt.PromptWriteError(error);
             }
         }
         private Dictionary<Arguments, string> UpgradeWizard(CancellationToken cancellationToken)
@@ -317,7 +331,7 @@ namespace AdrPlus.Commands.Upgrade
             {
                 parsedArgs.Clear();
 
-                var options = _console.PromptSelectRepoActions(cancellationToken);
+                var options = _prompt.PromptSelectRepoActions(cancellationToken);
                 if (options.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -328,7 +342,7 @@ namespace AdrPlus.Commands.Upgrade
 
                 if (drives.Length > 1)
                 {
-                    var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
+                    var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -336,7 +350,7 @@ namespace AdrPlus.Commands.Upgrade
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderRepositoryAdr(rootPath, _filesystem, _validateconfig, cancellationToken);
+                var folderPrompt = _prompt.PromptSelectFolderRepositoryAdr(rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -345,7 +359,7 @@ namespace AdrPlus.Commands.Upgrade
 
                 if (options.Content.Contains(RepoActions.Template))
                 {
-                    var (IsAborted, FilePathAdrTemplate) = _console.PromptConfigTemplateAdrSelect(rootPath, cancellationToken);
+                    var (IsAborted, FilePathAdrTemplate) = _prompt.PromptConfigTemplateAdrSelect(rootPath, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -355,7 +369,7 @@ namespace AdrPlus.Commands.Upgrade
                 }
                 if (options.Content.Contains(RepoActions.Version))
                 { 
-                    var (IsAborted, newversion) = _console.PromptEditFieldVersion(new FieldsJson { Name = AppConstants.FieldLenVersion }, cancellationToken);
+                    var (IsAborted, newversion) = _prompt.PromptEditFieldVersion(new FieldsJson { Name = AppConstants.FieldLenVersion }, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -364,7 +378,7 @@ namespace AdrPlus.Commands.Upgrade
                 }
                 if (options.Content.Contains(RepoActions.Revision))
                 {
-                    var (IsAborted, newrevision) = _console.PromptEditFieldVersion(new FieldsJson { Name = AppConstants.FieldLenRevision }, cancellationToken);
+                    var (IsAborted, newrevision) = _prompt.PromptEditFieldVersion(new FieldsJson { Name = AppConstants.FieldLenRevision }, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -373,21 +387,21 @@ namespace AdrPlus.Commands.Upgrade
                 }
                 if (options.Content.Contains(RepoActions.Scope))
                 {
-                    var (IsAborted, newrevision) = _console.PromptEditFieldLenScope(new FieldsJson { Name = AppConstants.FieldLenScope, Value = "1" }, cancellationToken);
+                    var (IsAborted, newrevision) = _prompt.PromptEditFieldLenScope(new FieldsJson { Name = AppConstants.FieldLenScope, Value = "1" }, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
                     parsedArgs[Arguments.RepoScope] = newrevision.ToString(CultureInfo.CurrentCulture);
 
-                    var newitems = _console.PromptEditFieldScopes(new FieldsJson { Name = AppConstants.FieldScopes }, cancellationToken);
+                    var newitems = _prompt.PromptEditFieldScopes(new FieldsJson { Name = AppConstants.FieldScopes }, cancellationToken);
                     if (newitems.IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
                     parsedArgs[Arguments.RepoScopeItems] = newitems.Content;
 
-                    var withdolder = _console.PromptEditFieldFolderByScope(new FieldsJson { Name = AppConstants.FieldFolderByScope }, cancellationToken);
+                    var withdolder = _prompt.PromptEditFieldFolderByScope(new FieldsJson { Name = AppConstants.FieldFolderByScope }, cancellationToken);
                     if (withdolder.IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -398,7 +412,7 @@ namespace AdrPlus.Commands.Upgrade
                     }
                 }
 
-                var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

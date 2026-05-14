@@ -63,7 +63,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0001-use-new-database-V01R00.md");
+        fileName.Should().Be("ADR-0001V01R00-use-new-database.md");
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0005-UseGraphQl-V02-Api-Backend.md");
+        fileName.Should().Be("ADR-0005V02API-UseGraphQl@Backend.md");
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0010-use-postgre-sql-V01R00-0009.md");
+        fileName.Should().Be("ADR-0010V01R00-use-postgre-sql--0009.md");
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0003-UseRedis-V01.md");
+        fileName.Should().Be("ADR-0003V01-UseRedis.md");
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0001-use_new_database-V01.md");
+        fileName.Should().Be("ADR-0001V01-use_new_database.md");
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0002-useNewApi-V01.md");
+        fileName.Should().Be("ADR-0002V01-useNewApi.md");
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class AdrRecordTests
         var fileName = record.GetFileName(config);
 
         // Assert
-        fileName.Should().Be("ADR-0007-UseCache-V01-Perfo.md");
+        fileName.Should().Be("ADR-0007V01Perfo-UseCache.md");
     }
 
     #endregion

@@ -868,13 +868,13 @@
     <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardConfigTemplateTitle" xml:space="preserve">
-    <value>Change Default ADR Content Template</value>
+    <value>Config default content template</value>
   </data>
   <data name="WizardConfigTemplateDescription" xml:space="preserve">
     <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardConfigRepositoryTitle" xml:space="preserve">
-    <value>Configure default ADR repository template</value>
+    <value>Configure the default ADR repository</value>
   </data>
   <data name="WizardConfigRepositoryDescription" xml:space="preserve">
     <value>After selected, press [ESC] if you want to return to the wizard</value>
@@ -1120,7 +1120,7 @@
     <value>View only. Press &lt;enter&gt; to continue</value>
   </data>
   <data name="WizardConfigMigratedTitle" xml:space="preserve">
-    <value>Migrate existing ADRs to the Adrs Plus format</value>
+    <value>Migrate existing ADRs to ADRs Plus compatibility</value>
   </data>
   <data name="WizardConfigMigratedDescription" xml:space="preserve">
     <value>After selected, press [ESC] if you want to return to the wizard</value>
@@ -1220,5 +1220,71 @@
   </data>
   <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
     <value>Wrong migration pattern</value>
+  </data>
+  <data name="ConfigPromptOverwriteMigration" xml:space="preserve">
+    <value>Only the migration pattern will be overwritten. Do you want to overwrite it?</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="PromptFieldsMigrationTitle" xml:space="preserve">
+    <value>Select the elements that exist in the ADR file title</value>
+  </data>
+  <data name="Prefix" xml:space="preserve">
+    <value>Prefix</value>
+  </data>
+  <data name="ErrorLenFileSampleMigration" xml:space="preserve">
+    <value>Filename must be at least {0} characters long</value>
+  </data>
+  <data name="PromptFileSampleMigration" xml:space="preserve">
+    <value>Enter a sample ADR filename to validate the pattern</value>
+  </data>
+  <data name="SummarySampleFilename" xml:space="preserve">
+    <value>Sample filename</value>
+  </data>
+  <data name="PromptPrefixPosition" xml:space="preserve">
+    <value>Select a position for the 'Prefix' element at filename</value>
+  </data>
+  <data name="SampleResult" xml:space="preserve">
+    <value>Sample result</value>
+  </data>
+  <data name="PromptPrefixLength" xml:space="preserve">
+    <value>Select a length for the 'Prefix' element at filename</value>
+  </data>
+  <data name="PromptNumberPosition" xml:space="preserve">
+    <value>Select a position for the 'Number' element at filename</value>
+  </data>
+  <data name="PromptNumberLength" xml:space="preserve">
+    <value>Select a length for the 'Number' element at filename</value>
+  </data>
+  <data name="PromptVersionPosition" xml:space="preserve">
+    <value>Select a position for the 'Version' element at filename</value>
+  </data>
+  <data name="PromptVersionLength" xml:space="preserve">
+    <value>Select a length for the 'Version' element at filename</value>
+  </data>
+  <data name="PromptRevisionPosition" xml:space="preserve">
+    <value>Select a position for the 'Revision' element at filename</value>
+  </data>
+  <data name="PromptRevisionLength" xml:space="preserve">
+    <value>Select a length for the 'Revision' element at filename</value>
+  </data>
+  <data name="PromptTitlePosition" xml:space="preserve">
+    <value>Select a position for the 'Title' element at filename</value>
+  </data>
+  <data name="PromptConfirmParamMigration" xml:space="preserve">
+    <value>Confirm your parameters?</value>
+  </data>
+  <data name="WizardConfigMigration" xml:space="preserve">
+    <value>Configure the ADR migration</value>
+  </data>
+  <data name="WizardConfigMigrationDescription" xml:space="preserve">
+    <value>After selected, press [ESC] if you want to return to the wizard</value>
+  </data>
+  <data name="ErrMsgInvalidRepoConfigMigrationPattern" xml:space="preserve">
+    <value>Empty migration pattern configuration : {0}</value>
+  </data>
+  <data name="AlredyAdrPlusCreated" xml:space="preserve">
+    <value>There are already ADRs that were created using this tool</value>
   </data>
 </root>

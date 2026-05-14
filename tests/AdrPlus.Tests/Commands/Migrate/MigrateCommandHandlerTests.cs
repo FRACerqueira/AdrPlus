@@ -24,7 +24,7 @@ public class MigrateCommandHandlerTests
 {
     private ILogger<MigrateCommandHandler> _mockLogger = null!;
     private IFileSystemService _mockFileSystem = null!;
-    private IConsoleWriter _mockConsole = null!;
+    private IPromptConsole _mockConsole = null!;
     private IValidateJsonConfig _mockValidateConfig = null!;
     private IAdrServices _mockAdrServices = null!;
     private AdrPlusConfig _config = null!;
@@ -39,7 +39,7 @@ public class MigrateCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<MigrateCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -50,28 +50,10 @@ public class MigrateCommandHandlerTests
 
         _handler = new MigrateCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
             _mockAdrServices);
-    }
-
-    private MigrateCommandHandler CreateHandlerWithCustomMocks()
-    {
-        var mockLogger = Substitute.For<ILogger<MigrateCommandHandler>>();
-        var mockFileSystem = Substitute.For<IFileSystemService>();
-        var mockConsole = Substitute.For<IConsoleWriter>();
-        var mockValidateConfig = Substitute.For<IValidateJsonConfig>();
-        var mockAdrServices = Substitute.For<IAdrServices>();
-
-        return new MigrateCommandHandler(
-            mockLogger,
-            Options.Create(_config),
-            mockFileSystem,
-            mockValidateConfig,
-            mockConsole,
-            mockAdrServices);
     }
 
     #region Constructor Tests
@@ -82,7 +64,6 @@ public class MigrateCommandHandlerTests
         // Arrange & Act
         var handler = new MigrateCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
@@ -110,7 +91,7 @@ public class MigrateCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -203,7 +184,7 @@ public class MigrateCommandHandlerTests
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
-        _mockConsole.Received(1).WriteError("Config error");
+        _mockConsole.Received(1).PromptWriteError("Config error");
     }
 
     #endregion
@@ -254,7 +235,7 @@ public class MigrateCommandHandlerTests
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(testFile.FileName, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -295,7 +276,7 @@ public class MigrateCommandHandlerTests
 
         // Assert
         await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.DidNotReceive().WriteSuccess(Arg.Any<string>());
+        _mockConsole.DidNotReceive().PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -367,7 +348,7 @@ public class MigrateCommandHandlerTests
 
         // Assert - no write operations, already migrated
         await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.DidNotReceive().WriteSuccess(Arg.Any<string>());
+        _mockConsole.DidNotReceive().PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -460,7 +441,7 @@ public class MigrateCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
@@ -500,7 +481,7 @@ public class MigrateCommandHandlerTests
 
         // Assert
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion

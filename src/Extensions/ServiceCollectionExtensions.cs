@@ -41,7 +41,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IFileSystemService, FileSystemService>();
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
-            services.AddSingleton<IConsoleWriter, ConsoleWriter>();
+            services.AddSingleton<IPromptConsole, PromptConsole>();
             services.AddSingleton<IAdrFileParser, AdrFileParserService>();
             services.AddSingleton<IAdrQueryService, AdrQueryService>();
             services.AddSingleton<IAdrStatusService, AdrStatusService>();

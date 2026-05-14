@@ -30,7 +30,7 @@ public class AdrConfigMapperServiceTests
         config.FolderAdr.Should().Be(AppConstants.DefaultFolderAdr);
         config.Template.Should().Be(_template);
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix);
-        config.LenSeq.Should().Be(4);
+        config.LenSeq.Should().Be(3);
         config.LenVersion.Should().Be(2);
         config.LenRevision.Should().Be(0);
         config.LenScope.Should().Be(0);
@@ -256,7 +256,7 @@ public class AdrConfigMapperServiceTests
         var jsonZero = CreateJsonWithField(AppConstants.FieldLenSeq, 0);
         var configZero = _mapper.FromJson(jsonZero, _template);
         
-        configZero.LenSeq.Should().Be(4); // Default value
+        configZero.LenSeq.Should().Be(3); // Default value
 
         // Arrange - Test with negative
         var jsonNegative = CreateJsonWithField(AppConstants.FieldLenSeq, -1);
@@ -265,7 +265,7 @@ public class AdrConfigMapperServiceTests
         var configNegative = _mapper.FromJson(jsonNegative, _template);
 
         // Assert
-        configNegative.LenSeq.Should().Be(4); // Default value
+        configNegative.LenSeq.Should().Be(3); // Default value
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class AdrConfigMapperServiceTests
 
         // Assert
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix); // Default
-        config.LenSeq.Should().Be(4); // Default
+        config.LenSeq.Should().Be(3); // Default
         config.CaseTransform.Should().Be(CaseFormat.PascalCase); // Default
     }
 
@@ -743,7 +743,7 @@ public class AdrConfigMapperServiceTests
 
         // Assert
         config.Prefix.Should().Be("VALID-PREFIX");
-        config.LenSeq.Should().Be(4); // Kept default
+        config.LenSeq.Should().Be(3); // Kept default
         config.LenVersion.Should().Be(3); // Parsed successfully
         config.LenRevision.Should().Be(0); // Kept default
         config.LenScope.Should().Be(2); // Parsed successfully
@@ -785,7 +785,7 @@ public class AdrConfigMapperServiceTests
 
         // Assert
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix);
-        config.LenSeq.Should().Be(4);
+        config.LenSeq.Should().Be(3);
         config.LenVersion.Should().Be(2);
         config.LenRevision.Should().Be(0);
         config.LenScope.Should().Be(0);

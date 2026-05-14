@@ -23,7 +23,7 @@ public class InitCommandHandlerTests
 {
     private readonly ILogger<InitCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -33,7 +33,7 @@ public class InitCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<InitCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -44,7 +44,6 @@ public class InitCommandHandlerTests
 
         _handler = new InitCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
@@ -59,7 +58,6 @@ public class InitCommandHandlerTests
         // Arrange & Act
         var handler = new InitCommandHandler(
             _mockLogger,
-            Options.Create(_config),
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
@@ -87,7 +85,7 @@ public class InitCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -143,7 +141,7 @@ public class InitCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
-        _mockConsole.Received().WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -177,7 +175,7 @@ public class InitCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
-        _mockConsole.Received().WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -279,7 +277,7 @@ public class InitCommandHandlerTests
         // Assert
         _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
-        _mockConsole.Received().WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -633,8 +631,8 @@ public class InitCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received().WriteSuccess(configPath);
-        _mockConsole.Received().WriteSuccess(Arg.Is<string>(s => s.Contains("api")));
+        _mockConsole.Received().PromptWriteSuccess(configPath);
+        _mockConsole.Received().PromptWriteSuccess(Arg.Is<string>(s => s.Contains("api")));
     }
 
     #endregion
@@ -677,7 +675,7 @@ public class InitCommandHandlerTests
         // Assert - Should not attempt to create empty scope directories, but ADR folder should be created
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.EndsWith("adr", StringComparison.OrdinalIgnoreCase)));
         // WriteSuccess is called for config file and adr folder (2 times)
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -864,7 +862,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("adr")));
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("frontend")));
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("backend")));
-        _mockConsole.Received().WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion

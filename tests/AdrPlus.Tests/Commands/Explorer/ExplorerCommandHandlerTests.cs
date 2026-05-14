@@ -4,11 +4,8 @@
 // ***************************************************************************************
 
 using AdrPlus.Commands;
-using AdrPlus.Commands.Explorer;
 using AdrPlus.Domain;
-using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
-using NSubstitute;
 
 namespace AdrPlus.Tests.Commands.Explorer;
 
@@ -53,7 +50,7 @@ public class ExplorerCommandHandlerTests
         await _fixture.Handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _fixture.MockConsole.Received(1).WriteHelp("Help text");
+        _fixture.MockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     [Fact]
@@ -236,7 +233,7 @@ public class ExplorerCommandHandlerTests
 
         // Assert
         await _fixture.MockFileSystem.Received(1).WriteAllTextAsync(reportPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _fixture.MockConsole.Received(1).WriteSuccess(reportPath);
+        _fixture.MockConsole.Received(1).PromptWriteSuccess(reportPath);
     }
 
     [Fact]
@@ -341,7 +338,7 @@ public class ExplorerCommandHandlerTests
 
         // Assert
         _fixture.MockAdrServices.Received(1).OpenFile(Arg.Any<string>(), Arg.Any<string>());
-        _fixture.MockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _fixture.MockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion

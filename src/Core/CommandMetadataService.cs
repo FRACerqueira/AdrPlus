@@ -9,15 +9,10 @@ using System.Text;
 
 namespace AdrPlus.Core
 {
-    internal sealed class CommandMetadataService : ICommandMetadataService
+    /// <inheritdoc/>
+    internal sealed class CommandMetadataService(IProcessService processService) : ICommandMetadataService
     {
-        private readonly IProcessService _processService;
-
-        /// <inheritdoc/>
-        public CommandMetadataService(IProcessService processService)
-        {
-            _processService = processService ?? throw new ArgumentNullException(nameof(processService));
-        }
+        private readonly IProcessService _processService = processService ?? throw new ArgumentNullException(nameof(processService));
 
         /// <inheritdoc/>
         public Dictionary<string, Type> GenerateCommandsMap()

@@ -22,23 +22,20 @@ namespace AdrPlus.Commands.Init
     /// Initializes a new instance of the <see cref="InitCommandHandler"/> class.
     /// </remarks>
     /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="appconfig">The application configuration settings (folder, date format, etc.).</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="console">The console writer for displaying output and prompting user input.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
-        IOptions<AdrPlusConfig> appconfig,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
-        private readonly AdrPlusConfig _appconfig = appconfig.Value;
         private readonly IFileSystemService _fileSystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardInit, Arguments.TargetRepo, Arguments.Help];
@@ -65,7 +62,7 @@ namespace AdrPlus.Commands.Init
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "init",
                         ValidCommandArgs,
                         [
@@ -99,7 +96,7 @@ namespace AdrPlus.Commands.Init
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
-                    _console.WriteSuccess(item);
+                    _prompt.PromptWriteSuccess(item);
                 }
             }
             catch (Exception ex)
@@ -124,7 +121,7 @@ namespace AdrPlus.Commands.Init
 
             if (drives.Length > 1)
             {
-                var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
                 if (IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -132,7 +129,7 @@ namespace AdrPlus.Commands.Init
                 rootPath = Content;
             }
 
-            var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateconfig, cancellationToken);
+            var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateconfig, cancellationToken);
             if (folderPrompt.IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -182,15 +179,16 @@ namespace AdrPlus.Commands.Init
         {
             var result = new List<string>();
 
-            var repoPath = Path.GetFullPath(Path.Combine(targetPath));
-            if (!_fileSystem.DirectoryExists(repoPath))
-            {
-                repoPath = _fileSystem.CreateDirectory(repoPath);
-            }
             var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
             if (_fileSystem.FileExists(configPath))
             {
                 throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+            }
+
+            var repoPath = Path.GetFullPath(Path.Combine(targetPath));
+            if (!_fileSystem.DirectoryExists(repoPath))
+            {
+                repoPath = _fileSystem.CreateDirectory(repoPath);
             }
 
             await CreateNewConfigAsync(targetPath, repoPath, result, cancellationToken);

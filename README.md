@@ -362,7 +362,7 @@ adrplus config --repository
 | `lenversion` | Number of digits for major version formatting (for example: `2` => `01`). |
 | `lenrevision` | Number of digits for revision formatting (for example: `2` => `01`; `0` disables revision numbering). |
 | `lenscope` | Maximum scope segment length used in generated names (when scope is enabled, value > 0). |
-| `separator` | Separator character used in generated file names (valid values: `-`, `~`, or `.`). |
+| `separator` | Separator character used in generated file names (valid values: `-`, `_`, or `.`). |
 | `casetransform` | Case style applied to generated name segments (for example: `PascalCase`, `CamelCase`, `SnakeCase`, or `KebabCase`). |
 | `statusnew` | Label used for newly created ADRs. |
 | `statusacc` | Label used for accepted ADRs. |
@@ -404,7 +404,7 @@ Before selecting a team profile, understand these key concepts:
 
 - **Separator**: The character separating different parts of the filename:
   - `-` (hyphen): `ADR0001-UsePostgreSQL-V01R01.md`
-  - `~` (tilde): `ADR0001~UsePostgreSQL~V01R01.md`
+  - `_` (underscore): `ADR0001_UsePostgreSQL_V01R01.md`
   - `.` (period): `ADR0001.UsePostgreSQL.V01R01.md`
 
 - **Version vs. Revision**: 

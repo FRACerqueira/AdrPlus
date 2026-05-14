@@ -30,7 +30,7 @@ namespace AdrPlus.Core
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldMigrationPattern, out var migrationPatternElement) && migrationPatternElement.ValueKind == JsonValueKind.String)
             {
-                config.MigratePattern = migrationPatternElement.GetString()!;
+                config.MigrationPattern = migrationPatternElement.GetString()!;
             }
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldPrefix, out var prefixElement) && prefixElement.ValueKind == JsonValueKind.String)

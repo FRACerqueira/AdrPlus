@@ -11,6 +11,13 @@ namespace AdrPlus.Core
     internal interface IValidateJsonConfig
     {
         /// <summary>
+        /// Loads the migration pattern configuration from default template file. 
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>A Task that represents the asynchronous operation, containing the migration pattern configuration as a string.</returns>
+        Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Validates the entire configuration and returns a formatted error report
         /// </summary>
         /// <returns>A Task that represents the asynchronous operation, containing a tuple of (isValid, errorMessages)</returns>

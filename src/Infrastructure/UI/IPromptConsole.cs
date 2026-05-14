@@ -13,8 +13,129 @@ namespace AdrPlus.Infrastructure.UI
     /// Interface for console output operations.
     /// Provides a testable abstraction over console writing.
     /// </summary>
-    internal interface IConsoleWriter
+    internal interface IPromptConsole
     {
+
+        /// <summary>
+        /// Clears the console history related to migration operations, ensuring that any previous migration logs or messages are removed from the console output. This method is typically used to maintain a clean and organized console display during migration processes, allowing users to focus on current migration activities without being distracted by past logs. 
+        /// </summary>
+        void ClearHistoryMigration();
+
+
+        /// <summary>
+        /// Prompts the user to select a Title position for a file.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="maxValue">The maximum position value allowed.</param>
+        /// <param name="defaultValue">The default position value.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected position value.</returns>
+        (bool IsAborted, int Value) PromptSelectTitlePosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Prompts the user to select a prefix position for a file.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="maxValue">The maximum position value allowed.</param>
+        /// <param name="defaultValue">The default position value.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected position value.</returns>
+        (bool IsAborted, int Value) PromptSelectPrefixPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Prompts the user to select a revision length from a file at a specified position.
+        /// </summary>
+        /// <param name="filename">The name or path of the file.</param>
+        /// <param name="position">The position within the file.</param>
+        /// <param name="maxValue">The maximum allowed value for the revision length.</param>
+        /// <param name="defaultValue">The default value to use if no selection is made.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected value.</returns>
+        (bool IsAborted, int Value) PromptSelectRevisionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Prompts the user to select a Revision position for a file.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="maxValue">The maximum position value allowed.</param>
+        /// <param name="defaultValue">The default position value.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected position value.</returns>
+        (bool IsAborted, int Value) PromptSelectRevisionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Prompts the user to select a version length from a file at a specified position.
+        /// </summary>
+        /// <param name="filename">The name or path of the file.</param>
+        /// <param name="position">The position within the file.</param>
+        /// <param name="maxValue">The maximum allowed value for the version length.</param>
+        /// <param name="defaultValue">The default value to use if no selection is made.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected value.</returns>
+        (bool IsAborted, int Value) PromptSelectVersionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Prompts the user to select a Version position for a file.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="maxValue">The maximum position value allowed.</param>
+        /// <param name="defaultValue">The default position value.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected position value.</returns>
+        (bool IsAborted, int Value) PromptSelectVersionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Prompts the user to select a prefix length from a file at a specified position.
+        /// </summary>
+        /// <param name="filename">The name or path of the file.</param>
+        /// <param name="position">The position within the file.</param>
+        /// <param name="maxValue">The maximum allowed value for the prefix length.</param>
+        /// <param name="defaultValue">The default value to use if no selection is made.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing whether the operation was aborted, the selected value, and the prefix value string.</returns>
+        (bool IsAborted, int Value, string PrefixValue) PromptSelectPrefixLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Prompts the user to select a number position for a file.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="maxValue">The maximum position value allowed.</param>
+        /// <param name="defaultValue">The default position value.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected position value.</returns>
+        (bool IsAborted, int Value) PromptSelectNumberPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+
+        /// <summary>
+        /// Prompts the user to select a number length for a file at a specified position.
+        /// </summary>
+        /// <param name="filename">The name of the file.</param>
+        /// <param name="position">The position within the file.</param>
+        /// <param name="maxValue">The maximum allowed value for the number length.</param>
+        /// <param name="defaultValue">The default value to use if no selection is made.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing whether the operation was aborted and the selected number length value.</returns>
+        (bool IsAborted, int Value) PromptSelectNumberLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken);
+
+
+
+        /// <summary>
+        /// Prompts the user to provide existing fields from a filename.
+        /// </summary>
+        /// <param name="cancellationToken">Token to cancel the prompt operation.</param>
+        /// <returns>A tuple containing a flag indicating whether the operation was aborted and an array of field values from the filename.</returns>
+        (bool IsAborted, string[] FieldsFromFileAdr) PromptFieldsFromFileAdr(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Prompts the user for sample file migration.
+        /// </summary>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing a flag indicating whether the operation was aborted and the sample file migration result.</returns>
+        (bool IsAborted, string SampleFileMigration) PromptSampleFileMigration(CancellationToken cancellationToken);
+
         /// <summary>
         /// Prompts the user to select fields using an interactive explorer and returns the result along with an
         /// indicator of whether the operation was aborted.
@@ -65,20 +186,20 @@ namespace AdrPlus.Infrastructure.UI
         /// Gets the current position of the cursor in the console.  
         /// </summary>
         /// <returns>A tuple containing the left and top positions of the cursor.</returns>
-        (int left, int top) CursorPosition();
+        (int left, int top) PromptCursorPosition();
 
         /// <summary>
         /// Moves the cursor to a new position in the console.
         /// </summary>
         /// <param name="left">The left position to move the cursor to.</param>
         /// <param name="top">The top position to move the cursor to.</param>
-        void MovePosition(int left,int top);
+        void PromptMovePosition(int left,int top);
 
         /// <summary>
         /// Checks if the current operation was aborted by the user pressing Ctrl+C.
         /// </summary>
         /// <returns> <c>true</c> if the operation was aborted by Ctrl+C; otherwise, <c>false</c>.</returns>
-        bool IsAbortedByCtrlC();
+        bool PromptIsAbortedByCtrlC();
 
         /// <summary>
         /// Ensures that the console culture settings are properly configured based on the provided application configuration. 
@@ -86,15 +207,15 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="config">
         /// The application configuration containing culture settings to apply to the console. This may include settings such as language, date formats, and other culture-specific configurations that affect how information is displayed in the console.
         /// </param>
-        void EnsureCulture(AdrPlusConfig config);
+        void PromptEnsureCulture(AdrPlusConfig config);
 
         /// <summary>
         /// Gets the current position of the cursor.
         /// </summary>
         /// <returns>A tuple containing the left and top positions of the cursor.</returns>
-        (int left, int top) GetCursorPosition();
+        (int left, int top) PromptGetCursorPosition();
 
-        void WriteWait(string message);
+        void PromptWriteWait(string message);
 
         /// <summary>
         /// Clears the wait message from the console at current positions and set positions of the cursor. 
@@ -102,62 +223,62 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="position">
         /// A tuple containing the left and top positions where the wait message was displayed, used to clear the message and reset the cursor position.
         /// </param>
-        void ClearWait((int left, int top) position);
+        void PromptClearWaitText((int left, int top) position);
 
         /// <summary>
         /// Writes an informational message to the console.
         /// </summary>
-        void WriteInfo(string message);
+        void PromptWriteInfo(string message);
 
         /// <summary>
         /// Writes a message to the console indicating that an operation is being resumed before a wait or pause.
         /// </summary>
-        void WriteSummary(string message);
+        void PromptWriteSummary(string message);
 
         /// <summary>
         /// Writes a success message to the console.
         /// </summary>
-        void WriteSuccess(string message);
+        void PromptWriteSuccess(string message);
 
         /// <summary>
         /// Writes an error message to the console.
         /// </summary>
-        void WriteError(string message);
+        void PromptWriteError(string message);
 
         /// <summary>
         /// Writes help information to the console.
         /// </summary>
-        void WriteHelp(string helpText);
+        void PromptWriteHelp(string helpText);
 
         /// <summary>
         /// Writes the specified command to the output stream.
         /// </summary>
         /// <param name="command">The command string to write.</param>
-        void WriteStartCommand(string command);
+        void PromptWriteStartCommand(string command);
 
         /// <summary>
         /// Writes a message indicating that the specified command has finished executing. 
         /// </summary>
         /// <param name="command">The command string to write.</param>
-        void WriteFinishedCommand(string command);
+        void PromptWriteFinishedCommand(string command);
 
         /// <summary>
         /// Displays a welcome message including the specified application version.
         /// </summary>
         /// <param name="appVersion">The version of the application to include in the welcome message.</param>
-        void ShowWellcome(string appVersion);
+        void PromptShowWellcome(string appVersion);
 
         /// <summary>
         /// Configures the prompt settings. 
         /// </summary>
         /// <param name="config">The configuration settings to apply to the prompt.</param>
-        void ConfigurePrompt(AdrPlusConfig config);
+        void PromptConfigure(AdrPlusConfig config);
 
         /// <summary>
         /// Displays a banner with the specified text. 
         /// </summary>
         /// <param name="bannerText">The text to display in the banner.</param>
-        void ShowBanner(string bannerText);
+        void PromptShowBanner(string bannerText);
 
         /// <summary>
         /// 
@@ -165,14 +286,14 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="message">The message to display to the user.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A boolean indicating whether the user pressed abort key.</returns>
-        bool PressAnyKeyToContinue(string message,CancellationToken cancellationToken);
+        bool PromptPressAnyKeyToContinue(string message,CancellationToken cancellationToken);
 
         /// <summary>
         /// Enables or disables the ability for the user to abort an operation by pressing the Escape key during prompts. 
         /// </summary>
         /// <param name="enabled"> A boolean value indicating whether pressing the Escape key should abort the current operation. If set to true, the user can press Escape to cancel prompts; if false, the Escape key will not have any effect on prompt cancellation.
         /// </param>
-        void EnabledEscToAbort(bool enabled);
+        void PromptEnabledEscToAbort(bool enabled);
 
         /// <summary>
         /// Prompts the user to select an option from a menu.
@@ -410,11 +531,10 @@ namespace AdrPlus.Infrastructure.UI
         /// </summary>
         /// <param name="fileSystemService">The file system service to use for file operations.</param>
         /// <param name="path">The directory path to search for ADR files.</param>
-        /// <param name="config">The application configuration.</param>
         /// <param name="adrPlusRepo">The repository configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing abort status, array of domains, and any exception that occurred.</returns>
-        (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusConfig config, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to edit the domain of an ADR with suggested domains.

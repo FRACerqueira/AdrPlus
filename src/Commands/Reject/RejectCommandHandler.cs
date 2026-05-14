@@ -28,20 +28,20 @@ namespace AdrPlus.Commands.Reject
     /// <param name="config">The application configuration settings (folder, language, etc.).</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="console">The console writer for displaying output and prompting user input.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
     internal sealed class RejectCommandHandler(
         ILogger<RejectCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<RejectCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
@@ -98,7 +98,7 @@ namespace AdrPlus.Commands.Reject
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "reject",
                         ValidCommandArgs,
                         [
@@ -142,7 +142,15 @@ namespace AdrPlus.Commands.Reject
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-
+                if (repoconfig.MigrationPattern.Length == 0)
+                {
+                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
+                    if (repoconfig.MigrationPattern.Length > 0)
+                    {
+                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                        await _filesystem.WriteAllTextAsync(configrootPath, jsonStringNew, cancellationToken);
+                    }
+                }
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
                 {
@@ -198,7 +206,7 @@ namespace AdrPlus.Commands.Reject
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
-            _console.WriteSuccess(message);
+            _prompt.PromptWriteSuccess(message);
         }
 
         /// <summary>
@@ -247,7 +255,7 @@ namespace AdrPlus.Commands.Reject
                 var rootPath = drives[0];
                 if (drives.Length > 1)
                 {
-                    var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
+                    var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -255,7 +263,7 @@ namespace AdrPlus.Commands.Reject
                     rootPath = Content;
                 }
 
-                var folderPrompt = _console.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
+                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -273,10 +281,10 @@ namespace AdrPlus.Commands.Reject
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                var curpos = _console.GetCursorPosition();
-                _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
+                var curpos = _prompt.PromptGetCursorPosition();
+                _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
                 var filesadrs = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, repoconfig,false);
-                _console.ClearWait(curpos);
+                _prompt.PromptClearWaitText(curpos);
 
                 if (filesadrs.Length == 0)
                 {
@@ -296,14 +304,14 @@ namespace AdrPlus.Commands.Reject
                     }
                     return (true, null);
                 }
-                var filenewver = _console.PromptSelecAdrs(filesadrs, repoconfig, validselect, cancellationToken);
+                var filenewver = _prompt.PromptSelecAdrs(filesadrs, repoconfig, validselect, cancellationToken);
                 if (filenewver.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                var dateRefPrompt = _console.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -311,10 +319,10 @@ namespace AdrPlus.Commands.Reject
                 var defDateRef = dateRefPrompt.Content;
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
-                var (_, Top) = _console.CursorPosition();
+                var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), defDateRef);
-                var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _console.MovePosition(0, Top);
+                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                _prompt.PromptMovePosition(0, Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -335,7 +343,7 @@ namespace AdrPlus.Commands.Reject
             foreach (var error in errors)
             {
                 LogMessages.LogCommandFailure(_logger, error);
-                _console.WriteError(error);
+                _prompt.PromptWriteError(error);
             }
         }
 
@@ -348,10 +356,10 @@ namespace AdrPlus.Commands.Reject
         /// <param name="defDateRef">The reference date for the rejection operation.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
-            _console.WriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
-            _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
-            _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
-            _console.WriteSummary("");
+            _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.File + ": " + fileref);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
+            _prompt.PromptWriteSummary("");
         }
     }
 }
