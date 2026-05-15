@@ -367,15 +367,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Character used to represent &apos;No&apos; in prompts.
-        /// </summary>
-        internal static string ConfigFieldDescNoValue {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescNoValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command to open ADR files (must contain the text &apos;{0}&apos;).
         /// </summary>
         internal static string ConfigFieldDescOpenAdr {
@@ -453,15 +444,6 @@ namespace AdrPlus.Resources {
         internal static string ConfigFieldDescStatusSuperseded {
             get {
                 return ResourceManager.GetString("ConfigFieldDescStatusSuperseded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character used to represent &apos;Yes&apos; in prompts.
-        /// </summary>
-        internal static string ConfigFieldDescYesValue {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescYesValue", resourceCulture);
             }
         }
         
@@ -1042,15 +1024,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yes and No values cannot be the same.
-        /// </summary>
-        internal static string ErrMsgYesNoConflict {
-            get {
-                return ResourceManager.GetString("ErrMsgYesNoConflict", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot determine root path with ADR config.
         /// </summary>
         internal static string ErrorCannotDetermineRootPath {
@@ -1510,15 +1483,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No character value.
-        /// </summary>
-        internal static string FieldTitleNoValue {
-            get {
-                return ResourceManager.GetString("FieldTitleNoValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command to Open ADR.
         /// </summary>
         internal static string FieldTitleOpenAdr {
@@ -1605,15 +1569,6 @@ namespace AdrPlus.Resources {
         internal static string FieldTitleTemplate {
             get {
                 return ResourceManager.GetString("FieldTitleTemplate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Yes character value.
-        /// </summary>
-        internal static string FieldTitleYesValue {
-            get {
-                return ResourceManager.GetString("FieldTitleYesValue", resourceCulture);
             }
         }
         
@@ -2163,15 +2118,6 @@ namespace AdrPlus.Resources {
         internal static string NewVerChooseAdr {
             get {
                 return ResourceManager.GetString("NewVerChooseAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No.
-        /// </summary>
-        internal static string No {
-            get {
-                return ResourceManager.GetString("No", resourceCulture);
             }
         }
         
@@ -3558,15 +3504,6 @@ namespace AdrPlus.Resources {
         internal static string WizardHelpVersionTitle {
             get {
                 return ResourceManager.GetString("WizardHelpVersionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Yes.
-        /// </summary>
-        internal static string Yes {
-            get {
-                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

@@ -96,15 +96,7 @@ namespace AdrPlus.Commands.Upgrade
                     throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, configPath));
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (repoconfig.MigrationPattern.Length > 0)
-                    {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _filesystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
-                    }
-                }
+
                 var changetemplate = parsedArgs.ContainsKey(Arguments.RepoTemplate);
                 var filetemplate = string.Empty;
                 if (changetemplate)

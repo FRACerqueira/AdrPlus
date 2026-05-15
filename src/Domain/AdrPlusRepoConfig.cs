@@ -72,9 +72,9 @@ namespace AdrPlus.Domain
 
         /// <summary>
         /// Gets or sets the case transformation to apply to the title portion of the filename,
-        /// e.g., <see cref="CaseFormat.CamelCase"/>, <see cref="CaseFormat.PascalCase"/>, <see cref="CaseFormat.SnakeCase"/>, or <see cref="CaseFormat.KebabCase"/>.
+        /// e.g., <see cref="CaseFormat.KebabCase"/>, <see cref="CaseFormat.PascalCase"/>, <see cref="CaseFormat.SnakeCase"/>, or <see cref="CaseFormat.KebabCase"/>.
         /// </summary>
-        public CaseFormat CaseTransform { get; set; } = CaseFormat.PascalCase;
+        public CaseFormat CaseTransform { get; set; } = CaseFormat.KebabCase;
 
         /// <summary>
         /// Gets or sets the status value for newly proposed ADRs, e.g., "Proposed".

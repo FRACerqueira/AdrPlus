@@ -102,10 +102,6 @@ namespace AdrPlus.Commands.Explorer
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateConfig.LoadPatternsConfigMigration(cancellationToken);
-                }   
 
                 parsedArgs.TryGetValue(Arguments.FileReport, out var targetreport);
                 targetreport ??= string.Empty;

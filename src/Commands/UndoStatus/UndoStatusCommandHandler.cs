@@ -136,15 +136,7 @@ namespace AdrPlus.Commands.UndoStatus
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (repoconfig.MigrationPattern.Length > 0)
-                    {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _filesystem.WriteAllTextAsync(configrootPath, jsonStringNew, cancellationToken);
-                    }
-                }
+
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
                 {

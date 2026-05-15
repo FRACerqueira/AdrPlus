@@ -109,16 +109,6 @@ namespace AdrPlus.Core
         public const string FieldFolderAdr = "folderadr";
 
         /// <summary>
-        /// The name of the configuration file used by the application to store yes value and preferences. 
-        /// </summary>
-        public const string FieldYesValue = "yesvalue";
-
-        /// <summary>
-        /// The name of the configuration file used by the application to store no value and preferences. 
-        /// </summary>
-        public const string FieldNoValue = "novalue";
-
-        /// <summary>
         /// The configuration key for the template used to generate ADR filenames, allowing users to define a custom format for how ADR files are named based on their metadata. 
         /// </summary>
         public const string FieldTemplate = "template";

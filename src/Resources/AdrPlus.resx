@@ -349,7 +349,7 @@
     <value>Description</value>
   </data>
   <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
-    <value>Invalid Culture  {0}</value>
+    <value>Invalid culture: {0}</value>
   </data>
   <data name="ValidationFieldMaxCharValue" xml:space="preserve">
     <value>The field '{0}' must have a maximum of 1 character</value>
@@ -359,12 +359,6 @@
   </data>
   <data name="FieldTitleOpenAdr" xml:space="preserve">
     <value>Command to Open ADR</value>
-  </data>
-  <data name="FieldTitleNoValue" xml:space="preserve">
-    <value>No character value</value>
-  </data>
-  <data name="FieldTitleYesValue" xml:space="preserve">
-    <value>Yes character value</value>
   </data>
   <data name="CancelledByUser" xml:space="preserve">
     <value>Cancelled by user</value>
@@ -411,9 +405,6 @@
   <data name="ConfigFieldDescLenVersion" xml:space="preserve">
     <value>Length of the version number in file names</value>
   </data>
-  <data name="ConfigFieldDescNoValue" xml:space="preserve">
-    <value>Character used to represent 'No' in prompts</value>
-  </data>
   <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
     <value>Command to open ADR files (must contain the text '{0}')</value>
   </data>
@@ -441,9 +432,6 @@
   <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
     <value>Text label for the 'Superseded' status</value>
   </data>
-  <data name="ConfigFieldDescYesValue" xml:space="preserve">
-    <value>Character used to represent 'Yes' in prompts</value>
-  </data>
   <data name="ConfigInfoFileNameSample" xml:space="preserve">
     <value>File name examples:</value>
   </data>
@@ -457,10 +445,10 @@
     <value>The configuration file already exists. Do you want to overwrite it?</value>
   </data>
   <data name="ConfigPromptSelectField" xml:space="preserve">
-    <value>Select field to edit</value>
+    <value>Select a field to edit</value>
   </data>
   <data name="ConfigPromptSelectNewValues" xml:space="preserve">
-    <value>Select new values</value>
+    <value>Select the new values</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
@@ -491,9 +479,6 @@
   </data>
   <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
     <value>Duplicate scope entries found</value>
-  </data>
-  <data name="ErrMsgYesNoConflict" xml:space="preserve">
-    <value>Yes and No values cannot be the same</value>
   </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>Init command has not been executed. Run 'adrplus init' first</value>
@@ -655,7 +640,7 @@
     <value>Choose an ADR</value>
   </data>
   <data name="NotFoundADR" xml:space="preserve">
-    <value>Not found ADR´s</value>
+    <value>No ADRs found</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>File</value>
@@ -709,19 +694,19 @@
     <value>Wizard to reject an ADR (supress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
-    <value>Wizard to undo the status (accepted/rejected) of an ADR (suprime todos os outros argumentos)</value>
+    <value>Wizard to undo the status (accepted/rejected) of an ADR (suppress all other arguments)</value>
   </data>
   <data name="WaitReadFiles" xml:space="preserve">
-    <value>Wait, reading ADR´s...</value>
+    <value>Please wait, reading ADRs...</value>
   </data>
   <data name="InvalidAppStructure" xml:space="preserve">
-    <value>Invalid application json file  structure</value>
+    <value>Invalid application JSON file structure</value>
   </data>
   <data name="InvalidRepoStructure" xml:space="preserve">
-    <value>Invalid repository json file  structure</value>
+    <value>Invalid repository JSON file structure</value>
   </data>
   <data name="WhenNotWizard" xml:space="preserve">
-    <value>when not wizard</value>
+    <value>When not in wizard mode</value>
   </data>
   <data name="HelpUsageWizardConfigApp" xml:space="preserve">
     <value>Application settings wizard (if file argument is not provided)</value>
@@ -760,7 +745,7 @@
     <value>Undone</value>
   </data>
   <data name="SelectAnOption" xml:space="preserve">
-    <value>Select  an option</value>
+    <value>Select an option</value>
   </data>
   <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
     <value>ADR template settings wizard  (if file argument is not provided)</value>
@@ -954,12 +939,6 @@
   <data name="PromptEmptyTemplate" xml:space="preserve">
     <value>Use model without data</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>No</value>
-  </data>
   <data name="ErrMsgFileTemplateNotFound" xml:space="preserve">
     <value>Template file not found</value>
   </data>
@@ -1069,7 +1048,7 @@
     <value>Status Created text in header</value>
   </data>
   <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
-    <value>Status created text in header</value>
+    <value>Status changed text in header</value>
   </data>
   <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
     <value>Status superseded text in header</value>
@@ -1081,7 +1060,7 @@
     <value>Values text header</value>
   </data>
   <data name="FieldTitleHeaderMigrated" xml:space="preserve">
-    <value>Migrant's comment</value>
+    <value>Migration comment</value>
   </data>
   <data name="Superseded" xml:space="preserve">
     <value>Superseded</value>
@@ -1117,7 +1096,7 @@
     <value>Ready to migrate</value>
   </data>
   <data name="ViewOnlyPrompt" xml:space="preserve">
-    <value>View only. Press &lt;enter&gt; to continue</value>
+    <value>View only. Press Enter to continue</value>
   </data>
   <data name="WizardConfigMigratedTitle" xml:space="preserve">
     <value>Migrate existing ADRs to ADRs Plus compatibility</value>
@@ -1162,10 +1141,10 @@
     <value>Current Status</value>
   </data>
   <data name="StatusCreated" xml:space="preserve">
-    <value>Initial status</value>
+    <value>Status created</value>
   </data>
   <data name="StatusUpdated" xml:space="preserve">
-    <value>Updated status</value>
+    <value>Status updated</value>
   </data>
   <data name="PromptFieldsReport" xml:space="preserve">
     <value>Fields to show</value>
@@ -1213,7 +1192,7 @@
     <value>Show help information</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
-    <value>Migrate pattern</value>
+    <value>Migration pattern</value>
   </data>
   <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
     <value>Migration settings wizard (if file argument is not provided)</value>

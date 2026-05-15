@@ -22,15 +22,5 @@ namespace AdrPlus.Domain
         /// Gets the command used to open an ADR.
         /// </summary>
         public string ComandOpenAdr { get; init; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the character used for yes responses. Optional, can be empty for the default language (pt-br or en-us).
-        /// </summary>
-        public string YesValue { get; init; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the character used for no responses. Optional, can be empty for the default language (pt-br or en-us).
-        /// </summary>
-        public string NoValue { get; init; } = string.Empty;
     }
 }

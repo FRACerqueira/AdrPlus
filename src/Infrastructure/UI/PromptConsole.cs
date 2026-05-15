@@ -426,15 +426,6 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
             PromptPlus.Config.PageSize = 8;
-
-            if (!string.IsNullOrWhiteSpace(config.YesValue))
-            {
-                PromptPlus.Config.YesChar = config.YesValue[0];
-            }
-            if (!string.IsNullOrWhiteSpace(config.NoValue))
-            {
-                PromptPlus.Config.NoChar = config.NoValue[0];
-            }
         }
 
         public void PromptEnsureCulture(AdrPlusConfig config)
@@ -446,14 +437,6 @@ namespace AdrPlus.Infrastructure.UI
             CultureInfo.CurrentCulture = cultureInfo;
             CultureInfo.CurrentUICulture = cultureInfo;
             PromptPlus.Config.DefaultCulture = cultureInfo; 
-            if (!string.IsNullOrWhiteSpace(config.YesValue))
-            {
-                PromptPlus.Config.YesChar = config.YesValue[0];
-            }
-            if (!string.IsNullOrWhiteSpace(config.NoValue))
-            {
-                PromptPlus.Config.NoChar = config.NoValue[0];
-            }
         }
 
         /// <inheritdoc/>
@@ -496,7 +479,6 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .AddItems(fields.Where(x => x.IsEnabled), false)
-                .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
@@ -526,8 +508,6 @@ namespace AdrPlus.Infrastructure.UI
         {
                 { AppConstants.FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
                 { AppConstants.FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
-                { AppConstants.FieldYesValue, Resources.AdrPlus.FieldTitleYesValue },
-                { AppConstants.FieldNoValue, Resources.AdrPlus.FieldTitleNoValue },
                 { AppConstants.FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
                 { AppConstants.FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
                 { AppConstants.FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
@@ -687,44 +667,7 @@ namespace AdrPlus.Infrastructure.UI
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
         }
 
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldYesNoChar(FieldsJson fieldsJson, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .InputToCase(CaseOptions.Uppercase)
-                .MaxLength(1)
-                .AcceptInput(input => char.IsAsciiLetter(input))
-                .PredicateSelected(input =>
-                {
-                    if (input.Length == 0)
-                    {
-                        return (true, string.Empty);
-                    }
-                    var yesfield = fields.First(f => f.Name == AppConstants.FieldYesValue);
-                    var nofield = fields.First(f => f.Name == AppConstants.FieldNoValue);
-                    var isvalid = true;
-                    if (fieldsJson.Name == AppConstants.FieldYesValue)
-                    {
-                        isvalid = input != nofield.Value;
-                    }
-                    if (fieldsJson.Name == AppConstants.FieldNoValue)
-                    {
-                        isvalid = input != yesfield.Value;
-                    }
-                    if (!isvalid)
-                    {
-                        return (false, Resources.AdrPlus.ErrMsgYesNoConflict);
-                    }
-                    return (true, string.Empty);
-                })
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
+         /// <inheritdoc/>
         public (bool IsAborted, int Content) PromptEditFieldLenSeq(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
@@ -733,7 +676,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 3)
                 .Layout(SliderLayout.UpDown)
                 .Step(1)
-                .LargeStep(5)
+                .LargeStep(1)
                 .Range(3, 5)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!);
@@ -748,7 +691,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 0)
                 .Layout(SliderLayout.UpDown)
                 .Step(1)
-                .LargeStep(3)
+                .LargeStep(1)
                 .Range(0, 3)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!);
@@ -763,7 +706,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 2)
                 .Layout(SliderLayout.UpDown)
                 .Step(1)
-                .LargeStep(3)
+                .LargeStep(1)
                 .Range(2, 3)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 2 : (int)result.Content!);
@@ -852,8 +795,6 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.PromptEmptyTemplate}: ";
             var result = PromptPlus.Controls
                 .Switch(message, Resources.AdrPlus.HelpUsageEmptyAdr)
-                .OffValue(Resources.AdrPlus.No)
-                .OnValue(Resources.AdrPlus.Yes)
                 .Run(cancellationToken);
             return (result.IsAborted, !result.IsAborted && (bool)result.Content!);
         }
@@ -1322,8 +1263,6 @@ namespace AdrPlus.Infrastructure.UI
                 AppConstants.FieldFolderAdr => Resources.AdrPlus.ConfigFieldDescFolderRepo,
                 AppConstants.FieldMigrationPattern => Resources.AdrPlus.ConfigFieldDescMigrationPattern,
                 AppConstants.FieldOpenAdr => Resources.AdrPlus.ConfigFieldDescOpenAdr,
-                AppConstants.FieldYesValue => Resources.AdrPlus.ConfigFieldDescYesValue,
-                AppConstants.FieldNoValue => Resources.AdrPlus.ConfigFieldDescNoValue,
                 AppConstants.FieldPrefix => Resources.AdrPlus.ConfigFieldDescPrefix,
                 AppConstants.FieldLenSeq => Resources.AdrPlus.ConfigFieldDescLenSeq,
                 AppConstants.FieldLenVersion => Resources.AdrPlus.ConfigFieldDescLenVersion,

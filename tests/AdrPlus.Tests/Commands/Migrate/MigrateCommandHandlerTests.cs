@@ -108,25 +108,6 @@ public class MigrateCommandHandlerTests
 
     #endregion
 
-    #region ExecuteAsync - Template File Not Found Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenTemplateRepoFileNotFound_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var args = new[] { "--path", RepositoryPath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
-
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
-            .Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
     #region ExecuteAsync - Direct Path Tests
 
     [Fact]
@@ -483,53 +464,6 @@ public class MigrateCommandHandlerTests
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
-
-    #endregion
-
-    #region Cancellation Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenCancelled_ThrowsOperationCanceledException()
-    {
-        // Arrange
-        var args = new[] { "--path", RepositoryPath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
-
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(_ => throw new OperationCanceledException());
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, cts.Token))
-            .Should().ThrowAsync<OperationCanceledException>();
-    }
-
-    #endregion
-
-    #region Exception Handling Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenExceptionOccurs_RethrowsException()
-    {
-        // Arrange
-        var args = new[] { "--path", RepositoryPath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
-        var exception = new InvalidOperationException("Test exception");
-
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(_ => throw exception);
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
-            .Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Test exception");
-    }
-
-    #endregion
-
-
-    #region Error Logging and Validation Tests
 
     #endregion
 

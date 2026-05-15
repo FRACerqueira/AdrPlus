@@ -121,15 +121,6 @@ namespace AdrPlus.Commands.NewAdr
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (repoconfig.MigrationPattern.Length > 0)
-                    {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _filesystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
-                    }
-                }
 
                 ValidateScopeAndDomain(repoconfig, parsedArgs);
 
@@ -419,19 +410,7 @@ namespace AdrPlus.Commands.NewAdr
                 }
 
                 var auxconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (auxconfig.MigrationPattern.Length == 0)
-                {
-                    auxconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (auxconfig.MigrationPattern.Length == 0)
-                    {
-                        auxconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                        if (auxconfig.MigrationPattern.Length > 0)
-                        {
-                            var jsonStringNew = JsonSerializer.Serialize(auxconfig, AppConstants.RepoSerializerOptions);
-                            await _filesystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
-                        }
-                    }
-                }
+
                 parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
                 defFolder = folderPrompt.Content;
 

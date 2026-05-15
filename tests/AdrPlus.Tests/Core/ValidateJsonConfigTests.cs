@@ -70,8 +70,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
     }
@@ -688,9 +686,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""invalid-culture"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
+                ""comandopenadr"": ""code {0}""
             }
         }";
 
@@ -711,8 +707,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": """",
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
@@ -732,8 +726,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": ""code"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
@@ -754,8 +746,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": """",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
@@ -766,49 +756,6 @@ public class ValidateJsonConfigTests
         IsValid.Should().BeTrue();
     }
 
-    [Fact]
-    public void ValidateAppStructure_WithYesValueTooLong_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""yes"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("yesvalue"));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithNoValueTooLong_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""no""
-            }
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("novalue"));
-    }
 
     [Fact]
     public void ValidateAppStructure_WithExtraFields_ReturnsInvalid()
@@ -819,8 +766,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n"",
                 ""extrafield"": ""should not exist""
             }
         }";
@@ -842,8 +787,6 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": 123,
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
@@ -1650,14 +1593,12 @@ public class ValidateJsonConfigTests
     public void ValidateAppStructure_WithInvalidLanguageCode_ReturnsError()
     {
         // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var jsonContent = """
         {
             "DefaultSettings": {
                 "Language": "invalid-lang",
-                "OpenAdr": "command {0}",
-                "YesValue": "y",
-                "NoValue": "n"
+                "OpenAdr": "command {0}"
             }
         }
         """;
@@ -1670,54 +1611,6 @@ public class ValidateJsonConfigTests
         result.ErrorReport.Should().Contain(e => e.Contains("Language", StringComparison.OrdinalIgnoreCase));
     }
 
-    [Fact]
-    public void ValidateAppStructure_WithYesValueTooLong_ReturnsError()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
-        var jsonContent = """
-        {
-            "DefaultSettings": {
-                "Language": "en",
-                "OpenAdr": "command {0}",
-                "YesValue": "yes",
-                "NoValue": "n"
-            }
-        }
-        """;
-
-        // Act
-        var result = validator.ValidateAppStructure(jsonContent);
-
-        // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("YesValue", StringComparison.OrdinalIgnoreCase));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithNoValueTooLong_ReturnsError()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
-        var jsonContent = """
-        {
-            "DefaultSettings": {
-                "Language": "en",
-                "OpenAdr": "command {0}",
-                "YesValue": "y",
-                "NoValue": "no"
-            }
-        }
-        """;
-
-        // Act
-        var result = validator.ValidateAppStructure(jsonContent);
-
-        // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("NoValue", StringComparison.OrdinalIgnoreCase));
-    }
-
     #endregion
 
     #region Validation Rules - Repo Config
@@ -1726,7 +1619,7 @@ public class ValidateJsonConfigTests
     public void ValidateRepoStructure_WithInvalidSeparator_ReturnsError()
     {
         // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var invalidJson = CreateValidRepoJson();
         var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
         jsonObj![AppConstants.FieldSeparator] = "|"; // Invalid separator
@@ -1744,7 +1637,7 @@ public class ValidateJsonConfigTests
     public void ValidateRepoStructure_WithInvalidCaseTransform_ReturnsError()
     {
         // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var invalidJson = CreateValidRepoJson();
         var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
         jsonObj![AppConstants.FieldCaseTransform] = "UPPERCASE"; // Invalid case transform
@@ -1762,7 +1655,7 @@ public class ValidateJsonConfigTests
     public void ValidateRepoStructure_WithLenSeqTooSmall_ReturnsError()
     {
         // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var invalidJson = CreateValidRepoJson();
         var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
         jsonObj![AppConstants.FieldLenSeq] = 2; // Too small, minimum is 3
@@ -1780,7 +1673,7 @@ public class ValidateJsonConfigTests
     public void ValidateRepoStructure_WithScopesMissingWhenLenScopeZero_IsValid()
     {
         // Arrange - Scopes is empty when LenScope is 0, which is valid
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var validJson = CreateValidRepoJson();
 
         // Act
@@ -1794,7 +1687,7 @@ public class ValidateJsonConfigTests
     public void ValidateRepoStructure_WithScopesEmptyWhenLenScopePositive_ReturnsError()
     {
         // Arrange - Scopes is empty when LenScope > 0, which is invalid
-        var validator = CreateValidator(new Dictionary<string, string?> { });
+        var validator = CreateValidator([]);
         var invalidJson = CreateValidRepoJson();
         var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
         jsonObj![AppConstants.FieldLenScope] = 2;

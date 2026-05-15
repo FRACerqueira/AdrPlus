@@ -62,7 +62,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application and repository settings
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
-- 🔄 **Migrate** existing ADRs to the standardized format with a simple command
+- 🔄 **Migrate** existing ADRs to the standardized format
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
@@ -151,18 +151,21 @@ Using this for the first time? Follow the step-by-step guide to set up and creat
 ```bash
 # 1. Configure the tool (optional, you can edit the config file directly or use the config command later)
 
-    # Configure application settings (language, prompts, defaults)
+    # Configure application settings (optional: language, prompts, defaults)
     adrplus config --application
 
-    # Configure the base template used for new ADRs
+    # Configure the base template used for new ADRs (optional: default template is madr)
     adrplus config --template
+
+    # Configure pattern migrated ADRs (optional: used when migrating existing ADRs) 
+    adrplus config --migrate
 
     # Configure repository settings (ADR naming, template, statuses, and structure)
     adrplus config --repository
 
 # 2. Initialize a new ADR repository in the current directory
     
-        adrplus init --wizard
+    adrplus init --wizard
 
 # 3. Create your first ADR
 
@@ -186,9 +189,11 @@ You can also execute commands directly, one by one, without the wizard and witho
 ```bash
 # Configure the tool (optional, you can edit the config file directly or use the config command later)
 
-    adrplus config --application --file "path/to/file-config"
+    adrplus config --application --file "path/to/file-tool-config"
     adrplus config --template --file "path/to/file-template.md"
-    adrplus config --repository --file "path/to/file-config"
+    # any mode can be used for repository config, the important part is to point to the correct file
+    adrplus config --repository --file "path/to/file-adr-config"
+    adrplus config --migrate --file "path/to/file-ard-config"
 
 # Launch the ADR file viewer explorer
 
@@ -200,26 +205,29 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 # Create a new ADR directly
 
-    adrplus new --title "Use PostgreSQL as primary database" --path "path/to/repository"
+    # the parameter --open is optional and depends on the configuration for opening files after creation/update
+    adrplus new --title "Use PostgreSQL as primary database" --path "path/to/repository" --open
 
 # Approve or reject a specific ADR file
 
-    adrplus approve --file "./doc/adr/0001-usepostgresql.md"
-    adrplus reject --file "./doc/adr/0002-legacycache.md"
+    adrplus approve --file "./doc/adr/ADR0001V01-use-postgresql.md"
+    adrplus reject --file "./doc/adr/ADR0002V01-legacy-cache.md"
 
 # Undo last status change
 
-    adrplus undo --file "./doc/adr/0001-usepostgresql.md"
+    adrplus undo --file "./doc/adr/ADR0001V01-use-postgresql.md"
 
 # Create supersede flows
 
-    adrplus approve --file "./doc/adr/0001-usepostgresql.md"
-    adrplus supersede --file "./doc/adr/0001-usepostgresql.md"
+    adrplus approve --file "./doc/adr/ADR0001V01-use-postgresql.md"
+    # the parameter --open is optional and depends on the configuration for opening files after creation/update
+    adrplus supersede --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 # Create review/version flows
 
-    adrplus review --file "./doc/adr/0001-usepostgresql.md"
-    adrplus version --file "./doc/adr/0001-usepostgresql.md"
+    # the parameter --open is optional and depends on the configuration for opening files after creation/update
+    adrplus review --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
+    adrplus version --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 ```
 
@@ -235,7 +243,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `wizard`    | Launch the interactive wizard for guided operations                          |
 | `config`    | Application configuration editor, repository, and default ADR template       |
 | `explorer`  | Launch the file viewer explorer and report for the ADR repository            |
-| `migrate`   | Migrate existing ADRs to use the tool (create header)                        |
+| `migrate`   | Migrate existing ADRs to use the tool                   |
 | `init`      | Initialize the ADR repository folder structure                               |
 | `upgrade`   | Upgrade repository's settings                                                |
 | `new`       | Create a new ADR with an incremental number                                  |
@@ -270,7 +278,7 @@ The rules below describe what must be true for a command to select its target su
 
 AdrPlus uses two configuration files:
 
-- `adrplus.json`: application-level settings (language, prompts, defaults).
+- `adrplus.json`: application-level settings (language and command to open ADR).
 - `adr-config.adrplus`: repository-level settings (ADR naming, template, statuses, and structure).
 
 ### `adrplus.json` example
@@ -284,17 +292,13 @@ adrplus config --application
 ```json
 {
   "Language": "en-US",
-  "YesValue": "",
-  "NoValue": "",
   "ComandOpenAdr": "code {0}"
 }
 ```
 
 | Key | Description |
 |-----|-------------|
-|`Language`| UI language/culture used by the tool (for example: `en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
-|`YesValue`| Default confirmation value for positive responses (for example: `Y`, `yes`, `sim`). Leave empty to use the default for the configured language. |
-|`NoValue`| Default confirmation value for negative responses (for example: `N`, `no`, `não`). Leave empty to use the default for the configured language. |
+|`Language`| UI language/culture used by the tool (`en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
 |`ComandOpenAdr`| Command to open an ADR file after creation/update when supported. See examples below. |
 
 ##### Examples for `ComandOpenAdr`
@@ -323,6 +327,7 @@ adrplus config --repository
 ```json
 {
   "folderadr": "doc/adr",
+  "migrationpattern": "...",
   "template": "...",
   "prefix": "ADR",
   "lenseq": 4,
@@ -356,7 +361,8 @@ adrplus config --repository
 | Key | Description |
 |-----|-------------|
 | `folderadr` | Folder where ADR files are stored. |
-| `template` | Base Markdown template used when creating new ADR files (generated automatically; not editable). |
+| `migrationpattern` | Pattern used for migrating ADR files (generated by the tool). |
+| `template` | Base Markdown template used when creating new ADR files (generated by the tool). |
 | `prefix` | Prefix used in ADR titles/identifiers (for example: `ADR`). |
 | `lenseq` | Number of digits for the sequential ADR number (for example: `4` => `0001`). |
 | `lenversion` | Number of digits for major version formatting (for example: `2` => `01`). |
@@ -400,12 +406,12 @@ Before selecting a team profile, understand these key concepts:
   - `PascalCase`: `UsePostgreSQLAsDatabase`
   - `CamelCase`: `usePostgreSQLAsDatabase`
   - `SnakeCase`: `use_postgresql_as_database`
-  - `KebabCase`: `use-postgresql-as-database`
+  - `KebabCase`: `use-postgresql-as-database` (default)
 
 - **Separator**: The character separating different parts of the filename:
-  - `-` (hyphen): `ADR0001-UsePostgreSQL-V01R01.md`
-  - `_` (underscore): `ADR0001_UsePostgreSQL_V01R01.md`
-  - `.` (period): `ADR0001.UsePostgreSQL.V01R01.md`
+  - `-` (hyphen): `ADR0001V01-UsePostgreSQL.md`
+  - `_` (underscore): `ADR0001_UsePostgreSQL.md`
+  - `.` (period): `ADR0001V01.UsePostgreSQL.md`
 
 - **Version vs. Revision**: 
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
@@ -417,21 +423,21 @@ Use scopes and folder grouping to keep ADRs organized by area. Each team or doma
 
 ```json
 {
-  "scopes": "enterprise;project;backend;frontend;mobile;data",
-  "skipdomain": "enterprise",
+  "scopes": "Enterprise;Project;Backend;Frontend;Mobile;Data",
+  "skipdomain": "Enterprise",
   "folderbyscope": true,
   "lenscope": 1,
   "separator": "-",
   "casetransform": "PascalCase",
   "lenversion": 2,
-  "lenrevision": 2
+  "lenrevision": 0
 }
 ```
 
 **Example filenames generated**:
-- `doc/adr/enterprise/ADR0001-UnifyAuthenticationStrategy-V01R01-E.md`
-- `doc/adr/backend/ADR0001-UsePostgreSQL-V01R01-B-MyBackEndScope.md`
-- `doc/adr/frontend/ADR0001-AdoptReactFramework-V01R01-F-MyFrontEndScope.md`
+- `doc/adr/Enterprise/ADR0001V01E-UnifyAuthenticationStrategy.md`
+- `doc/adr/Backend/ADR0001V01B-UsePostgreSQ@MyBackEndScope.md`
+- `doc/adr/Frontend/ADR0001V01F-AdoptReactFramework@MyFrontEndScope.md`
 
 #### 2) Simple repository
 
@@ -450,8 +456,8 @@ Use a simple flat structure with no scope folder split. Ideal for smaller projec
 ```
 
 **Example filenames generated**:
-- `doc/adr/ADR0001-UsePostgreSQL-V01.md`
-- `doc/adr/ADR0002-AdoptReactFramework-V01.md`
+- `doc/adr/ADR0001V01-UsePostgreSQL.md`
+- `doc/adr/ADR0002V01-AdoptReactFramework.md`
 
 #### 3) Product team with frequent revisions
 
@@ -466,10 +472,10 @@ Keep revision metadata visible and standardized. Useful for teams that frequentl
 ```
 
 **Example filenames generated**:
-- `doc/adr/ADR0001-DecisionTitle-V01R01.md` (created)
-- `doc/adr/ADR0001-DecisionTitle-V01R02.md` (after revision)
-- `doc/adr/ADR0001-DecisionTitle-V02R01.md` (after version bump)
-- `doc/adr/ADR0002-DecisionTitle-V01R01-0001.md` (after superseded bump)
+- `doc/adr/ADR0001V01R01-DecisionTitle.md` (created)
+- `doc/adr/ADR0001V02R01-DecisionTitle.md` (after revision)
+- `doc/adr/ADR0001V03R02-DecisionTitle.md` (after version bump)
+- `doc/adr/ADR0002V01R01-DecisionTitle--0001.md` (after superseded bump)
 
 #### 4) Enterprise with department scopes
 
@@ -477,20 +483,20 @@ Organize ADRs by department with custom headers and folder structure.
 
 ```json
 {
-  "scopes": "infrastructure;database;platform;security",
-  "skipdomain": "platform",
+  "scopes": "Infrastructure;Database;Platform;Security",
+  "skipdomain": "Platform",
   "folderbyscope": true,
   "lenscope": 3,
   "separator": "-",
-  "casetransform": "KebabCase",
+  "casetransform": "PascalCase",
   "lenversion": 2,
   "lenrevision": 0
 }
 ```
 
 **Example filenames generated**:
-- `doc/adr/infrastructure/ADR0001-UseDockerContainers-V01-Inf.md` (infrastructure/Docker decision)
-- `doc/adr/database/ADR0001-AdoptPostgresql-V01-Dat.md` (database/PostgreSQL decision)
+- `doc/adr/Infrastructure/ADR0001V01Inf-UseDockerContainers.md` (Infrastructure)
+- `doc/adr/Database/ADR0001V01Dat-AdoptPostgresql.md` (Database)
 
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.

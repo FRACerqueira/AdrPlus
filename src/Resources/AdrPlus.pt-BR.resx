@@ -124,10 +124,10 @@
     <value>'content' contém um caminho de arquivo inválido: {0}</value>
   </data>
   <data name="ErrMsgContentPathTooLong" xml:space="preserve">
-    <value>'content' caminho de arquivo muito longo: '{0}'</value>
+    <value>'content' — caminho de arquivo muito longo: '{0}'</value>
   </data>
   <data name="ErrMsgContentPathNotSupported" xml:space="preserve">
-    <value>'content' formato de caminho de arquivo não suportado: '{0}'</value>
+    <value>'content' — formato de caminho de arquivo não suportado: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
     <value>'folderRepo' deve ser um caminho relativo. Caminhos absolutos não são permitidos: '{0}'</value>
@@ -349,7 +349,7 @@
     <value>Descrição</value>
   </data>
   <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
-    <value>Cultura inválida: {0}</value>
+    <value>Idioma inválido: {0}</value>
   </data>
   <data name="ValidationFieldMaxCharValue" xml:space="preserve">
     <value>O campo '{0}' deve ter no máximo 1 caractere</value>
@@ -359,12 +359,6 @@
   </data>
   <data name="FieldTitleOpenAdr" xml:space="preserve">
     <value>Comando para Abrir ADR</value>
-  </data>
-  <data name="FieldTitleNoValue" xml:space="preserve">
-    <value>Valor do caractere Não</value>
-  </data>
-  <data name="FieldTitleYesValue" xml:space="preserve">
-    <value>Valor do caractere Sim</value>
   </data>
   <data name="CancelledByUser" xml:space="preserve">
     <value>Cancelado pelo usuário</value>
@@ -411,9 +405,6 @@
   <data name="ConfigFieldDescLenVersion" xml:space="preserve">
     <value>Comprimento do número de versão nos nomes de arquivo</value>
   </data>
-  <data name="ConfigFieldDescNoValue" xml:space="preserve">
-    <value>Caractere usado para representar 'Não' em prompts</value>
-  </data>
   <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
     <value>Comando para abrir arquivos ADR (deve conter o texto '{0}')</value>
   </data>
@@ -440,9 +431,6 @@
   </data>
   <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
     <value>Etiqueta de texto para o status 'Substituído'</value>
-  </data>
-  <data name="ConfigFieldDescYesValue" xml:space="preserve">
-    <value>Caractere usado para representar 'Sim' em prompts</value>
   </data>
   <data name="ConfigInfoFileNameSample" xml:space="preserve">
     <value>Exemplos de nomes de arquivo:</value>
@@ -491,9 +479,6 @@
   </data>
   <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
     <value>Entradas de escopo duplicadas encontradas</value>
-  </data>
-  <data name="ErrMsgYesNoConflict" xml:space="preserve">
-    <value>Os valores Sim e Não não podem ser iguais</value>
   </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>Comando Init não foi executado. Execute 'adrplus init' primeiro</value>
@@ -943,7 +928,7 @@
     <value>Pressione qualquer tecla para continuar</value>
   </data>
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
-    <value>O ADR foi rejeitado. Você quer continuar?</value>
+    <value>O ADR foi rejeitado. Deseja continuar?</value>
   </data>
   <data name="CmdDescUpgrade" xml:space="preserve">
     <value>Atualizar configurações do repositório</value>
@@ -953,12 +938,6 @@
   </data>
   <data name="PromptEmptyTemplate" xml:space="preserve">
     <value>Usar modelo sem dados</value>
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Sim</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>Não</value>
   </data>
   <data name="ErrMsgFileTemplateNotFound" xml:space="preserve">
     <value>Arquivo de modelo não encontrado</value>
@@ -988,7 +967,7 @@
     <value>O valor do tamanho da revisão deve ser um número inteiro e entre 1 e 3</value>
   </data>
   <data name="ErrMsgRepoScopeValueMustBeIntegerAndRangeScope" xml:space="preserve">
-    <value>O valor do tamanho do escopo deve ser um número inteiro  e entre 1 e 5</value>
+    <value>O valor do tamanho do escopo deve ser um número inteiro entre 1 e 5</value>
   </data>
   <data name="PromptSelectAdrRepositoryAdr" xml:space="preserve">
     <value>Selecione o caminho do repositório ADR</value>
@@ -1039,7 +1018,7 @@
     <value>Não é possível determinar o caminho raiz com a configuração ADR</value>
   </data>
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
-    <value>Assistente para migrar os ADR´s para uso da ferramenta AdrPlus (criação do cabeçalho)</value>
+    <value>Assistente para migrar os ADRs para uso da ferramenta AdrPlus (criação do cabeçalho)</value>
   </data>
   <data name="DefaultHeaderTitleFile" xml:space="preserve">
     <value>Título do aquivo md</value>
@@ -1057,28 +1036,28 @@
     <value>Migrado</value>
   </data>
   <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
-    <value>Texto título do Arquivo no cabeçalho</value>
+    <value>Texto de título do arquivo no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderScope" xml:space="preserve">
-    <value>Texto escopo no cabeçalho</value>
+    <value>Texto de escopo no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderDomain" xml:space="preserve">
-    <value>Texto domínio no cabeçalho</value>
+    <value>Texto de domínio no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
-    <value>Texto status criado no cabeçalho</value>
+    <value>Texto de status criado no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
-    <value>Texto status modificado no cabeçalho</value>
+    <value>Texto de status modificado no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
-    <value>Texto status substituído </value>
+    <value>Texto de status substituído no cabeçalho</value>
   </data>
   <data name="FieldTitleHeaderTableFields" xml:space="preserve">
-    <value>Texto cabeçalho dos campos</value>
+    <value>Texto de cabeçalho dos campos</value>
   </data>
   <data name="FieldTitleHeaderTableValues" xml:space="preserve">
-    <value>Texto cabeçalho de valores</value>
+    <value>Texto de cabeçalho de valores</value>
   </data>
   <data name="FieldTitleHeaderMigrated" xml:space="preserve">
     <value>Comentário de migrado</value>
@@ -1087,34 +1066,34 @@
     <value>Substituído</value>
   </data>
   <data name="ErrMsgAdrInvalidHeader" xml:space="preserve">
-    <value>Cabeçalho inválido</value>
+    <value>Cabeçalho do ADR inválido</value>
   </data>
   <data name="ErrMsgAdrHeaderDomainInvalid" xml:space="preserve">
     <value>O arquivo ADR não possui o cabeçalho de domínio esperado</value>
   </data>
   <data name="ErrMsgAdrHeaderStatusSupersededLineInvalid" xml:space="preserve">
-    <value>O arquivo ADR não possui o status de subistituição esperado</value>
+    <value>O arquivo ADR não possui o status de substituição esperado</value>
   </data>
   <data name="PromptConfirmMigration" xml:space="preserve">
     <value>Confirmar a migração de ADR para esses arquivos?</value>
   </data>
   <data name="NotFoundValidMigrateADR" xml:space="preserve">
-    <value>Não encontrados ADR com critérios validos para migração</value>
+    <value>Não encontrados ADRs com critérios válidos para migração</value>
   </data>
   <data name="PromptAdrToMigrate" xml:space="preserve">
     <value>ADRs para migrar</value>
   </data>
   <data name="MsgUnknownStructure" xml:space="preserve">
-    <value>Estrutura desconhecida</value>
+    <value>Estrutura desconhecida do arquivo</value>
   </data>
   <data name="AdrPlusFormat" xml:space="preserve">
     <value>Formato AdrPlus</value>
   </data>
   <data name="InvalidFormatHeader" xml:space="preserve">
-    <value>Cabeçalho com  formato inválido</value>
+    <value>Cabeçalho com formato inválido</value>
   </data>
   <data name="ReadyToMigrate" xml:space="preserve">
-    <value>Pronto para migrar</value>
+    <value>Pronto para migração</value>
   </data>
   <data name="ViewOnlyPrompt" xml:space="preserve">
     <value>Somente visualização. Pressione &lt;enter&gt; para continuar</value>
@@ -1201,7 +1180,7 @@
     <value>Relatório e explorador</value>
   </data>
   <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
-    <value>Cria relatório e mostra metadados das ARDs  </value>
+    <value>Cria relatório e exibe metadados dos ADRs</value>
   </data>
   <data name="FilesExplored" xml:space="preserve">
     <value>Arquivos explorados</value>
@@ -1258,7 +1237,7 @@
     <value>Selecione um comprimento para o elemento 'Número' no nome do arquivo</value>
   </data>
   <data name="PromptVersionPosition" xml:space="preserve">
-    <value>Selecione uma posição para o elemento 'Versão' em nome do arquivo</value>
+    <value>Selecione uma posição para o elemento 'Versão' no nome do arquivo</value>
   </data>
   <data name="PromptVersionLength" xml:space="preserve">
     <value>Selecione um comprimento para o elemento 'Versão' no nome do arquivo</value>
@@ -1270,7 +1249,7 @@
     <value>Selecione um comprimento para o elemento 'Revisão' no nome do arquivo</value>
   </data>
   <data name="PromptTitlePosition" xml:space="preserve">
-    <value>Selecione uma posição para o elemento 'Título' em nome do arquivo</value>
+    <value>Selecione uma posição para o elemento 'Título' no nome do arquivo</value>
   </data>
   <data name="PromptConfirmParamMigration" xml:space="preserve">
     <value>Confirmar seus parâmetros?</value>
@@ -1285,6 +1264,6 @@
     <value>Configuração de padrões de migração vazia : {0}</value>
   </data>
   <data name="AlredyAdrPlusCreated" xml:space="preserve">
-    <value>Já existem ADRs que foram criadas usando esta ferramenta</value>
+    <value>Já existem ADRs que foram criados usando esta ferramenta</value>
   </data>
 </root>

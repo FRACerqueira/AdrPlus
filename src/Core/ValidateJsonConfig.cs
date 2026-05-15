@@ -819,9 +819,6 @@ namespace AdrPlus.Core
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
                     { AppConstants.FieldOpenAdr, JsonValueKind.String },
-                    { AppConstants.FieldYesValue, JsonValueKind.String },
-                    { AppConstants.FieldNoValue, JsonValueKind.String },
-
                 };
 
                 // Check for missing required fields
@@ -891,20 +888,6 @@ namespace AdrPlus.Core
             if (openAdrValue.Length > 0 && !openAdrValue.Contains("{0}"))
             {
                 errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldOpenAdr, "{0}"));
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldYesValue);
-            var yesvalueValue = property.GetString() ?? string.Empty;
-            if (yesvalueValue.Length > 1)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldMaxCharValue, AppConstants.FieldYesValue));
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldNoValue);
-            var novalueValue = property.GetString() ?? string.Empty;
-            if (novalueValue.Length > 1)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldMaxCharValue, AppConstants.FieldNoValue));
             }
             return [.. errors];
         }

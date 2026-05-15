@@ -142,15 +142,6 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (repoconfig.MigrationPattern.Length > 0)
-                    {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _filesystem.WriteAllTextAsync(configrootPath, jsonStringNew, cancellationToken);
-                    }
-                }
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
@@ -363,10 +354,7 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                }
+
                 var curpos = _prompt.PromptGetCursorPosition();
                 _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
                 var filesadrs = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, repoconfig,false);

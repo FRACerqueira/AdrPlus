@@ -35,7 +35,7 @@ public class AdrConfigMapperServiceTests
         config.LenRevision.Should().Be(0);
         config.LenScope.Should().Be(0);
         config.Separator.Should().Be('-');
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase);
+        config.CaseTransform.Should().Be(CaseFormat.KebabCase);
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public class AdrConfigMapperServiceTests
         var config = _mapper.FromJson(json, _template);
 
         // Assert
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase);
+        config.CaseTransform.Should().Be(CaseFormat.KebabCase);
     }
 
     [Fact]
@@ -376,7 +376,7 @@ public class AdrConfigMapperServiceTests
         // Assert
         config.Prefix.Should().Be(Resources.AdrPlus.DefaultPrefix); // Default
         config.LenSeq.Should().Be(3); // Default
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase); // Default
+        config.CaseTransform.Should().Be(CaseFormat.KebabCase); // Default
     }
 
     #endregion
@@ -748,7 +748,7 @@ public class AdrConfigMapperServiceTests
         config.LenRevision.Should().Be(0); // Kept default
         config.LenScope.Should().Be(2); // Parsed successfully
         config.Separator.Should().Be('-'); // Kept default
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase); // Kept default
+        config.CaseTransform.Should().Be(CaseFormat.KebabCase); // Kept default
         config.StatusNew.Should().Be("Proposed"); // Parsed successfully
     }
 
@@ -790,7 +790,7 @@ public class AdrConfigMapperServiceTests
         config.LenRevision.Should().Be(0);
         config.LenScope.Should().Be(0);
         config.Separator.Should().Be('-');
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase);
+        config.CaseTransform.Should().Be(CaseFormat.KebabCase);
     }
 
     [Fact]

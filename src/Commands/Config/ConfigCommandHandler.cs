@@ -773,10 +773,6 @@ namespace AdrPlus.Commands.Config
             {
                 AppConstants.FieldLanguage => HandleEditField(() =>
                     _prompt.PromptEditFieldLanguage(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldYesValue => HandleEditField(() =>
-                    _prompt.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldNoValue => HandleEditField(() =>
-                    _prompt.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldFolderAdr => HandleEditField(() =>
                     _prompt.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldOpenAdr => HandleEditField(() =>

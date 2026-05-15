@@ -100,13 +100,13 @@ namespace AdrPlus.Commands.Migrate
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+                var hasChanges = false;
                 if (repoconfig.MigrationPattern.Length == 0)
                 {
                     repoconfig.MigrationPattern = await _validateConfig.LoadPatternsConfigMigration(cancellationToken);
                     if (repoconfig.MigrationPattern.Length > 0)
                     {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _fileSystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
+                         hasChanges = true;
                     }
                 }
 
@@ -132,6 +132,13 @@ namespace AdrPlus.Commands.Migrate
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
                     _prompt.PromptWriteSuccess(item);
+                }
+                if (hasChanges)
+                {
+                    var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                    await _fileSystem.WriteAllTextAsync(configPath, jsonStringNew, cancellationToken);
+                    LogMessages.LogCommandSuccessful(_logger, configPath);
+                    _prompt.PromptWriteSuccess(configPath);
                 }
             }
             catch (Exception ex)
