@@ -39,6 +39,7 @@ namespace AdrPlus.Extensions
         public static IServiceCollection AddAdrPlusServices(this IServiceCollection services)
         {
             services.AddSingleton<IFileSystemService, FileSystemService>();
+            services.AddSingleton<IFirstInstall, FirstInstall>();
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
             services.AddSingleton<IPromptConsole, PromptConsole>();

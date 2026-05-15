@@ -84,6 +84,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="firstinstall.adrplus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="adrplus.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -30,6 +30,13 @@ namespace AdrPlus.Infrastructure.FileSystem
         /// <returns>A tuple: <c>Success = true</c> and the deserialized <c>Result</c> when the file exists; otherwise <c>Success = false</c> and <c>Result = default</c>.</returns>
         Task<(bool Success, T? Result)> ReadHistoryAsync<T>(string fileKey, CancellationToken cancellationToken = default);
 
+
+        /// <summary>
+        /// Deletes the file at the specified path if it exists. 
+        /// </summary>
+        /// <param name="path">The path of the file to delete.</param>
+        void RemoveFile(string path);
+
         /// <summary>
         /// Determines whether the specified directory exists.
         /// </summary>

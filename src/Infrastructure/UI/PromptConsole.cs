@@ -25,12 +25,7 @@ namespace AdrPlus.Infrastructure.UI
         /// </summary>
         private const string ColorHelp = "skyblue2";
 
-        /// <summary>
-        /// Console color for welcome template messages.
-        /// </summary>
-        private const string ColorWelcomeTemplate = "yellow";
-
-        /// <summary>
+            /// <summary>
         /// Console color for the welcome banner.
         /// </summary>
         private static Color ColorWelcomeBanner => Color.DarkOrange;
@@ -431,7 +426,8 @@ namespace AdrPlus.Infrastructure.UI
         public void PromptEnsureCulture(AdrPlusConfig config)
         {
             var cultureInfo = new CultureInfo(config.Language);
-
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(config.Language);
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(config.Language);
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
             CultureInfo.CurrentCulture = cultureInfo;
@@ -821,6 +817,10 @@ namespace AdrPlus.Infrastructure.UI
                 .FileSelect(message)
                 .DefaultHistory()
                 .SearchPattern("*.md")
+                .PredicateSelected(item =>
+                    {
+                        return (!item.IsFolder) && item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase);
+                    })
                 .EnabledHistory("AdrPlusAdrTemplatePathHistory")
                 .Root(root)
                 .Run(cancellationToken);

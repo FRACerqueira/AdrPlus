@@ -10,7 +10,6 @@ using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace AdrPlus.Commands.UndoStatus

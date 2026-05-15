@@ -144,6 +144,8 @@ Using this for the first time? Follow the step-by-step guide to set up and creat
 
 [Step-by-Step Guide](StepByStepGuide.md)
 
+> **Note**: If you have existing ADR files in a different format, see [Migration Guide](MigrationGuide.md) for detailed prerequisites and migration instructions before creating new ADRs with the tool.
+
 ---
 
 ## Manual Setup with the Wizard

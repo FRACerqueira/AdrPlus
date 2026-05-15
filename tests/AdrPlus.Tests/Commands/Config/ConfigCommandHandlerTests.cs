@@ -69,6 +69,18 @@ public class ConfigCommandHandlerTests
 
     #endregion
 
+    #region ExecuteAsync - Null Args Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithNullArgs_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(null!, CancellationToken.None))
+            .Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    #endregion
+
     #region ExecuteAsync - Help Tests
 
     [Fact]
@@ -586,6 +598,55 @@ public class ConfigCommandHandlerTests
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    #endregion
+
+    #region ExecuteAsync - Multiple Config Arguments Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithBothRepositoryAndMigrationArgs_ProcessesRepository()
+    {
+        // Arrange - when both repository and migration are specified, repository takes precedence
+        var args = new[] { "--repository", "--migration" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.WizardConfigRepository, string.Empty },
+            { Arguments.WizardConfigMigration, string.Empty }
+        };
+        var configPath = RepoConfigPath;
+        var jsonContent = """{"Prefix": "ADR", "LenSeq": 4}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(false);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(jsonContent);
+        _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
+        _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
+
+        var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
+        _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+            .Returns((false, field));
+
+        var repoConfig = new AdrPlusRepoConfig("","")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase,
+            Separator = '-'
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(repoConfig);
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - repository config should be processed
+        await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     #endregion

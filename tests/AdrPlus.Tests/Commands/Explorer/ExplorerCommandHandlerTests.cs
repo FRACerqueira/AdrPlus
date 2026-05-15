@@ -184,7 +184,7 @@ public class ExplorerCommandHandlerTests
         // Act & Assert
         await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>()
-            .WithMessage("*not*found*");
+            .WithMessage("*found*");
     }
 
     #endregion

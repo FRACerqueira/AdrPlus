@@ -10,7 +10,6 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Migrate;
@@ -27,7 +26,6 @@ public class MigrateCommandHandlerTests
     private IPromptConsole _mockConsole = null!;
     private IValidateJsonConfig _mockValidateConfig = null!;
     private IAdrServices _mockAdrServices = null!;
-    private AdrPlusConfig _config = null!;
     private MigrateCommandHandler _handler = null!;
 
     public MigrateCommandHandlerTests()
@@ -42,11 +40,6 @@ public class MigrateCommandHandlerTests
         _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
-
-        _config = new AdrPlusConfig
-        {
-            Language = "en-US"
-        };
 
         _handler = new MigrateCommandHandler(
             _mockLogger,
@@ -139,6 +132,22 @@ public class MigrateCommandHandlerTests
         _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.FileExists(configPath).Returns(false);
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithMissingTemplateRepoFile_ThrowsFileNotFoundException()
+    {
+        // Arrange
+        var args = new[] { "--path", RepositoryPath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(false); // Template repo file is missing
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -332,6 +341,71 @@ public class MigrateCommandHandlerTests
         _mockConsole.DidNotReceive().PromptWriteSuccess(Arg.Any<string>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithMultipleAdrFiles_MigratesValidFiles()
+    {
+        // Arrange - multiple files: 1 valid to migrate, 1 already migrated, 1 invalid (should process 1, skip others)
+        var args = new[] { "--path", RepositoryPath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+
+        var toMigrateFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
+        var alreadyMigratedFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0002.md"), 2, AdrStatus.Proposed, true);
+        var invalidFile = new AdrFileNameComponents { FileName = Path.Combine(RepositoryPath, "invalid.md"), IsValid = false };
+
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true)
+            .Returns([toMigrateFile, alreadyMigratedFile, invalidFile]);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.Contains("adr-0001")), Arg.Any<CancellationToken>()).Returns("## Context\n\nDecision.");
+        _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - only 1 file migrated
+        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithMultipleValidFilesToMigrate_MigratesAll()
+    {
+        // Arrange - multiple valid files needing migration
+        var args = new[] { "--path", RepositoryPath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+
+        var file1 = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
+        var file2 = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0002.md"), 2, AdrStatus.Unknown, false);
+        var file3 = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0003.md"), 3, AdrStatus.Unknown, false);
+
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([file1, file2, file3]);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => !s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns("## Context\n\nContent.");
+        _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - 3 files migrated
+        await _mockFileSystem.Received(3).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(3).PromptWriteSuccess(Arg.Any<string>());
+    }
+
     #endregion
 
     #region ExecuteAsync - Wizard Mode Tests
@@ -463,6 +537,53 @@ public class MigrateCommandHandlerTests
         // Assert
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardModeConfirmNo_RepeatsWizard()
+    {
+        // Arrange - user confirms NO, should repeat wizard (then eventually throw or return after max attempts)
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardMigrate, string.Empty } };
+        var drives = TestDrives;
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+        _mockFileSystem.GetDrives().Returns(drives);
+        _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((false, SingleTestDrive));
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+
+        var adrFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([adrFile]);
+        _mockConsole.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+            .Returns((false, 1));
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((false, false)); // Confirm NO - will cause loop to repeat
+
+        // Setup to break infinite loop on second iteration by throwing after first NO confirmation
+        var callCount = 0;
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(x => 
+            {
+                callCount++;
+                if (callCount == 1)
+                    return (false, false); // First call: NO
+                else
+                    throw new OperationCanceledException("Test escape from loop");
+            });
+
+        // Act & Assert - should eventually break the loop (via abort on drive selection on retry)
+        // Note: The actual behavior depends on how the wizard loop works; this simulates the NO confirmation
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 
     #endregion

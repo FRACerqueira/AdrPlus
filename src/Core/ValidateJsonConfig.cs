@@ -6,7 +6,6 @@
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
-using AdrPlus.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text.Json;

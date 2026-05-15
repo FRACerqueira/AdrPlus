@@ -152,8 +152,8 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "headertitlestatuscreated": "Created",
   "headertitlestatuschanged": "Changed",
   "headertitlestatussuperseded": "Superseded",
-  "headertablefields": "Field",
-  "headertablevalues": "Value",
+  "headertablefields": "Fields",
+  "headertablevalues": "Values",
   "headermigrated": "Migrated"
 }
 ```
@@ -170,9 +170,9 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `lenversion` | Digits for major version (0 disables) | `2` → `V01`, `V02`, etc. |
 | `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `R01`, `R02` |
 | `lenscope` | Number of characters for scope abbreviation (0 disables) | `1` → `B`, `F`, etc. |
-| `separator` | Character between name parts | `-`, `~`, or `.` |
+| `separator` | Character between name parts | `-`, `_`, or `.` |
 | `casetransform` | Case style for names | `PascalCase`, `CamelCase`, `SnakeCase`, `KebabCase` |
-| `scopes` | Semicolon-separated list of allowed scopes | `backend;frontend;data` |
+| `scopes` | Semicolon-separated list of allowed scopes | `Backend;Frontend;Data` |
 | `folderbyscope` | Create separate folders per scope | `true` or `false` |
 | `skipdomain` | Scopes that skip domain in filenames | `data;platform` |
 | `statusnew` | Label for new ADRs | `Proposed` |
@@ -213,11 +213,45 @@ Before initializing your repository, let's understand some important concepts:
 
 - **Version vs. Revision**: 
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that represents a significant decision update.
-  - **Revision**: A minor change to an ADR (e.g., `R01`, `R02'`) that represents clarifications or documentation improvements.
+  - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
 ---
 
 ## Initialize Your Repository
+
+### ⚠️ Important: Migrate Existing ADRs First (if applicable)
+
+**If your repository already contains ADR files in a different format than the one you just configured**, you MUST execute the migration process **before creating your first ADR with AdrPlus**.
+
+**Why?** 
+- Migration transforms existing ADRs into the AdrPlus format
+- This must be done before creating any new ADRs with the tool
+- Mixing manually-created ADRs in different formats with tool-created ADRs will cause inconsistencies
+
+**To migrate existing ADRs:**
+
+1. Run the migration configuration:
+   ```bash
+   adrplus config --migrate
+   ```
+
+2. Execute the migration process using one of these methods:
+   - **Interactive wizard (recommended)**:
+     ```bash
+     adrplus migrate --wizard
+     ```
+   - **Direct path**:
+     ```bash
+     adrplus migrate --path "./path/to/existing/adrs"
+     ```
+
+3. For detailed migration instructions, see: [Migration Guide](MigrationGuide.md)
+
+**After migration is complete**, proceed with the repository initialization below.
+
+---
+
+### Initialize Your Repository
 
 Now initialize the ADR repository structure in your project:
 

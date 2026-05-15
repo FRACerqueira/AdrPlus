@@ -35,13 +35,24 @@ Before migrating your ADRs, ensure you have:
    - Run: `adrplus config --repository` to configure your ADR naming conventions
    - Your configuration file exists at the repository root
 
+✅ **Migration configuration set up** ⚠️ **REQUIRED**
+   - Run: `adrplus config --migrate` to configure migration source settings
+   - This must be done BEFORE attempting any migration operation
+   - This step configures where the tool will look for ADRs to migrate
+
 ✅ **Repository already initialized with AdrPlus**
    - Run: `adrplus init` (if not already done)
    - This creates the `adr-config.adrplus` configuration file
 
+✅ **No ADRs created by AdrPlus tool yet** ⚠️ **CRITICAL**
+   - Migration can ONLY be executed if no ADRs have been created using `adrplus new`
+   - If you have already created ADRs with the tool, migration cannot proceed
+   - Migration is designed for repositories with only existing, manually-created ADR files
+
 ✅ **Existing ADR files in your repository**
    - You have `.md` files that need to be migrated
    - Files should be in a consistent location (e.g., `doc/adr/`)
+   - These should be manually-created ADRs (not created by AdrPlus tool)
 
 ✅ **Git repository initialized** (highly recommended)
    - Initialize with: `git init` (if not already done)
@@ -128,7 +139,33 @@ We have decided to use PostgreSQL...
 
 ## Before You Start
 
+### ⚠️ Critical Prerequisites
+
+Before starting migration, **you MUST**:
+
+1. **Configure migration settings**:
+   ```bash
+   adrplus config --migrate
+   ```
+   This command must be executed before any migration operation. It configures how AdrPlus will discover and process your existing ADRs.
+
+2. **Ensure NO ADRs have been created with AdrPlus tool**:
+   - Migration can ONLY run when your repository contains zero ADRs created by `adrplus new`
+   - If you've already created ADRs using the tool, you cannot migrate
+   - Migration is a one-time operation for repositories with only manually-created ADRs
+   - Once migration is complete, you can create new ADRs with `adrplus new`
+
+**Why this requirement?**
+- Migration transforms your existing ADR structure into AdrPlus format
+- Tool-created ADRs already have the correct format and metadata
+- Mixing manually-created and tool-created ADRs during migration would cause conflicts
+
 ### ⚠️ Important Checklist
+
+- [x] **Verify migration was configured**: Run `adrplus config --migrate` first
+  ```bash
+  adrplus config --migrate  # Configure migration before proceeding
+  ```
 
 - [x] **Backup your repository**: Commit everything to Git
   ```bash
@@ -141,10 +178,9 @@ We have decided to use PostgreSQL...
   adrplus config --repository  # Review settings
   ```
 
-- [x] **Test with one ADR first**: Use `--wizard` mode to preview before committing
+- [x] **Confirm no tool-created ADRs exist**: Check that all existing ADRs are manually created, not via `adrplus new`
 
-- [x] **Ensure all ADR files follow naming convention**: 
-  - Expected format: `prefix-number-title.md` (e.g., `0001-UsePostgreSQL.md` or `0001UsePostgreSQL.md`)
+- [x] **Ensure all ADR files follow migration patterns convention**: 
   - Invalid files will be skipped during migration
 
 - [x] **Close IDE if files are open**: Migration modifies files; avoid file locking issues
@@ -307,6 +343,43 @@ After verifying, commit the migration:
 
 ## Troubleshooting
 
+### Issue: "Migration configuration not found"
+
+**Problem**: Migration command fails because migration settings haven't been configured.
+
+**Solution**: 
+- Run migration configuration first:
+  ```bash
+  adrplus config --migrate
+  ```
+- This must be done before any migration operation
+- Follow the prompts to configure migration source settings
+- After configuration is complete, retry your migration command
+
+---
+
+### Issue: "Cannot migrate: existing tool-created ADRs detected"
+
+**Problem**: You already have ADRs created with `adrplus new` command, blocking migration.
+
+**Causes & Why**:
+- Migration is designed for repositories with only manually-created ADRs
+- Tool-created ADRs already have the correct AdrPlus format and metadata
+- Mixing both types during migration would cause conflicts and data loss
+
+**Solutions**:
+- [x] **If you haven't created many tool ADRs**: Delete them and retry migration
+ 
+- [x] **If you have valuable tool-created ADRs**: Create a new repository for migration
+  - Migrate existing ADRs in a separate branch or repository
+  - Merge migrated ADRs back with your tool-created ones after migration completes
+  - This requires careful reconciliation
+
+**Best Practice**: 
+Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-time setup operation.
+
+---
+
 ### Issue: "No ADRs found to migrate"
 
 **Problem**: Migration command found no ADR files.
@@ -467,11 +540,13 @@ After successful migration:
 
 ### Having Issues?
 
-1. Check the [Troubleshooting](#troubleshooting) section above
-2. Review your `adr-config.adrplus` file using `adrplus config --repository`
-3. Ensure ADR files follow the naming convention in your config
-4. Check Git logs to understand what changed: `git log --oneline -5`
-5. Use `--wizard` mode for interactive debugging: `adrplus migrate --wizard`
+1. **Ensure migration is configured**: Run `adrplus config --migrate` first
+2. Verify no tool-created ADRs exist in your repository
+3. Check the [Troubleshooting](#troubleshooting) section above
+4. Review your `adr-config.adrplus` file using `adrplus config --repository`
+5. Ensure ADR files follow the naming convention in your config
+6. Check Git logs to understand what changed: `git log --oneline -5`
+7. Use `--wizard` mode for interactive debugging: `adrplus migrate --wizard`
 
 ---
 
@@ -479,14 +554,22 @@ After successful migration:
 
 Here's a realistic example of migrating a repository:
 
-### Step 1: Backup
+### Step 1: Configure Migration
+
+```bash
+adrplus config --migrate
+```
+
+Follow prompts to configure migration source settings. **This step is mandatory.**
+
+### Step 2: Backup
 
 ```bash
 git add .
 git commit -m "backup: before ADR migration"
 ```
 
-### Step 2: Review Configuration
+### Step 3: Review Configuration
 
 ```bash
 adrplus config --repository
@@ -502,7 +585,20 @@ Output shows:
 }
 ```
 
-### Step 3: Run Migration Wizard
+### Step 4: Verify No Tool-Created ADRs
+
+Ensure all existing ADRs were manually created (not via `adrplus new`):
+
+```bash
+# Check if any ADRs exist with AdrPlus metadata
+grep -l "<!-- Do not remove this comment" doc/adr/*.md 2>/dev/null || echo "All ADRs are manually created - migration can proceed"
+```
+
+If tool-created ADRs are found, either:
+- Delete them first, then migrate, or
+- Create a separate repository for migration
+
+### Step 5: Run Migration Wizard
 
 ```bash
 adrplus migrate --wizard
@@ -510,7 +606,7 @@ adrplus migrate --wizard
 
 Follow prompts to select drive and repository.
 
-### Step 4: Preview and Confirm
+### Step 6: Preview and Confirm
 
 Review the 5 ADRs to migrate, then confirm with `Y`.
 
@@ -522,13 +618,13 @@ Review the 5 ADRs to migrate, then confirm with `Y`.
 ✓ Migrated: doc/adr/0005UseServiceCollection.md
 ```
 
-### Step 5: Verify
+### Step 7: Verify
 
 ```bash
 code doc/adr/0001UsePostgreSQL.md  # Open to verify
 ```
 
-### Step 6: Commit
+### Step 8: Commit
 
 ```bash
 git add doc/adr/
@@ -536,7 +632,9 @@ git commit -m "docs: migrate ADRs to AdrPlus format"
 git log --oneline -5
 ```
 
-### Step 7: Create New ADR
+### Step 9: Create New ADR
+
+Now that migration is complete, you can create new ADRs with the tool:
 
 ```bash
 adrplus new --title "Use UUID for IDs"

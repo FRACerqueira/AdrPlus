@@ -18,6 +18,13 @@ namespace AdrPlus.Core
         /// </summary>
         public const int LenghtHeader = 12;
 
+
+        /// <summary>
+        /// The name of the file used to track whether the application has been run for the first time, allowing the application to perform any necessary setup or initialization tasks on the first run. 
+        /// </summary>
+        public const string FileFirstInstall  = "firstinstall.adrplus";
+
+
         /// <summary>
         /// The name of the directory where ADR templates are stored. This directory is used to store template files that define the structure and content of ADRs, allowing users to create new ADRs based on predefined templates.  
         /// </summary>

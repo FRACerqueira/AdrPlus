@@ -57,6 +57,16 @@ namespace AdrPlus.Infrastructure.FileSystem
         /// <inheritdoc/>
         public string[] GetDrives() => Directory.GetLogicalDrives();
 
+        /// <inheritdoc/>
+        public void RemoveFile(string path)
+        { 
+            if (FileExists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
+        /// <inheritdoc/>
         public string? GetFileRootRepositoryPath(string pathfileadr)
         {
             var directory = GetParentDirectory(pathfileadr);

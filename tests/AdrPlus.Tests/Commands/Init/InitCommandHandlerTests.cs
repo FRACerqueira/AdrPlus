@@ -10,7 +10,6 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Init;

@@ -36,7 +36,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application and repository settings
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
-- 🔄 **Migrate** existing ADRs to the standardized format with a simple command
+- 🔄 **Migrate** existing ADRs to the standardized format
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
