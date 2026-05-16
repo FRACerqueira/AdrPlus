@@ -452,7 +452,7 @@ namespace AdrPlus.Core
                         var content = property.GetString() ?? string.Empty;
                         if (content.Length > 0)
                         {
-                            var patternResult = MigratePatternParser.ParsePattern(content);
+                            var patternResult = PatternParser.ParseMigratePattern(content);
                             if (patternResult == null)
                             {
                                 errors.Add(Resources.AdrPlus.ErrMsgWrongMigrationPattern);

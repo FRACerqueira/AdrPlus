@@ -1184,10 +1184,6 @@ namespace AdrPlus.Tests.Core
 
         #endregion
 
-        #region ParseFileName with Real File Content Tests
-
-        #endregion
-
         #region Additional Edge Cases
 
         [Fact]

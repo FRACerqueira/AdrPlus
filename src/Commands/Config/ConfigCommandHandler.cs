@@ -170,7 +170,7 @@ namespace AdrPlus.Commands.Config
             }
             var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsoncontent, AppConstants.RepoSerializerOptions)!;
 
-            var migrateparam = MigratePatternParser.ParsePattern(repoconfig.MigrationPattern)
+            var migrateparam = PatternParser.ParseMigratePattern(repoconfig.MigrationPattern)
                 ?? throw new InvalidDataException(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
 
             if (!_validateConfig.HasTemplateRepoFile())
@@ -374,7 +374,7 @@ namespace AdrPlus.Commands.Config
                 if (ConfirmYes)
                 {
 
-                    repoconfig.MigrationPattern = MigratePatternParser.CreateMigratePattern(configrecord);
+                    repoconfig.MigrationPattern = PatternParser.CreateMigratePattern(configrecord);
                     return (JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions), prefixvalue);
                 }
                 PromptPlus.Config.EnabledAbortKey = true;

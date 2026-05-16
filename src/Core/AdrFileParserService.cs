@@ -5,7 +5,6 @@
 
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using AdrPlus.Infrastructure.Formatting;
 using System.Globalization;
 using System.Text;
 
@@ -328,7 +327,7 @@ namespace AdrPlus.Core
                 result.IsValid = true;
                 return result;
             }
-            if (config.MigrationPattern.Length > 0 && MigratePatternParser.ParsePattern(config.MigrationPattern) != null)
+            if (config.MigrationPattern.Length > 0 && PatternParser.ParseMigratePattern(config.MigrationPattern) != null)
             {
                 var (Success, resultMigration) = ParseMigrationFileNameAsync(filePath, config);
                 if (Success)
@@ -340,8 +339,10 @@ namespace AdrPlus.Core
                     result.IsValid = true;
                     return result;
                 }
-                // Handle migration pattern logic here
             }
+            // If filename parsing failed, try to load the file header anyway to report header errors
+            var (fileHeader, _) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
+            result.Header = fileHeader;
             result.ErrorMessage = parseResult.Result.ErrorMessage;
             return result;
         }
@@ -352,28 +353,28 @@ namespace AdrPlus.Core
                 FileName = filePath
             };
             var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
-            var pattern = MigratePatternParser.ParsePattern(config.MigrationPattern)!;
-            if (!pattern.TryGetValue("P", out var valueprefix) && nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
+            var pattern = PatternParser.ParseMigratePattern(config.MigrationPattern)!;
+            if (!pattern.TryGetValue("P", out var valueprefix) || nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("N", out var valueseq) && nameWithoutExtension.Length < valueseq.Position + valueseq.Length)
+            if (!pattern.TryGetValue("N", out var valueseq) || nameWithoutExtension.Length < valueseq.Position + valueseq.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("V", out var valueversion) && nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
+            if (!pattern.TryGetValue("V", out var valueversion) || nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("R", out var valuerevison) && nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
+            if (!pattern.TryGetValue("R", out var valuerevison) || nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("T", out var valuetitle) && nameWithoutExtension.Length < valuetitle.Position)
+            if (!pattern.TryGetValue("T", out var valuetitle) || nameWithoutExtension.Length < valuetitle.Position)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
@@ -422,100 +423,49 @@ namespace AdrPlus.Core
                 parts.Add(supersedeParts[0][..index]);
                 parts.Add(part1);
             }
-            var currentIndex = 0;
-            string part = parts[currentIndex] ?? string.Empty;
-            //prefix
-            result.Prefix = config.Prefix ?? string.Empty;
-            if (!string.IsNullOrWhiteSpace(config.Prefix) && !part.StartsWith(config.Prefix, ordinalIgnoreCase))
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorFilenameNoPrefixFormat, config.Prefix);
-                return (false, result);
-            }
-
-            if (!string.IsNullOrWhiteSpace(config.Prefix) && part.StartsWith(result.Prefix, ordinalIgnoreCase))
-            {
-                part = part[config.Prefix.Length..];
-            }
-            //sequence number
-            if (part.Length < config.LenSeq)
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                return (false, result);
-            }
-            var tryNumberString = part[..config.LenSeq];
-            if (!int.TryParse(tryNumberString, out var numberseq))
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                return (false, result);
-            }
-            result.Number = numberseq;
-            part = part[config.LenSeq..];
-
-            //version
-            if (part.Length < config.LenVersion + 1)
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, part);
-                return (false, result);
-            }
-            if (!part.StartsWith('V') && !part.StartsWith('v'))
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, part);
-                return (false, result);
-            }
-            string tryversionNumberString = part[1..][..config.LenVersion];
-            if (!int.TryParse(tryversionNumberString, out var numberver))
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, tryversionNumberString);
-                return (false, result);
-            }
-            result.Version = numberver;
-            part = part[(config.LenVersion + 1)..];
-            //revision
-            if (config.LenRevision > 0 && part.Length < config.LenRevision + 1)
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, part);
-                return (false, result);
-            }
-            if (config.LenRevision > 0)
-            {
-                if (!part.StartsWith('R') && !part.StartsWith('r'))
-                {
-                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, part);
-                    return (false, result);
-                }
-                string tryrevisionNumberString = part[1..][..config.LenRevision];
-                if (!int.TryParse(tryrevisionNumberString, out var numberrev))
-                {
-                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, tryrevisionNumberString);
-                    return (false, result);
-                }
-                result.Revision = numberrev;
-                part = part[(config.LenRevision + 1)..];
-            }
-            //scope
-            if (config.LenScope > 0 && part.Length < config.LenScope)
-            {
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidScopeFormatMsg, part);
-                return (false, result);
-            }
-            if (config.LenScope > 0)
-            {
-                result.Scope = part[..config.LenScope];
-                part = part[(config.LenScope)..];
-            }
-            if (part.Length != 0)
+            //first part is prefix, number, version, revision and scope
+            string part = parts[0] ?? string.Empty;
+            var pattern = PatternParser.ParseAdrPattern(part);
+            if (pattern == null)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
+            //prefix
+            result.Prefix = pattern["P"];
+            //number
+            if (string.IsNullOrWhiteSpace(pattern["N"]) || !int.TryParse(pattern["N"], CultureInfo.InvariantCulture, out var number))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Number = number;
+            //version
+            if (string.IsNullOrWhiteSpace(pattern["V"]) || !int.TryParse(pattern["V"], CultureInfo.InvariantCulture, out var version))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Version = version;
+            //revision
+            if (!string.IsNullOrWhiteSpace(pattern["R"]) && !int.TryParse(pattern["R"], CultureInfo.InvariantCulture, out var revision))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Revision = string.IsNullOrWhiteSpace(pattern["R"]) ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
+            //scope
+            result.Scope = pattern["S"].Length == 0 ? "" : pattern["S"];
             //title and domain
-            currentIndex = 1;
-            part = parts[currentIndex];
-            index = part.IndexOf('@');
+            part = parts[1];
+            index = part.LastIndexOf('@');
             if (index != -1)
             {
                 result.Title = Helper.Humanize(part[..index]);
-                result.Domain = Helper.Humanize(part[(index + 1)..]);
+                if (index + 1 < part.Length)
+                {
+                    result.Domain = Helper.Humanize(part[(index + 1)..]);
+                }
             }
             else
             {

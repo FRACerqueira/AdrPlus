@@ -23,7 +23,7 @@ namespace AdrPlus.Infrastructure.Formatting
             var cacheKey = $"{culture}:{key}";
             return Cache.GetOrAdd(cacheKey, _ => CompositeFormat.Parse(resourceAccessor()));
         }
-
+        public static CompositeFormat ErrMsgFileAlreadyExists => Get(() => Resources.AdrPlus.ErrMsgFileAlreadyExists);
         public static CompositeFormat ErrMsgInvalidRepoConfigMigrationPattern => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfigMigrationPattern);
         public static CompositeFormat ErrorLenFileSampleMigration => Get(() => Resources.AdrPlus.ErrorLenFileSampleMigration);
         public static CompositeFormat ErrorCannotDetermineRootPath => Get(() => Resources.AdrPlus.ErrorCannotDetermineRootPath);

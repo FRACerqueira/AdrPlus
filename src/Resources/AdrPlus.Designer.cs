@@ -358,7 +358,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Migrate pattern.
+        ///   Looks up a localized string similar to Migration pattern.
         /// </summary>
         internal static string ConfigFieldDescMigrationPattern {
             get {
@@ -493,7 +493,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select field to edit.
+        ///   Looks up a localized string similar to Select a field to edit.
         /// </summary>
         internal static string ConfigPromptSelectField {
             get {
@@ -502,7 +502,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select new values.
+        ///   Looks up a localized string similar to Select the new values.
         /// </summary>
         internal static string ConfigPromptSelectNewValues {
             get {
@@ -831,6 +831,15 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgDefaultSettingsMissing {
             get {
                 return ResourceManager.GetString("ErrMsgDefaultSettingsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file already exists.
+        /// </summary>
+        internal static string ErrMsgFileAlreadyExists {
+            get {
+                return ResourceManager.GetString("ErrMsgFileAlreadyExists", resourceCulture);
             }
         }
         
@@ -1348,7 +1357,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Migrant&apos;s comment.
+        ///   Looks up a localized string similar to Migration comment.
         /// </summary>
         internal static string FieldTitleHeaderMigrated {
             get {
@@ -1375,7 +1384,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Status created text in header.
+        ///   Looks up a localized string similar to Status changed text in header.
         /// </summary>
         internal static string FieldTitleHeaderStatusChanged {
             get {
@@ -1951,7 +1960,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to undo the status (accepted/rejected) of an ADR (suprime todos os outros argumentos).
+        ///   Looks up a localized string similar to Wizard to undo the status (accepted/rejected) of an ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardUndoStatus {
             get {
@@ -1969,7 +1978,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid application json file  structure.
+        ///   Looks up a localized string similar to Invalid application JSON file structure.
         /// </summary>
         internal static string InvalidAppStructure {
             get {
@@ -1996,7 +2005,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid repository json file  structure.
+        ///   Looks up a localized string similar to Invalid repository JSON file structure.
         /// </summary>
         internal static string InvalidRepoStructure {
             get {
@@ -2122,7 +2131,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not found ADR´s.
+        ///   Looks up a localized string similar to No ADRs found.
         /// </summary>
         internal static string NotFoundADR {
             get {
@@ -2554,7 +2563,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select  an option.
+        ///   Looks up a localized string similar to Select an option.
         /// </summary>
         internal static string SelectAnOption {
             get {
@@ -2590,7 +2599,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initial status.
+        ///   Looks up a localized string similar to Status created.
         /// </summary>
         internal static string StatusCreated {
             get {
@@ -2626,7 +2635,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updated status.
+        ///   Looks up a localized string similar to Status updated.
         /// </summary>
         internal static string StatusUpdated {
             get {
@@ -2788,7 +2797,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid Culture  {0}.
+        ///   Looks up a localized string similar to Invalid culture: {0}.
         /// </summary>
         internal static string ValidationLanguageInvalidFormat {
             get {
@@ -2878,7 +2887,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View only. Press &lt;enter&gt; to continue.
+        ///   Looks up a localized string similar to View only. Press Enter to continue.
         /// </summary>
         internal static string ViewOnlyPrompt {
             get {
@@ -2887,7 +2896,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wait, reading ADR´s....
+        ///   Looks up a localized string similar to Please wait, reading ADRs....
         /// </summary>
         internal static string WaitReadFiles {
             get {
@@ -2905,7 +2914,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to when not wizard.
+        ///   Looks up a localized string similar to When not in wizard mode.
         /// </summary>
         internal static string WhenNotWizard {
             get {

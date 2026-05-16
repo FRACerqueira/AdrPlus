@@ -1266,4 +1266,7 @@
   <data name="AlredyAdrPlusCreated" xml:space="preserve">
     <value>There are already ADRs that were created using this tool</value>
   </data>
+  <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
+    <value>The file already exists</value>
+  </data>
 </root>
