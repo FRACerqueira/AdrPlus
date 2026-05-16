@@ -153,16 +153,6 @@ namespace AdrPlus.Commands.Review
                     throw new InvalidDataException(string.Format(null, FormatMessages.ErrorRevisionNotconfig, configrootPath));
                 }
 
-                if (repoconfig.MigrationPattern.Length == 0)
-                {
-                    repoconfig.MigrationPattern = await _validateconfig.LoadPatternsConfigMigration(cancellationToken);
-                    if (repoconfig.MigrationPattern.Length > 0)
-                    {
-                        var jsonStringNew = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
-                        await _filesystem.WriteAllTextAsync(configrootPath, jsonStringNew, cancellationToken);
-                    }
-                }
-
                 var rootPath = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);

@@ -10,15 +10,35 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NSubstitute;
+using Xunit;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Supersede;
 
 /// <summary>
 /// Unit tests for SupersedeCommandHandler class.
-/// Tests demonstrate supersede command execution, wizard flows, and validation patterns using NSubstitute.
+/// Tests demonstrate supersede command execution, wizard flows, and validation patterns using NSubstitute and FluentAssertions.
+/// 
+/// This test suite uses a domain-specific mock helper (SupersedeCommandHandlerMockHelper) that properly handles
+/// file path and existence semantics specific to supersede operations. Unlike generic command handlers that simply
+/// create new files, the Supersede handler:
+/// - Validates input files exist before marking them as superseded
+/// - Creates new numbered ADRs to reference the superseded entries
+/// - Preserves proper file existence semantics during testing
+/// 
+/// Test Organization:
+/// - Constructor Tests: Verify handler instantiation
+/// - ExecuteAsync Help Tests: Verify help text display
+/// - ExecuteAsync Template File Tests: Verify template repository validation
+/// - ExecuteAsync Direct File Tests: Core supersede logic with various file and date scenarios
+/// - ExecuteAsync Wizard Mode Tests: Interactive wizard flows and cancellation points
+/// - FolderByScope Tests: Configuration-based folder organization
+/// - Revision Handling Tests: Version/revision component handling
+/// - Exception Handling Tests: Error propagation and logging
 /// </summary>
 public class SupersedeCommandHandlerTests
 {
@@ -182,7 +202,6 @@ public class SupersedeCommandHandlerTests
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
 
         var adrInfo = CreateAdrFileNameComponents(AdrFileWithExtensionPath, AdrStatus.Accepted, AdrStatus.Unknown);
@@ -433,7 +452,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -959,7 +978,7 @@ public class SupersedeCommandHandlerTests
 
     private void SetupBasicMocks(Dictionary<Arguments, string> parsedArgs, string jsonConfig)
     {
-        CommandHandlerMockHelper.SetupBasicCommandMocks(
+        SupersedeCommandHandlerMockHelper.SetupSupersedeCommandMocks(
             _mockAdrServices,
             _mockFileSystem,
             _mockValidateConfig,
@@ -972,7 +991,7 @@ public class SupersedeCommandHandlerTests
     /// </summary>
     private void SetupBasicMocksForHandler(Dictionary<Arguments, string> parsedArgs, string jsonConfig)
     {
-        CommandHandlerMockHelper.SetupBasicCommandMocks(
+        SupersedeCommandHandlerMockHelper.SetupSupersedeCommandMocks(
             _mockAdrServices,
             _mockFileSystem,
             _mockValidateConfig,
