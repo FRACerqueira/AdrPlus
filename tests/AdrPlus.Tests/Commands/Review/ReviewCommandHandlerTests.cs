@@ -155,7 +155,6 @@ public class ReviewCommandHandlerTests
         var jsonConfig = BuildJsonConfig();
 
         SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
 
         var adrInfo = CreateAcceptedAdrComponents(TestPathData.ValidAdrFilePath);
         SetupLatestAdrSequence(adrInfo);
@@ -885,9 +884,14 @@ public class ReviewCommandHandlerTests
             { Arguments.OpenFile, string.Empty }
         };
 
+        // Normalize the input file path as the handler does
+        var normalizedInputPath = Path.GetFullPath(TestPathData.ValidAdrFilePath);
+
         mocks.AdrServices.ParseArgs(default!, default!).ReturnsForAnyArgs(parsedArgs);
         mocks.ValidateConfig.HasTemplateRepoFile().Returns(true);
-        mocks.FileSystem.FileExists(default!).ReturnsForAnyArgs(true);
+        // Setup FileExists for input ADR file and config files, but not for new revision
+        mocks.FileSystem.FileExists(Arg.Is<string>(s => s == normalizedInputPath || s.EndsWith(".adrplus"))).Returns(true);
+        mocks.FileSystem.FileExists(Arg.Any<string>()).Returns(false);
         mocks.ValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         mocks.FileSystem.ReadAllTextAsync(default!, default).ReturnsForAnyArgs(jsonConfig);
         mocks.ValidateConfig.ValidateRepoStructure(default!).ReturnsForAnyArgs((true, []));
@@ -922,9 +926,14 @@ public class ReviewCommandHandlerTests
             { Arguments.OpenFile, string.Empty }
         };
 
+        // Normalize the input file path as the handler does
+        var normalizedInputPath = Path.GetFullPath(TestPathData.ValidAdrFilePath);
+
         mocks.AdrServices.ParseArgs(default!, default!).ReturnsForAnyArgs(parsedArgs);
         mocks.ValidateConfig.HasTemplateRepoFile().Returns(true);
-        mocks.FileSystem.FileExists(default!).ReturnsForAnyArgs(true);
+        // Setup FileExists for input ADR file and config files, but not for new revision
+        mocks.FileSystem.FileExists(Arg.Is<string>(s => s == normalizedInputPath || s.EndsWith(".adrplus"))).Returns(true);
+        mocks.FileSystem.FileExists(Arg.Any<string>()).Returns(false);
         mocks.ValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         mocks.FileSystem.ReadAllTextAsync(default!, default).ReturnsForAnyArgs(jsonConfig);
         mocks.ValidateConfig.ValidateRepoStructure(default!).ReturnsForAnyArgs((true, []));
@@ -1386,6 +1395,35 @@ public class ReviewCommandHandlerTests
             _mockValidateConfig,
             parsedArgs,
             jsonConfig);
+
+        // Override the generic .md returns from CommandHandlerMockHelper to properly handle:
+        // - The input ADR file (from parsedArgs) should exist (return true)
+        // - Config files (.adrplus) should exist (return true)
+        // - The generated output file should NOT exist (return false)
+        // Since both have .md extensions, we need path-specific logic
+        var inputAddrPath = parsedArgs.ContainsKey(Arguments.FileAdr) 
+            ? Path.GetFullPath(parsedArgs[Arguments.FileAdr])
+            : null;
+
+        // Normalize path for comparison (add .md if missing)
+        var normalizedInputPath = !string.IsNullOrEmpty(inputAddrPath) && !inputAddrPath.EndsWith(".md")
+            ? inputAddrPath + ".md"
+            : inputAddrPath;
+
+        _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+        {
+            var path = callInfo.Arg<string>();
+            // Always return true for config files
+            if (path.EndsWith(".adrplus"))
+                return true;
+            // Return true for the input ADR file (with or without original extension)
+            if (!string.IsNullOrEmpty(normalizedInputPath) && path == normalizedInputPath)
+                return true;
+            if (!string.IsNullOrEmpty(inputAddrPath) && path == inputAddrPath)
+                return true;
+            // Return false for generated revision files (they're new, shouldn't exist yet)
+            return false;
+        });
     }
 
     private void SetupLatestAdrSequence(AdrFileNameComponents adrInfo)

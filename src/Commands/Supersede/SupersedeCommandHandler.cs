@@ -188,6 +188,20 @@ namespace AdrPlus.Commands.Supersede
                     Superseded = infoadr.Number,
                     Template = repoconfig.Template,
                 };
+
+
+                var filename = adrRecord.GetFileName(repoconfig);
+                var folder = Path.GetFullPath(Path.Combine(rootrepo, repoconfig.FolderAdr));
+                if (repoconfig.FolderByScope)
+                {
+                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
+                }
+                var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
+                if (_filesystem.FileExists(filePath))
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgFileAlreadyExists, Path.GetFileName(filePath)));
+                }
+
                 var numbersupersede = infoadr.Number.ToString($"D{repoconfig.LenSeq}", null);
                 var (updok, upderror) = await _adrServices.StatusChangeSupersedeAdrAsync(infoadr.FileName, numbersupersede, dateAdr, repoconfig, _filesystem, cancellationToken);
                 if (!updok)
@@ -196,7 +210,9 @@ namespace AdrPlus.Commands.Supersede
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
-                var filePath = await CreateAdrFile(adrRecord, rootrepo, repoconfig, cancellationToken);
+                var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
+                await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
+
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
                 // Open file if requested

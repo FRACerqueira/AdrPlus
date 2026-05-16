@@ -268,7 +268,21 @@ namespace AdrPlus.Commands.Version
                     Revision = repoconfig.LenRevision == 0 ? null : 1,
                     Template = emptyard ? repoconfig.Template : infoadr.ContentAdr!,
                 };
-                var filePath = await CreateAdrFile(adrRecord, rootPath, repoconfig, cancellationToken);
+
+                var filename = adrRecord.GetFileName(repoconfig);
+                var folder = Path.GetFullPath(Path.Combine(rootPath, repoconfig.FolderAdr));
+                if (repoconfig.FolderByScope)
+                {
+                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
+                }
+                var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
+                if (_filesystem.FileExists(filePath))
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgFileAlreadyExists, Path.GetFileName(filePath)));
+                }
+                var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
+                await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
+
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 
@@ -323,32 +337,6 @@ namespace AdrPlus.Commands.Version
                 throw new FormatException(string.Format(null, FormatMessages.ErrorDateFormat, _config.Language));
             }
             return dateAdr;
-        }
-
-        /// <summary>
-        /// Writes the ADR content (header + body) to a <c>.md</c> file under the configured repository folder,
-        /// creating a scope sub-folder when <see cref="AdrPlusRepoConfig.FolderByScope"/> is enabled.
-        /// </summary>
-        /// <param name="adrRecord">The ADR record whose filename and content will be generated.</param>
-        /// <param name="rootpath">The root directory of the repository.</param>
-        /// <param name="auxconfig">The repository configuration defining folder structure and naming.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>The fully qualified path of the newly created ADR file.</returns>
-        private async Task<string> CreateAdrFile(AdrRecord adrRecord, string rootpath, AdrPlusRepoConfig auxconfig, CancellationToken cancellationToken)
-        {
-            var filename = adrRecord.GetFileName(auxconfig);
-            var folder = Path.GetFullPath(Path.Combine(rootpath, auxconfig.FolderAdr));
-
-            if (auxconfig.FolderByScope)
-            {
-                folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-            }
-
-            var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
-            var content = $"{adrRecord.GetHeader(auxconfig)}{adrRecord.Template}";
-            await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
-
-            return filePath;
         }
 
         /// <summary>
