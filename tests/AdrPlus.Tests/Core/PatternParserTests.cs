@@ -427,11 +427,11 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(2);
-            result["N"].Should().Be((0, 0));
-            result["T"].Should().Be((0, 0));
-            result.Should().NotContainKey("V");
-            result.Should().NotContainKey("R");
-            result.Should().NotContainKey("P");
+            result!["N"].Should().Be((0, 0));
+            result!["T"].Should().Be((0, 0));
+            result!.Should().NotContainKey("V");
+            result!.Should().NotContainKey("R");
+            result!.Should().NotContainKey("P");
         }
 
         [Fact]
@@ -446,9 +446,9 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(3);
-            result["N"].Should().Be((5, 4));
-            result["T"].Should().Be((30, 0));
-            result["V"].Should().Be((1, 2));
+            result!["N"].Should().Be((5, 4));
+            result!["T"].Should().Be((30, 0));
+            result!["V"].Should().Be((1, 2));
         }
 
         [Fact]
@@ -463,9 +463,9 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(3);
-            result["N"].Should().Be((5, 4));
-            result["T"].Should().Be((30, 0));
-            result["R"].Should().Be((2, 1));
+            result!["N"].Should().Be((5, 4));
+            result!["T"].Should().Be((30, 0));
+            result!["R"].Should().Be((2, 1));
         }
 
         [Fact]
@@ -480,9 +480,9 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(3);
-            result["N"].Should().Be((5, 4));
-            result["T"].Should().Be((30, 0));
-            result["P"].Should().Be((3, 3));
+            result!["N"].Should().Be((5, 4));
+            result!["T"].Should().Be((30, 0));
+            result!["P"].Should().Be((3, 3));
         }
 
         [Fact]
@@ -497,11 +497,11 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(5);
-            result["N"].Should().Be((5, 4));
-            result["T"].Should().Be((30, 0));
-            result["V"].Should().Be((1, 2));
-            result["R"].Should().Be((2, 1));
-            result["P"].Should().Be((3, 3));
+            result!["N"].Should().Be((5, 4));
+            result!["T"].Should().Be((30, 0));
+            result!["V"].Should().Be((1, 2));
+            result!["R"].Should().Be((2, 1));
+            result!["P"].Should().Be((3, 3));
         }
 
         [Fact]
@@ -516,10 +516,10 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!["N"].Should().Be((99, 99));
-            result["T"].Should().Be((99, 0));
-            result["V"].Should().Be((99, 99));
-            result["R"].Should().Be((99, 99));
-            result["P"].Should().Be((99, 99));
+            result!["T"].Should().Be((99, 0));
+            result!["V"].Should().Be((99, 99));
+            result!["R"].Should().Be((99, 99));
+            result!["P"].Should().Be((99, 99));
         }
 
         [Fact]
@@ -534,10 +534,10 @@ namespace AdrPlus.Tests.Core
             // Assert
             result.Should().NotBeNull();
             result!.Should().HaveCount(4);
-            result["N"].Should().Be((10, 5));
-            result["T"].Should().Be((25, 0));
-            result["V"].Should().Be((2, 3));
-            result["R"].Should().Be((1, 1));
+            result!["N"].Should().Be((10, 5));
+            result!["T"].Should().Be((25, 0));
+            result!["V"].Should().Be((2, 3));
+            result!["R"].Should().Be((1, 1));
         }
 
         #endregion
@@ -788,7 +788,7 @@ namespace AdrPlus.Tests.Core
             {
                 var result = PatternParser.ParseAdrPattern(pattern);
                 result.Should().NotBeNull($"Pattern '{pattern}' should be valid");
-                result!.Keys.Should().Contain(new[] { "P", "N", "V", "R", "S" });
+                result!.Keys.Should().Contain(["P", "N", "V", "R", "S"]);
             }
         }
 

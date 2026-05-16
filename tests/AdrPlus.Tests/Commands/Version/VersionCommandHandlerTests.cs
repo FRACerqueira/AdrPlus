@@ -35,9 +35,9 @@ namespace AdrPlus.Tests.Commands.Version
 
         private const string ConfigFileName = ".adrplus";
         private const string RepoPath = "/repo";
-        private const string AdrFileName = "ADR-0001-test.md";
-        private const string AdrFilePath = "/repo/adr/ADR-0001-test.md";
-
+        private const string AdrFileName = "ADR0001V01-test.md";
+        private const string AdrFilePath = "/repo/adr/ADR0001V01-test.md";
+            
         private static readonly string BasicJsonConfig =
             """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 1, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusRej": "Rejected", "StatusSup": "Superseded", "template":"# ADR"}""";
 
@@ -169,8 +169,8 @@ namespace AdrPlus.Tests.Commands.Version
         public async Task ExecuteAsync_WhenAdrFileHasNoExtension_AddsMarkdownExtension()
         {
             // Arrange
-            var fileWithoutExt = "/repo/adr/ADR-0001-test";
-            var fileWithExt = "/repo/adr/ADR-0001-test.md";
+            var fileWithoutExt = "/repo/adr/ADR0001V01-test";
+            var fileWithExt = "/repo/adr/ADR0001V01-test.md";
             var args = new[] { "--file", fileWithoutExt };
             var parsedArgs = new Dictionary<Arguments, string>
             {
@@ -376,18 +376,60 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(
                 AdrFileName,
                 AdrStatus.Accepted);
             infoadr.Number = 1;
 
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
             var supersededAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(AdrFileName, AdrStatus.Accepted);
             supersededAdr.Header.StatusChange = AdrStatus.Superseded;
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+            _mockConsole.PromptWriteError(Arg.Any<string>());
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(supersededAdr));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
                 .Returns([supersededAdr]);
 
             // Act & Assert
@@ -406,20 +448,62 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(
                 AdrFileName,
                 AdrStatus.Accepted);
             infoadr.Number = 1;
 
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
             var unknownStatusAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(AdrFileName, AdrStatus.Accepted);
             unknownStatusAdr.Header.StatusUpdate = AdrStatus.Unknown;
             unknownStatusAdr.Header.IsMigrated = false;
             unknownStatusAdr.Header.StatusChange = AdrStatus.Unknown;
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+            _mockConsole.PromptWriteError(Arg.Any<string>());
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(unknownStatusAdr));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
                 .Returns([unknownStatusAdr]);
 
             // Act & Assert
@@ -442,17 +526,55 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
-
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
             var invalidLatest = new AdrFileNameComponents { IsValid = false, ErrorMessage = "Not found" };
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(invalidLatest);
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(invalidLatest));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
 
             // Act & Assert
             await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -470,19 +592,57 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
-
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
             var latestWithInvalidHeader = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(AdrFileName, AdrStatus.Accepted);
             latestWithInvalidHeader.Header.IsValid = false;
             latestWithInvalidHeader.Header.ErrorMessage = "Invalid header";
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(latestWithInvalidHeader);
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(latestWithInvalidHeader));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
 
             // Act & Assert
             await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -500,19 +660,57 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
-
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
             var latestDifferent = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0002-other.md", AdrStatus.Accepted);
             latestDifferent.Number = 2;
             latestDifferent.Title = "other";
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(latestDifferent);
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(latestDifferent));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
 
             // Act & Assert
             await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -530,19 +728,57 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
-
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
-
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
             var latestNewer = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0001-v1-r2.md", AdrStatus.Accepted);
             latestNewer.Number = 1;
             latestNewer.Revision = 2;
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(latestNewer);
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks (complex logic required)
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(latestNewer));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
 
             // Act & Assert
             await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -564,15 +800,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -592,15 +830,9 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
-            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+            _ = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -620,15 +852,9 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
-            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+            _ = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -648,15 +874,9 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
-            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Rejected, number: 1, revision: 1);
+            _ = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Rejected, number: 1, revision: 1);
 
-            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(infoadr);
-            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns([]);
-            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -682,15 +902,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.DateRefAdr, customDate }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             string? capturedContent = null;
             _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
@@ -716,15 +938,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.DateRefAdr, "not-a-date" }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act & Assert
             await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -742,15 +966,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             var beforeCall = DateTime.UtcNow.Year;
 
@@ -780,16 +1006,18 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.OpenFile, string.Empty }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
             _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -810,16 +1038,18 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.OpenFile, string.Empty }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
             _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -840,16 +1070,18 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.OpenFile, string.Empty }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
             _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns("open command failed");
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -872,15 +1104,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.FileAdr, AdrFilePath }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
             await handler.ExecuteAsync(args, CancellationToken.None);
@@ -905,15 +1139,17 @@ namespace AdrPlus.Tests.Commands.Version
                 { Arguments.EmptyAdr, string.Empty }
             };
 
-            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
             var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
+            // Set up specific mocks before generic ones to ensure they take precedence
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
                 .Returns(infoadr);
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(infoadr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             string? capturedContent = null;
             _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
@@ -948,7 +1184,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
                 .ReturnsForAnyArgs([]);
             _mockAdrServices.GetLatestADRSequence(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-                .ReturnsForAnyArgs(infoadr);
+                .ReturnsForAnyArgs(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
 
             string? capturedContent = null;
             _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
@@ -1231,7 +1467,7 @@ namespace AdrPlus.Tests.Commands.Version
 
         #region Helper Methods
 
-        private AdrFileNameComponents CreateTestAdrFileNameComponents(
+        private static AdrFileNameComponents CreateTestAdrFileNameComponents(
             string fileName,
             AdrStatus status,
             int number = 1,
@@ -1320,21 +1556,23 @@ namespace AdrPlus.Tests.Commands.Version
             var validAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents(AdrFileName, AdrStatus.Accepted);
             validAdr.Number = 1;
 
-            _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-                .Returns(validAdr);
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<IFileSystemService>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(validAdr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
-            _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+            _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
                 .Returns([validAdr]);
 
-            _mockAdrServices.GetLatestADRSequence(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-                .Returns(validAdr);
+            _mockAdrServices.GetLatestADRSequence(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(validAdr));
 
             var repoConfig = new AdrPlusRepoConfig("", "")
             {
                 Prefix = "ADR",
                 LenSeq = 4,
                 LenVersion = 2,
-                LenRevision = 2,
+                LenRevision = 0,
                 FolderAdr = "adr",
                 FolderByScope = false,
                 Separator = '-',
@@ -1423,7 +1661,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([selectedAdr]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-                .Returns(selectedAdr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(selectedAdr));
             _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
                 .Returns((false, new DateTime(2026, 1, 15)));
             _mockConsole.PromptEmptyTemplate(Arg.Any<CancellationToken>())
@@ -1437,7 +1675,7 @@ namespace AdrPlus.Tests.Commands.Version
                 Prefix = "ADR",
                 LenSeq = 4,
                 LenVersion = 2,
-                LenRevision = 2,
+                LenRevision = 0,
                 FolderAdr = "adr",
                 FolderByScope = false,
                 Separator = '-',
@@ -1462,14 +1700,14 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockAdrServices);
         }
 
-        private AdrPlusRepoConfig CreateMockAdrPlusRepoConfig()
+        private static AdrPlusRepoConfig CreateMockAdrPlusRepoConfig()
         {
             return new AdrPlusRepoConfig("", "")
             {
                 Prefix = "ADR",
                 LenSeq = 4,
                 LenVersion = 2,
-                LenRevision = 2,
+                LenRevision = 0,
                 FolderAdr = "adr",
                 FolderByScope = false,
                 Separator = '-',
@@ -1527,7 +1765,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(defaultAdr);
 
             _mockAdrServices.GetLatestADRSequence(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-                .Returns(defaultAdr);
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(defaultAdr));
 
             _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);

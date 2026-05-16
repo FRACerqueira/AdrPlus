@@ -81,13 +81,67 @@ internal static class CommandHandlerMockHelper
             FileName = fileName,
             Number = 1,
             IsValid = true,
+            Title = "test",
+            Domain = string.Empty,
+            Version = 1,
+            Revision = 1,
             Header = new AdrHeader
             {
                 IsValid = true,
                 StatusUpdate = status,
-                StatusCreate = AdrStatus.Proposed
+                StatusCreate = AdrStatus.Proposed,
+                StatusChange = AdrStatus.Unknown,
+                Title = "Test ADR",
+                Version = 1,
+                Revision = 1
             },
-            SupersededValue = supersededValue
+            SupersededValue = supersededValue,
+            ContentAdr = "Test content"
+        };
+    }
+
+    /// <summary>
+    /// Creates an AdrFileNameComponents instance with fully specified properties for testing.
+    /// Ensures all fields are consistently populated to avoid cross-platform test failures.
+    /// </summary>
+    /// <param name="fileName">The file name for the ADR.</param>
+    /// <param name="status">The ADR status update value.</param>
+    /// <param name="number">The ADR sequence number.</param>
+    /// <param name="version">The ADR version number.</param>
+    /// <param name="revision">The ADR revision number.</param>
+    /// <param name="title">The ADR title (normalized).</param>
+    /// <param name="domain">The ADR domain (optional).</param>
+    /// <returns>A properly configured AdrFileNameComponents instance with all fields set.</returns>
+    public static AdrFileNameComponents CreateCompleteAdrFileNameComponents(
+        string fileName,
+        AdrStatus status,
+        int number = 1,
+        int version = 1,
+        int revision = 1,
+        string title = "test",
+        string domain = "")
+    {
+        return new AdrFileNameComponents
+        {
+            FileName = fileName,
+            Number = number,
+            IsValid = true,
+            Title = title,
+            Domain = domain,
+            Version = version,
+            Revision = revision,
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                StatusUpdate = status,
+                StatusCreate = AdrStatus.Proposed,
+                StatusChange = AdrStatus.Unknown,
+                Title = title,
+                Domain = domain,
+                Version = version,
+                Revision = revision
+            },
+            ContentAdr = "Test content"
         };
     }
 
