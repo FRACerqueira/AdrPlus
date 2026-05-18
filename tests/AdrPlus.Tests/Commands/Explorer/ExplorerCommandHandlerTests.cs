@@ -47,7 +47,7 @@ public class ExplorerCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _fixture.Handler.ExecuteAsync(args, CancellationToken.None);
+        await _fixture.Handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _fixture.MockConsole.Received(1).PromptWriteHelp("Help text");
@@ -64,7 +64,7 @@ public class ExplorerCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _fixture.Handler.ExecuteAsync(args, CancellationToken.None);
+        await _fixture.Handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _fixture.MockValidateConfig.DidNotReceive().HasTemplateRepoFile();
@@ -89,7 +89,7 @@ public class ExplorerCommandHandlerTests
         _fixture.MockValidateConfig.HasTemplateRepoFile().Returns(false);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -109,7 +109,7 @@ public class ExplorerCommandHandlerTests
         _fixture.MockFileSystem.DirectoryExists(targetPath).Returns(false);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
@@ -127,7 +127,7 @@ public class ExplorerCommandHandlerTests
         _fixture.MockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -152,7 +152,7 @@ public class ExplorerCommandHandlerTests
             .Returns((false, ["Invalid structure"]));
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -182,7 +182,7 @@ public class ExplorerCommandHandlerTests
             .Returns([]);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("*found*");
     }
@@ -229,7 +229,7 @@ public class ExplorerCommandHandlerTests
             adrFiles);
 
         // Act
-        await _fixture.Handler.ExecuteAsync(args, CancellationToken.None);
+        await _fixture.Handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _fixture.MockFileSystem.Received(1).WriteAllTextAsync(reportPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -259,7 +259,7 @@ public class ExplorerCommandHandlerTests
             [adrFile]);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("*empty*");
     }
@@ -292,7 +292,7 @@ public class ExplorerCommandHandlerTests
             .Returns([adrFile]);
 
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
@@ -334,7 +334,7 @@ public class ExplorerCommandHandlerTests
         var handlerWithCommand = _fixture.CreateHandlerWithConfig(customConfig);
 
         // Act
-        await handlerWithCommand.ExecuteAsync(args, CancellationToken.None);
+        await handlerWithCommand.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _fixture.MockAdrServices.Received(1).OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -349,9 +349,10 @@ public class ExplorerCommandHandlerTests
     public async Task ExecuteAsync_WithNullArgs_ThrowsArgumentNullException()
     {
         // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(null!, CancellationToken.None))
+        await _fixture.Handler.Invoking(h => h.ExecuteAsync(null!, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<ArgumentNullException>();
     }
 
     #endregion
 }
+

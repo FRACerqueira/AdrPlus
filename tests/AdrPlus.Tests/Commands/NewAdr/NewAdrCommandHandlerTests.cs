@@ -1,4 +1,4 @@
-﻿// ***************************************************************************************
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -102,7 +102,7 @@ public class NewAdrCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -119,7 +119,7 @@ public class NewAdrCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -143,7 +143,7 @@ public class NewAdrCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -166,7 +166,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
@@ -186,7 +186,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.Contains(ConfigFileName))).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -214,7 +214,7 @@ public class NewAdrCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -238,7 +238,7 @@ public class NewAdrCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((false, errors));
 
         // Act
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
 
         // Assert
@@ -266,7 +266,7 @@ public class NewAdrCommandHandlerTests
             .Returns(string.Empty);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<ArgumentException>();
     }
 
@@ -285,7 +285,7 @@ public class NewAdrCommandHandlerTests
         SetupBasicMocks(parsedArgs, ScopedJsonConfig);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<ArgumentException>();
     }
 
@@ -304,7 +304,7 @@ public class NewAdrCommandHandlerTests
         SetupBasicMocks(parsedArgs, ScopedJsonConfig);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<ArgumentException>();
     }
 
@@ -327,7 +327,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act & Assert - no ArgumentException means domain was not required
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().NotThrowAsync<ArgumentException>();
     }
 
@@ -349,7 +349,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act & Assert - no ArgumentException means neither scope nor domain was required
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().NotThrowAsync<ArgumentException>();
     }
 
@@ -373,7 +373,7 @@ public class NewAdrCommandHandlerTests
             .Returns($"{AdrFolderPath}\\ADR-0001-Existing-Adr.md");
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
@@ -399,7 +399,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -423,7 +423,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
@@ -457,7 +457,7 @@ public class NewAdrCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: file was written (date used during AdrRecord creation)
         capturedContent.Should().NotBeNull();
@@ -482,7 +482,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FormatException>();
     }
 
@@ -506,7 +506,7 @@ public class NewAdrCommandHandlerTests
         var beforeCall = DateTime.UtcNow.Year;
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: file write occurred, meaning UTC now was used without throwing
         await _mockFileSystem.Received(1).WriteAllTextAsync(
@@ -546,7 +546,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockAdrServices.Received(1).OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -579,7 +579,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: one success for ADR created, one for open success
         _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
@@ -611,7 +611,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns("open command failed");
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
@@ -635,7 +635,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockAdrServices.DidNotReceive().OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -655,7 +655,7 @@ public class NewAdrCommandHandlerTests
             .Throws(exception);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Unexpected error");
     }
@@ -679,7 +679,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -698,7 +698,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -725,7 +725,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -754,7 +754,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -785,7 +785,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -818,7 +818,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, [], (Exception?)null));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -835,7 +835,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, false));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -854,7 +854,7 @@ public class NewAdrCommandHandlerTests
             .Returns((false, false), (true, false));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
 
         // Confirm drive/folder prompts were called at least twice (second loop iteration)
@@ -880,7 +880,7 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -899,7 +899,7 @@ public class NewAdrCommandHandlerTests
             .Returns((true, false));
 
         // Act
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
 
         // Assert: WriteInfo called for each summary field (repo, date, title, and empty separator = 4 calls)
@@ -923,7 +923,7 @@ public class NewAdrCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((false, ["Config error"]));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
@@ -1012,4 +1012,5 @@ public class NewAdrCommandHandlerTests
 
     #endregion
 }
+
 

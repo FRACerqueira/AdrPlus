@@ -8,14 +8,10 @@ using AdrPlus.Commands.Version;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NSubstitute;
-using Xunit;
 
 namespace AdrPlus.Tests.Commands.Version
 {
@@ -99,7 +95,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns("Help text");
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -116,7 +112,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns("Help text");
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -139,7 +135,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockValidateConfig.HasTemplateRepoFile().Returns(false);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FileNotFoundException>();
         }
 
@@ -161,7 +157,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockFileSystem.FileExists(AdrFilePath).Returns(false);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FileNotFoundException>();
         }
 
@@ -182,7 +178,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockFileSystem.FileExists(fileWithExt).Returns(false);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FileNotFoundException>();
         }
 
@@ -218,7 +214,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns((string?)null);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -239,7 +235,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((false, errors));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -260,7 +256,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((false, errors));
 
             // Act
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
 
             // Assert
@@ -289,7 +285,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem).ReturnsForAnyArgs(invalidAdr);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -319,7 +315,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .ReturnsForAnyArgs(infoadr);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -361,7 +357,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .ReturnsForAnyArgs([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -433,7 +429,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([supersededAdr]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -507,7 +503,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([unknownStatusAdr]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -577,7 +573,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -645,7 +641,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -713,7 +709,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidOperationException>();
         }
 
@@ -781,7 +777,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidOperationException>();
         }
 
@@ -851,7 +847,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidOperationException>();
         }
 
@@ -921,7 +917,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("*1000*2*", because: "the error message should contain the new version (1000) and the configured limit (2)");
         }
@@ -954,7 +950,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -976,7 +972,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
@@ -998,7 +994,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1020,7 +1016,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1060,7 +1056,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             capturedContent.Should().NotBeNull();
@@ -1092,7 +1088,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FormatException>();
         }
 
@@ -1122,7 +1118,7 @@ namespace AdrPlus.Tests.Commands.Version
             var beforeCall = DateTime.UtcNow.Year;
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.Received(1).WriteAllTextAsync(
@@ -1161,7 +1157,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             _mockAdrServices.Received(1).OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -1193,7 +1189,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert: one success for ADR created, one for open success
             _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
@@ -1225,7 +1221,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
@@ -1258,7 +1254,7 @@ namespace AdrPlus.Tests.Commands.Version
             SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
 
             // Act
-            await handler.ExecuteAsync(args, CancellationToken.None);
+            await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             _mockAdrServices.DidNotReceive().OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -1297,7 +1293,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             capturedContent.Should().NotBeNull();
@@ -1332,7 +1328,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             capturedContent.Should().NotBeNull();
@@ -1353,7 +1349,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Do(x => throw exception);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidOperationException>()
                 .WithMessage("Unexpected error");
         }
@@ -1377,7 +1373,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, string.Empty));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
         }
 
@@ -1396,7 +1392,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, string.Empty));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
         }
 
@@ -1425,7 +1421,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, (AdrFileNameComponents?)null));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
         }
 
@@ -1460,7 +1456,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, DateTime.UtcNow));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
         }
 
@@ -1477,7 +1473,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, false));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
         }
 
@@ -1495,7 +1491,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((false, false), (true, false));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
 
             _mockConsole.Received(2).PromptSelectFolderPath(
@@ -1530,7 +1526,7 @@ namespace AdrPlus.Tests.Commands.Version
                 });
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1549,7 +1545,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((true, false));
 
             // Act
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<OperationCanceledException>();
 
             // Assert
@@ -1573,7 +1569,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((false, ["Config error"]));
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<InvalidDataException>();
         }
 
@@ -1600,7 +1596,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([]);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FileNotFoundException>();
         }
 
@@ -1915,3 +1911,4 @@ namespace AdrPlus.Tests.Commands.Version
         #endregion
     }
 }
+

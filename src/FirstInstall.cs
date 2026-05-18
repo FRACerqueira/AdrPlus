@@ -8,8 +8,6 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using PromptPlusLibrary;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 
 namespace AdrPlus
 {

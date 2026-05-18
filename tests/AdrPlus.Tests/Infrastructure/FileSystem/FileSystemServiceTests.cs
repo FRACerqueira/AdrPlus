@@ -127,11 +127,11 @@ public class FileSystemServiceTests
         try
         {
             // Act
-            await _fileSystemService.WriteAllTextAsync(filePath, content);
+            await _fileSystemService.WriteAllTextAsync(filePath, content, TestContext.Current.CancellationToken);
 
             // Assert
             File.Exists(filePath).Should().BeTrue();
-            var readContent = await File.ReadAllTextAsync(filePath);
+            var readContent = await File.ReadAllTextAsync(filePath, TestContext.Current.CancellationToken);
             readContent.Should().Be(content);
         }
         finally
@@ -147,12 +147,12 @@ public class FileSystemServiceTests
         Directory.CreateDirectory(_testDirectory);
         var filePath = Path.Combine(_testDirectory, "test.txt");
         var content = "Test content";
-        await File.WriteAllTextAsync(filePath, content);
+        await File.WriteAllTextAsync(filePath, content, TestContext.Current.CancellationToken);
 
         try
         {
             // Act
-            var result = await _fileSystemService.ReadAllTextAsync(filePath);
+            var result = await _fileSystemService.ReadAllTextAsync(filePath, TestContext.Current.CancellationToken);
 
             // Assert
             result.Should().Be(content);
@@ -170,12 +170,12 @@ public class FileSystemServiceTests
         Directory.CreateDirectory(_testDirectory);
         var filePath = Path.Combine(_testDirectory, "test.txt");
         var lines = new[] { "Line 1", "Line 2", "Line 3" };
-        await File.WriteAllLinesAsync(filePath, lines);
+        await File.WriteAllLinesAsync(filePath, lines, TestContext.Current.CancellationToken);
 
         try
         {
             // Act
-            var result = await _fileSystemService.ReadAllLinesAsync(filePath);
+            var result = await _fileSystemService.ReadAllLinesAsync(filePath, TestContext.Current.CancellationToken);
 
             // Assert
             result.Should().BeEquivalentTo(lines);
@@ -280,10 +280,10 @@ public class FileSystemServiceTests
         var testData = new { Name = "Test", Value = 42 };
 
         // Act
-        await _fileSystemService.SaveHistoryAsync(fileKey, testData);
+        await _fileSystemService.SaveHistoryAsync(fileKey, testData, TestContext.Current.CancellationToken);
 
         // Assert
-        var (success, result) = await _fileSystemService.ReadHistoryAsync<Dictionary<string, object>>(fileKey);
+        var (success, result) = await _fileSystemService.ReadHistoryAsync<Dictionary<string, object>>(fileKey, TestContext.Current.CancellationToken);
         success.Should().BeTrue();
         result.Should().NotBeNull();
     }
@@ -295,7 +295,7 @@ public class FileSystemServiceTests
         var fileKey = $"nonexistent_{Guid.NewGuid():N}";
 
         // Act
-        var (success, result) = await _fileSystemService.ReadHistoryAsync<string>(fileKey);
+        var (success, result) = await _fileSystemService.ReadHistoryAsync<string>(fileKey, TestContext.Current.CancellationToken);
 
         // Assert
         success.Should().BeFalse();
@@ -310,7 +310,7 @@ public class FileSystemServiceTests
         var testData = new { Name = "Test" };
 
         // Act
-        var act = async () => await _fileSystemService.SaveHistoryAsync(fileKey!, testData);
+        var act = async () => await _fileSystemService.SaveHistoryAsync(fileKey!, testData, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();
@@ -323,7 +323,7 @@ public class FileSystemServiceTests
         string? fileKey = null;
 
         // Act
-        var act = async () => await _fileSystemService.ReadHistoryAsync<string>(fileKey!);
+        var act = async () => await _fileSystemService.ReadHistoryAsync<string>(fileKey!, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();

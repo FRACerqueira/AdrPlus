@@ -10,11 +10,8 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NSubstitute;
-using Xunit;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Supersede;
@@ -105,7 +102,7 @@ public class SupersedeCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -126,7 +123,7 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -154,7 +151,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).StatusChangeSupersedeAdrAsync(
@@ -187,7 +184,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: one success for supersede update, one for new file creation
         _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
@@ -213,7 +210,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.Received().FileExists(Arg.Is<string>(s => s.EndsWith(".md")));
@@ -244,7 +241,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).StatusChangeSupersedeAdrAsync(
@@ -268,7 +265,7 @@ public class SupersedeCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -285,7 +282,7 @@ public class SupersedeCommandHandlerTests
         _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns((string?)null);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -308,7 +305,7 @@ public class SupersedeCommandHandlerTests
             .Returns(Task.FromException<string>(new FileNotFoundException($"File not found: {configPath}")));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -332,7 +329,7 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
 
         _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
@@ -365,7 +362,7 @@ public class SupersedeCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Invalid file name format");
     }
@@ -401,7 +398,7 @@ public class SupersedeCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Invalid header format");
     }
@@ -422,7 +419,7 @@ public class SupersedeCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -442,7 +439,7 @@ public class SupersedeCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -466,7 +463,7 @@ public class SupersedeCommandHandlerTests
             .Returns((false, "Supersede update failed"));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Supersede update failed");
     }
@@ -491,7 +488,7 @@ public class SupersedeCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FormatException>();
     }
 
@@ -517,7 +514,7 @@ public class SupersedeCommandHandlerTests
         var beforeCall = DateTime.UtcNow.Date;
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: date passed to StatusChangeSupersedeAdrAsync is today's date
         await _mockAdrServices.Received(1).StatusChangeSupersedeAdrAsync(
@@ -567,7 +564,7 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockAdrServices.Received(1).OpenFile(Arg.Any<string>(), Arg.Any<string>());
@@ -611,7 +608,7 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert: 2 from supersede+file creation, 1 from open success = 3 total
         _mockConsole.Received(3).PromptWriteSuccess(Arg.Any<string>());
@@ -655,7 +652,7 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns("open error");
 
         // Act
-        await handler.ExecuteAsync(args, CancellationToken.None);
+        await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
@@ -680,7 +677,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -699,7 +696,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -726,7 +723,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, (AdrFileNameComponents?)null));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -750,7 +747,7 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -779,7 +776,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -810,7 +807,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, false));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -859,7 +856,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -886,7 +883,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -917,7 +914,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -944,7 +941,7 @@ public class SupersedeCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -967,7 +964,7 @@ public class SupersedeCommandHandlerTests
         _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(_ => throw exception);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Test exception");
     }
@@ -1056,4 +1053,5 @@ public class SupersedeCommandHandlerTests
 
     #endregion
 }
+
 

@@ -1,4 +1,4 @@
-﻿// ***************************************************************************************
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -81,7 +81,7 @@ public class InitCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -102,7 +102,7 @@ public class InitCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -137,7 +137,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
@@ -172,7 +172,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), jsonConfig, Arg.Any<CancellationToken>());
@@ -191,7 +191,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.DirectoryExists(NonexistentPath).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
@@ -211,7 +211,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.Contains(".adrplus"))).Returns(true);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
@@ -234,7 +234,7 @@ public class InitCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
@@ -274,7 +274,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptSelectFolderPath(Arg.Any<string>(), false, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
@@ -317,7 +317,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
@@ -340,7 +340,7 @@ public class InitCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -359,7 +359,7 @@ public class InitCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -400,7 +400,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("frontend")));
@@ -441,7 +441,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.DidNotReceive().CreateDirectory(Arg.Is<string>(s => s.Contains("frontend")));
@@ -479,7 +479,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.DidNotReceive().CreateDirectory(Arg.Is<string>(s => s.Contains("frontend")));
@@ -515,7 +515,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.EndsWith("adr", StringComparison.OrdinalIgnoreCase)));
@@ -547,7 +547,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.DidNotReceive().CreateDirectory(repoPath);
@@ -596,7 +596,7 @@ public class InitCommandHandlerTests
         _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(x => throw exception);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Test exception");
     }
@@ -637,7 +637,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received().PromptWriteSuccess(configPath);
@@ -680,7 +680,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Should not attempt to create empty scope directories, but ADR folder should be created
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.EndsWith("adr", StringComparison.OrdinalIgnoreCase)));
@@ -720,7 +720,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Should create scope folders despite whitespace
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("frontend")));
@@ -761,7 +761,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Only web and mobile should be created
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("web")));
@@ -796,7 +796,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Should create custom folder name
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains("decisions")));
@@ -831,7 +831,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Should create folder with specified name
         _mockFileSystem.Received(1).CreateDirectory(Arg.Is<string>(s => s.Contains(folderAdrName)));
@@ -862,7 +862,7 @@ public class InitCommandHandlerTests
             .Returns((true, string.Empty)); // IsAborted = true
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -898,7 +898,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Drive prompt should NOT be called
         _mockConsole.DidNotReceive().PromptSelectLogicalDrive(Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<CancellationToken>());
@@ -948,7 +948,7 @@ public class InitCommandHandlerTests
         _mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Both prompts should be called, repo initialized at selected location
         _mockConsole.Received(1).PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>());
@@ -978,10 +978,11 @@ public class InitCommandHandlerTests
             .Returns((true, string.Empty)); // IsAborted = true
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
     #endregion
 }
+
 

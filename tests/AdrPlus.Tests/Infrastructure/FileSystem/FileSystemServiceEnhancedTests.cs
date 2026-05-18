@@ -242,7 +242,7 @@ public class FileSystemServiceEnhancedTests
         try
         {
             // Act
-            var result = await _fileSystemService.ReadAllTextAsync(filePath, CancellationToken.None);
+            var result = await _fileSystemService.ReadAllTextAsync(filePath, TestContext.Current.CancellationToken);
 
             // Assert
             result.Should().Be(content);
@@ -263,7 +263,7 @@ public class FileSystemServiceEnhancedTests
         // Act & Assert
         // File not found could throw FileNotFoundException or other IO exceptions
         await Assert.ThrowsAnyAsync<Exception>(() =>
-            _fileSystemService.ReadAllTextAsync(filePath, CancellationToken.None));
+            _fileSystemService.ReadAllTextAsync(filePath, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -278,7 +278,7 @@ public class FileSystemServiceEnhancedTests
         try
         {
             // Act
-            var result = await _fileSystemService.ReadAllLinesAsync(filePath, CancellationToken.None);
+            var result = await _fileSystemService.ReadAllLinesAsync(filePath, TestContext.Current.CancellationToken);
 
             // Assert
             result.Should().HaveCount(3);
@@ -304,7 +304,7 @@ public class FileSystemServiceEnhancedTests
         try
         {
             // Act
-            await _fileSystemService.WriteAllTextAsync(filePath, content, CancellationToken.None);
+            await _fileSystemService.WriteAllTextAsync(filePath, content, TestContext.Current.CancellationToken);
 
             // Assert
             File.Exists(filePath).Should().BeTrue();
@@ -411,3 +411,4 @@ public class FileSystemServiceEnhancedTests
 
     #endregion
 }
+

@@ -122,7 +122,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
 
         // Act
-        var (IsValid, ErrorReport) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, ErrorReport) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeFalse();
@@ -139,7 +139,7 @@ public class ValidateJsonConfigTests
         });
 
         // Act
-        var (IsValid, ErrorReport) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, ErrorReport) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeFalse();
@@ -159,7 +159,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templatePath).Returns(true);
 
         // Act
-        var (IsValid, ErrorReport) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, ErrorReport) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeTrue();
@@ -179,7 +179,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templatePath).Returns(true);
 
         // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, _) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeFalse();
@@ -200,7 +200,7 @@ public class ValidateJsonConfigTests
         _fileSystem.DirectoryExists(templateDir).Returns(true);
 
         // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, _) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeTrue();
@@ -223,7 +223,7 @@ public class ValidateJsonConfigTests
         _fileSystem.DirectoryExists(templateDir).Returns(true);
 
         // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, _) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeTrue();
@@ -245,7 +245,7 @@ public class ValidateJsonConfigTests
         _fileSystem.DirectoryExists(templateDir).Returns(true);
 
         // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+        var (IsValid, _) = await validator.ValidateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         IsValid.Should().BeTrue();
@@ -1309,7 +1309,7 @@ public class ValidateJsonConfigTests
         _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
+        var result = await validator.GetConfigRepoTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(expectedContent);
@@ -1325,7 +1325,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(expectedPath).Returns(false);
 
         // Act
-        var act = async () => await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
+        var act = async () => await validator.GetConfigRepoTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();
@@ -1339,16 +1339,15 @@ public class ValidateJsonConfigTests
         var expectedContent = "template content";
         var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
         var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
-        var cts = new CancellationTokenSource();
         _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
+        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigRepoTemplateAsync(cts.Token);
+        var result = await validator.GetConfigRepoTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(expectedContent);
-        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
+        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -1366,7 +1365,7 @@ public class ValidateJsonConfigTests
         _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
+        var result = await validator.GetConfigAdrTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(expectedContent);
@@ -1381,7 +1380,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(expectedPath).Returns(false);
 
         // Act
-        var act = async () => await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
+        var act = async () => await validator.GetConfigAdrTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();
@@ -1394,16 +1393,15 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var expectedContent = "ADR template content";
         var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
-        var cts = new CancellationTokenSource();
         _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
+        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigAdrTemplateAsync(cts.Token);
+        var result = await validator.GetConfigAdrTemplateAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(expectedContent);
-        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
+        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -1421,7 +1419,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", TestContext.Current.CancellationToken);
 
         // Assert
         _fileSystem.Received(1).CreateDirectory(templateDir);
@@ -1439,7 +1437,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync("pt-BR", CancellationToken.None);
+        await validator.InitializeTemplateAsync("pt-BR", TestContext.Current.CancellationToken);
 
         // Assert
         _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
@@ -1457,7 +1455,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(true);
 
         // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1474,7 +1472,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync(null, CancellationToken.None);
+        await validator.InitializeTemplateAsync(null, TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1491,7 +1489,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync(string.Empty, CancellationToken.None);
+        await validator.InitializeTemplateAsync(string.Empty, TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1508,7 +1506,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+        await validator.InitializeTemplateAsync("en-US", TestContext.Current.CancellationToken);
 
         // Assert
         _fileSystem.Received(1).CreateDirectory(templateDir);
@@ -1526,7 +1524,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync("pt-PT", CancellationToken.None);
+        await validator.InitializeTemplateAsync("pt-PT", TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1543,7 +1541,7 @@ public class ValidateJsonConfigTests
         _fileSystem.FileExists(templateFile).Returns(false);
 
         // Act
-        await validator.InitializeTemplateAsync("invalid-culture", CancellationToken.None);
+        await validator.InitializeTemplateAsync("invalid-culture", TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -1564,7 +1562,7 @@ public class ValidateJsonConfigTests
         _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
 
         // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
+        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(expectedContent);
@@ -1582,7 +1580,7 @@ public class ValidateJsonConfigTests
             .Returns<string>(x => throw new FileNotFoundException("Template not found"));
 
         // Act
-        var act = async () => await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
+        var act = async () => await validator.GetConfigDefaultRepoContentAsync("doc/adr", TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();
@@ -1830,3 +1828,4 @@ public class ValidateJsonConfigTests
 
     #endregion
 }
+

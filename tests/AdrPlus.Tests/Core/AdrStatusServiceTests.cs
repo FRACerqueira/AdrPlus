@@ -104,7 +104,7 @@ public class AdrStatusServiceTests
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Accepted;
         var updateDate = new DateTime(2024, 6, 15);
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -142,7 +142,7 @@ public class AdrStatusServiceTests
 
         // Act
         await _statusService.StatusUpdateAdrAsync(
-            _filePath, newStatus, updateDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, newStatus, updateDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         capturedContent.Should().Contain(parsedFile.ContentAdr);
@@ -155,7 +155,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusUpdateAdrAsync(
-            null!, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            null!, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusUpdateAdrAsync(
-            string.Empty, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            string.Empty, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusUpdateAdrAsync(
-            "   ", AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            "   ", AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, null!, _fileSystemService, CancellationToken.None));
+            _filePath, AdrStatus.Accepted, DateTime.Now, null!, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, _config, null!, CancellationToken.None));
+            _filePath, AdrStatus.Accepted, DateTime.Now, _config, null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -195,7 +195,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidFile = CreateInvalidParsedFile();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidFile));
@@ -214,7 +214,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidHeaderFile = CreateParsedFileWithInvalidHeader();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidHeaderFile));
@@ -245,7 +245,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, error) = await _statusService.StatusUpdateAdrAsync(
-            _filePath, newStatus, updateDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, newStatus, updateDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -265,7 +265,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, _) = await _statusService.StatusUpdateAdrAsync(
-            crossPlatformPath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None);
+            crossPlatformPath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -276,21 +276,19 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
-        var cts = new CancellationTokenSource();
-        var cancellationToken = cts.Token;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
         // Act
         await _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, cancellationToken);
+            _filePath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystemService.Received(1).WriteAllTextAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is(cancellationToken));
+            Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -304,7 +302,7 @@ public class AdrStatusServiceTests
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var supersedingFilename = "ADR-0002-NewDecision-V01.md";
         var changeDate = new DateTime(2024, 8, 1);
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -342,7 +340,7 @@ public class AdrStatusServiceTests
 
         // Act
         await _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, supersedingFilename, changeDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, supersedingFilename, changeDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         capturedContent.Should().Contain(parsedFile.ContentAdr);
@@ -355,7 +353,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            null!, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            null!, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -363,7 +361,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            string.Empty, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            string.Empty, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -371,7 +369,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            "   ", "ADR-0002.md", DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            "   ", "ADR-0002.md", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -379,7 +377,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, null!, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            _filePath, null!, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -387,7 +385,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, string.Empty, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            _filePath, string.Empty, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -395,7 +393,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, "   ", DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            _filePath, "   ", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -403,7 +401,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, "ADR-0002.md", DateTime.Now, null!, _fileSystemService, CancellationToken.None));
+            _filePath, "ADR-0002.md", DateTime.Now, null!, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -411,7 +409,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, "ADR-0002.md", DateTime.Now, _config, null!, CancellationToken.None));
+            _filePath, "ADR-0002.md", DateTime.Now, _config, null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -419,7 +417,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidFile = CreateInvalidParsedFile();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidFile));
@@ -438,7 +436,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidHeaderFile = CreateParsedFileWithInvalidHeader();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidHeaderFile));
@@ -465,14 +463,14 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid1, _) = await _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, filename1, DateTime.Now, _config, _fileSystemService, CancellationToken.None);
+            _filePath, filename1, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
         var (isValid2, _) = await _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, filename2, DateTime.Now, _config, _fileSystemService, CancellationToken.None);
+            _filePath, filename2, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid1.Should().BeTrue();
@@ -491,7 +489,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, _) = await _statusService.StatusChangeSupersedeAdrAsync(
-            crossPlatformPath, "ADR-0004-NewDecision-V01.md", DateTime.Now, _config, _fileSystemService, CancellationToken.None);
+            crossPlatformPath, "ADR-0004-NewDecision-V01.md", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -502,21 +500,19 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
-        var cts = new CancellationTokenSource();
-        var cancellationToken = cts.Token;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
         // Act
         await _statusService.StatusChangeSupersedeAdrAsync(
-            _filePath, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, cancellationToken);
+            _filePath, "ADR-0002.md", DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystemService.Received(1).WriteAllTextAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is(cancellationToken));
+            Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -530,7 +526,7 @@ public class AdrStatusServiceTests
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         var newStatus = AdrStatus.Accepted;
         var changeDate = new DateTime(2024, 9, 10);
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
@@ -568,7 +564,7 @@ public class AdrStatusServiceTests
 
         // Act
         await _statusService.StatusChangeAdrAsync(
-            _filePath, newStatus, changeDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, newStatus, changeDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         capturedContent.Should().Contain(parsedFile.ContentAdr);
@@ -581,7 +577,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeAdrAsync(
-            null!, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            null!, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -589,7 +585,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeAdrAsync(
-            string.Empty, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            string.Empty, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -597,7 +593,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => _statusService.StatusChangeAdrAsync(
-            "   ", AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None));
+            "   ", AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -605,7 +601,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, null!, _fileSystemService, CancellationToken.None));
+            _filePath, AdrStatus.Accepted, DateTime.Now, null!, _fileSystemService, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -613,7 +609,7 @@ public class AdrStatusServiceTests
     {
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, _config, null!, CancellationToken.None));
+            _filePath, AdrStatus.Accepted, DateTime.Now, _config, null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -621,7 +617,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidFile = CreateInvalidParsedFile();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidFile));
@@ -640,7 +636,7 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var invalidHeaderFile = CreateParsedFileWithInvalidHeader();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(invalidHeaderFile));
@@ -671,7 +667,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, error) = await _statusService.StatusChangeAdrAsync(
-            _filePath, newStatus, changeDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, newStatus, changeDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -692,14 +688,14 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid1, _) = await _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Accepted, date1, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Accepted, date1, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
         var (isValid2, _) = await _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Rejected, date2, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Rejected, date2, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid1.Should().BeTrue();
@@ -718,7 +714,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, _) = await _statusService.StatusChangeAdrAsync(
-            crossPlatformPath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, CancellationToken.None);
+            crossPlatformPath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -729,21 +725,19 @@ public class AdrStatusServiceTests
     {
         // Arrange
         var parsedFile = AdrStatusServiceTests.CreateValidParsedFile();
-        var cts = new CancellationTokenSource();
-        var cancellationToken = cts.Token;
 
         _fileParser.ParseFileName(_filePath, _config, _fileSystemService)
             .Returns(Task.FromResult(parsedFile));
 
         // Act
         await _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, cancellationToken);
+            _filePath, AdrStatus.Accepted, DateTime.Now, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         await _fileSystemService.Received(1).WriteAllTextAsync(
             Arg.Any<string>(),
             Arg.Any<string>(),
-            Arg.Is(cancellationToken));
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -758,7 +752,7 @@ public class AdrStatusServiceTests
 
         // Act
         var (isValid, error) = await _statusService.StatusChangeAdrAsync(
-            _filePath, AdrStatus.Superseded, changeDate, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Superseded, changeDate, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeTrue();
@@ -804,15 +798,15 @@ public class AdrStatusServiceTests
         // Act
         var (result1, error1) = await _statusService.StatusUpdateAdrAsync(
             _filePath, AdrStatus.Accepted, new DateTime(2024, 5, 1),
-            _config, _fileSystemService, CancellationToken.None);
+            _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         var (result2, error2) = await _statusService.StatusChangeAdrAsync(
             _filePath, AdrStatus.Rejected, new DateTime(2024, 10, 1),
-            _config, _fileSystemService, CancellationToken.None);
+            _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         var (result3, error3) = await _statusService.StatusChangeSupersedeAdrAsync(
             _filePath, "ADR-0002-NewDecision-V01.md", new DateTime(2024, 11, 1),
-            _config, _fileSystemService, CancellationToken.None);
+            _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         result1.Should().BeTrue();
@@ -836,13 +830,13 @@ public class AdrStatusServiceTests
 
         // Act
         var (result1, _) = await _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Proposed, date1, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Proposed, date1, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         var (result2, _) = await _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Accepted, date2, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Accepted, date2, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         var (result3, _) = await _statusService.StatusUpdateAdrAsync(
-            _filePath, AdrStatus.Rejected, date3, _config, _fileSystemService, CancellationToken.None);
+            _filePath, AdrStatus.Rejected, date3, _config, _fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         result1.Should().BeTrue();
@@ -852,3 +846,4 @@ public class AdrStatusServiceTests
 
     #endregion
 }
+
