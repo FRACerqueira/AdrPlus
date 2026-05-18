@@ -24,14 +24,19 @@ namespace AdrPlus.Infrastructure.Formatting
             return Cache.GetOrAdd(cacheKey, _ => CompositeFormat.Parse(resourceAccessor()));
         }
 
+        public static CompositeFormat ErrMsgNewLenSeqGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenSeqGreatConfigSetting);
+        public static CompositeFormat ErrMsgNewLenVerGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenVerGreatConfigSetting);
+        public static CompositeFormat ErrMsgNewLenRevGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenRevGreatConfigSetting);
+        public static CompositeFormat ErrMsgFileAlreadyExists => Get(() => Resources.AdrPlus.ErrMsgFileAlreadyExists);
+        public static CompositeFormat ErrMsgInvalidRepoConfigMigrationPattern => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfigMigrationPattern);
+        public static CompositeFormat ErrorLenFileSampleMigration => Get(() => Resources.AdrPlus.ErrorLenFileSampleMigration);
+        public static CompositeFormat ErrorCannotDetermineRootPath => Get(() => Resources.AdrPlus.ErrorCannotDetermineRootPath);
         public static CompositeFormat InvalidMenuOption => Get(() => Resources.AdrPlus.InvalidMenuOption);
         public static CompositeFormat NotValidStatusForSupersede => Get(() => Resources.AdrPlus.NotValidStatusForSupersede);
         public static CompositeFormat NotValidStatusForUndo => Get(() => Resources.AdrPlus.NotValidStatusForUndo);
         public static CompositeFormat ExceptionFileNotFound => Get(() => Resources.AdrPlus.ExceptionFileNotFound);
         public static CompositeFormat ErrorInConfigFile => Get(() => Resources.AdrPlus.ErrorInConfigFile);
         public static CompositeFormat ErrorDateFormat => Get(() => Resources.AdrPlus.ErrorDateFormat);
-        public static CompositeFormat ErrorVersionNotConfig => Get(() => Resources.AdrPlus.ErrorVersionNotconfig);
-        public static CompositeFormat FileMustBeOverFolderFormat => Get(() => Resources.AdrPlus.FileMustBeOverFolder);
         public static CompositeFormat ExceptionDirectoryNotFoundPathFormat => Get(() => Resources.AdrPlus.ExceptionDirectoryNotFound);
         public static CompositeFormat ErrorFilenameNoPrefixFormat => Get(() => Resources.AdrPlus.ErrorFilenameNoPrefix);
         public static CompositeFormat ErrorInvalidNumberFormatMsg => Get(() => Resources.AdrPlus.ErrorInvalidNumberFormat);
@@ -42,11 +47,9 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ErrorUnexpectedPartInFilenameMsg => Get(() => Resources.AdrPlus.ErrorUnexpectedPartInFilename);
         public static CompositeFormat NotValidStatusForUpdate => Get(() => Resources.AdrPlus.NotValidStatusForUpdate);
         public static CompositeFormat NotValidStatusForApproveAndReject => Get(() => Resources.AdrPlus.NotValidStatusForApproveAndReject);
-        public static CompositeFormat NotValidStatusForAdr => Get(() => Resources.AdrPlus.NotValidStatusForAdr);
         public static CompositeFormat ErrorParsingFilenameMsg => Get(() => Resources.AdrPlus.ErrorParsingFilename);
         public static CompositeFormat ExceptionInvalidCaseFormatMsg => Get(() => Resources.AdrPlus.ExceptionInvalidCaseFormat);
         public static CompositeFormat WelcomeFormat => Get(() => Resources.AdrPlus.Welcome);
-        public static CompositeFormat ValidationDateFormatInvalidFormat => Get(() => Resources.AdrPlus.ValidationDateFormatInvalidFormat);
         public static CompositeFormat ErrMsgFolderRepoMustBeRelativeFormat => Get(() => Resources.AdrPlus.ErrMsgFolderRepoMustBeRelative);
         public static CompositeFormat ValidationLanguageInvalidFormat => Get(() => Resources.AdrPlus.ValidationLanguageInvalidFormat);
         public static CompositeFormat ExceptionDirectoryNotFound => Get(() => Resources.AdrPlus.ExceptionDirectoryNotFound);
@@ -57,8 +60,6 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat InitCmdConfigFileAlreadyExists => Get(() => Resources.AdrPlus.InitCmdConfigFileAlreadyExists);
         public static CompositeFormat ErrMsgInvalidRepoConfig => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfig);
         public static CompositeFormat ExceptionInvalidFilename => Get(() => Resources.AdrPlus.ExceptionConfigFileNotFound);
-        public static CompositeFormat ConfigInfoSelectedField => Get(() => Resources.AdrPlus.ConfigInfoSelectedField);
-        public static CompositeFormat ConfigInfoCurrentValue => Get(() => Resources.AdrPlus.ConfigInfoCurrentValue);
         public static CompositeFormat ConfigErrorInvalidNumber => Get(() => Resources.AdrPlus.ConfigErrorInvalidNumber);
         public static CompositeFormat ConfigErrorInvalidBoolean => Get(() => Resources.AdrPlus.ConfigErrorInvalidBoolean);
         public static CompositeFormat ErrorRevisionNotconfig => Get(() => Resources.AdrPlus.ErrorRevisionNotconfig);
@@ -66,7 +67,6 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat MsgCommandStartedFormat => Get(() => Resources.AdrPlus.MsgCommandStarted);
         public static CompositeFormat MsgCommandFinishedFormat => Get(() => Resources.AdrPlus.MsgCommandFinished);
         public static CompositeFormat ErrMsgInvalidLanguageCodeFormat => Get(() => Resources.AdrPlus.ErrMsgInvalidLanguageCode);
-        public static CompositeFormat ErrMsgDateFormatInvalidFormat => Get(() => Resources.AdrPlus.ErrMsgDateFormatInvalid);
         public static CompositeFormat ErrMsgConfigFileNotFoundFormat => Get(() => Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
         public static CompositeFormat ErrMsgContentInvalidPathFormat => Get(() => Resources.AdrPlus.ErrMsgContentInvalidPath);
         public static CompositeFormat ErrMsgContentPathTooLongFormat => Get(() => Resources.AdrPlus.ErrMsgContentPathTooLong);

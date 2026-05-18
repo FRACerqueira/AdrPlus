@@ -30,7 +30,6 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
-
             //normalize the path of the executing assembly to ensure it works correctly even if the app is run from a different directory
             var assembly = Assembly.GetExecutingAssembly()!;
             var basepath = Path.GetDirectoryName(assembly.Location)!;
@@ -78,7 +77,7 @@ namespace AdrPlus
                         }).Build();
 
                     var configapp = host.Services.GetRequiredService<IOptions<AdrPlusConfig>>().Value;
-                    var consoleservice = host.Services.GetRequiredService<IConsoleWriter>();
+                    var consoleservice = host.Services.GetRequiredService<IPromptConsole>();
                     logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
                     var appculture = configapp.Language;
@@ -87,19 +86,19 @@ namespace AdrPlus
                     {
                         cultureInfo = new CultureInfo(appculture);
                     }
-                    consoleservice.EnsureCulture(configapp);
-                    consoleservice.ConfigurePrompt(configapp);
-                    consoleservice.ShowBanner(AppConstants.BannerText);
+                    consoleservice.PromptEnsureCulture(configapp);
+                    consoleservice.PromptConfigure(configapp);
+                    consoleservice.PromptShowBanner(AppConstants.BannerText);
 
                     var validator = host.Services.GetRequiredService<IValidateJsonConfig>();
                     var (isValid, errorReport) = await validator.ValidateAsync();
                     if (!isValid)
                     {
-                        ConsoleWriter.ShowError(Resources.AdrPlus.ErrMsgConfigValidationFailed);
+                        PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgConfigValidationFailed);
                         foreach (var error in errorReport)
                         {
                             LogMessages.LogError(logger, error);
-                            ConsoleWriter.ShowError(error);
+                            PromptConsole.PromptShowError(error);
                         }
                         exitcode = 1;
                         return exitcode;
@@ -107,7 +106,7 @@ namespace AdrPlus
 
                     var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
                     LogMessages.LogApplicationStarting(logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
-                    consoleservice.ShowWellcome(appVersion);
+                    consoleservice.PromptShowWellcome(appVersion);
 
                     await host.RunAsync();
                     if (Helper.HasAppConfigChange)
@@ -125,8 +124,8 @@ namespace AdrPlus
                 {
                     LogMessages.LogCriticalError(logger, ex);
                 }
-                ConsoleWriter.ShowError(Resources.AdrPlus.ErrMsgCritical);
-                ConsoleWriter.ShowError(ex.Message);
+                PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgCritical);
+                PromptConsole.PromptShowError(ex.Message);
                 exitcode = 1;
             }
             finally

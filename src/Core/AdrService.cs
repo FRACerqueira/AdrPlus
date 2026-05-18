@@ -23,6 +23,10 @@ namespace AdrPlus.Core
         private readonly ICommandMetadataService _commandMetadataService = commandMetadataService;
 
         /// <inheritdoc/>
+        public Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched)
+            => _queryService.ReadAllAdrFiles(fileSystemService, directoryPath, config, includeNotMatched);
+
+        /// <inheritdoc/>
         public Task<(bool Isvalid, string Error)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
             => _statusService.StatusUpdateAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken);
 
@@ -35,28 +39,24 @@ namespace AdrPlus.Core
             => _statusService.StatusChangeAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken);
 
         /// <inheritdoc/>
-        public AdrPlusRepoConfig FromJson(string jsonString, string template, string defaultFolder)
-            => _configMapper.FromJson(jsonString, template, defaultFolder);
+        public AdrPlusRepoConfig FromJson(string jsonString, string template)
+            => _configMapper.FromJson(jsonString, template);
 
         /// <inheritdoc/>
         public Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
             => _queryService.ReadAllAdrByNumber(sequence, fileSystemService, directoryPath, config);
 
         /// <inheritdoc/>
-        public Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-            => _queryService.ReadLatestAdrFiles(fileSystemService, directoryPath, config);
-
-        /// <inheritdoc/>
-        public Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-            => _queryService.GetFileByUniqueTitle(title, domain, fileSystemService, directoryPath, config);
+        public Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService,string rootrepo, AdrPlusRepoConfig config)
+            => _queryService.GetFileByUniqueTitle(title, domain, fileSystemService, rootrepo, config);
 
         /// <inheritdoc/>
         public Task<int> GetNextNumber(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
             => _queryService.GetNextNumber(fileSystemService, directoryPath, config);
 
         /// <inheritdoc/>
-        public Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-            => _queryService.GetLatestADRSequence(sequence, fileSystemService, directoryPath, config);
+        public Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string rootPath, AdrPlusRepoConfig config)
+            => _queryService.GetLatestADRSequence(sequence, fileSystemService, rootPath, config);
 
         /// <inheritdoc/>
         public Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)

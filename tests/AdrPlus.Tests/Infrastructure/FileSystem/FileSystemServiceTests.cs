@@ -3,9 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+
+// ***************************************************************************************
+// MIT LICENCE
+// The maintenance and evolution is maintained by the AdrPlus project under MIT license
+// ***************************************************************************************
+
 using AdrPlus.Infrastructure.FileSystem;
 
-namespace AdrPlus.Tests.Infrastructure;
+namespace AdrPlus.Tests.Infrastructure.FileSystem;
 
 public class FileSystemServiceTests
 {
@@ -85,7 +91,7 @@ public class FileSystemServiceTests
         try
         {
             // Act
-            var result = _fileSystemService.GetFullNameDirectory(_testDirectory);
+            var result = _fileSystemService.GetFullNameDirectoryByFile(_testDirectory);
 
             // Assert
             result.Should().NotBeNullOrEmpty();

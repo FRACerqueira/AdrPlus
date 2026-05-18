@@ -18,16 +18,17 @@ namespace AdrPlus.Tests.Commands.Help;
 /// </summary>
 public class HelpCommandHandlerTests
 {
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly CommandRouter _mockCommandRouter;
     private readonly IAdrServices _mockAdrServices;
     private readonly HelpCommandHandler _handler;
 
     public HelpCommandHandlerTests()
     {
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
+        var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
         _mockAdrServices = Substitute.For<IAdrServices>();
         
         _mockCommandRouter = new CommandRouter(
@@ -36,7 +37,7 @@ public class HelpCommandHandlerTests
             _mockConsole,
             _mockAdrServices);
 
-        _handler = new HelpCommandHandler(_mockConsole, _mockCommandRouter, _mockAdrServices);
+        _handler = new HelpCommandHandler(mockHelpLogger, _mockConsole, _mockCommandRouter, _mockAdrServices);
     }
 
     #region Constructor Tests
@@ -45,15 +46,15 @@ public class HelpCommandHandlerTests
     public void Constructor_WithValidParameters_CreatesInstance()
     {
         // Arrange
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
         var adrServices = Substitute.For<IAdrServices>();
+        var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
         var commandRouter = new CommandRouter(mockServiceProvider, mockLogger, console, adrServices);
 
         // Act
-        var handler = new HelpCommandHandler(console, commandRouter, adrServices);
-
+        var handler = new HelpCommandHandler(mockHelpLogger, console, commandRouter, adrServices);
         // Assert
         handler.Should().NotBeNull();
     }
@@ -78,7 +79,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received().WriteHelp(Resources.AdrPlus.HelpHeaderAvailableCommands);
+        _mockConsole.Received().PromptWriteHelp(Resources.AdrPlus.HelpHeaderAvailableCommands);
     }
 
     [Fact]
@@ -99,7 +100,7 @@ public class HelpCommandHandlerTests
 
         // Assert
         // Verify console was called multiple times (header + 3 commands)
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     [Fact]
@@ -136,7 +137,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, cts.Token);
 
         // Assert
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion
@@ -246,7 +247,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, cts.Token);
 
         // Assert
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion
@@ -268,7 +269,7 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert
-        _mockConsole.Received(1).WriteHelp(Resources.AdrPlus.HelpHeaderAvailableCommands);
+        _mockConsole.Received(1).PromptWriteHelp(Resources.AdrPlus.HelpHeaderAvailableCommands);
     }
 
     [Fact]
@@ -346,8 +347,8 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert
-        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.Contains(descriptionNewAdr)));
-        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.Contains(descriptionReview)));
+        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains(descriptionNewAdr)));
+        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains(descriptionReview)));
     }
 
     [Fact]
@@ -366,7 +367,7 @@ public class HelpCommandHandlerTests
 
         // Assert
         // Verify that WriteHelp was called with padded strings
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     [Fact]
@@ -383,7 +384,7 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert
-        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.Contains("#")));
+        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains('#')));
     }
 
     [Fact]
@@ -400,7 +401,7 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert
-        _mockConsole.Received(1).WriteHelp(Arg.Is<string>(s => s.StartsWith("  ")));
+        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.StartsWith("  ")));
     }
 
     #endregion
@@ -424,7 +425,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert - Should work the same on all platforms
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     [Fact]
@@ -440,7 +441,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, cts.Token);
 
         // Assert
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     [Fact]
@@ -458,7 +459,7 @@ public class HelpCommandHandlerTests
         _handler.GenerateHelpAllCommands();
 
         // Assert - Should work the same on all platforms
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion
@@ -494,7 +495,7 @@ public class HelpCommandHandlerTests
         await _handler.ExecuteAsync(args, cts.Token);
 
         // Assert - Both calls should work the same
-        _mockConsole.Received().WriteHelp(Arg.Any<string>());
+        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion

@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -11,7 +11,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using System.Text.Json;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Config;
@@ -24,10 +24,9 @@ public class ConfigCommandHandlerTests
 {
     private readonly ILogger<ConfigCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
-    private readonly IOptions<AdrPlusConfig> _mockConfig;
     private readonly AdrPlusConfig _config;
     private readonly ConfigCommandHandler _handler;
 
@@ -35,14 +34,12 @@ public class ConfigCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<ConfigCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
-        _mockConfig = Substitute.For<IOptions<AdrPlusConfig>>();
 
         _config = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
         };
 
         _handler = new ConfigCommandHandler(
@@ -50,7 +47,6 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            Options.Create(_config),
             _mockAdrServices);
     }
 
@@ -65,11 +61,22 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            Options.Create(_config),
             _mockAdrServices);
 
         // Assert
         handler.Should().NotBeNull();
+    }
+
+    #endregion
+
+    #region ExecuteAsync - Null Args Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithNullArgs_ThrowsArgumentNullException()
+    {
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(null!, CancellationToken.None))
+            .Should().ThrowAsync<ArgumentNullException>();
     }
 
     #endregion
@@ -90,7 +97,7 @@ public class ConfigCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -121,7 +128,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]
@@ -171,7 +178,7 @@ public class ConfigCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Language field");
+        _mockConsole.Received(1).PromptWriteError("Missing Language field");
     }
 
     [Fact]
@@ -228,17 +235,17 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(_config, Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
         _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
-        var repoConfig = new AdrPlusRepoConfig
+        var repoConfig = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -248,7 +255,7 @@ public class ConfigCommandHandlerTests
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
-        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
             .Returns(repoConfig);
 
         // Act
@@ -256,7 +263,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]
@@ -272,17 +279,17 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
-        _mockValidateConfig.GetConfigDefaultRepoContentAsync(_config, Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
         _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
         _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
-        var repoConfig = new AdrPlusRepoConfig
+        var repoConfig = new AdrPlusRepoConfig("","")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -292,7 +299,7 @@ public class ConfigCommandHandlerTests
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
-        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
             .Returns(repoConfig);
 
         // Act
@@ -356,7 +363,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
         _mockValidateConfig.ValidateRepoStructure(jsonContent).Returns((true, []));
-        _mockValidateConfig.GetConfigRepoFilePath().Returns(configPath);
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         // Act
         await _handler.ExecuteAsync(args, CancellationToken.None);
@@ -409,7 +416,7 @@ public class ConfigCommandHandlerTests
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     #endregion
@@ -440,7 +447,7 @@ public class ConfigCommandHandlerTests
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -507,7 +514,7 @@ public class ConfigCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, templateContent, Arg.Any<CancellationToken>());
-        _mockConsole.Received(1).WriteSuccess(configPath);
+        _mockConsole.Received(1).PromptWriteSuccess(configPath);
     }
 
     [Fact]
@@ -595,6 +602,55 @@ public class ConfigCommandHandlerTests
 
     #endregion
 
+    #region ExecuteAsync - Multiple Config Arguments Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithBothRepositoryAndMigrationArgs_ProcessesRepository()
+    {
+        // Arrange - when both repository and migration are specified, repository takes precedence
+        var args = new[] { "--repository", "--migration" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.WizardConfigRepository, string.Empty },
+            { Arguments.WizardConfigMigration, string.Empty }
+        };
+        var configPath = RepoConfigPath;
+        var jsonContent = """{"Prefix": "ADR", "LenSeq": 4}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(false);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(jsonContent);
+        _mockValidateConfig.EnsureFieldsRepoStructure(jsonContent).Returns(jsonContent);
+        _mockValidateConfig.ValidateRepoStructure(Arg.Any<string>()).Returns((true, []));
+        _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
+
+        var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
+        _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+            .Returns((false, field));
+
+        var repoConfig = new AdrPlusRepoConfig("","")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase,
+            Separator = '-'
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(repoConfig);
+
+        // Act
+        await _handler.ExecuteAsync(args, CancellationToken.None);
+
+        // Assert - repository config should be processed
+        await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
     #region ExecuteAsync - Invalid Arguments Tests
 
     [Fact]
@@ -657,4 +713,173 @@ public class ConfigCommandHandlerTests
     }
 
     #endregion
+
+    #region Sample File Generation
+
+    [Fact]
+    public void GetSampleFiles_GeneratesMultipleSamples()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase,
+            LenScope = 0,
+            Scopes = string.Empty,
+            SkipDomain = string.Empty,
+            FolderByScope = false
+        };
+
+        var jsonContent = JsonSerializer.Serialize(repoConfig);
+        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "GetSampleFiles",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        var samples = (string[])method?.Invoke(_handler, [jsonContent])!;
+
+        // Assert
+        samples.Should().NotBeEmpty();
+        samples.Length.Should().Be(4); // 4 sample models created in GetSampleFiles
+    }
+
+    [Fact]
+    public void GetSampleFiles_GeneratedFileNamesFollowFormat()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase,
+            LenScope = 0,
+            Scopes = string.Empty,
+            SkipDomain = string.Empty,
+            FolderByScope = false
+        };
+
+        var jsonContent = JsonSerializer.Serialize(repoConfig);
+        _mockAdrServices.FromJson(jsonContent, string.Empty).Returns(repoConfig);
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "GetSampleFiles",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        var samples = (string[])method?.Invoke(_handler, [jsonContent])!;
+
+        // Assert - samples follow ADRNNNN-TITLE.md pattern with .md extension
+        samples.Should().AllSatisfy(s => s.Should().StartWith("ADR"));
+        samples.Should().AllSatisfy(s => s.Should().EndWith(".md"));
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithProposedStatus_CreatesCorrectRecord()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null,
+        [
+            1, // number
+            1, // version
+            1, // revision
+            AdrStatus.Proposed, // status
+            null, // superseded
+            "X", // titleSuffix
+            string.Empty, // scope
+            string.Empty, // domainSuffix
+            repoConfig // repoConfig
+        ])!;
+
+        // Assert
+        model.StatusCreate.Should().Be(AdrStatus.Proposed);
+        model.Superseded.Should().BeNull();
+        model.Number.Should().Be(1);
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithSupersededStatus_CreatesCorrectRecord()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null,
+        [
+            3, // number
+            1, // version
+            1, // revision
+            AdrStatus.Superseded, // status
+            2, // superseded (ADR-002)
+            "Y", // titleSuffix
+            string.Empty, // scope
+            "K", // domainSuffix
+            repoConfig // repoConfig
+        ])!;
+
+        // Assert
+        model.StatusCreate.Should().Be(AdrStatus.Superseded);
+        model.Superseded.Should().Be(2);
+        model.Number.Should().Be(3);
+    }
+
+    [Fact]
+    public void CreateSampleModel_WithScope_IncludesInModel()
+    {
+        // Arrange
+        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            CaseTransform = CaseFormat.PascalCase
+        };
+
+        // Act
+        var method = typeof(ConfigCommandHandler).GetMethod(
+            "CreateSampleModel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        var model = (AdrRecord)method?.Invoke(null,
+        [
+            2, // number
+            1, // version
+            1, // revision
+            AdrStatus.Proposed, // status
+            null, // superseded
+            "Y", // titleSuffix
+            "architecture", // scope
+            "K", // domainSuffix
+            repoConfig // repoConfig
+        ])!;
+
+        // Assert
+        model.Scope.Should().Be("architecture");
+        model.Domain.Should().NotBeEmpty();
+    }
+
+    #endregion
 }
+

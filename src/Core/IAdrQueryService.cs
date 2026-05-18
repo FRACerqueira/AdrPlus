@@ -21,22 +21,14 @@ namespace AdrPlus.Core
         Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
-        /// Reads the latest ADR files asynchronously.
-        /// </summary>
-        /// <param name="fileSystemService">The file system service used to access files.</param>
-        /// <param name="directoryPath">The directory path to search in.</param>
-        /// <param name="config">The ADR Plus repository configuration.</param>
-        /// <returns>An array of <see cref="AdrFileNameComponents"/> representing the latest ADR files.</returns>
-        Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
-
-        /// <summary>
         /// Reads all ADR files asynchronously.
         /// </summary>
         /// <param name="fileSystemService">The file system service used to access files.</param>
         /// <param name="directoryPath">The directory path to search in.</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
+        /// <param name="includeNotMatched">Indicates whether to include ADR files that do not match the configured naming conventions.</param>
         /// <returns>An array of all <see cref="AdrFileNameComponents"/> found.</returns>
-        Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+        Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false);
 
         /// <summary>
         /// Gets the file path of an ADR with a unique title in a specific domain asynchronously.
@@ -44,10 +36,10 @@ namespace AdrPlus.Core
         /// <param name="title">The title of the ADR to find.</param>
         /// <param name="domain">The domain to search within.</param>
         /// <param name="fileSystemService">The file system service used to access files.</param>
-        /// <param name="directoryPath">The directory path to search in.</param>
+        /// <param name="rootrepo">The root path repository</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <returns>The file path of the ADR with the matching title and domain.</returns>
-        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService,string rootrepo, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Gets the next available ADR sequence number asynchronously.

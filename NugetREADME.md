@@ -11,7 +11,7 @@ AdrPlus was created to **solve this problem with a practical CLI workflow that k
 
 It supports versioning, revision cycles, status workflows (approve / reject / undo), and an **interactive wizard** — all driven by a lightweight JSON configuration file.
 
-
+---
 
 ## Motivation and Benefits
 
@@ -33,14 +33,16 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
-- ⚙️ **Config editor** for application and repository settings
+- 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
+- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
+- 📂 **Customizable ADR structure** with user-defined templates and naming conventions
+- 🔄 **Migrate** existing ADRs to the standardized format
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
 
 ---
-
 
 ## License
 

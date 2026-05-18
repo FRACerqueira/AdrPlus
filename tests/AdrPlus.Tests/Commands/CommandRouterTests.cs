@@ -26,7 +26,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -48,7 +48,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -68,7 +68,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -80,7 +80,7 @@ public class CommandRouterTests
 
         // Assert
         ex.Should().NotBeNull();
-        console.Received().WriteError(Arg.Any<string>());
+        console.Received().PromptWriteError(Arg.Any<string>());
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -114,7 +114,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(object) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -138,7 +138,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };  // Use ICommandHandler type instead
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -166,7 +166,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -191,7 +191,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -201,7 +201,7 @@ public class CommandRouterTests
         await router.RouteAsync("new", Array.Empty<string>(), CancellationToken.None);
 
         // Assert
-        console.Received().WriteStartCommand(Arg.Is<string>(s => s.Contains("new")));
+        console.Received().PromptWriteStartCommand(Arg.Is<string>(s => s.Contains("new")));
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -224,7 +224,7 @@ public class CommandRouterTests
         await router.RouteAsync("review", Array.Empty<string>(), CancellationToken.None);
 
         // Assert
-        console.Received().WriteFinishedCommand(Arg.Is<string>(s => s.Contains("review")));
+        console.Received().PromptWriteFinishedCommand(Arg.Is<string>(s => s.Contains("review")));
     }
 
     #endregion
@@ -241,7 +241,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -264,7 +264,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -289,7 +289,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -318,7 +318,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -347,7 +347,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
@@ -371,7 +371,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
+        var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);

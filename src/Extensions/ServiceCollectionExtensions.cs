@@ -20,7 +20,8 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
-using AdrPlus.Commands.Upgrade;
+using AdrPlus.Commands.Migrate;
+using AdrPlus.Commands.Explorer;
 
 namespace AdrPlus.Extensions
 {
@@ -37,9 +38,10 @@ namespace AdrPlus.Extensions
         public static IServiceCollection AddAdrPlusServices(this IServiceCollection services)
         {
             services.AddSingleton<IFileSystemService, FileSystemService>();
+            services.AddSingleton<IFirstInstall, FirstInstall>();
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
-            services.AddSingleton<IConsoleWriter, ConsoleWriter>();
+            services.AddSingleton<IPromptConsole, PromptConsole>();
             services.AddSingleton<IAdrFileParser, AdrFileParserService>();
             services.AddSingleton<IAdrQueryService, AdrQueryService>();
             services.AddSingleton<IAdrStatusService, AdrStatusService>();
@@ -47,9 +49,10 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ICommandMetadataService, CommandMetadataService>();
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
+            services.AddSingleton<ExplorerCommandHandler>();
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
-            services.AddSingleton<UpgradeCommandHandler>();
+            services.AddSingleton<MigrateCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
             services.AddSingleton<ConfigCommandHandler>();
             services.AddSingleton<NewAdrCommandHandler>();

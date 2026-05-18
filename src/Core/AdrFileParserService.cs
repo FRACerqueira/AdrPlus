@@ -5,13 +5,15 @@
 
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using AdrPlus.Infrastructure.Formatting;
+using System.Globalization;
 using System.Text;
 
 namespace AdrPlus.Core
 {
     internal sealed class AdrFileParserService : IAdrFileParser
     {
+        private const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
+
         /// <inheritdoc/>
         public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
@@ -19,7 +21,6 @@ namespace AdrPlus.Core
 
             var result = new AdrHeader();
             const StringComparison ordinal = StringComparison.Ordinal;
-
             try
             {
                 if (lines.Length == 0)
@@ -28,157 +29,262 @@ namespace AdrPlus.Core
                     return (result, string.Empty);
                 }
 
-                if (lines.Length < 10)
+                if (lines.Length < AppConstants.LenghtHeader)
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrTooShort;
                     return (result, string.Empty);
                 }
-
-                if (!lines[0].StartsWith("###### ", ordinal))
+                //disclaimer
+                if (!lines[0].StartsWith("<!-- ", ordinal) || !lines[0].TrimEnd().EndsWith(" -->", ordinal))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDisclaimerInvalid;
                     return (result, string.Empty);
                 }
-                result.Disclaimer = lines[0][7..].Trim();
+                result.Disclaimer = lines[0].Replace("<!-- ", string.Empty, ordinal).Replace(" -->", string.Empty, ordinal).Trim();
 
-                if (!lines[1].StartsWith("##### ", ordinal))
+                //table header
+                if (!lines[1].StartsWith("|Adr-Plus ", ordinal))
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
+                    return (result, string.Empty);
+                }
+                if (lines[1].TrimEnd().EndsWith(" -->|", ordinal) && lines[1].Contains("<!-- ", ordinal))
+                {
+                    result.IsMigrated = true;
+                }
+                //table header separator
+                if (!lines[2].StartsWith("|--|--|", ordinal))
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
+                    return (result, string.Empty);
+                }
+
+                //title header
+                if (!lines[3].StartsWith('|'))
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    return (result, string.Empty);
+                }
+                var indexstart = lines[3].IndexOf('|', 1);
+                if (indexstart == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    return (result, string.Empty);
+                }
+                var indexend = lines[3].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    return (result, string.Empty);
+                }
+                result.Title = lines[3][(indexstart + 1)..indexend].Trim();
+
+                //version header
+                if (!lines[4].StartsWith('|'))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
                     return (result, string.Empty);
                 }
-                var index1 = lines[1].IndexOf(':', ordinal);
-                if (index1 < 0)
+                indexstart = lines[4].IndexOf('|', 1);
+                if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionFormatInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
                     return (result, string.Empty);
                 }
-                var versionText = lines[1][(index1 + 1)..].Trim();
-                if (versionText != "-" && int.TryParse(versionText, null, out var version))
+                indexend = lines[4].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    return (result, string.Empty);
+                }
+                var versionText = lines[4][(indexstart + 1)..indexend].Trim();
+                if (int.TryParse(versionText, null, out var version))
                 {
                     result.Version = version;
                 }
+                else if (versionText.Length > 0)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    return (result, string.Empty);
+                }
 
-                if (!lines[2].StartsWith("##### ", ordinal))
+                // revision header
+                if (!lines[5].StartsWith('|'))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
                     return (result, string.Empty);
                 }
-                index1 = lines[2].IndexOf(':', ordinal);
-                if (index1 < 0)
+                indexstart = lines[5].IndexOf('|', 1);
+                if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionFormatInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
                     return (result, string.Empty);
                 }
-                if (config.LenRevision > 0)
+                indexend = lines[5].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
                 {
-                    var revisionText = lines[2][(index1 + 1)..].Trim();
-                    if (revisionText != "-" && int.TryParse(revisionText, null, out var revision))
-                    {
-                        result.Revision = revision;
-                    }
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    return (result, string.Empty);
+                }
+                var revisionText = lines[5][(indexstart + 1)..indexend].Trim();
+                if (int.TryParse(revisionText, null, out var revision))
+                {
+                    result.Revision = revision;
+                }
+                else if (revisionText.Length > 0)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    return (result, string.Empty);
                 }
 
-                if (!lines[3].StartsWith("##### ", ordinal))
+                //scope header
+                if (!lines[6].StartsWith('|'))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
                     return (result, string.Empty);
                 }
-                var scopeDomainLine = lines[3][6..].Trim();
-                if (scopeDomainLine != "-")
+                indexstart = lines[6].IndexOf('|', 1);
+                if (indexstart == -1)
                 {
-                    var scopeParts = scopeDomainLine.Split(':', StringSplitOptions.TrimEntries);
-                    if (scopeParts.Length > 0)
-                    {
-                        result.Scope = scopeParts[0];
-                    }
-                    if (scopeParts.Length > 1)
-                    {
-                        result.Domain = scopeParts[1];
-                    }
-                }
-
-                if (!lines[4].StartsWith("##### ", ordinal))
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
                     return (result, string.Empty);
                 }
+                indexend = lines[6].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
+                    return (result, string.Empty);
+                }
+                result.Scope = lines[6][(indexstart + 1)..indexend].Trim();
 
-                if (!lines[5].StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+                //domain header
+                if (!lines[7].StartsWith('|'))
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    return (result, string.Empty);
+                }
+                indexstart = lines[7].IndexOf('|', 1);
+                if (indexstart == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    return (result, string.Empty);
+                }
+                indexend = lines[7].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    return (result, string.Empty);
+                }
+                result.Domain = lines[7][(indexstart + 1)..indexend].Trim();
+
+                //status create header
+                if (!lines[8].StartsWith('|'))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
                     return (result, string.Empty);
                 }
-                if (!lines[6].StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+                indexstart = lines[8].IndexOf('|', 1);
+                if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusUpdateLineInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
                     return (result, string.Empty);
                 }
-                if (!lines[7].StartsWith("- ", StringComparison.OrdinalIgnoreCase))
+                indexend = lines[8].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
+                    return (result, string.Empty);
+                }
+                var linestatus = lines[8][(indexstart + 1)..indexend].Trim();
+                if (linestatus.Length > 0)
+                {
+                    var (statusCreate, dateCreate, errorCreate) = Helper.ParseStatusLine(linestatus, config);
+                    if (!string.IsNullOrEmpty(errorCreate))
+                    {
+                        result.ErrorMessage = errorCreate;
+                        return (result, string.Empty);
+                    }
+                    result.StatusCreate = statusCreate;
+                    result.DateCreate = dateCreate;
+                }
+
+
+                // status update header 
+                if (!lines[9].StartsWith('|'))
                 {
                     result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
                     return (result, string.Empty);
                 }
-
-                var linestacreate = lines[5][2..];
-                var (statusCreate, dateCreate, errorCreate) = Helper.ParseStatusLine(linestacreate, config);
-                if (!string.IsNullOrEmpty(errorCreate))
+                indexstart = lines[9].IndexOf('|', 1);
+                if (indexstart == -1)
                 {
-                    result.ErrorMessage = errorCreate;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
                     return (result, string.Empty);
                 }
-                result.StatusCreate = statusCreate;
-                result.DateCreate = dateCreate;
-
-                var linestapdate = lines[6][2..];
-                if (linestapdate != AppConstants.AdrEmptyStatusMarker)
+                indexend = lines[9].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
                 {
-                    var (statusUpdate, dateUpdate, errorUpdate) = Helper.ParseStatusLine(linestapdate, config);
-                    if (!string.IsNullOrEmpty(errorUpdate))
-                    {
-                        result.ErrorMessage = errorUpdate;
-                        return (result, string.Empty);
-                    }
-                    result.StatusUpdate = statusUpdate;
-                    result.DateUpdate = dateUpdate;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
+                    return (result, string.Empty);
                 }
-
-                var linestachange = lines[7][2..];
-                if (linestachange != AppConstants.AdrEmptyStatusMarker)
+                linestatus = lines[9][(indexstart + 1)..indexend].Trim();
+                if (linestatus.Length > 0)
                 {
-                    var (statusChange, dateChange, errorChange) = Helper.ParseStatusLine(linestachange, config);
+                    var (statusChange, dateChange, errorChange) = Helper.ParseStatusLine(linestatus, config);
                     if (!string.IsNullOrEmpty(errorChange))
                     {
                         result.ErrorMessage = errorChange;
                         return (result, string.Empty);
                     }
-                    result.StatusChange = statusChange;
-                    result.DateChange = dateChange;
-                    if (statusChange == AdrStatus.Superseded)
+                    result.StatusUpdate = statusChange;
+                    result.DateUpdate = dateChange;
+                }
+
+                // status Superseded header 
+                if (!lines[10].StartsWith('|'))
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    return (result, string.Empty);
+                }
+                indexstart = lines[10].IndexOf('|', 1);
+                if (indexstart == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    return (result, string.Empty);
+                }
+                indexend = lines[10].IndexOf('|', indexstart + 1);
+                if (indexend == -1)
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    return (result, string.Empty);
+                }
+                linestatus = lines[10][(indexstart + 1)..indexend].Trim();
+                var (statusSuperseded, dateSuperseded, errorSuperseded) = Helper.ParseStatusLine(linestatus, config);
+                if (linestatus.Length > 0)
+                {
+                    if (!string.IsNullOrEmpty(errorSuperseded))
                     {
-                        var indexfile = linestachange.IndexOf(':', ordinal);
-                        if (indexfile < 0)
-                        {
-                            result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrStatusLineSupersedeFormatInvalid;
-                            return (result, string.Empty);
-                        }
-                        var fileSuperSedes = linestachange[(indexfile + 1)..].Trim();
-                        result.FileSuperSedes = fileSuperSedes;
+                        result.ErrorMessage = errorSuperseded;
+                        return (result, string.Empty);
                     }
+                    result.StatusChange = statusSuperseded;
+                    result.DateChange = dateSuperseded;
+                    var indexfile = linestatus.IndexOf(':', ordinal);
+                    if (indexfile < 0)
+                    {
+                        result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrStatusLineSupersedeFormatInvalid;
+                        return (result, string.Empty);
+                    }
+                    var fileSuperSedes = linestatus[(indexfile + 1)..].Trim();
+                    result.NumberSuperSedes = fileSuperSedes;
                 }
 
-                if (!lines[8].StartsWith("# ", ordinal))
+                //disclaimer
+                if (!lines[11].StartsWith("<!-- ", ordinal) || !lines[11].TrimEnd().EndsWith(" -->", ordinal))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDisclaimerInvalid;
                     return (result, string.Empty);
                 }
-                result.Title = lines[8][2..].Trim();
-
-                if (lines[9] != "---")
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderSeparatorInvalid;
-                    return (result, string.Empty);
-                }
-
                 result.IsValid = true;
             }
             catch (Exception ex)
@@ -186,8 +292,8 @@ namespace AdrPlus.Core
                 result.IsValid = false;
                 result.ErrorMessage = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrMsgAdrHeaderParsingError), ex.Message);
             }
-            var content = string.Join(Environment.NewLine, lines.Skip(10));
-            if (lines.Length > 10)
+            var content = string.Join(Environment.NewLine, lines.Skip(AppConstants.LenghtHeader));
+            if (lines.Length > AppConstants.LenghtHeader)
             {
                 content += Environment.NewLine;
             }
@@ -197,186 +303,214 @@ namespace AdrPlus.Core
         /// <inheritdoc/>
         public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
         {
-            const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
             var result = new AdrFileNameComponents
             {
                 FileName = filePath
             };
-            try
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameEmpty;
-                    return result;
-                }
-                if (!filePath.EndsWith(".md", ordinalIgnoreCase))
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
-                    return result;
-                }
-
-                var nameWithoutExtension = Path.GetFileName(filePath)[..^3];
-                var separator = config.Separator;
-                var parts = nameWithoutExtension.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length < 2)
-                {
-                    result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                    return result;
-                }
-
-                var currentIndex = 0;
-                var part = parts[currentIndex];
-                if (!string.IsNullOrWhiteSpace(config.Prefix))
-                {
-                    if (!part.StartsWith(config.Prefix, ordinalIgnoreCase))
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorFilenameNoPrefixFormat, config.Prefix);
-                        return result;
-                    }
-                    else
-                    {
-                        result.Prefix = config.Prefix;
-                        var numberString = part[config.Prefix.Length..];
-                        if (!int.TryParse(numberString, out var number))
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, numberString);
-                            return result;
-                        }
-                        result.Number = number;
-                        currentIndex++;
-                    }
-                }
-                else
-                {
-                    if (!int.TryParse(part, out var number))
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidNumberFormatMsg, part);
-                        result.IsValid = false;
-                        return result;
-                    }
-                    result.Number = number;
-                    currentIndex++;
-                }
-
-                part = parts[currentIndex];
-                result.Title = part;
-                currentIndex++;
-
-                if (currentIndex < parts.Length && config.LenVersion > 0)
-                {
-                    part = parts[currentIndex];
-                    if (part.StartsWith('V'))
-                    {
-                        var versionString = part[1..];
-
-                        var revisionIndex = versionString.IndexOf('R', ordinalIgnoreCase);
-                        if (revisionIndex > 0)
-                        {
-                            var versionPart = versionString[..revisionIndex];
-                            if (int.TryParse(versionPart, out var version))
-                            {
-                                result.Version = version;
-                            }
-                            else
-                            {
-                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, versionPart);
-                                return result;
-                            }
-
-                            if (config.LenRevision > 0)
-                            {
-                                var revisionPart = versionString[(revisionIndex + 1)..];
-                                if (int.TryParse(revisionPart, out var revision))
-                                {
-                                    result.Revision = revision;
-                                }
-                                else
-                                {
-                                    result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidRevisionFormatMsg, revisionPart);
-                                    return result;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (int.TryParse(versionString, out var version))
-                            {
-                                result.Version = version;
-                            }
-                            else
-                            {
-                                result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidVersionFormatMsg, versionString);
-                                return result;
-                            }
-                        }
-                        currentIndex++;
-                    }
-                }
-
-                if (currentIndex < parts.Length && config.LenScope > 0)
-                {
-                    part = parts[currentIndex];
-                    var matchingScope = config.GetScopes()
-                        .FirstOrDefault(s => s.StartsWith(part, ordinalIgnoreCase));
-
-                    if (matchingScope == null)
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidScopeFormatMsg, part);
-                        return result;
-                    }
-                    else
-                    {
-                        result.Scope = matchingScope;
-                        currentIndex++;
-                        if (currentIndex < parts.Length && !config.Getskipdomains().Contains(matchingScope))
-                        {
-                            var domainPart = parts[currentIndex];
-                            result.Domain = domainPart;
-                            currentIndex++;
-                        }
-                    }
-                }
-
-                if (currentIndex < parts.Length)
-                {
-                    part = parts[currentIndex];
-                    if (part.StartsWith("SUP", ordinalIgnoreCase))
-                    {
-                        if (part.Length <= 3)
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidSupersededNumberFormatMsg, string.Empty);
-                            return result;
-                        }
-
-                        var numberString = part[3..];
-                        if (!int.TryParse(numberString, out var number))
-                        {
-                            result.ErrorMessage = string.Format(null, FormatMessages.ErrorInvalidSupersededNumberFormatMsg, numberString);
-                            return result;
-                        }
-
-                        result.SupersededValue = number;
-                        currentIndex++;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = string.Format(null, FormatMessages.ErrorUnexpectedPartInFilenameMsg, part);
-                        return result;
-                    }
-                }
-
+                result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameEmpty;
+                return result;
+            }
+            if (!filePath.EndsWith(".md", ordinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
+                return result;
+            }
+            //try parse with configured ADRLUS format
+            var parseResult = ParseAdrPlusFileNameAsync(filePath, config);
+            if (parseResult.Success)
+            {
+                result = parseResult.Result;
                 var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
                 result.Header = header;
                 result.ContentAdr = content;
                 result.IsValid = true;
+                return result;
             }
-            catch (Exception ex)
+            else
             {
-                result.IsValid = false;
-                result.ErrorMessage = string.Format(null, FormatMessages.ErrorParsingFilenameMsg, ex.Message);
+                result = parseResult.Result;
             }
+            if (config.MigrationPattern.Length > 0 && PatternParser.ParseMigratePattern(config.MigrationPattern) != null)
+            {
+                var (Success, resultMigration) = ParseMigrationFileNameAsync(filePath, config);
+                if (Success)
+                {
+                    result = resultMigration;
+                    var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
+                    result.Header = header;
+                    result.ContentAdr = content;
+                    result.IsValid = true;
+                    return result;
+                }
+                else
+                {
+                    result = resultMigration;
+                }
+            }
+            // If filename parsing failed, try to load the file header anyway to report header errors ?
             return result;
+        }
+        private static (bool Success, AdrFileNameComponents Result) ParseMigrationFileNameAsync(string filePath, AdrPlusRepoConfig config)
+        {
+            var result = new AdrFileNameComponents
+            {
+                FileName = filePath
+            };
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            var pattern = PatternParser.ParseMigratePattern(config.MigrationPattern)!;
+            if (!pattern.TryGetValue("P", out var valueprefix) && nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("N", out var valueseq) || nameWithoutExtension.Length < valueseq.Position + valueseq.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("V", out var valueversion) && nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("R", out var valuerevison) && nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (!pattern.TryGetValue("T", out var valuetitle) || nameWithoutExtension.Length < valuetitle.Position)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Prefix = valueprefix.Length > 0 ? nameWithoutExtension.Substring(valueprefix.Position, valueprefix.Length) : string.Empty;
+            result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length),CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
+            result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
+            result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
+            result.Title = valuetitle.Length > 0 ? Helper.Humanize(nameWithoutExtension[valuetitle.Position..]) : string.Empty;
+            return (true, result);
+        }
+
+        private static (bool Success, AdrFileNameComponents Result) ParseAdrPlusFileNameAsync(string filePath, AdrPlusRepoConfig config)
+        {
+            var result = new AdrFileNameComponents
+            {
+                FileName = filePath
+            };
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            var separator = $"{config.Separator}";
+            var supersedeSeparator = $"{config.Separator}{config.Separator}";
+            var supersedeParts = nameWithoutExtension.Split(supersedeSeparator, StringSplitOptions.RemoveEmptyEntries);
+            var parts = new List<string>();
+            var supersedeNumber = string.Empty;
+            if (supersedeParts.Length > 2)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (supersedeParts.Length == 2)
+            {
+                if (int.TryParse(supersedeParts[1], out var supersedeNumberValue))
+                {
+                    supersedeNumber = supersedeParts[1];
+                }
+                else
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                    return (false, result);
+                }
+            }
+            var index = supersedeParts[0].IndexOf(separator, ordinalIgnoreCase);
+            if (index < 0)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            parts.Add(supersedeParts[0][..index]);
+            parts.AddRange(supersedeParts[0][(index + separator.Length)..].Split(separator, StringSplitOptions.RemoveEmptyEntries));
+            if (parts.Count > 2)
+            {
+                string part1 = parts[1..].Aggregate((a, b) => $"{a}{config.Separator}{b}");
+                parts.Clear();
+                parts.Add(supersedeParts[0][..index]);
+                parts.Add(part1);
+            }
+            if (parts.Count != 2)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            //first part is prefix, number, version, revision and scope
+            string part = parts[0] ?? string.Empty;
+            var pattern = PatternParser.ParseAdrPattern(part);
+            if (pattern == null)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            //prefix
+            result.Prefix = pattern["P"];
+            //number
+            if (!int.TryParse(pattern["N"], CultureInfo.InvariantCulture, out var _))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (pattern["V"].Length > 0 && !int.TryParse(pattern["V"], CultureInfo.InvariantCulture, out var _))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (pattern["R"].Length > 0 && !int.TryParse(pattern["R"], CultureInfo.InvariantCulture, out var _))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Number = int.Parse(pattern["N"], CultureInfo.InvariantCulture);
+            //version
+            result.Version = pattern["V"].Length == 0  ? 0 : int.Parse(pattern["V"], CultureInfo.InvariantCulture);
+            //revision
+            result.Revision = pattern["R"].Length == 0 ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
+            //scope
+            result.Scope = pattern["S"].Length == 0 ? "" : pattern["S"];
+
+            //invalid version
+            if (result.Scope.Length > 0 && pattern["V"].Length == 0 && config.LenVersion > 0 && result.Scope.StartsWith("V", StringComparison.OrdinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+
+            //invalid revision
+            if (result.Scope.Length > 0 && pattern["R"].Length == 0 && config.LenRevision > 0 && result.Scope.StartsWith("R",StringComparison.OrdinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            //title and domain
+            part = parts[1];
+            if (part.Length == 0)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }   
+            index = part.LastIndexOf('@');
+            if (index != -1)
+            {
+                result.Title = Helper.Humanize(part[..index]);
+                if (index + 1 < part.Length)
+                {
+                    result.Domain = Helper.Humanize(part[(index + 1)..]);
+                }
+            }
+            else
+            {
+                result.Title = Helper.Humanize(part);
+            }
+            result.SupersededValue = string.IsNullOrEmpty(supersedeNumber) ? null : int.Parse(supersedeNumber, CultureInfo.InvariantCulture);
+            return (true, result);
         }
     }
 }

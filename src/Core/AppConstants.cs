@@ -3,8 +3,6 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
-using PromptPlusLibrary;
-using System.Collections.Frozen;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +12,19 @@ namespace AdrPlus.Core
 {
     internal static class AppConstants
     {
+
+        /// <summary>
+        /// The length of the header section in generated ADR files, used to determine how many lines to read when parsing the header information from an existing ADR file. 
+        /// </summary>
+        public const int LenghtHeader = 12;
+
+
+        /// <summary>
+        /// The name of the file used to track whether the application has been run for the first time, allowing the application to perform any necessary setup or initialization tasks on the first run. 
+        /// </summary>
+        public const string FileFirstInstall  = "firstinstall.adrplus";
+
+
         /// <summary>
         /// The name of the directory where ADR templates are stored. This directory is used to store template files that define the structure and content of ADRs, allowing users to create new ADRs based on predefined templates.  
         /// </summary>
@@ -31,20 +42,12 @@ namespace AdrPlus.Core
         /// </summary>
         /// <remarks>Use this constant when referencing or creating the ADR configuration file to ensure
         /// consistency across the application.</remarks>
-        public const string AdrConfigFileName = "adr-config.adrplus";
+        public const string AdrRepoConfigFileName = "adr-config.adrplus";
 
         /// <summary>
         /// The namespace where the application's embedded resources are located, used for loading templates, configuration files, and other resources that are compiled into the application assembly. 
         /// </summary>
         public const string ResourceNamespace = "AdrPlus.Resources";
-
-        /// <summary>
-        /// Represents the culture prefix for Portuguese language locales.
-        /// </summary>
-        /// <remarks>This constant can be used when constructing culture names or performing
-        /// culture-specific operations that require the Portuguese language prefix, such as "pt-BR" for Brazilian
-        /// Portuguese or "pt-PT" for Portuguese as used in Portugal.</remarks>
-        public const string PtCulturePrefix = "pt-";
 
         /// <summary>
         /// The name of the directory where ADR templates are stored. 
@@ -57,19 +60,14 @@ namespace AdrPlus.Core
         public const string BannerText = "ADR-PLUS";
 
         /// <summary>
-        /// Folder name for storing application history data.
-        /// </summary>
-        public const string Folderhistory = "AdrPlus.History";
-
-        /// <summary>
         /// Separator character for joining command arguments.
         /// </summary>
         public const char CommandArgsSeparator = (char)1;
 
         /// <summary>
-        /// The Markdown escape sequence used to represent an empty or null ADR status value in ADR file headers.
+        /// The default folder path for Architecture Decision Records (ADR).
         /// </summary>
-        public const string AdrEmptyStatusMarker = @"\-";
+        public const string DefaultFolderAdr = @"doc/adr";
 
         /// <summary>
         /// The application name.
@@ -92,46 +90,6 @@ namespace AdrPlus.Core
         public const string CfgCommandArgs = "CommandArgs";
 
         /// <summary>
-        /// Console color for help messages.
-        /// </summary>
-        public const string ColorHelp = "skyblue2";
-
-        /// <summary>
-        /// Console color for welcome template messages.
-        /// </summary>
-        public const string ColorWelcomeTemplate = "yellow";
-
-        /// <summary>
-        /// Console color for the welcome banner.
-        /// </summary>
-        public static Color ColorWelcomeBanner => Color.DarkOrange;
-
-        /// <summary>
-        /// Console color for error messages.
-        /// </summary>
-        public const string ColorError = "red";
-
-        /// <summary>
-        /// Console color for informational messages.
-        /// </summary>
-        public const string ColorInfo = "grey";
-
-        /// <summary>
-        /// Console color for command results.
-        /// </summary>
-        public const string ColorResult = "white";
-
-        /// <summary>
-        /// Console color for warning messages.
-        /// </summary>
-        public const string ColorWarning = "gold1";
-
-        /// <summary>
-        /// Console color for summary messages.
-        /// </summary>  
-        public const string ColorSummary = "navajowhite1";
-
-        /// <summary>
         /// Configuration root section name.
         /// </summary>
         public const string DefaultSettingsRoot = "DefaultSettings";
@@ -148,19 +106,14 @@ namespace AdrPlus.Core
         public const string FieldOpenAdr = "comandopenadr";
 
         /// <summary>
+        /// The name of the configuration migration pattern preferences. 
+        /// </summary>
+        public const string FieldMigrationPattern = "migrationpattern";
+
+        /// <summary>
         /// The name of the configuration file used by the application to store folder and preferences. 
         /// </summary>
-        public const string FieldFolderRepo = "folderrepo";
-
-        /// <summary>
-        /// The name of the configuration file used by the application to store yes value and preferences. 
-        /// </summary>
-        public const string FieldYesValue = "yesvalue";
-
-        /// <summary>
-        /// The name of the configuration file used by the application to store no value and preferences. 
-        /// </summary>
-        public const string FieldNoValue = "novalue";
+        public const string FieldFolderAdr = "folderadr";
 
         /// <summary>
         /// The configuration key for the template used to generate ADR filenames, allowing users to define a custom format for how ADR files are named based on their metadata. 
@@ -243,11 +196,6 @@ namespace AdrPlus.Core
         public const string FieldHeaderDisclaimer = "headerdisclaimer";
 
         /// <summary>
-        /// The configuration key for the status text that can be included in the header of generated ADR files, allowing users to specify custom status information that will be included in the header section of each generated ADR file. 
-        /// </summary>
-        public const string FieldHeaderStatus = "headerstatus";
-
-        /// <summary>
         /// The configuration key for the version text that can be included in the header of generated ADR files, allowing users to specify custom status information that will be included in the header section of each generated ADR file. 
         /// </summary>
         public const string FieldHeaderVersion = "headerversion";
@@ -259,79 +207,80 @@ namespace AdrPlus.Core
         public const string FieldHeaderRevision = "headerrevision";
 
         /// <summary>
-        /// A frozen dictionary mapping configuration field names to their corresponding display titles, used for presenting user-friendly titles in the application's user interface when displaying configuration settings.
-        /// Uses FrozenDictionary for optimal read performance.
+        /// The configuration key for the title file text that can be included in the header of generated ADR files, allowing users to specify custom title file information that will be included in the header section of each generated ADR file. 
         /// </summary>
-        private static FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
-        {
-                { FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
-                { FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
-                { FieldYesValue, Resources.AdrPlus.FieldTitleYesValue },
-                { FieldNoValue, Resources.AdrPlus.FieldTitleNoValue },
-                { FieldFolderRepo, Resources.AdrPlus.FieldTitleFolderRepo },
-                { FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
-                { FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
-                { FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },
-                { FieldLenVersion, Resources.AdrPlus.FieldTitleLenVersion },
-                { FieldLenRevision, Resources.AdrPlus.FieldTitleLenRevision },
-                { FieldLenScope, Resources.AdrPlus.FieldTitleLenScope },
-                { FieldScopes, Resources.AdrPlus.FieldTitleScopes },
-                { FieldFolderByScope, Resources.AdrPlus.FieldTitleFolderByScope },
-                { FieldSkipDomain, Resources.AdrPlus.FieldTitleSkipDomain },
-                { FieldSeparator, Resources.AdrPlus.FieldTitleSeparator },
-                { FieldCaseTransform, Resources.AdrPlus.FieldTitleCaseTransform },
-                { FieldStatusNew, Resources.AdrPlus.FieldTitleStatusNew },
-                { FieldStatusAccepted, Resources.AdrPlus.FieldTitleStatusAccepted },
-                { FieldStatusRejected, Resources.AdrPlus.FieldTitleStatusRejected },
-                { FieldStatusSuperseded, Resources.AdrPlus.FieldTitleStatusSuperseded },
-                { FieldHeaderDisclaimer, Resources.AdrPlus.FieldTitleHeaderDisclaimer },
-                { FieldHeaderStatus, Resources.AdrPlus.FieldTitleHeaderStatus },
-                { FieldHeaderVersion, Resources.AdrPlus.FieldTitleHeaderVersion },
-                { FieldHeaderRevision, Resources.AdrPlus.FieldTitleHeaderRevision },
-        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+        public const string FieldHeaderTitleFile = "headertitlefile";
 
         /// <summary>
-        /// Gets the display title for a given configuration field name, returning a user-friendly title from resources if available, or the original field name if no title is defined. 
+        /// The configuration key for the domain text that can be included in the header of generated ADR files, allowing users to specify custom domain information that will be included in the header section of each generated ADR file. 
         /// </summary>
-        /// <param name="name">
-        /// The configuration field name for which to retrieve the display title. This should correspond to one of the defined configuration keys in AppConstants, such as "folderrepo", "dateformat", etc. 
-        /// </param>
-        /// <returns>The display title for the specified configuration field name.</returns>
-        public static string GetTitleField(string name)
-        {
-            return TitleFields.TryGetValue(name.ToLowerInvariant(), out var title) ? title : name;
-        }
+        public const string FieldHeaderDomain = "headerdomain";
 
         /// <summary>
-        /// Gets the cached JSON serializer options used for serializing and deserializing repository data, configured to ignore read-only fields, write indented JSON, be case-insensitive for property names, and include a converter for string enums. 
+        /// The configuration key for the scope text that can be included in the header of generated ADR files, allowing users to specify custom scope information that will be included in the header section of each generated ADR file. 
         /// </summary>
-        private static readonly JsonSerializerOptions _repoSerializerOptions = new()
+        public const string FieldHeaderScope = "headerscope";
+
+        /// <summary>
+        /// The configuration key for the title status created text that can be included in the header of generated ADR files, allowing users to specify custom title status created information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusCreated = "headertitlestatuscreated";
+
+        /// <summary>
+        /// The configuration key for the title status changed text that can be included in the header of generated ADR files, allowing users to specify custom title status changed information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusChanged = "headertitlestatuschanged";
+
+        /// <summary>
+        /// The configuration key for the title status superseded text that can be included in the header of generated ADR files, allowing users to specify custom title status superseded information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderStatusSuperseded = "headertitlestatussuperseded";
+
+        /// <summary>
+        /// The configuration key for the table fields text that can be included in the header of generated ADR files, allowing users to specify custom table fields information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderTableFields = "headertablefields";
+
+        /// <summary>
+        /// The configuration key for the table values text that can be included in the header of generated ADR files, allowing users to specify custom table values information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderTableValues = "headertablevalues";
+
+        /// <summary>
+        /// The configuration key for the migrated text that can be included in the header of generated ADR files, allowing users to specify custom migrated information that will be included in the header section of each generated ADR file. 
+        /// </summary>
+        public const string FieldHeaderMigrated = "headermigrated";
+
+        /// <summary>
+        /// JSON serializer options configured for repository data with lowercase property naming, indented formatting,
+        /// case-insensitive deserialization, and string-based enum conversion.
+        /// The result is cached after the first call.
+        /// </summary>
+        /// <returns>The configured JSON serializer options.</returns>
+        public static JsonSerializerOptions RepoSerializerOptions => serializerOptions.Value;
+
+        private static readonly Lazy<JsonSerializerOptions> serializerOptions = new(() => new JsonSerializerOptions
         {
             IgnoreReadOnlyFields = true,
             WriteIndented = true,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = new LowercaseNamingPolicy(),
             Converters = { new JsonStringEnumConverter() }
-        };
+        });
 
         /// <summary>
-        /// Gets the cached JSON serializer options used for serializing and deserializing repository data.
+        /// JSON document options configured to allow trailing commas and skip comments during parsing.
+        /// The result is cached after the first call.
         /// </summary>
-        public static JsonSerializerOptions RepoSerializerOptions => _repoSerializerOptions;
+        /// <returns>The configured JSON document options.</returns>
+        public static JsonDocumentOptions DocumentOptions => documentOptions.Value;
 
-        /// <summary>
-        /// Gets the cached JSON document options used for parsing JSON configuration files, configured to allow trailing commas and skip comments in the JSON content. 
-        /// </summary>
-        private static readonly JsonDocumentOptions _documentOptions = new()
+        private static readonly Lazy<JsonDocumentOptions> documentOptions = new(() => new JsonDocumentOptions
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip
-        };
+        });
 
-        /// <summary>
-        /// Gets the cached JSON document options used for parsing JSON configuration files.
-        /// </summary>
-        public static JsonDocumentOptions DocumentOptions => _documentOptions;
 
         /// <summary>
         /// Gets the neutral language culture name from the assembly's NeutralResourcesLanguageAttribute.
@@ -339,11 +288,17 @@ namespace AdrPlus.Core
         /// The result is cached after the first call.
         /// </summary>
         /// <returns>The neutral language culture name.</returns>
-        public static string GetNeutralLanguage()
+        public static string GetNeutralLanguage => neutralLanguage.Value;
+
+        /// <summary>
+        /// Neutral resource language for the assembly, defaulting to 'en-us'.
+        /// </summary>
+        private static readonly Lazy<string> neutralLanguage = new(() =>
         {
             var assembly = Assembly.GetExecutingAssembly();
             var attribute = assembly.GetCustomAttribute<NeutralResourcesLanguageAttribute>();
             return attribute?.CultureName ?? "en-us";
-        }
+        }); 
+
     }
 }

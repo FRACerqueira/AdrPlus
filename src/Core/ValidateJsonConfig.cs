@@ -16,16 +16,39 @@ namespace AdrPlus.Core
     /// <summary>
     /// Validates the consistency and fields of the AdrPlus.json configuration file
     /// </summary>
-    internal sealed class ValidateJsonConfig(IFileSystemService fileSystem, IConfiguration configuration) : IValidateJsonConfig
+    internal sealed class ValidateJsonConfig(IFileSystemService fileSystem, IAdrQueryService adrQueryServicerservices,  IConfiguration configuration) : IValidateJsonConfig
     {
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IConfiguration _configuration = configuration;
+        private readonly IAdrQueryService _adrQueryService = adrQueryServicerservices;
 
         /// <summary>
-        /// Validates the entire application configuration (DefaultSettings section) and returns a formatted error report.
+        /// Reads all existing ADR files in the repository to determine the maximum sequence number, version, and revision currently in use. 
         /// </summary>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple: <c>IsValid = true</c> with an empty array when valid; otherwise <c>IsValid = false</c> with the list of error messages.</returns>
+        /// <param name="rootPath">The root path of the ADR repository.</param>
+        /// <param name="repoconfig">The repository configuration.</param>
+        /// <returns>A Task that represents the asynchronous operation, containing a tuple of (MaxNumber, MaxVersion, MaxRevision)</returns>
+        public async Task<(int MaxNumber, int MaxVersion, int MaxRevision)> GetMaxNumberVersionRevision(string rootPath, AdrPlusRepoConfig repoconfig)
+        { 
+            var foundadrs = await _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoconfig, true);
+            var adrList = foundadrs.ToList();
+
+            if (adrList.Count == 0)
+            {
+                return (0, 0, 0);
+            }
+
+            var maxnumber = adrList.Max(a => a.Number);
+            var maxversion = adrList.Max(a => a.Version);
+            var maxrevision = adrList.Max(a => a.Revision ?? 0);
+            return (maxnumber, maxversion, maxrevision);
+        }
+
+        /// <summary>
+        /// Validates the entire application configuration from the <c>DefaultSettings</c> section and returns an error report.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>A tuple containing: <c>IsValid = true</c> with an empty array if valid; otherwise <c>IsValid = false</c> with validation error messages.</returns>
         public async Task<(bool IsValid, string[] ErrorReport)> ValidateAsync(CancellationToken cancellationToken)
         {
             var errors = await ValidateDefaultSettingsAsync(cancellationToken);
@@ -39,10 +62,10 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates the <c>DefaultSettings</c> section of the application configuration.
-        /// Checks language code validity, template file existence, folder path format, and date format.
+        /// Checks for section existence, language code validity, and template file availability.
         /// </summary>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A list of validation error messages. Empty when all checks pass.</returns>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>A list of validation error messages; empty if all checks pass.</returns>
         private async Task<List<string>> ValidateDefaultSettingsAsync(CancellationToken cancellationToken = default)
         {
             var errors = new List<string>();
@@ -65,41 +88,31 @@ namespace AdrPlus.Core
             var contentpath = Path.Combine(AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
             errors.AddRange(await ValidateTemplateFileAsync(language, contentpath, cancellationToken));
 
-            // Validate folderRepo (optional, must be relative path if specified)
-            var folderRepo = section[AppConstants.FieldFolderRepo];
-            if (!string.IsNullOrWhiteSpace(folderRepo))
-            {
-                if (Path.IsPathRooted(folderRepo))
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, folderRepo));
-                }
-            }
-
             return errors;
         }
 
         /// <summary>
-        /// Checks whether the default repository configuration file (<c>adr-config.adrplus</c>) exists at the expected path.
+        /// Checks whether the default repository configuration file <c>adr-config.adrplus</c> exists.
         /// </summary>
-        /// <returns><see langword="true"/> if the file exists; otherwise <see langword="false"/>.</returns>
+        /// <returns><c>true</c> if the file exists; otherwise <c>false</c>.</returns>
         public bool HasTemplateRepoFile()
         {
-            return _fileSystem.FileExists(GetConfigRepoFilePath());
+            return _fileSystem.FileExists(GetDefaultConfigRepoFilePath());
         }
 
         /// <summary>
-        /// Gets the full file-system path for the default repository configuration file.
+        /// Gets the full file system path for the default repository configuration file.
         /// The file is expected in the <c>template</c> subdirectory of the application base directory.
         /// </summary>
-        /// <returns>The absolute path to the <c>adr-config.adrplus</c> file.</returns>
-        public string GetConfigRepoFilePath()
+        /// <returns>The absolute path to <c>adr-config.adrplus</c>.</returns>
+        public string GetDefaultConfigRepoFilePath()
         {
             var baseDirectory = AppContext.BaseDirectory;
             return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, GetFileNameRepoConfig()));
         }
 
         /// <summary>
-        /// Gets the full file-system path for the application configuration file (<c>adrplus.json</c>).
+        /// Gets the full file system path for the application configuration file <c>adrplus.json</c>.
         /// </summary>
         /// <returns>The absolute path to <c>adrplus.json</c> in the application base directory.</returns>
         public string GetConfigAppFilePath()
@@ -110,15 +123,15 @@ namespace AdrPlus.Core
 
 
         /// <summary>
-        /// Retrieves the content of the repository configuration template file (<c>adr-config.adrplus</c>) asynchronously.
+        /// Retrieves the content of the repository configuration template file <c>adr-config.adrplus</c>.
         /// </summary>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A task representing the asynchronous operation, containing the template content as a string.</returns>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>The template content as a string.</returns>
         /// <exception cref="FileNotFoundException">Thrown when the template file does not exist at the expected path.</exception>
         public async Task<string> GetConfigRepoTemplateAsync(CancellationToken cancellationToken)
         {
             var baseDirectory = AppContext.BaseDirectory;
-            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
+            var fullpath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
             if (_fileSystem.FileExists(fullpath))
             {
                 return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
@@ -127,10 +140,10 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Retrieves the content of the ADR Markdown template file (<c>adr-template.adrplus</c>) asynchronously.
+        /// Retrieves the content of the ADR Markdown template file <c>adr-template.adrplus</c>.
         /// </summary>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A task representing the asynchronous operation, containing the template content as a string.</returns>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>The template content as a string.</returns>
         /// <exception cref="FileNotFoundException">Thrown when the template file does not exist at the expected path.</exception>
         public async Task<string> GetConfigAdrTemplateAsync(CancellationToken cancellationToken)
         {
@@ -143,7 +156,7 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Gets the full file-system path for the ADR Markdown template file (<c>adr-template.adrplus</c>).
+        /// Gets the full file system path for the ADR Markdown template file <c>adr-template.adrplus</c>.
         /// The file is expected in the <c>template</c> subdirectory of the application base directory.
         /// </summary>
         /// <returns>The absolute path to <c>adr-template.adrplus</c>.</returns>
@@ -154,23 +167,23 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Returns the default file name for the repository configuration file.
+        /// Returns the file name for the default repository configuration file.
         /// </summary>
         /// <returns>The constant file name <c>adr-config.adrplus</c>.</returns>
         public string GetFileNameRepoConfig()
         {
-            return AppConstants.AdrConfigFileName;
+            return AppConstants.AdrRepoConfigFileName;
         }
 
 
         /// <summary>
-        /// Validates that the template path represents a valid file path and, when the file does not exist, initializes the template.
+        /// Validates that a template path is a valid file path and initializes the template if the file does not exist.
         /// Handles relative paths by resolving them against <see cref="AppContext.BaseDirectory"/>.
         /// </summary>
-        /// <param name="culture">The culture value from the configuration (used to select the appropriate template language).</param>
+        /// <param name="culture">The culture value from the configuration, used to select the appropriate template language.</param>
         /// <param name="content">The content path value from the configuration to validate.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>An array of validation error messages. Empty when the path is valid and the file exists (or was successfully initialized).</returns>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>An array of validation error messages; empty if the path is valid and the file exists or was successfully initialized.</returns>
         private async Task<string[]> ValidateTemplateFileAsync(string? culture, string content, CancellationToken cancellationToken)
         {
             List<string> errors = [];
@@ -219,8 +232,8 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates and normalizes the repository configuration JSON to ensure all required fields are present and consistent.
-        /// Normalizes scopes, <c>skipdomain</c>, <c>folderByScope</c>, <c>lenversion</c>, and <c>lenrevision</c> based on <c>lenscope</c>.
-        /// Removes duplicate scope entries (case-insensitive) and removes <c>skipdomain</c> entries that are not in the defined scopes.
+        /// Normalizes <c>scopes</c>, <c>skipdomain</c>, <c>folderByScope</c>, <c>lenversion</c>, and <c>lenrevision</c> based on <c>lenscope</c>.
+        /// Removes duplicate scope entries (case-insensitive) and removes <c>skipdomain</c> entries not in the defined scopes.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate and normalize.</param>
         /// <returns>The normalized JSON content as a string.</returns>
@@ -304,11 +317,11 @@ namespace AdrPlus.Core
         }
 
         /// <summary>
-        /// Ensures the ADR Markdown template file exists on disk. When it is missing, extracts the appropriate embedded resource
+        /// Ensures the ADR Markdown template file exists on disk. If missing, extracts the appropriate embedded resource
         /// (Portuguese for cultures starting with <c>pt-</c>, English otherwise) and writes it to the <c>template</c> directory.
         /// </summary>
-        /// <param name="appculture">The application culture string (e.g. "pt-BR"). Null or whitespace defaults to the English template.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <param name="appculture">The application culture string (e.g., "pt-BR"). Null or whitespace defaults to the English template.</param>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
         public async Task InitializeTemplateAsync(string? appculture, CancellationToken cancellationToken)
         {
             var baseDirectory = AppContext.BaseDirectory;
@@ -383,7 +396,7 @@ namespace AdrPlus.Core
                 return templateFileName;
             }
 
-            if (!appculture.StartsWith(AppConstants.PtCulturePrefix, StringComparison.OrdinalIgnoreCase))
+            if (!appculture.StartsWith("pt-", StringComparison.OrdinalIgnoreCase))
             {
                 return templateFileName;
             }
@@ -396,10 +409,10 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates that a JSON string has exactly the same field set and types as the <c>adr-config.adrplus</c> template.
-        /// After structural validation, performs value-level validation on fields such as lengths, status strings, and separators.
+        /// After structural validation, performs value-level validation on field values such as lengths, status strings, and separators.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate against the expected repository structure.</param>
-        /// <returns>A tuple: <c>IsValid = true</c> with an empty array when valid; otherwise <c>IsValid = false</c> with the list of error messages.</returns>
+        /// <returns>A tuple containing: <c>IsValid = true</c> with an empty array if valid; otherwise <c>IsValid = false</c> with validation error messages.</returns>
         public (bool IsValid, string[] ErrorReport) ValidateRepoStructure(string jsonContent)
         {
             var errors = new List<string>();
@@ -417,7 +430,8 @@ namespace AdrPlus.Core
                 // Define all required fields with their expected types
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
-                    { AppConstants.FieldFolderRepo, JsonValueKind.String },
+                    { AppConstants.FieldFolderAdr, JsonValueKind.String },
+                    { AppConstants.FieldMigrationPattern, JsonValueKind.String },
                     { AppConstants.FieldTemplate, JsonValueKind.String },
                     { AppConstants.FieldPrefix, JsonValueKind.String },
                     { AppConstants.FieldLenSeq, JsonValueKind.Number },
@@ -434,10 +448,18 @@ namespace AdrPlus.Core
                     { AppConstants.FieldStatusRejected, JsonValueKind.String },
                     { AppConstants.FieldStatusSuperseded, JsonValueKind.String },
                     { AppConstants.FieldHeaderDisclaimer, JsonValueKind.String },
-                    { AppConstants.FieldHeaderStatus, JsonValueKind.String },
+                    { AppConstants.FieldHeaderTitleFile, JsonValueKind.String },
                     { AppConstants.FieldHeaderVersion, JsonValueKind.String },
-                    { AppConstants.FieldHeaderRevision, JsonValueKind.String }
-                };
+                    { AppConstants.FieldHeaderRevision, JsonValueKind.String },
+                    { AppConstants.FieldHeaderScope, JsonValueKind.String },
+                    { AppConstants.FieldHeaderDomain, JsonValueKind.String },
+                    { AppConstants.FieldHeaderStatusCreated, JsonValueKind.String },
+                    { AppConstants.FieldHeaderStatusChanged, JsonValueKind.String },
+                    { AppConstants.FieldHeaderStatusSuperseded, JsonValueKind.String },
+                    { AppConstants.FieldHeaderTableFields, JsonValueKind.String },
+                    { AppConstants.FieldHeaderTableValues, JsonValueKind.String },
+                    { AppConstants.FieldHeaderMigrated, JsonValueKind.String },
+             };
 
                 // Check for missing required fields
                 foreach (var field in requiredFields)
@@ -446,6 +468,19 @@ namespace AdrPlus.Core
                     {
                         errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredFieldFormat, field.Key));
                         continue;
+                    }
+                    // Validate type - special handling for migrationpattern 
+                    if (field.Key.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase)) 
+                    {
+                        var content = property.GetString() ?? string.Empty;
+                        if (content.Length > 0)
+                        {
+                            var patternResult = PatternParser.ParseMigratePattern(content);
+                            if (patternResult == null)
+                            {
+                                errors.Add(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
+                            }
+                        }
                     }
 
                     // Validate type - special handling for boolean
@@ -530,15 +565,14 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates the values of repository configuration fields for correctness and internal consistency.
-        /// Checks numeric minimums, scope/skipdomain coherence, separator, case-transform enum, and required string fields.
+        /// Checks numeric minimums, scope/skipdomain coherence, separator validity, case-transform enum values, and required non-empty string fields.
         /// </summary>
         /// <param name="root">The root <see cref="JsonElement"/> of the repository configuration JSON.</param>
-        /// <returns>An array of validation error messages. Empty when all field values are valid.</returns>
+        /// <returns>An array of validation error messages; empty if all field values are valid.</returns>
         private static string[] ValidateConfigRepoFieldValues(JsonElement root)
         {
             List<string> errors = [];
 
-            // Validate numeric fields 
             JsonElement property = root.GetProperty(AppConstants.FieldLenSeq);
             if (property.TryGetInt32(out var numvalue))
             {
@@ -610,7 +644,7 @@ namespace AdrPlus.Core
 
 
             property = root.GetProperty(AppConstants.FieldSeparator);
-            var validSeparators = new[] { "-", "~", "." };
+            var validSeparators = new[] { "-", "_", "." };
             var valuestring = property.GetString() ?? string.Empty;
             if (!validSeparators.Contains(valuestring))
             {
@@ -660,11 +694,11 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderDisclaimer));
             }
 
-            property = root.GetProperty(AppConstants.FieldHeaderStatus);
+            property = root.GetProperty(AppConstants.FieldHeaderTitleFile);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatus));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTitleFile));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderVersion);
@@ -681,37 +715,118 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderRevision));
             }
 
+            property = root.GetProperty(AppConstants.FieldHeaderScope);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderScope));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderDomain);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderDomain));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderStatusCreated);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusCreated));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderStatusChanged);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusChanged));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderStatusSuperseded);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusSuperseded));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderMigrated);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderMigrated));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderTableFields);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTableFields));
+            }
+
+            property = root.GetProperty(AppConstants.FieldHeaderTableValues);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTableValues));
+            }
+
+            // Migration pattern can be empty
+            property = root.GetProperty(AppConstants.FieldMigrationPattern);
+            valuestring = property.GetString() ?? string.Empty;
+
+            property = root.GetProperty(AppConstants.FieldFolderAdr);
+            valuestring = property.GetString() ?? string.Empty;
+            if (valuestring.Length == 0)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldFolderAdr));
+            }
+
             return [.. errors];
         }
 
         /// <summary>
         /// Returns the default repository configuration content. If the configuration file already exists on disk, its content is returned verbatim;
-        /// otherwise a new JSON string is generated from the embedded template and the supplied <paramref name="config"/> defaults.
+        /// otherwise a new JSON string is generated from the embedded template and the supplied <paramref name="pathadr"/> path.
         /// </summary>
-        /// <param name="config">The application configuration providing default folder and date format values.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A task representing the asynchronous operation, containing the repository configuration JSON string.</returns>
-        public async Task<string> GetConfigDefaultRepoContentAsync(AdrPlusConfig config, CancellationToken cancellationToken = default)
+        /// <param name="pathadr">The path to the ADR folder, used to initialize the configuration.</param>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>The repository configuration JSON string.</returns>
+        public async Task<string> GetConfigDefaultRepoContentAsync(string pathadr, CancellationToken cancellationToken = default)
         {
-            var fullpath = GetConfigRepoFilePath();
+            var fullpath = GetDefaultConfigRepoFilePath();
             if (!_fileSystem.FileExists(fullpath))
             {
                 var template = await GetConfigAdrTemplateAsync(cancellationToken);
-                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(template, config.FolderRepo), AppConstants.RepoSerializerOptions);
+                var aux =  JsonSerializer.Serialize(new AdrPlusRepoConfig(pathadr, template), AppConstants.RepoSerializerOptions);
                 var normalized = NormalizeJsonKeysToLowerInvariant(aux);
-                await _fileSystem.WriteAllTextAsync(fullpath, normalized, cancellationToken);
                 return normalized;
             }
+
             return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
         }
+
+        public async Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken)
+        {
+            var defaultjsonrepoconfig = await _fileSystem.ReadAllTextAsync(GetDefaultConfigRepoFilePath(), cancellationToken);
+            var (isValid, _) = ValidateRepoStructure(defaultjsonrepoconfig);
+            if (!isValid)
+            {
+                return string.Empty;
+            }
+            var defaultrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(defaultjsonrepoconfig, AppConstants.RepoSerializerOptions)!;
+            return defaultrepoconfig.MigrationPattern;
+        }
+
+
 
         /// <summary>
         /// Validates that a JSON string matches the expected structure of <c>AdrPlus.json</c>,
         /// ensuring all required fields are present under <c>DefaultSettings</c> with the correct types.
-        /// After structural validation, performs value-level validation on language, open-ADR command, folder, date format, and yes/no values.
+        /// After structural validation, performs value-level validation on language code, open-ADR command format, and yes/no values.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate against the expected application structure.</param>
-        /// <returns>A tuple: <c>IsValid = true</c> with an empty array when valid; otherwise <c>IsValid = false</c> with the list of error messages.</returns>
+        /// <returns>A tuple containing: <c>IsValid = true</c> with an empty array if valid; otherwise <c>IsValid = false</c> with validation error messages.</returns>
         public (bool IsValid, string[] ErrorReport) ValidateAppStructure(string jsonContent)
         {
             var errors = new List<string>();
@@ -725,11 +840,7 @@ namespace AdrPlus.Core
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
-                    { AppConstants.FieldFolderRepo, JsonValueKind.String },
                     { AppConstants.FieldOpenAdr, JsonValueKind.String },
-                    { AppConstants.FieldYesValue, JsonValueKind.String },
-                    { AppConstants.FieldNoValue, JsonValueKind.String },
-
                 };
 
                 // Check for missing required fields
@@ -779,10 +890,10 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates the values of application configuration fields for correctness and consistency.
-        /// Checks language code, open-ADR command format, folder path format, date format, and yes/no value lengths.
+        /// Checks language code validity, open-ADR command format, and yes/no value lengths.
         /// </summary>
         /// <param name="root">The root <see cref="JsonElement"/> of the application configuration JSON.</param>
-        /// <returns>An array of validation error messages. Empty when all field values are valid.</returns>
+        /// <returns>An array of validation error messages; empty if all field values are valid.</returns>
         private static string[] ValidateConfigAppFieldValues(JsonElement root)
         {
             List<string> errors = [];
@@ -799,43 +910,6 @@ namespace AdrPlus.Core
             if (openAdrValue.Length > 0 && !openAdrValue.Contains("{0}"))
             {
                 errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldOpenAdr, "{0}"));
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldFolderRepo);
-            var foldervalue = property.GetString() ?? string.Empty;
-            if (foldervalue.Length == 0)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldFolderRepo));
-            }
-            else
-            {
-                try
-                {
-                    // Validate that the path doesn't contain invalid characters
-                    _ = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, foldervalue));
-                }
-                catch (ArgumentException)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgContentInvalidPathFormat, foldervalue));
-                }
-                catch (NotSupportedException)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ErrMsgContentPathNotSupportedFormat, foldervalue));
-                }
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldYesValue);
-            var yesvalueValue = property.GetString() ?? string.Empty;
-            if (yesvalueValue.Length > 1)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldMaxCharValue, AppConstants.FieldYesValue));
-            }
-
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldNoValue);
-            var novalueValue = property.GetString() ?? string.Empty;
-            if (novalueValue.Length > 1)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldMaxCharValue, AppConstants.FieldNoValue));
             }
             return [.. errors];
         }

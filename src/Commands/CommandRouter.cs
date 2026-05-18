@@ -14,18 +14,21 @@ using Microsoft.Extensions.Logging;
 namespace AdrPlus.Commands
 {
     /// <summary>
-    /// Routes incoming command requests to their appropriate handlers.
-    /// Replaces the large switch statement in the old AdrServices.CommandSelector method.
+    /// Routes command names to their corresponding handlers and executes them, handling logging and error reporting. 
     /// </summary>
+    /// <param name="serviceProvider">The service provider for resolving command handlers.</param>
+    /// <param name="logger">The logger for recording command execution and errors.</param>
+    /// <param name="prompt">The console writer for displaying command execution status and errors.</param>
+    /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
     internal class CommandRouter(
         IServiceProvider serviceProvider,
         ILogger<CommandRouter> logger,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices)
     {
         private readonly IServiceProvider _serviceProvider = serviceProvider;
         private readonly ILogger<CommandRouter> _logger = logger;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly Dictionary<string, Type> _commandMap = adrServices.GenerateCommandsMap();
 
         /// <summary>
@@ -36,21 +39,22 @@ namespace AdrPlus.Commands
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         public async Task RouteAsync(string commandName, string[] args, CancellationToken cancellationToken)
         {
+            var logcmd = string.Join(' ', new[] { commandName }.Concat(args));
             if (string.IsNullOrWhiteSpace(commandName))
             {
                 try
                 {
                     LogMessages.LogExecutingCommand(_logger, "help");
                     var helpHandler = _serviceProvider.GetRequiredService<HelpCommandHandler>();
-                    _console.WriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "help"));
+                    _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "help"));
                     await helpHandler.ExecuteAsync([], cancellationToken);
-                    _console.WriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, "help"));
+                    _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, "help"));
                     LogMessages.LogCommandCompleted(_logger, "help" );
                 }
                 catch (Exception ex)
                 {
                     LogMessages.LogCommandException(_logger, ex);
-                    _console.WriteError(ex.Message);
+                    _prompt.PromptWriteError(ex.Message);
                     throw;
                 }
                 return;
@@ -62,27 +66,27 @@ namespace AdrPlus.Commands
             {
                 LogMessages.LogUnknownCommand(_logger, commandName);
                 var msg = string.Format(null, FormatMessages.ExceptionUnknownCommandFormat, commandName);
-                _console.WriteError(msg);
+                _prompt.PromptWriteError(msg);
                 throw new InvalidOperationException(msg);
             }
 
             try
             {
-                LogMessages.LogExecutingCommand(_logger, commandName);
-                _console.WriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, commandName));
+                LogMessages.LogExecutingCommand(_logger, logcmd);
+                _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, commandName));
                 var handler = (ICommandHandler)_serviceProvider.GetRequiredService(handlerType);
                 await handler.ExecuteAsync(args, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex );
-                _console.WriteError(ex.Message);
+                _prompt.PromptWriteError(ex.Message);
                 throw;
             }
             finally
             {
-                LogMessages.LogCommandCompleted(_logger, commandName);
-                _console.WriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, commandName));
+                LogMessages.LogCommandCompleted(_logger, logcmd);
+                _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, commandName));
             }
         }
 

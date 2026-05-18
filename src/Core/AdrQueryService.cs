@@ -15,29 +15,30 @@ namespace AdrPlus.Core
         private readonly IAdrFileParser _fileParser = fileParser;
 
         /// <inheritdoc/>
-        public async Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        public async Task<AdrFileNameComponents[]> ReadAllAdrByNumber(int sequence, IFileSystemService fileSystemService, string rootpath, AdrPlusRepoConfig config)
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
 
-            if (string.IsNullOrWhiteSpace(directoryPath))
+            if (string.IsNullOrWhiteSpace(rootpath))
             {
-                throw new ArgumentException(Resources.AdrPlus.ExceptionDirectoryPathEmpty, nameof(directoryPath));
+                throw new ArgumentException(Resources.AdrPlus.ExceptionDirectoryPathEmpty, nameof(rootpath));
             }
 
-            if (!fileSystemService.DirectoryExists(directoryPath))
+            if (!fileSystemService.DirectoryExists(rootpath))
             {
-                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFoundPathFormat, directoryPath));
+                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFoundPathFormat, rootpath));
             }
 
             var result = new List<AdrFileNameComponents>();
-            var searchPattern = $"{config.Prefix ?? string.Empty}{sequence.ToString($"D{config.LenSeq}", CultureInfo.CurrentCulture)}{config.Separator}*.md";
-            var mdFiles = fileSystemService.GetFiles(directoryPath, searchPattern);
+            var searchPattern = $"*{sequence.ToString($"D{config.LenSeq}", CultureInfo.CurrentCulture)}*.md";
+            var adrfolder = Path.GetFullPath(Path.Combine(rootpath, config.FolderAdr));
+            var mdFiles = fileSystemService.GetFiles(adrfolder, searchPattern);
 
             foreach (var filePath in mdFiles)
             {
                 var aux = await _fileParser.ParseFileName(filePath, config, fileSystemService);
-                if (aux.IsValid && aux.Header.IsValid)
+                if (aux.IsValid && aux.Header.IsValid && aux.Number == sequence)
                 {
                     result.Add(aux);
                 }
@@ -46,22 +47,7 @@ namespace AdrPlus.Core
         }
 
         /// <inheritdoc/>
-        public async Task<AdrFileNameComponents[]> ReadLatestAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
-        {
-            var allAdrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);
-            return [.. allAdrFiles
-               .GroupBy(adr => $"{adr.Number}{adr.Header.StatusUpdate}")
-               .Select(group => group
-                   .OrderByDescending(adr => adr.Version)
-                   .ThenByDescending(adr => adr.Revision ?? 0)
-                   .First())
-               .OrderByDescending(adr => adr.Number)
-               .ThenByDescending(adr => adr.Version)
-               .ThenByDescending(adr => adr.Revision ?? 0)];
-        }
-
-        /// <inheritdoc/>
-        public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        public async Task<AdrFileNameComponents[]> ReadAllAdrFiles(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false)
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
@@ -75,27 +61,27 @@ namespace AdrPlus.Core
             {
                 throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFoundPathFormat, directoryPath));
             }
-
             var result = new List<AdrFileNameComponents>();
-            var mdFiles = fileSystemService.GetFiles(directoryPath, "*.md", SearchOption.AllDirectories);
+            var folderadr = Path.GetFullPath(Path.Combine(directoryPath, config.FolderAdr));
+            var mdFiles = fileSystemService.GetFiles(folderadr, "*.md", SearchOption.AllDirectories);
 
             foreach (var filePath in mdFiles)
             {
                 var parsedComponents = await _fileParser.ParseFileName(filePath, config, fileSystemService);
-                if (!parsedComponents.IsValid)
+                if (!parsedComponents.IsValid && !includeNotMatched)
                 {
                     continue;
                 }
                 result.Add(parsedComponents);
             }
-            return [.. result];
+            return [.. result.OrderByDescending(x => x.Header.IsValid).ThenBy(x => x.Header.IsMigrated).ThenByDescending(x=> x.Number)];
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        public async Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
         {
             var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform), domain.ToCase(config.CaseTransform));
-            AdrFileNameComponents[] adrFiles = await ReadAllAdrFiles(fileSystemService, directoryPath, config);
+            AdrFileNameComponents[] adrFiles = await ReadAllAdrFiles(fileSystemService, rootrepo, config);
             var aux = adrFiles
                 .FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
             return aux?.FileName ?? string.Empty;
@@ -109,9 +95,9 @@ namespace AdrPlus.Core
         }
 
         /// <inheritdoc/>
-        public async Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        public async Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string rootpath, AdrPlusRepoConfig config)
         {
-            return (await ReadAllAdrByNumber(sequence, fileSystemService, directoryPath, config))
+            return (await ReadAllAdrByNumber(sequence, fileSystemService, rootpath, config))
                 .OrderBy(x => x.Version)
                 .ThenBy(x => x.Revision ?? 0)
                 .Last();

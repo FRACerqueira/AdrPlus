@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Problema
 
 Descreva o problema de design arquitetônico que você está abordando, deixando sem dúvidas sobre por que você está abordando este problema agora. Seguindo uma abordagem minimalista, aborde e documente apenas os problemas que precisam ser abordados em vários pontos do ciclo de vida.

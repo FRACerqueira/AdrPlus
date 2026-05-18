@@ -10,7 +10,7 @@ using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using PromptPlusLibrary;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -26,28 +26,30 @@ namespace AdrPlus.Commands.Config
     /// Initializes a new instance of the <see cref="ConfigCommandHandler"/> class.
     /// </remarks>
     /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="console">The console writer for displaying output and prompting user input.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class ConfigCommandHandler(
         ILogger<ConfigCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
-        IOptions<AdrPlusConfig> config,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<ConfigCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateConfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private readonly AdrPlusConfig _config = config.Value;
 
-
-        private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardConfigApplication, Arguments.WizardConfigRepository,Arguments.WizardConfigTemplate,Arguments.FileConfig, Arguments.Help];
+        private static readonly Arguments[] ValidCommandArgs = [
+            Arguments.WizardConfigApplication,
+            Arguments.WizardConfigRepository,
+            Arguments.WizardConfigTemplate,
+            Arguments.WizardConfigMigration,
+            Arguments.FileConfig,
+            Arguments.Help];
 
         /// <summary>
         /// Executes the <c>config</c> command asynchronously to create or edit configuration files.
@@ -63,26 +65,32 @@ namespace AdrPlus.Commands.Config
         /// <exception cref="OperationCanceledException">Thrown when the user cancels a wizard prompt.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
-                        "config", 
-                        ValidCommandArgs, 
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
+                        "config",
+                        ValidCommandArgs,
                         [
                             "adrplus config --application",
+                            "adrplus config --migration",
                             "adrplus config --repository",
                             "adrplus config --template -file \"path/to/file-config\""
                         ]));
                     return;
                 }
 
-                if (parsedArgs.ContainsKey(Arguments.WizardConfigRepository) && _validateConfig.HasTemplateRepoFile())
+                if ((parsedArgs.ContainsKey(Arguments.WizardConfigRepository) || parsedArgs.ContainsKey(Arguments.WizardConfigMigration)) && _validateConfig.HasTemplateRepoFile() && !parsedArgs.ContainsKey(Arguments.FileConfig))
                 {
-                    var (IsAborted, ConfirmYes) = _console.PromptConfirm(Resources.AdrPlus.ConfigPromptOverwriteConfig, cancellationToken);
+                    var msg = Resources.AdrPlus.ConfigPromptOverwriteConfig;
+                    if (parsedArgs.ContainsKey(Arguments.WizardConfigMigration))
+                    {
+                        msg =  Resources.AdrPlus.ConfigPromptOverwriteMigration;
+                    }
+                    var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(msg, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
@@ -100,7 +108,11 @@ namespace AdrPlus.Commands.Config
 
                 if (parsedArgs.ContainsKey(Arguments.WizardConfigRepository))
                 {
-                    await ProcessRepoConfigAsync(fileConfigPath,cancellationToken);
+                    await ProcessRepoConfigAsync(fileConfigPath, cancellationToken);
+                }
+                else if (parsedArgs.ContainsKey(Arguments.WizardConfigMigration))
+                {
+                    await ProcessMigrationConfigAsync(fileConfigPath, cancellationToken);
                 }
                 else if (parsedArgs.ContainsKey(Arguments.WizardConfigApplication))
                 {
@@ -119,6 +131,254 @@ namespace AdrPlus.Commands.Config
             {
                 LogMessages.LogCommandException(_logger, ex);
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Processes the migration configuration 
+        /// </summary>
+        /// <param name="fileConfigPath">Optional path to an external configuration file. Empty string triggers the wizard.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
+        private async Task ProcessMigrationConfigAsync(string fileConfigPath, CancellationToken cancellationToken)
+        {
+            string? jsoncontent;
+            string? newprefix = null;
+            if (!string.IsNullOrEmpty(fileConfigPath))
+            {
+                if (!_fileSystem.FileExists(fileConfigPath))
+                {
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfigPath));
+                }
+                jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
+            }
+            else
+            {
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
+            }
+            if (string.IsNullOrEmpty(fileConfigPath))
+            {
+                (jsoncontent, newprefix) = WizardMigrationConfig(jsoncontent, cancellationToken);
+            }
+            var (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsoncontent);
+            if (!IsValid)
+            {
+                LogAndWriteErrors(ErrorReport);
+                throw new InvalidDataException(Resources.AdrPlus.InvalidRepoStructure);
+            }
+            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsoncontent, AppConstants.RepoSerializerOptions)!;
+
+            var migrateparam = PatternParser.ParseMigratePattern(repoconfig.MigrationPattern)
+                ?? throw new InvalidDataException(Resources.AdrPlus.ErrMsgWrongMigrationPattern);
+
+            if (!_validateConfig.HasTemplateRepoFile())
+            {
+                repoconfig.LenSeq = migrateparam["N"].Length;
+                if (migrateparam.TryGetValue("P", out _))
+                {
+                    repoconfig.Prefix = newprefix;
+                }
+                if (migrateparam.TryGetValue("V", out (int _, int LengthVer) valueVer))
+                {
+                    repoconfig.LenVersion = valueVer.LengthVer;
+                }
+                if (migrateparam.TryGetValue("R", out (int _, int LengthRev) valueRev))
+                {
+                    repoconfig.LenRevision = valueRev.LengthRev;
+                }
+                jsoncontent = JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions);
+                (IsValid, ErrorReport) = _validateConfig.ValidateRepoStructure(jsoncontent);
+                if (!IsValid)
+                {
+                    LogAndWriteErrors(ErrorReport);
+                    throw new InvalidDataException(Resources.AdrPlus.InvalidRepoStructure);
+                }
+            }
+
+            var filePath = _validateConfig.GetDefaultConfigRepoFilePath();
+            await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
+            LogMessages.LogCommandSuccessful(_logger, filePath);
+            _prompt.PromptWriteSuccess(filePath);
+        }
+
+        private (string JsonConfig, string PrefixValue) WizardMigrationConfig(string content, CancellationToken cancellationToken)
+        {
+            var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(content, AppConstants.RepoSerializerOptions)!;
+            var configrecord = new ConfigMigration();
+            _prompt.ClearHistoryMigration();
+            var prefixvalue = string.Empty;
+            var (Curleft, Curtop) = _prompt.PromptGetCursorPosition();
+            while (true)
+            {
+                var elementsPrompt = _prompt.PromptFieldsFromFileAdr(cancellationToken);
+                if (elementsPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                var sample = _prompt.PromptSampleFileMigration(cancellationToken);
+                if (sample.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                var filename = Path.GetFileNameWithoutExtension(sample.SampleFileMigration);
+                var maxlen = filename.Length;
+                var largestep = 5;
+                if (maxlen < largestep)
+                {
+                    largestep = maxlen;
+                }
+                (Curleft, Curtop) = _prompt.PromptGetCursorPosition();
+
+                _prompt.PromptWriteSummary($"{Resources.AdrPlus.SummarySampleFilename}: {filename}");
+                double defaulvalue = 0;
+
+                if (elementsPrompt.FieldsFromFileAdr.Any(x => x.StartsWith('P')))
+                {
+                    var elementprefix = _prompt.PromptSelectPrefixPosition(filename, maxlen, 0, cancellationToken);
+                    if (elementprefix.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+
+                    defaulvalue = elementprefix.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenprefix = _prompt.PromptSelectPrefixLength(filename, elementprefix.Value, maxlen, 3, cancellationToken);
+                    if (elementlenprefix.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+                    _prompt.PromptWriteSummary($"{Resources.AdrPlus.Prefix} : {filename[elementprefix.Value..][..elementlenprefix.Value]}");
+                    configrecord.Prefix = (int)elementprefix.Value;
+                    configrecord.LenPrefix = (int)elementlenprefix.Value;
+                    prefixvalue = elementlenprefix.PrefixValue;
+
+                    defaulvalue += elementlenprefix.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+                }
+
+                var elementnumber = _prompt.PromptSelectNumberPosition(filename, maxlen,(int)defaulvalue, cancellationToken);
+                if (elementnumber.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                defaulvalue = elementnumber.Value + 1;
+                if (defaulvalue > maxlen - 1)
+                {
+                    defaulvalue = maxlen - 1;
+                }
+
+                var elementlennumber = _prompt.PromptSelectNumberLength(filename, elementnumber.Value, 6, 3, cancellationToken);
+                if (elementlennumber.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                _prompt.PromptWriteSummary($"{Resources.AdrPlus.Number} : {filename[elementnumber.Value..][..(int)elementlennumber.Value]}");
+                configrecord.Number = (int)elementnumber.Value;
+                configrecord.LenNumber = (int)elementlennumber.Value;
+
+
+                defaulvalue += elementlennumber.Value;
+                if (defaulvalue > maxlen - 1)
+                {
+                    defaulvalue = maxlen - 1;
+                }
+
+                if (elementsPrompt.FieldsFromFileAdr.Any(x => x.StartsWith('V')))
+                {
+                    var elementversion = _prompt.PromptSelectVersionPosition(filename, maxlen, (int)defaulvalue, cancellationToken);
+                    if (elementversion.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+
+                    defaulvalue = elementversion.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenversion = _prompt.PromptSelectVersionLength(filename, elementversion.Value, 3, 2, cancellationToken);
+                    if (elementlenversion.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+
+                    _prompt.PromptWriteSummary($"{Resources.AdrPlus.Version} : {filename[elementversion.Value..][..elementlenversion.Value]}");
+                    configrecord.Version = elementversion.Value;
+                    configrecord.LenVersion = elementlenversion.Value;
+
+                    defaulvalue += elementlenversion.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+                }
+                if (elementsPrompt.FieldsFromFileAdr.Any(x => x.StartsWith('R')))
+                {
+                    var elementrevision = _prompt.PromptSelectRevisionPosition(filename, maxlen, (int)defaulvalue, cancellationToken);
+                    if (elementrevision.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+
+                    defaulvalue = elementrevision.Value + 1;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+
+                    var elementlenrevision = _prompt.PromptSelectRevisionLength(filename, elementrevision.Value, 3, 2, cancellationToken);
+                    if (elementlenrevision.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+
+                    _prompt.PromptWriteSummary($"{Resources.AdrPlus.Revision} : {filename[elementrevision.Value..][..elementlenrevision.Value]}");
+                    configrecord.Revision = elementrevision.Value;
+                    configrecord.LenRevision = elementlenrevision.Value;
+
+                    defaulvalue += elementlenrevision.Value;
+                    if (defaulvalue > maxlen - 1)
+                    {
+                        defaulvalue = maxlen - 1;
+                    }
+                }
+
+                var elementtitle = _prompt.PromptSelectTitlePosition(filename, maxlen, (int)defaulvalue, cancellationToken);
+                if (elementtitle.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                _prompt.PromptWriteSummary($"{Resources.AdrPlus.Title} : {filename[elementtitle.Value..]}");
+                configrecord.Title = elementtitle.Value;
+
+                var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmParamMigration, cancellationToken);
+                if (IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (ConfirmYes)
+                {
+
+                    repoconfig.MigrationPattern = PatternParser.CreateMigratePattern(configrecord);
+                    return (JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions), prefixvalue);
+                }
+                PromptPlus.Config.EnabledAbortKey = true;
+                _prompt.PromptMovePosition(0, Curtop);
             }
         }
 
@@ -157,7 +417,7 @@ namespace AdrPlus.Commands.Config
             var fielpath = _validateConfig.GetConfigAdrTemplatePath();
             await _fileSystem.WriteAllTextAsync(fielpath, jsoncontent, cancellationToken);
             LogMessages.LogCommandSuccessful(_logger, fielpath);
-            _console.WriteSuccess(fielpath);
+            _prompt.PromptWriteSuccess(fielpath);
         }
 
         /// <summary>
@@ -176,7 +436,7 @@ namespace AdrPlus.Commands.Config
             var rootPath = drives[0];
             if (drives.Length > 1)
             {
-                var (IsAbortedDrive, driveContent) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                var (IsAbortedDrive, driveContent) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
                 if (IsAbortedDrive)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -185,7 +445,7 @@ namespace AdrPlus.Commands.Config
             }
 
             // Select file template
-            var (IsAborted, Content) = _console.PromptConfigTemplateAdrSelect(rootPath,cancellationToken);
+            var (IsAborted, Content) = _prompt.PromptConfigTemplateAdrSelect(rootPath, cancellationToken);
             if (IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
@@ -241,7 +501,7 @@ namespace AdrPlus.Commands.Config
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
             Helper.HasAppConfigChange = true;
             LogMessages.LogCommandSuccessful(_logger, filePath);
-            _console.WriteSuccess(filePath);
+            _prompt.PromptWriteSuccess(filePath);
         }
 
         /// <summary>
@@ -255,7 +515,7 @@ namespace AdrPlus.Commands.Config
         /// <exception cref="FileNotFoundException">Thrown when the specified external config file is not found.</exception>
         /// <exception cref="InvalidDataException">Thrown when the configuration fails structure validation.</exception>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
-        private async Task ProcessRepoConfigAsync(string fileConfigPath,  CancellationToken cancellationToken)
+        private async Task ProcessRepoConfigAsync(string fileConfigPath, CancellationToken cancellationToken)
         {
             string? jsoncontent;
             if (!string.IsNullOrEmpty(fileConfigPath))
@@ -268,7 +528,7 @@ namespace AdrPlus.Commands.Config
             }
             else
             {
-                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(_config, cancellationToken);
+                jsoncontent = await _validateConfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
             }
             if (string.IsNullOrEmpty(fileConfigPath))
             {
@@ -281,10 +541,10 @@ namespace AdrPlus.Commands.Config
                 throw new InvalidDataException(Resources.AdrPlus.InvalidRepoStructure);
             }
 
-            var filePath = _validateConfig.GetConfigRepoFilePath();
+            var filePath = _validateConfig.GetDefaultConfigRepoFilePath();
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
             LogMessages.LogCommandSuccessful(_logger, filePath);
-            _console.WriteSuccess(filePath);
+            _prompt.PromptWriteSuccess(filePath);
         }
 
         /// <summary>
@@ -296,7 +556,7 @@ namespace AdrPlus.Commands.Config
             foreach (var error in errors)
             {
                 LogMessages.LogCommandFailure(_logger, error);
-                _console.WriteError(error);
+                _prompt.PromptWriteError(error);
             }
         }
 
@@ -315,7 +575,7 @@ namespace AdrPlus.Commands.Config
             while (true)
             {
                 var fields = BuildAppFieldsFromJson(modifiedConfig);
-                var (IsAborted, Content) = _console.PromptConfigJsonAppSelect(defaultselect, fields, cancellationToken);
+                var (IsAborted, Content) = _prompt.PromptConfigJsonAppSelect(defaultselect, fields, cancellationToken);
 
                 if (IsAborted)
                 {
@@ -357,10 +617,9 @@ namespace AdrPlus.Commands.Config
             while (true)
             {
                 var fields = BuildRepoFieldsFromJson(modifiedConfig);
+                var (_, Top) = _prompt.PromptCursorPosition();
                 DisplaySampleFiles(modifiedConfig);
-
-                var (IsAborted, Content) = _console.PromptConfigJsonRepoSelect(defaultselect, fields, cancellationToken);
-
+                var (IsAborted, Content) = _prompt.PromptConfigJsonRepoSelect(defaultselect, fields, cancellationToken);
                 if (IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
@@ -378,7 +637,7 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
                 }
-
+                _prompt.PromptMovePosition(0, Top);
                 modifiedConfig = UpdateJsonFieldRepo(modifiedConfig, field.Name, field.Value, field.Type);
                 modifiedConfig = _validateConfig.EnsureFieldsRepoStructure(modifiedConfig);
             }
@@ -402,6 +661,10 @@ namespace AdrPlus.Commands.Config
             {
                 var enabled = true;
                 if (property.Name.Equals(AppConstants.FieldTemplate, StringComparison.OrdinalIgnoreCase))
+                {
+                    enabled = false;
+                }
+                else if (property.Name.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase))
                 {
                     enabled = false;
                 }
@@ -450,10 +713,10 @@ namespace AdrPlus.Commands.Config
         /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         private void DisplaySampleFiles(string modifiedConfig)
         {
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoFileNameSample);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.ConfigInfoFileNameSample);
             foreach (var sample in GetSampleFiles(modifiedConfig))
             {
-                _console.WriteInfo($"- {sample}");
+                _prompt.PromptWriteSummary($"- {sample}");
             }
         }
 
@@ -470,15 +733,7 @@ namespace AdrPlus.Commands.Config
         private (bool IsAborted, FieldsJson EditField) EditFieldApp(string fieldName, FieldsJson[] fields, CancellationToken cancellationToken)
         {
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
-
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoPropertyEditor);
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoSelectedField, AppConstants.GetTitleField(selection.Name)));
-
             var isaborted = ProcessFieldEdit(selection.Name, selection, fields, -1, cancellationToken);
-
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoCurrentValue, selection.Name, selection.Value));
-            _console.WriteInfo(string.Empty);
-
             return (isaborted, selection);
         }
 
@@ -498,15 +753,7 @@ namespace AdrPlus.Commands.Config
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
             var fieldscope = fields.First(f => f.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
             int lenscope = int.TryParse(fieldscope.Value, out var parsedValue) ? parsedValue : 0;
-
-            _console.WriteInfo(Resources.AdrPlus.ConfigInfoPropertyEditor);
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoSelectedField, AppConstants.GetTitleField(selection.Name)));
-
             var isaborted = ProcessFieldEdit(selection.Name, selection, fields, lenscope, cancellationToken);
-
-            _console.WriteInfo(string.Format(null, FormatMessages.ConfigInfoCurrentValue, selection.Name, selection.Value));
-            _console.WriteInfo(string.Empty);
-
             return (isaborted, selection);
         }
 
@@ -524,52 +771,64 @@ namespace AdrPlus.Commands.Config
         {
             return fieldName switch
             {
-                AppConstants.FieldLanguage => HandleEditField(() => 
-                    _console.PromptEditFieldLanguage(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldYesValue => HandleEditField(() => 
-                    _console.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldNoValue => HandleEditField(() => 
-                    _console.PromptEditFieldYesNoChar(selection, fields, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldFolderRepo => HandleEditField(() => 
-                    _console.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldOpenAdr => HandleEditField(() => 
-                    _console.PromptEditFielOpenAdr(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldPrefix => HandleEditField(() => 
-                    _console.PromptEditFieldPrefix(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldLenSeq => HandleEditField(() => 
-                    _console.PromptEditFieldLenSeq(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldLenVersion => HandleEditField(() => 
-                    _console.PromptEditFieldVersion(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                AppConstants.FieldLanguage => HandleEditField(() =>
+                    _prompt.PromptEditFieldLanguage(selection, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldFolderAdr => HandleEditField(() =>
+                    _prompt.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldOpenAdr => HandleEditField(() =>
+                    _prompt.PromptEditFielOpenAdr(selection, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldPrefix => HandleEditField(() =>
+                    _prompt.PromptEditFieldPrefix(selection, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldLenSeq => HandleEditField(() =>
+                    _prompt.PromptEditFieldLenSeq(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                AppConstants.FieldLenVersion => HandleEditField(() =>
+                    _prompt.PromptEditFieldVersion(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
                 AppConstants.FieldLenRevision => HandleEditField(() =>
-                    _console.PromptEditFieldRevision(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldScopes when lenscope > 0 => HandleEditField(() => 
-                    _console.PromptEditFieldScopes(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                    _prompt.PromptEditFieldRevision(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                AppConstants.FieldScopes when lenscope > 0 => HandleEditField(() =>
+                    _prompt.PromptEditFieldScopes(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
                 AppConstants.FieldSkipDomain when lenscope > 0 => HandleEditField(() =>
-                    _console.PromptEditFieldskipdomain(selection, fields, cancellationToken), selection, v => v.ToString()!),
-                AppConstants.FieldLenScope => HandleEditField(() => 
-                    _console.PromptEditFieldLenScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldFolderByScope when lenscope > 0 => HandleEditField(() => 
-                    _console.PromptEditFieldFolderByScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldCaseTransform => HandleEditField(() => 
-                    _console.PromptEditFieldCaseTransform(selection, cancellationToken), selection, v => v.ToString()!),
-                AppConstants.FieldSeparator => HandleEditField(() => 
-                    _console.PromptEditFieldSeparator(selection, cancellationToken), selection, v => v.ToString()!),
-                AppConstants.FieldStatusNew  => HandleEditField(() => 
-                    _console.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldStatusAccepted => HandleEditField(() => 
-                    _console.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldStatusSuperseded => HandleEditField(() => 
-                    _console.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldStatusRejected => HandleEditField(() => 
-                    _console.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldHeaderDisclaimer => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderDisclaimer(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldHeaderStatus => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
-                AppConstants.FieldHeaderVersion => HandleEditField(() => 
-                    _console.PromptEditFieldHeaderVersion(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                    _prompt.PromptEditFieldskipdomain(selection, fields, cancellationToken), selection, v => v.ToString()!),
+                AppConstants.FieldLenScope => HandleEditField(() =>
+                    _prompt.PromptEditFieldLenScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                AppConstants.FieldFolderByScope when lenscope > 0 => HandleEditField(() =>
+                    _prompt.PromptEditFieldFolderByScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
+                AppConstants.FieldCaseTransform => HandleEditField(() =>
+                    _prompt.PromptEditFieldCaseTransform(selection, cancellationToken), selection, v => v.ToString()!),
+                AppConstants.FieldSeparator => HandleEditField(() =>
+                    _prompt.PromptEditFieldSeparator(selection, cancellationToken), selection, v => v.ToString()!),
+                AppConstants.FieldStatusNew => HandleEditField(() =>
+                    _prompt.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                AppConstants.FieldStatusAccepted => HandleEditField(() =>
+                    _prompt.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                AppConstants.FieldStatusSuperseded => HandleEditField(() =>
+                    _prompt.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                AppConstants.FieldStatusRejected => HandleEditField(() =>
+                    _prompt.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                AppConstants.FieldHeaderDisclaimer => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 200, Resources.AdrPlus.DefaultHeaderDisclaimer, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTitleFile => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.DefaultHeaderTitleFile, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderVersion => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Version, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldHeaderRevision => HandleEditField(() =>
-                    _console.PromptEditFieldHeaderRevision(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Revision, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderScope => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Scope, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderDomain => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Domain, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusCreated => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Created, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusChanged => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Changed, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderStatusSuperseded => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Superseded, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTableFields => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Fields, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderTableValues => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Values, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldHeaderMigrated => HandleEditField(() =>
+                    _prompt.PromptEditFieldHeaderText(selection, 40, Resources.AdrPlus.Migrated, cancellationToken), selection, v => v.Trim()),
                 _ => false
             };
         }
@@ -601,17 +860,17 @@ namespace AdrPlus.Commands.Config
         /// <returns>An array of sample filename strings demonstrating the naming convention.</returns>
         private string[] GetSampleFiles(string modifiedConfig)
         {
-            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty, _config.FolderRepo);
-            var skipdomains = repoconfig.Getskipdomains();
+            var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty);
+            var skipdomains = repoconfig.GetSkipDomains();
             var scopes = repoconfig.GetScopes();
             var eligibleScope = scopes.Where(x => !skipdomains.Any(s => s == x)).FirstOrDefault() ?? string.Empty;
 
             var models = new[]
             {
-                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, "X", skipdomains.FirstOrDefault() ?? string.Empty, string.Empty, repoconfig),
-                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, "Y", eligibleScope, "K", repoconfig),
-                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, "Y", eligibleScope, "K", repoconfig),
-                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, "Y", eligibleScope, "K", repoconfig),
+                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}X", skipdomains.FirstOrDefault() ?? string.Empty, string.Empty, repoconfig),
+                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
+                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
+                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
             };
 
             return [.. models.Select(m => m.GetFileName(repoconfig))];

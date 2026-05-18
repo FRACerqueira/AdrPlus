@@ -9,7 +9,7 @@ using AdrPlus.Infrastructure.Process;
 using AdrPlus.Tests.Helpers;
 using AdrPlus.Tests.Infrastructure.Process;
 
-namespace AdrPlus.Tests.Commands;
+namespace AdrPlus.Tests.Core;
 
 /// <summary>
 /// Unit tests for CommandMetadataService class.
@@ -719,7 +719,7 @@ public class CommandMetadataServiceTests
 
         // Act
         var parsedArgs = _service.ParseArgs(args, supportedArgs);
-        var helpText = _service.GetHelpText("help", supportedArgs, new[] { "example" });
+        var helpText = _service.GetHelpText("help", supportedArgs, ["example"]);
 
         // Assert
         parsedArgs.Should().ContainKey(Arguments.Help);

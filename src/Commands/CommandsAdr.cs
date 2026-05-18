@@ -5,14 +5,15 @@
 
 using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
+using AdrPlus.Commands.Explorer;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
+using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
 using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
-using AdrPlus.Commands.Upgrade;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 
@@ -39,15 +40,20 @@ namespace AdrPlus.Commands
         [Command("config", typeof(ConfigCommandHandler), "CmdDescConfig")]
         Config,
         /// <summary>
-        /// Initializes the repository with folders for ADRs.
+        /// Launches the file viewer explorer for the ADR repository with option to create Markdown file.
+        /// </summary>
+        [Command("explorer", typeof(ExplorerCommandHandler), "CmdDescExplorer")]
+        Explorer,
+        /// <summary>
+        /// Migrate repository's settings.
+        /// </summary>
+        [Command("migrate", typeof(MigrateCommandHandler), "CmdDescMigrate")]
+        Migrate,
+        /// <summary>
+        /// Initializes or updates configuration for the repository.
         /// </summary>
         [Command("init", typeof(InitCommandHandler), "CmdDescInit")]
         Init,
-        /// <summary>
-        /// Upgrade repository's settings.
-        /// </summary>
-        [Command("upgrade", typeof(UpgradeCommandHandler), "CmdDescUpgrade")]
-        Upgrade,
         /// <summary>
         /// Creates a new ADR with a new number (incremental number).
         /// </summary>

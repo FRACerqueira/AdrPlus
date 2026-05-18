@@ -61,9 +61,9 @@ namespace AdrPlus.Domain
         public AdrStatus StatusChange { get; set; } = AdrStatus.Unknown;
 
         /// <summary>
-        /// Gets or sets the name of the file that this file supersedes.
+        /// Gets or sets the number(sequence) of the ADR that this supersedes.
         /// </summary>
-        public string FileSuperSedes { get; set; } = string.Empty;
+        public string NumberSuperSedes { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the change date from the ADR header.
@@ -79,6 +79,12 @@ namespace AdrPlus.Domain
         /// Gets or sets a value indicating whether the header was parsed successfully.
         /// </summary>
         public bool IsValid { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the ADR file was migrated from an older version without header to the new version with header. 
+        /// </summary>
+        public bool IsMigrated { get; set; }
 
         /// <summary>
         /// Gets or sets the error message if header parsing failed.

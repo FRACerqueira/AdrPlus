@@ -10,7 +10,8 @@ using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using System.Globalization;
+using System.Text.Json;
 
 namespace AdrPlus.Commands.Init
 {
@@ -22,26 +23,27 @@ namespace AdrPlus.Commands.Init
     /// Initializes a new instance of the <see cref="InitCommandHandler"/> class.
     /// </remarks>
     /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="appconfig">The application configuration settings (folder, date format, etc.).</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="console">The console writer for displaying output and prompting user input.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
-        IOptions<AdrPlusConfig> appconfig,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
-        private readonly AdrPlusConfig _appconfig = appconfig.Value;
         private readonly IFileSystemService _fileSystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardInit, Arguments.TargetRepo, Arguments.Help];
+        private static readonly Arguments[] ValidCommandArgs = [
+            Arguments.WizardInit, 
+            Arguments.TargetRepo,
+            Arguments.FileConfig,
+            Arguments.Help];
 
         /// <summary>
         /// Executes the <c>init</c> command asynchronously to initialize the ADR repository structure.
@@ -59,18 +61,19 @@ namespace AdrPlus.Commands.Init
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "init",
                         ValidCommandArgs,
                         [
                             "adrplus init --wizard",
                             "adrplus init --path \"path/to/repository\"",
+                            "adrplus init --path \"path/to/repository\" -file \"path/to/file-config\"",
                         ]));
                     return;
                 }
@@ -85,21 +88,25 @@ namespace AdrPlus.Commands.Init
                     parsedArgs =  InitWizard(cancellationToken);
                 }
 
+                parsedArgs.TryGetValue(Arguments.FileConfig, out var fileConfig);
+                fileConfig ??= string.Empty;
+
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
                 targetPath ??= string.Empty;
 
-                LogMessages.LogInitializingRepository(_logger, targetPath);
 
                 if (!_fileSystem.DirectoryExists(targetPath))
                 {
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
                 }
 
-                var result = await InitializeRepositoryAsync(targetPath, cancellationToken);
+                LogMessages.LogInitializingRepository(_logger, targetPath);
+
+                var result = await InitializeRepositoryAsync(targetPath, fileConfig, cancellationToken);
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
-                    _console.WriteSuccess(item);
+                    _prompt.PromptWriteSuccess(item);
                 }
             }
             catch (Exception ex)
@@ -124,7 +131,7 @@ namespace AdrPlus.Commands.Init
 
             if (drives.Length > 1)
             {
-                var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
                 if (IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -132,12 +139,11 @@ namespace AdrPlus.Commands.Init
                 rootPath = Content;
             }
 
-            var folderPrompt = _console.PromptSelectFolderRepositoryPath(false, rootPath, _fileSystem, _validateconfig, _appconfig, cancellationToken);
+            var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateconfig, cancellationToken);
             if (folderPrompt.IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
             }
-
             parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
             return parsedArgs;
         }
@@ -175,54 +181,101 @@ namespace AdrPlus.Commands.Init
         /// and creates optional scope sub-folders.
         /// </summary>
         /// <param name="targetPath">The root directory where the repository will be initialized.</param>
+        /// <param name="fileConfig">The path to the configuration file.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>An array of fully qualified paths for all files and directories that were created.</returns>
         /// <exception cref="InvalidOperationException">Thrown when a configuration file already exists at the computed config path.</exception>
-        private async Task<string[]> InitializeRepositoryAsync(string targetPath,CancellationToken cancellationToken)
+        private async Task<string[]> InitializeRepositoryAsync(string targetPath, string fileConfig, CancellationToken cancellationToken)
         {
             var result = new List<string>();
 
-            var repoPath = Path.GetFullPath(Path.Combine(targetPath, _appconfig.FolderRepo));
-            if (!_fileSystem.DirectoryExists(repoPath))
+            var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
+            string jsonrepoconfig;
+            string filecfg;
+            if (_fileSystem.FileExists(configPath) && fileConfig.Length == 0)
             {
-                repoPath = _fileSystem.CreateDirectory(repoPath);
+                filecfg = configPath;
+                var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
+                if (IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                }
+                if (!ConfirmYes)
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+                }
+                jsonrepoconfig = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
             }
-            var configPath = Path.GetFullPath(Path.Combine(repoPath, _validateconfig.GetFileNameRepoConfig()));
-            if (_fileSystem.FileExists(configPath))
+            else
             {
-                throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+                if (fileConfig.Length > 0)
+                {
+                    filecfg = Path.GetFullPath(fileConfig);
+                    if (!_fileSystem.FileExists(fileConfig))
+                    {
+                        throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfig));
+                    }
+                    jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                }
+                else
+                {
+                    filecfg = _validateconfig.GetDefaultConfigRepoFilePath();
+                    jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                }
             }
 
-            await CreateNewConfigAsync(configPath, repoPath, result, cancellationToken);
+            var (isValid, errorMessage) = _validateconfig.ValidateRepoStructure(jsonrepoconfig);
+            if (!isValid)
+            {
+                LogMessages.LogInvalidRepoConfiguration(_logger, string.Join("; ", errorMessage));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgInvalidRepoConfig, filecfg));
+            }
+            var newrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonrepoconfig, AppConstants.RepoSerializerOptions)!;
+
+            //ensure if new configutation is valid (check existent number,version and revision)
+            (int maxnumber, int maxversion, int maxrevision) = await _validateconfig.GetMaxNumberVersionRevision(targetPath, newrepoconfig);
+            if (maxnumber.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenSeq)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenSeqGreatConfigSetting, maxnumber, newrepoconfig.LenSeq));
+            }
+            if (maxversion.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenVersion)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenVerGreatConfigSetting, maxversion, newrepoconfig.LenVersion));
+            }
+            if (maxrevision.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenRevision && newrepoconfig.LenRevision > 0)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenRevGreatConfigSetting, maxrevision, newrepoconfig.LenRevision));
+            }
+
+            await CreateNewConfigAsync(jsonrepoconfig, targetPath, result, cancellationToken);
 
             return [.. result];
         }
 
         /// <summary>
         /// Reads the default repository configuration template, validates its structure, writes it to
-        /// <paramref name="configPath"/>, and creates scope sub-folders when required.
+        /// <paramref name="rootrepoPath"/>, and creates scope sub-folders when required.
         /// </summary>
-        /// <param name="configPath">The destination path for the new configuration file.</param>
-        /// <param name="repoPath">The repository root path used for scope folder creation.</param>
+        /// <param name="jsonrepoconfig">The JSON string representing the repository configuration.</param>
+        /// <param name="rootrepoPath">The destination root path repository for the new configuration file.</param>
         /// <param name="result">The list to which the created file path (and any scope folder paths) are appended.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <exception cref="InvalidOperationException">Thrown when the default configuration template fails structure validation.</exception>
-        private async Task CreateNewConfigAsync(string configPath, string repoPath, List<string> result, CancellationToken cancellationToken)
+        private async Task CreateNewConfigAsync(string jsonrepoconfig, string rootrepoPath,  List<string> result, CancellationToken cancellationToken)
         {
-            var jsonrepoconfig = await _fileSystem.ReadAllTextAsync(_validateconfig.GetConfigRepoFilePath(), cancellationToken);
-            var (isValid, errorMessage) =  _validateconfig.ValidateRepoStructure(jsonrepoconfig);
+            var filepath = Path.GetFullPath(Path.Combine(rootrepoPath, _validateconfig.GetFileNameRepoConfig()));
+            await _fileSystem.WriteAllTextAsync(filepath, jsonrepoconfig, cancellationToken);
+            result.Add(filepath);
 
-            if (!isValid)
+            var config = _adrServices.FromJson(jsonrepoconfig, "")!;
+
+            var folderadr = Path.GetFullPath(Path.Combine(rootrepoPath, config.FolderAdr));
+            if (!_fileSystem.DirectoryExists(folderadr))
             {
-                LogMessages.LogInvalidRepoConfiguration(_logger, string.Join("; ", errorMessage));
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgInvalidRepoConfig, _validateconfig.GetConfigRepoFilePath()));
+                _fileSystem.CreateDirectory(folderadr);
+                result.Add(folderadr);
             }
-
-            await _fileSystem.WriteAllTextAsync(configPath, jsonrepoconfig, cancellationToken);
-            result.Add(_fileSystem.GetFullNameFile(configPath));
-
-            var config = _adrServices.FromJson(jsonrepoconfig, "", "")!;
-            CreateScopeDirectories(config, repoPath, result);
+            CreateScopeDirectories(config, folderadr, result);
         }
     }
 }

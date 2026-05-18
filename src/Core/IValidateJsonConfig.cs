@@ -13,6 +13,21 @@ namespace AdrPlus.Core
     internal interface IValidateJsonConfig
     {
         /// <summary>
+        /// Retrieves the maximum number, version, and revision values from the existing ADR files in the specified root path. 
+        /// </summary>
+        /// <param name="rootPath">The root path of the ADR repository.</param>
+        /// <param name="repoconfig">The repository configuration.</param>
+        /// <returns>A Task that represents the asynchronous operation, containing a tuple of (MaxNumber, MaxVersion, MaxRevision)</returns>
+        Task<(int MaxNumber, int MaxVersion, int MaxRevision)> GetMaxNumberVersionRevision(string rootPath, AdrPlusRepoConfig repoconfig);
+
+        /// <summary>
+        /// Loads the migration pattern configuration from default template file. 
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the async operation.</param>
+        /// <returns>A Task that represents the asynchronous operation, containing the migration pattern configuration as a string.</returns>
+        Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Validates the entire configuration and returns a formatted error report
         /// </summary>
         /// <returns>A Task that represents the asynchronous operation, containing a tuple of (isValid, errorMessages)</returns>
@@ -56,7 +71,7 @@ namespace AdrPlus.Core
         /// <returns>
         /// The full file path of the configuration file
         /// </returns>
-        string GetConfigRepoFilePath();
+        string GetDefaultConfigRepoFilePath();
 
         /// <summary>
         /// Retrieves the file name configuration value.
@@ -69,10 +84,10 @@ namespace AdrPlus.Core
         /// <summary>
         /// Retrieves the default repository configuration embeded content.
         /// </summary>
-        /// <param name="config">The configuration object to use for generating the default repository configuration content.</param>
+        /// <param name="pathadr">The path to the ADR folder, used to replace the placeholder in the template content.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation</param>
         /// <returns>A Task that represents the asynchronous operation, containing a string with the default repository configuration.</returns>
-        Task<string> GetConfigDefaultRepoContentAsync(AdrPlusConfig config, CancellationToken cancellationToken = default);
+        Task<string> GetConfigDefaultRepoContentAsync(string pathadr, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Validates and adjusts the structure of the specified repository JSON content to ensure required fields are present.

@@ -9,21 +9,42 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Tests.Helpers;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NSubstitute;
+using Xunit;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Supersede;
 
 /// <summary>
 /// Unit tests for SupersedeCommandHandler class.
-/// Tests demonstrate supersede command execution, wizard flows, and validation patterns using NSubstitute.
+/// Tests demonstrate supersede command execution, wizard flows, and validation patterns using NSubstitute and FluentAssertions.
+/// 
+/// This test suite uses a domain-specific mock helper (SupersedeCommandHandlerMockHelper) that properly handles
+/// file path and existence semantics specific to supersede operations. Unlike generic command handlers that simply
+/// create new files, the Supersede handler:
+/// - Validates input files exist before marking them as superseded
+/// - Creates new numbered ADRs to reference the superseded entries
+/// - Preserves proper file existence semantics during testing
+/// 
+/// Test Organization:
+/// - Constructor Tests: Verify handler instantiation
+/// - ExecuteAsync Help Tests: Verify help text display
+/// - ExecuteAsync Template File Tests: Verify template repository validation
+/// - ExecuteAsync Direct File Tests: Core supersede logic with various file and date scenarios
+/// - ExecuteAsync Wizard Mode Tests: Interactive wizard flows and cancellation points
+/// - FolderByScope Tests: Configuration-based folder organization
+/// - Revision Handling Tests: Version/revision component handling
+/// - Exception Handling Tests: Error propagation and logging
 /// </summary>
 public class SupersedeCommandHandlerTests
 {
     private readonly ILogger<SupersedeCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -33,13 +54,12 @@ public class SupersedeCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<SupersedeCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
         _config = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
             Language = "en-US"
         };
 
@@ -88,7 +108,7 @@ public class SupersedeCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     #endregion
@@ -120,7 +140,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -153,7 +173,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -170,7 +190,7 @@ public class SupersedeCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: one success for supersede update, one for new file creation
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -179,10 +199,9 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", AdrFileWithoutExtensionPath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, AdrFileWithoutExtensionPath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
 
         var adrInfo = CreateAdrFileNameComponents(AdrFileWithExtensionPath, AdrStatus.Accepted, AdrStatus.Unknown);
@@ -211,7 +230,7 @@ public class SupersedeCommandHandlerTests
             { Arguments.FileAdr, ValidAdrFilePath },
             { Arguments.DateRefAdr, customDate }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -262,7 +281,8 @@ public class SupersedeCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(FileOutsideAdrFolderPath).Returns(true);
+        _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns((string?)null);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -275,12 +295,17 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
+        var configPath = Path.Combine(Path.GetDirectoryName(ValidAdrFilePath) ?? "/repo", ".adrplus");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(ValidAdrFilePath).Returns(true);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(false);
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Is<string>(s => s.EndsWith(".md")))
+            .Returns(configPath);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<string>(new FileNotFoundException($"File not found: {configPath}")));
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -293,23 +318,24 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var configPath = ConfigFilePath;
         var jsonConfig = """{"Invalid": "config"}""";
         var errors = new[] { "Missing Prefix field" };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(ValidAdrFilePath).Returns(true);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
-        _mockFileSystem.FileExists(configPath).Returns(true);
-        _mockFileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Is<string>(s => s.EndsWith(".md")))
+            .Returns(callInfo => Path.Combine(Path.GetDirectoryName(callInfo.Arg<string>()) ?? "/repo", ".adrplus"));
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((false, errors));
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
             .Should().ThrowAsync<InvalidDataException>();
 
-        _mockConsole.Received(1).WriteError("Missing Prefix field");
+        _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
     }
 
     [Fact]
@@ -322,9 +348,11 @@ public class SupersedeCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(InvalidFileNameAdrPath).Returns(true);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Is<string>(s => s.EndsWith(".md")))
+            .Returns(callInfo => Path.Combine(Path.GetDirectoryName(callInfo.Arg<string>()) ?? "/repo", ".adrplus"));
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
 
@@ -352,9 +380,11 @@ public class SupersedeCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(ValidAdrFilePath).Returns(true);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.GetFileRootRepositoryPath(Arg.Is<string>(s => s.EndsWith(".md")))
+            .Returns(callInfo => Path.Combine(Path.GetDirectoryName(callInfo.Arg<string>()) ?? "/repo", ".adrplus"));
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
 
@@ -422,7 +452,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -451,7 +481,7 @@ public class SupersedeCommandHandlerTests
             { Arguments.FileAdr, ValidAdrFilePath },
             { Arguments.DateRefAdr, "invalid-date" }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -471,7 +501,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -505,7 +535,6 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
             Language = "en-US",
             ComandOpenAdr = "code {0}"
         };
@@ -521,9 +550,9 @@ public class SupersedeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.FileAdr, ValidAdrFilePath },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocksForHandler(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -550,7 +579,6 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
             Language = "en-US",
             ComandOpenAdr = "code {0}"
         };
@@ -566,9 +594,9 @@ public class SupersedeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.FileAdr, ValidAdrFilePath },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocksForHandler(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -586,7 +614,7 @@ public class SupersedeCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: 2 from supersede+file creation, 1 from open success = 3 total
-        _mockConsole.Received(3).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(3).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -595,7 +623,6 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = "docs/adr",
             Language = "en-US",
             ComandOpenAdr = "code {0}"
         };
@@ -611,9 +638,9 @@ public class SupersedeCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.FileAdr, ValidAdrFilePath },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocksForHandler(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -631,7 +658,7 @@ public class SupersedeCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteError(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
     }
 
     #endregion
@@ -668,7 +695,7 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(true, SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), true, SingleTestDrive, _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -689,13 +716,13 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((true, (AdrFileNameComponents?)null));
 
         // Act & Assert
@@ -715,12 +742,12 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns([]);
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
@@ -740,15 +767,15 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -769,15 +796,15 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockAdrServices.ReadLatestAdrFiles(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(filesAdrs);
-        _mockConsole.PromptSelecLatesAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
+        _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, false));
@@ -818,7 +845,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderByScope": true, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "FolderByScope": true, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -836,7 +863,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -845,7 +872,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderByScope": false, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "FolderByScope": false, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -863,7 +890,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -876,7 +903,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -894,7 +921,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -903,7 +930,7 @@ public class SupersedeCommandHandlerTests
         // Arrange
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 0, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 0, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
 
         SetupBasicMocks(parsedArgs, jsonConfig);
         _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
@@ -921,7 +948,7 @@ public class SupersedeCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -951,14 +978,12 @@ public class SupersedeCommandHandlerTests
 
     private void SetupBasicMocks(Dictionary<Arguments, string> parsedArgs, string jsonConfig)
     {
-        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
-        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
-        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
-        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+        SupersedeCommandHandlerMockHelper.SetupSupersedeCommandMocks(
+            _mockAdrServices,
+            _mockFileSystem,
+            _mockValidateConfig,
+            parsedArgs,
+            jsonConfig);
     }
 
     /// <summary>
@@ -966,14 +991,12 @@ public class SupersedeCommandHandlerTests
     /// </summary>
     private void SetupBasicMocksForHandler(Dictionary<Arguments, string> parsedArgs, string jsonConfig)
     {
-        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
-        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
-        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
-        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
-        _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+        SupersedeCommandHandlerMockHelper.SetupSupersedeCommandMocks(
+            _mockAdrServices,
+            _mockFileSystem,
+            _mockValidateConfig,
+            parsedArgs,
+            jsonConfig);
     }
 
     private static AdrFileNameComponents CreateAdrFileNameComponents(
@@ -1033,3 +1056,4 @@ public class SupersedeCommandHandlerTests
 
     #endregion
 }
+

@@ -1,3 +1,6 @@
+---
+# [Brief title of the decision]
+
 ## Gist
 
 A brief summary of the requirement or area addressed

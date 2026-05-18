@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -24,7 +24,7 @@ public class NewAdrCommandHandlerTests
 {
     private readonly ILogger<NewAdrCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IConsoleWriter _mockConsole;
+    private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -37,25 +37,24 @@ public class NewAdrCommandHandlerTests
     private static readonly string ConfigFilePath = Path.Combine(AdrFolderPath, ConfigFileName);
 
     private static readonly string BasicJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     private static readonly string ScopedJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     private static readonly string ScopedSkipDomainJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenScope": 1, "Scopes": "Enterprise;Domain;Project", "SkipDomain": "Enterprise", "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
     public NewAdrCommandHandlerTests()
     {
         _mockLogger = Substitute.For<ILogger<NewAdrCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
         _config = new AdrPlusConfig
         {
-            FolderRepo = FolderRepo,
             Language = "en-US"
         };
 
@@ -106,7 +105,7 @@ public class NewAdrCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteHelp("Help text");
+        _mockConsole.Received(1).PromptWriteHelp("Help text");
     }
 
     [Fact]
@@ -243,8 +242,8 @@ public class NewAdrCommandHandlerTests
             .Should().ThrowAsync<InvalidDataException>();
 
         // Assert
-        _mockConsole.Received(1).WriteError("Error one");
-        _mockConsole.Received(1).WriteError("Error two");
+        _mockConsole.Received(1).PromptWriteError("Error one");
+        _mockConsole.Received(1).PromptWriteError("Error two");
     }
 
     #endregion
@@ -427,7 +426,7 @@ public class NewAdrCommandHandlerTests
         await _handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion
@@ -526,7 +525,6 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = FolderRepo,
             Language = "en-US",
             ComandOpenAdr = "code {0}"
         };
@@ -537,7 +535,7 @@ public class NewAdrCommandHandlerTests
         {
             { Arguments.TargetRepo, RepoPath },
             { Arguments.TitleAdr, "My New ADR" },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
@@ -560,7 +558,6 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = FolderRepo,
             Language = "en-US",
             ComandOpenAdr = "code {0}"
         };
@@ -571,7 +568,7 @@ public class NewAdrCommandHandlerTests
         {
             { Arguments.TargetRepo, RepoPath },
             { Arguments.TitleAdr, "My New ADR" },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
@@ -585,7 +582,7 @@ public class NewAdrCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert: one success for ADR created, one for open success
-        _mockConsole.Received(2).WriteSuccess(Arg.Any<string>());
+        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     [Fact]
@@ -594,7 +591,6 @@ public class NewAdrCommandHandlerTests
         // Arrange
         var configWithCommand = new AdrPlusConfig
         {
-            FolderRepo = FolderRepo,
             ComandOpenAdr = "code {0}"
         };
         var handler = CreateHandlerWith(configWithCommand);
@@ -604,7 +600,7 @@ public class NewAdrCommandHandlerTests
         {
             { Arguments.TargetRepo, RepoPath },
             { Arguments.TitleAdr, "My New ADR" },
-            { Arguments.OpenAdr, string.Empty }
+            { Arguments.OpenFile, string.Empty }
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
@@ -618,19 +614,18 @@ public class NewAdrCommandHandlerTests
         await handler.ExecuteAsync(args, CancellationToken.None);
 
         // Assert
-        _mockConsole.Received(1).WriteError(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteError(Arg.Any<string>());
     }
 
     [Fact]
     public async Task ExecuteAsync_WithOpenArgButNoCommandConfigured_DoesNotCallOpenFile()
     {
         // Arrange - config with no ComandOpenAdr
-        var args = new[] { "--path", RepoPath, "--title", "My New ADR", "--open" };
+        var args = new[] { "--path", RepoPath, "--title", "My New ADR"};
         var parsedArgs = new Dictionary<Arguments, string>
         {
             { Arguments.TargetRepo, RepoPath },
             { Arguments.TitleAdr, "My New ADR" },
-            { Arguments.OpenAdr, string.Empty }
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
@@ -699,7 +694,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(true, TestPathData.SingleTestDrive, _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -718,10 +713,14 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
@@ -741,13 +740,17 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -766,13 +769,17 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -793,17 +800,21 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
-        _mockConsole.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), _config, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockConsole.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, [], (Exception?)null));
 
         // Act & Assert
@@ -847,8 +858,8 @@ public class NewAdrCommandHandlerTests
             .Should().ThrowAsync<OperationCanceledException>();
 
         // Confirm drive/folder prompts were called at least twice (second loop iteration)
-        _mockConsole.Received(2).PromptSelectFolderRepositoryPath(
-            Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>());
+        _mockConsole.Received(2).PromptSelectFolderPath(
+            Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -892,7 +903,7 @@ public class NewAdrCommandHandlerTests
             .Should().ThrowAsync<OperationCanceledException>();
 
         // Assert: WriteInfo called for each summary field (repo, date, title, and empty separator = 4 calls)
-        _mockConsole.Received(4).WriteInfo(Arg.Any<string>());
+        _mockConsole.Received(4).PromptWriteInfo(Arg.Any<string>());
     }
 
     [Fact]
@@ -906,7 +917,7 @@ public class NewAdrCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
         _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((false, ["Config error"]));
@@ -929,23 +940,63 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.Contains(ConfigFileName)), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+
+        // Setup console wait-state mocks for GetFileByUniqueTitle and GetNextNumber operations
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        _mockConsole.PromptClearWaitText(cursorPos);
+
+        var repoConfig = new AdrPlusRepoConfig("", "")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenVersion = 2,
+            FolderAdr = "adr",
+            FolderByScope = false,
+            Separator = '-',
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
     }
 
     private void SetupWizardMocksUpToConfirmation(string jsonConfig)
     {
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockFileSystem.GetDrives().Returns([TestPathData.SingleTestDrive]);
-        _mockConsole.PromptSelectFolderRepositoryPath(Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
         _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.Contains(ConfigFileName))).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockConsole.PromptWriteWait(Arg.Any<string>());
+        var cursorPos = (0, 0);
+        _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+        _mockConsole.PromptClearWaitText(cursorPos);
         _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PrompCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+
+        var repoConfig = new AdrPlusRepoConfig("", "")
+        {
+            Prefix = "ADR",
+            LenSeq = 4,
+            LenVersion = 2,
+            FolderAdr = "adr",
+            FolderByScope = false,
+            Separator = '-',
+            LenScope = 0,
+            Scopes = "",
+            SkipDomain = "",
+            CaseTransform = CaseFormat.PascalCase
+        };
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
     }
 
     private NewAdrCommandHandler CreateHandlerWith(AdrPlusConfig config)
@@ -961,3 +1012,4 @@ public class NewAdrCommandHandlerTests
 
     #endregion
 }
+

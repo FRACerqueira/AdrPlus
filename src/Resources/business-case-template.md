@@ -1,3 +1,6 @@
+---
+# [Brief title of the decision]
+
 ## Summary
 
 * Evaluation criteria

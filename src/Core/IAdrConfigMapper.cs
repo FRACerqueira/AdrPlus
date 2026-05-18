@@ -14,8 +14,7 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="jsonString">The JSON string to deserialize.</param>
         /// <param name="template">The template name to associate with the configuration.</param>
-        /// <param name="defaultFolder">The default folder path for the configuration.</param>
         /// <returns>An <see cref="AdrPlusRepoConfig"/> object created from the JSON data.</returns>
-        AdrPlusRepoConfig FromJson(string jsonString, string template, string defaultFolder);
+        AdrPlusRepoConfig FromJson(string jsonString, string template);
     }
 }

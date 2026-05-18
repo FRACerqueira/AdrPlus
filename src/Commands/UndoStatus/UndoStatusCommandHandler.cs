@@ -10,8 +10,6 @@ using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Globalization;
 using System.Text.Json;
 
 namespace AdrPlus.Commands.UndoStatus
@@ -28,49 +26,48 @@ namespace AdrPlus.Commands.UndoStatus
     /// <param name="config">The application configuration settings (folder, language, etc.).</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="console">The console writer for displaying output and prompting user input.</param>
+    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
     internal sealed partial class UndoStatusCommandHandler(
         ILogger<UndoStatusCommandHandler> logger,
-        IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
-        IConsoleWriter console,
+        IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<UndoStatusCommandHandler> _logger = logger;
-        private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IConsoleWriter _console = console;
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardUndoStatus,
              Arguments.FileAdr,
-             Arguments.DateRefAdr,
                  Arguments.Help];
 
-             /// <summary>
-             /// Determines whether an ADR is eligible for undo.
-             /// An ADR is eligible when its update status is not <see cref="AdrStatus.Unknown"/>
-             /// and its change status is <see cref="AdrStatus.Unknown"/>.
-             /// </summary>
-             /// <param name="info">The parsed ADR filename components containing header and status information.</param>
-             /// <returns><see langword="true"/> when the ADR is eligible for undo; otherwise <see langword="false"/>.</returns>
-             private static bool SelectionCondition(AdrFileNameComponents info)
+        /// <summary>
+        /// Determines whether an ADR is eligible for undo.
+        /// An ADR is eligible when its update status is not <see cref="AdrStatus.Unknown"/>
+        /// and its change status is <see cref="AdrStatus.Unknown"/>.
+        /// </summary>
+        /// <param name="info">The parsed ADR filename components containing header and status information.</param>
+        /// <returns><see langword="true"/> when the ADR is eligible for undo; otherwise <see langword="false"/>.</returns>
+        private static bool SelectionCondition(AdrFileNameComponents info)
         {
-            return (info.Header.StatusUpdate != AdrStatus.Unknown && info.Header.StatusChange == AdrStatus.Unknown);
-        }
+            return (info.Header.IsValid &&
+                (info.Header.StatusCreate == AdrStatus.Proposed || (info.Header.StatusCreate == AdrStatus.Unknown && info.Header.IsMigrated)) &&
+                info.Header.StatusUpdate != AdrStatus.Unknown &&
+                info.Header.StatusChange == AdrStatus.Unknown);
+       }
 
         /// <summary>
         /// Builds a localized error message indicating that the ADR's current status does not allow undo.
         /// </summary>
-        /// <param name="repoconfig">The repository configuration providing the status-to-string mapping.</param>
         /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
         /// <returns>A formatted error string naming the current status.</returns>
-        private static string MessageNotValidStatusForUpdate(AdrPlusRepoConfig repoconfig, AdrStatus adrStatus)
+        private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
-            return string.Format(null, FormatMessages.NotValidStatusForUndo, $"{repoconfig.StatusMapping[adrStatus]}");
+            return string.Format(null, FormatMessages.NotValidStatusForUndo, $"{Helper.GetResourceStatus(adrStatus)}");
         }
 
         /// <summary>
@@ -89,18 +86,18 @@ namespace AdrPlus.Commands.UndoStatus
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the wizard.</exception>
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(args);
             try
             {
+                ArgumentNullException.ThrowIfNull(args);
                 var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
-                    _console.WriteHelp(_adrServices.GetHelpText(
+                    _prompt.PromptWriteHelp(_adrServices.GetHelpText(
                         "undo",
                         ValidCommandArgs,
                         [
                             "adrplus undo --wizard",
-                            "adrplus undo --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
+                            "adrplus undo --file \"path/to/File-ADR\"",
                         ]));
                     return;
                 }
@@ -125,34 +122,18 @@ namespace AdrPlus.Commands.UndoStatus
                 {
                     throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, fileadr));
                 }
-                var rootPath = Path.GetDirectoryName(fileadr) ?? string.Empty;
-                var folderadrroot = _config.GetFolderNormalized();
-                // Replace the throw statement to use the cached CompositeFormat
-                if (!rootPath.Contains(folderadrroot))
-                {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.FileMustBeOverFolderFormat, _config.FolderRepo, _config.FolderRepo));
-                }
+                var configrootPath = _filesystem.GetFileRootRepositoryPath(fileadr)
+                        ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorCannotDetermineRootPath, fileadr));
+                var rootrepo = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
-                var posindex = rootPath.LastIndexOf(folderadrroot, StringComparison.OrdinalIgnoreCase);
-
-                var targetPath = rootPath[..(posindex + folderadrroot.Length)];
-
-                rootPath = rootPath[..posindex];
-
-                // Validate config file exists and load repo config
-                var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
-                if (!_filesystem.FileExists(configPath))
-                {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
-                }
-
-                string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
+                string jsonString = await _filesystem.ReadAllTextAsync(configrootPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
+
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
@@ -168,23 +149,20 @@ namespace AdrPlus.Commands.UndoStatus
                 {
                     if (!SelectionCondition(infoadr))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, infoadr.Header.StatusCreate));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(infoadr.Header.StatusCreate));
                     }
-                    var filescheckadrs = _adrServices.ReadAllAdrByNumber(infoadr.Number, _filesystem, targetPath, repoconfig).Result;
+                    var filescheckadrs = _adrServices.ReadAllAdrByNumber(infoadr.Number, _filesystem, rootrepo, repoconfig).Result;
                     if (filescheckadrs.Any(adr => adr.Header.StatusChange == AdrStatus.Superseded))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Superseded));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(AdrStatus.Superseded));
                     }
-                    if (filescheckadrs.Any(adr => adr.Header.StatusUpdate == AdrStatus.Unknown))
+                    if (filescheckadrs.Any(adr => adr.Header.StatusUpdate == AdrStatus.Unknown && !adr.Header.IsMigrated))
                     {
-                        throw new InvalidDataException(MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Proposed));
+                        throw new InvalidDataException(MessageNotValidStatusForUpdate(AdrStatus.Proposed));
                     }
                 }
 
-                // Parse date reference
-                var dateAdr = ParseDateReference(parsedArgs);
-
-                var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
+                var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Unknown, DateTime.MinValue, repoconfig, _filesystem, cancellationToken);
                 if (!updok)
                 {
                     throw new InvalidDataException(upderror);
@@ -206,31 +184,7 @@ namespace AdrPlus.Commands.UndoStatus
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
-            _console.WriteSuccess(message);
-        }
-
-        /// <summary>
-        /// Parses the date reference from <paramref name="parsedArgs"/>.
-        /// Returns <see cref="DateTime.UtcNow"/> when no date argument was provided.
-        /// </summary>
-        /// <param name="parsedArgs">The dictionary of parsed command-line arguments.</param>
-        /// <returns>The parsed <see cref="DateTime"/>, or <see cref="DateTime.UtcNow"/> when absent.</returns>
-        /// <exception cref="FormatException">Thrown when the provided date string cannot be parsed.</exception>
-        private DateTime ParseDateReference(Dictionary<Arguments, string> parsedArgs)
-        {
-            var dateRef = parsedArgs.TryGetValue(Arguments.DateRefAdr, out string? valueDateRef) ? valueDateRef : string.Empty;
-
-            if (dateRef.Length == 0)
-            {
-                return DateTime.UtcNow;
-            }
-            var culture = CultureInfo.GetCultureInfo(_config.Language);
-            if (!DateTime.TryParse(dateRef, culture, DateTimeStyles.None, out var dateAdr))
-            {
-                LogMessages.LogErrorFormatDateForCulture(_logger, _config.Language);
-                throw new FormatException(string.Format(null, FormatMessages.ErrorDateFormat, _config.Language));
-            }
-            return dateAdr;
+            _prompt.PromptWriteSuccess(message);
         }
 
         /// <summary>
@@ -256,7 +210,7 @@ namespace AdrPlus.Commands.UndoStatus
                 var rootPath = drives[0];
                 if (drives.Length > 1)
                 {
-                    var (IsAborted, Content) = _console.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
+                    var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _filesystem, cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -265,14 +219,14 @@ namespace AdrPlus.Commands.UndoStatus
                 }
 
                 // Select folder
-                var folderPrompt = _console.PromptSelectFolderRepositoryPath(true, rootPath, _filesystem, _validateconfig, _config, cancellationToken);
+                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
                 // Validate repo config
-                var configPath = Path.Combine(folderPrompt.Content, _config.FolderRepo, _validateconfig.GetFileNameRepoConfig());
+                var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
 
@@ -283,12 +237,11 @@ namespace AdrPlus.Commands.UndoStatus
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
-                var targetPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _config.FolderRepo));
 
-                var curpos = _console.GetCursorPosition();
-                _console.WriteWait(Resources.AdrPlus.WaitReadFiles);
-                var filesadrs = await _adrServices.ReadLatestAdrFiles(_filesystem, targetPath, repoconfig);
-                _console.ClearWait(curpos);
+                var curpos = _prompt.PromptGetCursorPosition();
+                _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
+                var filesadrs = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, repoconfig,false);
+                _prompt.PromptClearWaitText(curpos);
 
                 if (filesadrs.Length == 0)
                 {
@@ -299,38 +252,32 @@ namespace AdrPlus.Commands.UndoStatus
                 {
                     if (!SelectionCondition(info))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig, info.Header.StatusCreate));
+                        return (false, MessageNotValidStatusForUpdate(info.Header.StatusCreate));
                     }
-                    var filescheckadrs = _adrServices.ReadAllAdrByNumber(info.Number, _filesystem, targetPath, repoconfig).Result;
+                    var filescheckadrs = _adrServices.ReadAllAdrByNumber(info.Number, _filesystem, folderPrompt.Content, repoconfig).Result;
                     if (filescheckadrs.Any(adr => adr.Header.StatusChange == AdrStatus.Superseded))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Superseded));
+                        return (false, MessageNotValidStatusForUpdate(AdrStatus.Superseded));
                     }
-                    if (filescheckadrs.Any(adr => adr.Header.StatusUpdate == AdrStatus.Unknown))
+                    if (filescheckadrs.Any(adr => adr.Header.StatusUpdate == AdrStatus.Unknown && !adr.Header.IsMigrated))
                     {
-                        return (false, MessageNotValidStatusForUpdate(repoconfig, AdrStatus.Proposed));
+                        return (false, MessageNotValidStatusForUpdate(AdrStatus.Proposed));
                     }
                     return (true, null);
                 }
-                var filenewver = _console.PromptSelecLatesAdrs(filesadrs, repoconfig, validselect, cancellationToken);
+                var filenewver = _prompt.PromptSelecAdrs(filesadrs, repoconfig, validselect, cancellationToken);
                 if (filenewver.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                // Get date
-                var dateRefPrompt = _console.PrompCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
-                if (dateRefPrompt.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                var defDateRef = dateRefPrompt.Content;
-                parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
-
                 // Display summary and confirm
-                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), defDateRef);
-                var resultCnf = _console.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                var (_, Top) = _prompt.PromptCursorPosition();
+                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName));
+                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
+                _prompt.PromptMovePosition(0, Top);
+
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -351,7 +298,7 @@ namespace AdrPlus.Commands.UndoStatus
             foreach (var error in errors)
             {
                 LogMessages.LogCommandFailure(_logger, error);
-                _console.WriteError(error);
+                _prompt.PromptWriteError(error);
             }
         }
 
@@ -361,13 +308,11 @@ namespace AdrPlus.Commands.UndoStatus
         /// </summary>
         /// <param name="rootpath">The root repository path selected by the user.</param>
         /// <param name="fileref">The filename of the ADR whose status will be undone.</param>
-        /// <param name="defDateRef">The reference date for the undo operation.</param>
-        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
+        private void DisplayWizardSummary(string rootpath, string fileref)
         {
-            _console.WriteSummary(Resources.AdrPlus.RE + ": " + rootpath);
-            _console.WriteSummary(Resources.AdrPlus.File + ": " + fileref);
-            _console.WriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
-            _console.WriteSummary("");
+            _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.File + ": " + fileref);
+            _prompt.PromptWriteSummary("");
         }
 
     }

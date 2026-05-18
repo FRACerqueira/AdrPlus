@@ -11,6 +11,10 @@
 
 ## General
 
+### Can I use existing ADRs created with other tools?
+
+Yes. You can use existing ADRs, but they must follow the expected naming and metadata format for the tool to recognize them properly. Consider running `migrate` to align them with the latest configuration.
+
 ### Do I need to use .NET in my application repository to use AdrPlus?
 
 No. AdrPlus manages ADR Markdown files and can be used in repositories of any language or framework.
@@ -106,3 +110,8 @@ Use repository practices (branch policies, code owners, reviews) to control conc
 ### What happens if `adr-config.adrplus` is missing or malformed?
 
 Commands that depend on repository config can fail until the file is fixed.
+
+### Can I use AdrPlus in a monorepo with multiple projects?
+
+Yes. Use scopes to organize ADRs by project, and ensure your team conventions align with this structure.
+

@@ -7,12 +7,114 @@ using AdrPlus.Domain;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AdrPlus.Core
 {
-    internal static class Helper
+    internal static partial class Helper
     {
         public static  bool HasAppConfigChange = true;
+
+        #region Trsanformation
+        public static string FmtStatus(AdrFileNameComponents arg, AdrPlusRepoConfig adrPlusRepoConfig)
+        {
+            if (!arg.IsValid || !arg.Header.IsValid)
+            {
+                return Resources.AdrPlus.Unknown;
+            }
+            var value = arg.Header;
+            if (value.StatusChange != AdrStatus.Unknown)
+            {
+                if (value.DateChange.HasValue)
+                {
+                    if (value.NumberSuperSedes.Length > 0)
+                    {
+                        return $"{value.DateChange.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusChange)}:{value.NumberSuperSedes.PadLeft(adrPlusRepoConfig.LenSeq, '0')}";
+                    }
+                    return $"{value.DateChange.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusChange)}";
+                }
+                return Helper.GetResourceStatus(value.StatusChange);
+            }
+            if (value.StatusUpdate != AdrStatus.Unknown)
+            {
+                if (value.DateUpdate.HasValue)
+                {
+                    return $"{value.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusUpdate)}";
+                }
+                return Helper.GetResourceStatus(value.StatusUpdate);
+            }
+            if (value.StatusCreate != AdrStatus.Unknown)
+            {
+                if (value.DateCreate.HasValue)
+                {
+                    return $"{value.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture)}:{Helper.GetResourceStatus(value.StatusCreate)}";
+                }
+                return Helper.GetResourceStatus(value.StatusCreate);
+            }
+            return Resources.AdrPlus.Unknown;
+        }
+
+        public static string FmtFormat(AdrFileNameComponents arg)
+        {
+            if (!arg.IsValid)
+            {
+                return Resources.AdrPlus.MsgUnknownStructure;
+            }
+            var info = arg.Header;
+            if (info.IsMigrated)
+            {
+                if (info.IsValid)
+                {
+                    return Resources.AdrPlus.Migrated;
+                }
+                else
+                {
+                    return Resources.AdrPlus.InvalidFormatHeader;
+                }
+            }
+            else if (info.StatusCreate != AdrStatus.Unknown)
+            {
+                if (info.IsValid)
+                {
+                    return Resources.AdrPlus.AdrPlusFormat;
+                }
+                else
+                {
+                    return Resources.AdrPlus.InvalidFormatHeader;
+                }
+            }
+            else if (info.StatusCreate == AdrStatus.Unknown && !info.IsMigrated && !info.IsValid)
+            {
+                return Resources.AdrPlus.ReadyToMigrate;
+            }
+            else
+            {
+                return Resources.AdrPlus.MsgUnknownStructure;
+            }
+        }
+
+        public static string FmtFolder(AdrFileNameComponents arg, string folderrepoadr)
+        {
+            // Normalize all path separators to forward slashes for consistent cross-platform handling
+            // This ensures compatibility when paths may use Windows backslashes on Linux or vice versa
+            var normalizedPath = arg.FileName.Replace('\\', '/');
+            var normalizedRepoFolder = folderrepoadr.Replace('\\', '/');
+
+            // Remove the repo folder path
+            var result = normalizedPath.Replace(normalizedRepoFolder, string.Empty, StringComparison.Ordinal);
+
+            // Get the filename from the normalized path
+            var lastSeparatorIndex = normalizedPath.LastIndexOf('/');
+            var fileName = lastSeparatorIndex >= 0 ? normalizedPath.Substring(lastSeparatorIndex + 1) : normalizedPath;
+
+            // Remove the filename from the result
+            result = result.Replace(fileName, string.Empty, StringComparison.Ordinal);
+
+            // Clean up leading and trailing separators
+            return result.Trim('/', '\\').Trim();
+        }
+
+        #endregion
 
         #region Validation
 
@@ -76,6 +178,52 @@ namespace AdrPlus.Core
         #endregion
 
         #region Parsing
+
+        public static string Humanize(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            string texto = input;
+
+            // 1. Detectar e converter PascalCase ou camelCase
+            // Insere espaço antes de letras maiúsculas (exceto no início)
+            texto = RegexConvertPascalAndCamelCase().Replace(texto, " $1");
+
+            // 2. Converter snake_case e kebab-case para espaços
+            texto = texto.Replace("_", " ").Replace("-", " ");
+
+            // 3. Normalizar múltiplos espaços
+            texto = RegexSpaces().Replace(texto, " ").Trim();
+
+            // 4. Capitalizar primeira letra
+            if (texto.Length > 0)
+            {
+                texto = char.ToUpper(texto[0], CultureInfo.CurrentCulture) + texto[1..].ToLower(CultureInfo.CurrentCulture);
+            }
+
+            return texto;
+        }
+
+        [GeneratedRegex("(?<!^)([A-Z])")]
+        private static partial Regex RegexConvertPascalAndCamelCase();
+
+        [GeneratedRegex(@"\s+")]
+        private static partial Regex RegexSpaces();
+
+        public static string GetResourceStatus(AdrStatus adrStatus)
+        {
+            return adrStatus switch
+            {
+                AdrStatus.Proposed => Resources.AdrPlus.StatusNew,
+                AdrStatus.Accepted => Resources.AdrPlus.StatusAcc,
+                AdrStatus.Rejected => Resources.AdrPlus.StatusRej,
+                AdrStatus.Superseded => Resources.AdrPlus.StatusSup,
+                AdrStatus.Unknown => Resources.AdrPlus.Unknown,
+                _ => adrStatus.ToString(),
+            };
+        }
+
 
         /// <summary>
         /// Parses a status line extracted from an ADR header.

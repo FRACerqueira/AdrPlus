@@ -14,10 +14,12 @@ namespace AdrPlus.Tests.Core;
 public class ValidateJsonConfigTests
 {
     private readonly IFileSystemService _fileSystem;
+    private readonly IAdrQueryService _adrQueryService;
 
     public ValidateJsonConfigTests()
     {
         _fileSystem = Substitute.For<IFileSystemService>();
+        _adrQueryService = Substitute.For<IAdrQueryService>();
     }
 
     private ValidateJsonConfig CreateValidator(Dictionary<string, string?> configValues)
@@ -26,14 +28,15 @@ public class ValidateJsonConfigTests
             .AddInMemoryCollection(configValues!)
             .Build();
 
-        return new ValidateJsonConfig(_fileSystem, configuration);
+        return new ValidateJsonConfig(_fileSystem, _adrQueryService, configuration);
     }
 
     private static string CreateValidRepoJson()
     {
         return JsonSerializer.Serialize(new Dictionary<string, object>
         {
-            { AppConstants.FieldFolderRepo, "docs/adr" },
+            { AppConstants.FieldFolderAdr, "doc/adr" },
+            { AppConstants.FieldMigrationPattern, "" },
             { AppConstants.FieldTemplate, "# ADR {0}" },
             { AppConstants.FieldPrefix, "ADR" },
             { AppConstants.FieldLenSeq, 4 },
@@ -50,9 +53,17 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldStatusRejected, "Rejected" },
             { AppConstants.FieldStatusSuperseded, "Superseded" },
             { AppConstants.FieldHeaderDisclaimer, "# Disclaimer" },
-            { AppConstants.FieldHeaderStatus, "## Status" },
+            { AppConstants.FieldHeaderTitleFile, "# Title" },
             { AppConstants.FieldHeaderVersion, "## Version" },
-            { AppConstants.FieldHeaderRevision, "## Revision" }
+            { AppConstants.FieldHeaderRevision, "## Revision" },
+            { AppConstants.FieldHeaderScope, "## Scope" },
+            { AppConstants.FieldHeaderDomain, "## Domain" },
+            { AppConstants.FieldHeaderStatusCreated, "## Status (Created)" },
+            { AppConstants.FieldHeaderStatusChanged, "## Status (Changed)" },
+            { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
+            { AppConstants.FieldHeaderTableFields, "## Fields" },
+            { AppConstants.FieldHeaderTableValues, "## Values" },
+            { AppConstants.FieldHeaderMigrated, "## Migrated" }
         }, AppConstants.RepoSerializerOptions);
     }
 
@@ -61,12 +72,45 @@ public class ValidateJsonConfigTests
         return @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
+    }
+
+    private static Dictionary<string, object> GetBaseRepoJsonDict()
+    {
+        return new Dictionary<string, object>
+        {
+            { AppConstants.FieldFolderAdr, "doc/adr" },
+            { AppConstants.FieldMigrationPattern, "" },
+            { AppConstants.FieldTemplate, "# ADR {0}" },
+            { AppConstants.FieldPrefix, "ADR" },
+            { AppConstants.FieldLenSeq, 4 },
+            { AppConstants.FieldLenVersion, 2 },
+            { AppConstants.FieldLenRevision, 0 },
+            { AppConstants.FieldLenScope, 0 },
+            { AppConstants.FieldScopes, "" },
+            { AppConstants.FieldFolderByScope, false },
+            { AppConstants.FieldSkipDomain, "" },
+            { AppConstants.FieldSeparator, "-" },
+            { AppConstants.FieldCaseTransform, "CamelCase" },
+            { AppConstants.FieldStatusNew, "New" },
+            { AppConstants.FieldStatusAccepted, "Accepted" },
+            { AppConstants.FieldStatusRejected, "Rejected" },
+            { AppConstants.FieldStatusSuperseded, "Superseded" },
+            { AppConstants.FieldHeaderDisclaimer, "# Disclaimer" },
+            { AppConstants.FieldHeaderTitleFile, "# Title" },
+            { AppConstants.FieldHeaderVersion, "## Version" },
+            { AppConstants.FieldHeaderRevision, "## Revision" },
+            { AppConstants.FieldHeaderScope, "## Scope" },
+            { AppConstants.FieldHeaderDomain, "## Domain" },
+            { AppConstants.FieldHeaderStatusCreated, "## Status (Created)" },
+            { AppConstants.FieldHeaderStatusChanged, "## Status (Changed)" },
+            { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
+            { AppConstants.FieldHeaderTableFields, "## Fields" },
+            { AppConstants.FieldHeaderTableValues, "## Values" },
+            { AppConstants.FieldHeaderMigrated, "## Migrated" }
+        };
     }
 
     #region ValidateAsync Tests
@@ -92,7 +136,6 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "invalid-lang" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
         // Act
@@ -104,51 +147,15 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public async Task ValidateAsync_WithAbsoluteFolderRepo_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "/absolute/path" }
-        });
-
-        // Act
-        var (IsValid, ErrorReport) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("relative"));
-    }
-
-    [Fact]
-    public async Task ValidateAsync_WithEmptyDateFormat_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeTrue(); // Empty date format is allowed
-    }
-
-    [Fact]
     public async Task ValidateAsync_WithValidConfiguration_ReturnsValid()
     {
         // Arrange
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
         });
 
-        var templatePath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
+        var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
         _fileSystem.FileExists(templatePath).Returns(true);
 
         // Act
@@ -157,6 +164,91 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeTrue();
         ErrorReport.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithEmptyLanguage_IsNotValid()
+    {
+        // Arrange
+        var validator = CreateValidator(new Dictionary<string, string?>
+        {
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "" },
+        });
+
+        var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+        _fileSystem.FileExists(templatePath).Returns(true);
+
+        // Act
+        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+
+        // Assert
+        IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithValidLanguageAndMissingTemplate_InitializesTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator(new Dictionary<string, string?>
+        {
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
+        });
+
+        var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        _fileSystem.FileExists(templatePath).Returns(false);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+
+        // Act
+        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+
+        // Assert
+        IsValid.Should().BeTrue();
+        await _fileSystem.Received(1).WriteAllTextAsync(templatePath, Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithRelativePathContent_InitializesWhenFileNotFound()
+    {
+        // Arrange
+        var validator = CreateValidator(new Dictionary<string, string?>
+        {
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
+        });
+
+        var contentPath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+
+        _fileSystem.FileExists(contentPath).Returns(false);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+
+        // Act
+        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+
+        // Assert
+        IsValid.Should().BeTrue();
+        await _fileSystem.Received(1).WriteAllTextAsync(contentPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ValidateAsync_WithAbsolutePathContent_InitializesWhenFileNotFound()
+    {
+        // Arrange
+        var validator = CreateValidator(new Dictionary<string, string?>
+        {
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
+        });
+
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
+
+        _fileSystem.FileExists(Arg.Any<string>()).Returns(false);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+
+        // Act
+        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
+
+        // Assert
+        IsValid.Should().BeTrue();
     }
 
     #endregion
@@ -176,7 +268,6 @@ public class ValidateJsonConfigTests
         // Assert
         if (!IsValid)
         {
-            // Output errors for debugging
             foreach (var error in ErrorReport)
             {
                 Console.WriteLine($"Validation Error: {error}");
@@ -191,12 +282,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "dateformat", "yyyy-MM-dd" }
-            // Missing many required fields
-        });
+        var dict = GetBaseRepoJsonDict();
+        dict.Remove(AppConstants.FieldFolderAdr);
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -211,28 +299,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = @"{
-            ""folderrepo"": ""docs/adr"",
-            ""dateformat"": ""yyyy-MM-dd"",
-            ""template"": ""# ADR"",
-            ""prefix"": ""ADR"",
-            ""lenseq"": ""not-a-number"",
-            ""lenversion"": 2,
-            ""lenrevision"": 0,
-            ""lenscope"": 0,
-            ""scopes"": """",
-            ""folderbyscope"": false,
-            ""skipdomain"": """",
-            ""separator"": ""-"",
-            ""casetransform"": ""CamelCase"",
-            ""statusnew"": ""New"",
-            ""statusacc"": ""Accepted"",
-            ""statusrej"": ""Rejected"",            ""statussup"": ""Superseded"",
-            ""headerdisclaimer"": ""# Disclaimer"",
-            ""headerstatus"": ""## Status"",
-            ""headerversion"": ""## Version"",
-            ""headerrevision"": ""## Revision""
-        }";
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenSeq] = "not-a-number";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, _) = validator.ValidateRepoStructure(json);
@@ -246,31 +315,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "dateformat", "yyyy-MM-dd" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            
-            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" },
-            { "extraField", "should not be here" }
-        });
+        var dict = GetBaseRepoJsonDict();
+        dict["extraField"] = "should not be here";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -285,28 +332,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 2 }, // Less than minimum of 3
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenSeq] = 2;
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -321,28 +349,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "_" }, // Invalid separator
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldSeparator] = "~";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -357,29 +366,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "dateformat", "yyyy-MM-dd" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "scope1;scope2" }, // Should be empty when lenscope is 0
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldScopes] = "scope1;scope2";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, _) = validator.ValidateRepoStructure(json);
@@ -393,29 +382,10 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "dateformat", "yyyy-MM-dd" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 3 },
-            { "scopes", "" }, // Should not be empty when lenscope > 0
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenScope] = 3;
+        dict[AppConstants.FieldScopes] = "";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, _) = validator.ValidateRepoStructure(json);
@@ -429,28 +399,11 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 3 },
-            { "scopes", "scope1;scope2" },
-            { "folderbyscope", false },
-            { "skipdomain", "scope1;invalidscope" }, // invalidscope is not in scopes
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenScope] = 3;
+        dict[AppConstants.FieldScopes] = "scope1;scope2";
+        dict[AppConstants.FieldSkipDomain] = "scope1;invalidscope";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -465,29 +418,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "dateformat", "yyyy-MM-dd" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", true }, // Cannot be true when scopes is empty
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldFolderByScope] = true;
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, _) = validator.ValidateRepoStructure(json);
@@ -501,28 +434,9 @@ public class ValidateJsonConfigTests
     {
         // Arrange
         var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "" }, // Empty
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldStatusNew] = "";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
 
         // Act
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
@@ -545,6 +459,188 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeFalse();
         ErrorReport.Should().Contain(e => e.Contains("JSON"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithInvalidCaseTransform_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldCaseTransform] = "InvalidCase";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("casetransform"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithLenVersionLessThan2_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenVersion] = 1;
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("lenversion"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithNegativeLenRevision_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenRevision] = -1;
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("lenrevision"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithScopeLengthLessThanLenScope_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldLenScope] = 5;
+        dict[AppConstants.FieldScopes] = "ab;cd";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("lenscope"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithAllValidSeparators_ReturnsValid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var validSeparators = new[] { "-", "_", "." };
+
+        foreach (var separator in validSeparators)
+        {
+            var dict = GetBaseRepoJsonDict();
+            dict[AppConstants.FieldSeparator] = separator;
+            var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+            // Act
+            var (IsValid, _) = validator.ValidateRepoStructure(json);
+
+            // Assert
+            IsValid.Should().BeTrue($"separator '{separator}' should be valid");
+        }
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithAllValidCaseFormats_ReturnsValid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var validFormats = new[] { "CamelCase", "PascalCase", "SnakeCase", "KebabCase" };
+
+        foreach (var format in validFormats)
+        {
+            var dict = GetBaseRepoJsonDict();
+            dict[AppConstants.FieldCaseTransform] = format;
+            var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+            // Act
+            var (IsValid, _) = validator.ValidateRepoStructure(json);
+
+            // Assert
+            IsValid.Should().BeTrue($"case format '{format}' should be valid");
+        }
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithEmptyHeaderFields_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldHeaderDisclaimer] = "";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("headerdisclaimer"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithNonBooleanFolderByScope_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        dict[AppConstants.FieldFolderByScope] = "not-a-boolean";
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("folderbyscope") && e.Contains("boolean"));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithMixedCaseKeys_NormalizesAndValidates()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Manually create JSON with mixed case keys
+        var mixedCaseJson = json.Replace("\"folderadr\"", "\"FolderAdr\"")
+                                .Replace("\"template\"", "\"Template\"")
+                                .Replace("\"prefix\"", "\"Prefix\"");
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(mixedCaseJson);
+
+        // Assert
+        IsValid.Should().BeTrue();
+        ErrorReport.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithAllLowercaseKeys_ValidatesCorrectly()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var dict = GetBaseRepoJsonDict();
+        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+
+        // Assert
+        IsValid.Should().BeTrue();
+        ErrorReport.Should().BeEmpty();
     }
 
     #endregion
@@ -593,10 +689,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""invalid-culture"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
+                ""comandopenadr"": ""code {0}""
             }
         }";
 
@@ -609,26 +702,22 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateAppStructure_WithEmptyFolderRepo_ReturnsInvalid()
+    public void ValidateAppStructure_WithEmptyLanguage_ReturnsValid()
     {
         // Arrange
         var validator = CreateValidator([]);
         var json = @"{
             ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": """",
+                ""language"": """",
                 ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
         // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+        var (IsValid, _) = validator.ValidateAppStructure(json);
 
         // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("folderrepo"));
+        IsValid.Should().BeTrue();
     }
 
     [Fact]
@@ -639,10 +728,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
             }
         }";
 
@@ -655,50 +741,24 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateAppStructure_WithYesValueTooLong_ReturnsInvalid()
+    public void ValidateAppStructure_WithEmptyOpenAdr_IsValid()
     {
         // Arrange
         var validator = CreateValidator([]);
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""yes"",
-                ""novalue"": ""n""
+                ""comandopenadr"": """",
             }
         }";
 
         // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+        var (IsValid, _) = validator.ValidateAppStructure(json);
 
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("yesvalue"));
+        // Assert - Empty comandopenadr is valid
+        IsValid.Should().BeTrue();
     }
 
-    [Fact]
-    public void ValidateAppStructure_WithNoValueTooLong_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""no""
-            }
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("novalue"));
-    }
 
     [Fact]
     public void ValidateAppStructure_WithExtraFields_ReturnsInvalid()
@@ -708,11 +768,7 @@ public class ValidateJsonConfigTests
         var json = @"{
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
                 ""comandopenadr"": ""code {0}"",
-                ""dateformat"": ""yyyy-MM-dd"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n"",
                 ""extrafield"": ""should not exist""
             }
         }";
@@ -723,6 +779,41 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeFalse();
         ErrorReport.Should().Contain(e => e.Contains("extrafield"));
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithWrongFieldType_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{
+            ""DefaultSettings"": {
+                ""language"": 123,
+                ""comandopenadr"": ""code {0}"",
+            }
+        }";
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("language"));
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithInvalidJson_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{ ""DefaultSettings"": { invalid json }";
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("JSON"));
     }
 
     #endregion
@@ -903,7 +994,7 @@ public class ValidateJsonConfigTests
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
             { "lenscope", 5 },
-            { "scopes", "ab;abc" }, // Minimum length is 2
+            { "scopes", "ab;abc" },
             { "skipdomain", "" },
             { "folderbyscope", false },
             { "lenversion", 2 },
@@ -916,613 +1007,6 @@ public class ValidateJsonConfigTests
 
         // Assert
         int.Parse(resultDict!["lenscope"].ToString()!).Should().Be(2);
-    }
-
-    #endregion
-
-    #region File Path Tests
-
-    [Fact]
-    public void HasTemplateRepoFile_WhenFileExists_ReturnsTrue()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        _fileSystem.FileExists(expectedPath).Returns(true);
-
-        // Act
-        var result = validator.HasTemplateRepoFile();
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void HasTemplateRepoFile_WhenFileDoesNotExist_ReturnsFalse()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        _fileSystem.FileExists(expectedPath).Returns(false);
-
-        // Act
-        var result = validator.HasTemplateRepoFile();
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void GetConfigRepoFilePath_ReturnsCorrectPath()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-
-        // Act
-        var result = validator.GetConfigRepoFilePath();
-
-        // Assert
-        result.Should().Contain("template");
-        result.Should().Contain("adr-config.adrplus");
-        Path.IsPathRooted(result).Should().BeTrue();
-    }
-
-    [Fact]
-    public void GetConfigAppFilePath_ReturnsCorrectPath()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-
-        // Act
-        var result = validator.GetConfigAppFilePath();
-
-        // Assert
-        result.Should().Contain("adrplus.json");
-        Path.IsPathRooted(result).Should().BeTrue();
-    }
-
-    [Fact]
-    public void GetConfigAdrTemplatePath_ReturnsCorrectPath()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-
-        // Act
-        var result = validator.GetConfigAdrTemplatePath();
-
-        // Assert
-        result.Should().Contain(AppConstants.TemplateDirectoryName);
-        result.Should().Contain(AppConstants.AdrTemplateFileName);
-        Path.IsPathRooted(result).Should().BeTrue();
-    }
-
-    [Fact]
-    public void GetFileNameRepoConfig_ReturnsCorrectFileName()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-
-        // Act
-        var result = validator.GetFileNameRepoConfig();
-
-        // Assert
-        result.Should().Be("adr-config.adrplus");
-    }
-
-    #endregion
-
-    #region GetConfigRepoTemplateAsync Tests
-
-    [Fact]
-    public async Task GetConfigRepoTemplateAsync_WhenFileExists_ReturnsContent()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedContent = "template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
-
-        // Act
-        var result = await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
-
-        // Assert
-        result.Should().Be(expectedContent);
-    }
-
-    [Fact]
-    public async Task GetConfigRepoTemplateAsync_WhenFileDoesNotExist_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        _fileSystem.FileExists(expectedPath).Returns(false);
-
-        // Act
-        var act = async () => await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
-
-        // Assert
-        await act.Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
-    #region GetConfigAdrTemplateAsync Tests
-
-    [Fact]
-    public async Task GetConfigAdrTemplateAsync_WhenFileExists_ReturnsContent()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedContent = "ADR template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
-        _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
-
-        // Act
-        var result = await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
-
-        // Assert
-        result.Should().Be(expectedContent);
-    }
-
-    [Fact]
-    public async Task GetConfigAdrTemplateAsync_WhenFileDoesNotExist_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md"));
-        _fileSystem.FileExists(expectedPath).Returns(false);
-
-        // Act
-        var act = async () => await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
-
-        // Assert
-        await act.Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
-    #region InitializeTemplateAsync Tests
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WithEnglishCulture_CreatesEnglishTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(false);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
-
-        // Assert
-        _fileSystem.Received(1).CreateDirectory(templateDir);
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WithPortugueseCulture_CreatesPortugueseTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync("pt-BR", CancellationToken.None);
-
-        // Assert
-        _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WhenTemplateExists_DoesNotOverwrite()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(true);
-
-        // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
-
-        // Assert
-        await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WithNullCulture_CreatesEnglishTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync(null, CancellationToken.None);
-
-        // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    #endregion
-
-    #region GetConfigDefaultRepoContentAsync Tests
-
-    [Fact]
-    public async Task GetConfigDefaultRepoContentAsync_WhenFileExists_ReturnsFileContent()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var config = new AdrPlusConfig { FolderRepo = "docs/adr"};
-        var expectedContent = "existing content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
-        _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
-
-        // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync(config, CancellationToken.None);
-
-        // Assert
-        result.Should().Be(expectedContent);
-    }
-
-    [Fact]
-    public async Task GetConfigDefaultRepoContentAsync_WhenFileDoesNotExist_ReturnsSerializedConfig()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var config = new AdrPlusConfig { FolderRepo = "docs/adr"};
-        var templateContent = "# Template Content";
-        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
-        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
-
-        // Setup: Handle multiple file path checks
-        _fileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
-        {
-            var path = callInfo.Arg<string>();
-            if (path == configPath) return false;      // config file doesn't exist
-            if (path == templatePath) return true;     // template file exists
-            return false;
-        });
-        _fileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
-
-        // Act
-        var result = await validator.GetConfigDefaultRepoContentAsync(config, CancellationToken.None);
-
-        // Assert - should be serialized JSON containing config values and template
-        result.Should().Contain("docs/adr");
-        result.Should().Contain(templateContent);
-    }
-
-    #endregion
-
-    #region Additional Edge Case Tests
-
-    [Fact]
-    public async Task ValidateAsync_WithEmptyLanguage_IsNotValid()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        var templatePath = Path.Combine(AppContext.BaseDirectory, "template", "adr-template.md");
-        _fileSystem.FileExists(templatePath).Returns(true);
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task ValidateAsync_WithValidLanguageAndMissingTemplate_InitializesTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        _fileSystem.FileExists(templatePath).Returns(false);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeTrue();
-        await _fileSystem.Received(1).WriteAllTextAsync(templatePath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithInvalidCaseTransform_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "InvalidCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("casetransform"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithLenVersionLessThan2_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 1 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("lenversion"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithNegativeLenRevision_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", -1 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("lenrevision"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithScopeLengthLessThanLenScope_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 5 },
-            { "scopes", "ab;cd" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("lenscope"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithAllValidSeparators_ReturnsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var validSeparators = new[] { "-", "~", "." };
-
-        foreach (var separator in validSeparators)
-        {
-            var json = JsonSerializer.Serialize(new Dictionary<string, object>
-            {
-                { "folderrepo", "docs/adr" },
-                { "template", "# ADR {0}" },
-                { "prefix", "ADR" },
-                { "lenseq", 4 },
-                { "lenversion", 2 },
-                { "lenrevision", 0 },
-                { "lenscope", 0 },
-                { "scopes", "" },
-                { "folderbyscope", false },
-                { "skipdomain", "" },
-                { "separator", separator },
-                { "casetransform", "CamelCase" },
-                { "statusnew", "New" },
-                { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-                { "headerdisclaimer", "# Disclaimer" },
-                { "headerstatus", "## Status" },
-                { "headerversion", "## Version" },
-                { "headerrevision", "## Revision" }
-            }, AppConstants.RepoSerializerOptions);
-
-            // Act
-            var (IsValid, _) = validator.ValidateRepoStructure(json);
-
-            // Assert
-            IsValid.Should().BeTrue($"separator '{separator}' should be valid");
-        }
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithAllValidCaseFormats_ReturnsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var validFormats = new[] { "CamelCase", "PascalCase", "SnakeCase", "KebabCase" };
-
-        foreach (var format in validFormats)
-        {
-            var json = JsonSerializer.Serialize(new Dictionary<string, object>
-            {
-                { "folderrepo", "docs/adr" },
-                { "template", "# ADR {0}" },
-                { "prefix", "ADR" },
-                { "lenseq", 4 },
-                { "lenversion", 2 },
-                { "lenrevision", 0 },
-                { "lenscope", 0 },
-                { "scopes", "" },
-                { "folderbyscope", false },
-                { "skipdomain", "" },
-                { "separator", "-" },
-                { "casetransform", format },
-                { "statusnew", "New" },
-                { "statusacc", "Accepted" },
-                { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-                { "headerdisclaimer", "# Disclaimer" },
-                { "headerstatus", "## Status" },
-                { "headerversion", "## Version" },
-                { "headerrevision", "## Revision" }
-            }, AppConstants.RepoSerializerOptions);
-
-            // Act
-            var (IsValid, _) = validator.ValidateRepoStructure(json);
-
-            // Assert
-            IsValid.Should().BeTrue($"case format '{format}' should be valid");
-        }
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithEmptyLanguage_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": """",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, _) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_WithCaseInsensitiveKeys_WorksCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "LENSCOPE", 3 },
-            { "SCOPES", "scope1;scope2" },
-            { "skipdomain", "scope1" },
-            { "FOLDERBYSCOPE", false },
-            { "LENVERSION", 2 },
-            { "LENREVISION", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict.Should().NotBeNull();
-        // Use case-insensitive comparison to find the value
-        var scopesValue = resultDict!.FirstOrDefault(kvp => 
-            kvp.Key.Equals("scopes", StringComparison.OrdinalIgnoreCase)).Value;
-        scopesValue.ToString().Should().Be("scope1;scope2");
     }
 
     [Fact]
@@ -1572,633 +1056,56 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public async Task InitializeTemplateAsync_WithPortuguesePortugalCulture_CreatesPortugueseTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync("pt-PT", CancellationToken.None);
-
-        // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WithInvalidCulture_CreatesEnglishTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync("invalid-culture", CancellationToken.None);
-
-        // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task GetConfigRepoTemplateAsync_WithCancellationToken_PassesTokenCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedContent = "template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrConfigFileName));
-        var cts = new CancellationTokenSource();
-        _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
-
-        // Act
-        var result = await validator.GetConfigRepoTemplateAsync(cts.Token);
-
-        // Assert
-        result.Should().Be(expectedContent);
-        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
-    }
-
-    [Fact]
-    public async Task GetConfigAdrTemplateAsync_WithCancellationToken_PassesTokenCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var expectedContent = "ADR template content";
-        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
-        var cts = new CancellationTokenSource();
-        _fileSystem.FileExists(expectedPath).Returns(true);
-        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
-
-        // Act
-        var result = await validator.GetConfigAdrTemplateAsync(cts.Token);
-
-        // Assert
-        result.Should().Be(expectedContent);
-        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyHeaderFields_ReturnsInvalid()
+    public void EnsureFieldsRepoStructure_WithScopesContainingWildcard_ExtractsSkipdomainScopes()
     {
         // Arrange
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
+            { "lenscope", 3 },
+            { "scopes", "scope1*;scope2" },
             { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
+            { "folderbyscope", false },
+            { "lenversion", 2 },
+            { "lenrevision", 0 }
         }, AppConstants.RepoSerializerOptions);
 
         // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+        var result = validator.EnsureFieldsRepoStructure(json);
+        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
 
         // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("headerdisclaimer"));
+        resultDict!["scopes"].ToString().Should().Contain("scope1");
+        resultDict["skipdomain"].ToString().Should().Contain("scope1");
     }
 
     [Fact]
-    public void ValidateRepoStructure_WithEmptyStatusRejected_ReturnsInvalid()
+    public void EnsureFieldsRepoStructure_WithMultipleScopesAndWildcard_HandlesCorrectly()
     {
         // Arrange
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
+            { "lenscope", 3 },
+            { "scopes", "api*;web;db*" },
             { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
+            { "folderbyscope", false },
+            { "lenversion", 2 },
+            { "lenrevision", 0 }
         }, AppConstants.RepoSerializerOptions);
 
         // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
+        var result = validator.EnsureFieldsRepoStructure(json);
+        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
 
         // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("statusrej"));
+        var scopes = resultDict!["scopes"].ToString()!.Split(';');
+        var skipdomains = resultDict["skipdomain"].ToString()!.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        scopes.Should().Contain("api");
+        scopes.Should().Contain("db");
+        skipdomains.Should().Contain("api");
+        skipdomains.Should().Contain("db");
     }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyStatusAccepted_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("statusacc"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyStatusSuperseded_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("statussup"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyHeaderStatus_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("headerstatus"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyHeaderVersion_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "" },
-            { "headerrevision", "## Revision" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("headerversion"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithEmptyHeaderRevision_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "folderrepo", "docs/adr" },
-            { "template", "# ADR {0}" },
-            { "prefix", "ADR" },
-            { "lenseq", 4 },
-            { "lenversion", 2 },
-            { "lenrevision", 0 },
-            { "lenscope", 0 },
-            { "scopes", "" },
-            { "folderbyscope", false },
-            { "skipdomain", "" },
-            { "separator", "-" },
-            { "casetransform", "CamelCase" },
-            { "statusnew", "New" },
-            { "statusacc", "Accepted" },
-            { "statusrej", "Rejected" },            { "statussup", "Superseded" },
-            { "headerdisclaimer", "# Disclaimer" },
-            { "headerstatus", "## Status" },
-            { "headerversion", "## Version" },
-            { "headerrevision", "" }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("headerrevision"));
-    }
-
-    #endregion
-
-    #region ValidateRepoStructure Boolean Field Tests
-
-    [Fact]
-    public void ValidateRepoStructure_WithNonBooleanFolderByScope_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""folderrepo"": ""docs/adr"",
-            ""dateformat"": ""yyyy-MM-dd"",
-            ""template"": ""# ADR"",
-            ""prefix"": ""ADR"",
-            ""lenseq"": 4,
-            ""lenversion"": 2,
-            ""lenrevision"": 0,
-            ""lenscope"": 0,
-            ""scopes"": """",
-            ""folderbyscope"": ""not-a-boolean"",
-            ""skipdomain"": """",
-            ""separator"": ""-"",
-            ""casetransform"": ""CamelCase"",
-            ""statusnew"": ""New"",
-            ""statusacc"": ""Accepted"",
-            ""statusrej"": ""Rejected"",            ""statussup"": ""Superseded"",
-            ""headerdisclaimer"": ""# Disclaimer"",
-            ""headerstatus"": ""## Status"",
-            ""headerversion"": ""## Version"",
-            ""headerrevision"": ""## Revision""
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("folderbyscope") && e.Contains("boolean"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithNumericFolderByScope_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""folderrepo"": ""docs/adr"",
-            ""dateformat"": ""yyyy-MM-dd"",
-            ""template"": ""# ADR"",
-            ""prefix"": ""ADR"",
-            ""lenseq"": 4,
-            ""lenversion"": 2,
-            ""lenrevision"": 0,
-            ""lenscope"": 0,
-            ""scopes"": """",
-            ""folderbyscope"": 1,
-            ""skipdomain"": """",
-            ""separator"": ""-"",
-            ""casetransform"": ""CamelCase"",
-            ""statusnew"": ""New"",
-            ""statusacc"": ""Accepted"",
-            ""statusrej"": ""Rejected"",            ""statussup"": ""Superseded"",
-            ""headerdisclaimer"": ""# Disclaimer"",
-            ""headerstatus"": ""## Status"",
-            ""headerversion"": ""## Version"",
-            ""headerrevision"": ""## Revision""
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("folderbyscope") && e.Contains("boolean"));
-    }
-
-    #endregion
-
-    #region ValidateContentFileAsync Exception Tests
-
-    [Fact]
-    public async Task ValidateAsync_WithRelativePathContent_InitializesWhenFileNotFound()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        var contentPath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-
-        _fileSystem.FileExists(contentPath).Returns(false);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeTrue();
-        await _fileSystem.Received(1).WriteAllTextAsync(contentPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task ValidateAsync_WithAbsolutePathContent_InitializesWhenFileNotFound()
-    {
-        // Arrange
-        var validator = CreateValidator(new Dictionary<string, string?>
-        {
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldFolderRepo}", "docs/adr" }
-        });
-
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
-
-        _fileSystem.FileExists(Arg.Any<string>()).Returns(false);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-
-        // Act
-        var (IsValid, _) = await validator.ValidateAsync(CancellationToken.None);
-
-        // Assert
-        IsValid.Should().BeTrue();
-    }
-
-    #endregion
-
-    #region ValidateAppStructure Path Validation Tests
-
-    [Fact]
-    public void ValidateAppStructure_WithInvalidFolderRepoPath_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""C:\invalid<>path"",
-                ""comandopenadr"": ""code {0}"",
-                ""dateformat"": ""yyyy-MM-dd"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("invalid") || e.Contains("path"));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithUnsupportedFolderRepoPath_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        // On Windows, paths like "CON", "PRN", "AUX", "NUL" are reserved and can cause NotSupportedException
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""CON"",
-                ""comandopenadr"": ""code {0}"",
-                ""dateformat"": ""yyyy-MM-dd"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var result = validator.ValidateAppStructure(json);
-
-        // Assert - CON is a reserved name on Windows, may or may not trigger validation error depending on OS
-        // The test documents the behavior
-        result.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithValidFolderRepoPath_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, _) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithWrongFieldType_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": 123,
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": ""code {0}"",
-                ""dateformat"": ""yyyy-MM-dd"",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("language"));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithInvalidJson_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{ ""DefaultSettings"": { invalid json }";
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("JSON"));
-    }
-
-    [Fact]
-    public void ValidateAppStructure_WithEmptyOpenAdr_IsValid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = @"{
-            ""DefaultSettings"": {
-                ""language"": ""en-US"",
-                ""folderrepo"": ""docs/adr"",
-                ""comandopenadr"": """",
-                ""yesvalue"": ""y"",
-                ""novalue"": ""n""
-            }
-        }";
-
-        // Act
-        var (IsValid, _) = validator.ValidateAppStructure(json);
-
-        // Assert
-        IsValid.Should().BeTrue();
-    }
-
-    #endregion
-
-    #region InitializeTemplate Additional Tests
-
-    [Fact]
-    public async Task InitializeTemplateAsync_WithEmptyString_CreatesEnglishTemplate()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(true);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync(string.Empty, CancellationToken.None);
-
-        // Assert
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>() , Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task InitializeTemplateAsync_CreatesDirectoryWhenNotExists()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
-        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
-        _fileSystem.DirectoryExists(templateDir).Returns(false);
-        _fileSystem.FileExists(templateFile).Returns(false);
-
-        // Act
-        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
-
-        // Assert
-        _fileSystem.Received(1).CreateDirectory(templateDir);
-        await _fileSystem.Received(1).WriteAllTextAsync(templateFile, Arg.Any<string>(), Arg.Any<CancellationToken>());
-    }
-
-    #endregion
-
-    #region EnsureFieldsRepoStructure Additional Edge Cases
 
     [Fact]
     public void EnsureFieldsRepoStructure_WithLenScopeGreaterThanMinScopeLength_AdjustsCorrectly()
@@ -2242,31 +1149,683 @@ public class ValidateJsonConfigTests
         var result = validator.EnsureFieldsRepoStructure(json);
         var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
 
-        // Assert - Should handle empty/whitespace scopes
+        // Assert
+        resultDict.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void EnsureFieldsRepoStructure_WhenScopesEmpty_SetsDefaultScope()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            { "lenscope", 1 },
+            { "scopes", "" },
+            { "skipdomain", "" },
+            { "folderbyscope", false },
+            { "lenversion", 2 },
+            { "lenrevision", 0 }
+        }, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var result = validator.EnsureFieldsRepoStructure(json);
+        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
+
+        // Assert
+        resultDict!["scopes"].ToString().Should().NotBeEmpty();
+        resultDict["skipdomain"].ToString().Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void EnsureFieldsRepoStructure_WithCaseInsensitiveKeys_WorksCorrectly()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            { "LENSCOPE", 3 },
+            { "SCOPES", "scope1;scope2" },
+            { "skipdomain", "scope1" },
+            { "FOLDERBYSCOPE", false },
+            { "LENVERSION", 2 },
+            { "LENREVISION", 0 }
+        }, AppConstants.RepoSerializerOptions);
+
+        // Act
+        var result = validator.EnsureFieldsRepoStructure(json);
+        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
+
+        // Assert
         resultDict.Should().NotBeNull();
     }
 
     #endregion
 
-    #region GetConfigDefaultRepoContentAsync Edge Cases
+    #region File Path Tests
+
+    [Fact]
+    public void HasTemplateRepoFile_WhenFileExists_ReturnsTrue()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
+        _fileSystem.FileExists(expectedPath).Returns(true);
+
+        // Act
+        var result = validator.HasTemplateRepoFile();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void HasTemplateRepoFile_WhenFileDoesNotExist_ReturnsFalse()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
+        _fileSystem.FileExists(expectedPath).Returns(false);
+
+        // Act
+        var result = validator.HasTemplateRepoFile();
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void GetDefaultConfigRepoFilePath_ReturnsCorrectPath()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+
+        // Act
+        var result = validator.GetDefaultConfigRepoFilePath();
+
+        // Assert
+        result.Should().Contain(AppConstants.TemplateDirectoryName);
+        result.Should().Contain(AppConstants.AdrRepoConfigFileName);
+        Path.IsPathRooted(result).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetConfigAppFilePath_ReturnsCorrectPath()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+
+        // Act
+        var result = validator.GetConfigAppFilePath();
+
+        // Assert
+        result.Should().Contain(AppConstants.AppConfigfileName);
+        Path.IsPathRooted(result).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetConfigAdrTemplatePath_ReturnsCorrectPath()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+
+        // Act
+        var result = validator.GetConfigAdrTemplatePath();
+
+        // Assert
+        result.Should().Contain(AppConstants.TemplateDirectoryName);
+        result.Should().Contain(AppConstants.AdrTemplateFileName);
+        Path.IsPathRooted(result).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetFileNameRepoConfig_ReturnsCorrectFileName()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+
+        // Act
+        var result = validator.GetFileNameRepoConfig();
+
+        // Assert
+        result.Should().Be(AppConstants.AdrRepoConfigFileName);
+    }
+
+    #endregion
+
+    #region GetConfigRepoTemplateAsync Tests
+
+    [Fact]
+    public async Task GetConfigRepoTemplateAsync_WhenFileExists_ReturnsContent()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedContent = "template content";
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
+        _fileSystem.FileExists(expectedPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
+
+        // Act
+        var result = await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
+
+        // Assert
+        result.Should().Be(expectedContent);
+    }
+
+    [Fact]
+    public async Task GetConfigRepoTemplateAsync_WhenFileDoesNotExist_ThrowsFileNotFoundException()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
+        _fileSystem.FileExists(expectedPath).Returns(false);
+
+        // Act
+        var act = async () => await validator.GetConfigRepoTemplateAsync(CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    [Fact]
+    public async Task GetConfigRepoTemplateAsync_WithCancellationToken_PassesTokenCorrectly()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedContent = "template content";
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var expectedPath = Path.Combine(templateDir, AppConstants.AdrRepoConfigFileName);
+        var cts = new CancellationTokenSource();
+        _fileSystem.FileExists(expectedPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
+
+        // Act
+        var result = await validator.GetConfigRepoTemplateAsync(cts.Token);
+
+        // Assert
+        result.Should().Be(expectedContent);
+        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
+    }
+
+    #endregion
+
+    #region GetConfigAdrTemplateAsync Tests
+
+    [Fact]
+    public async Task GetConfigAdrTemplateAsync_WhenFileExists_ReturnsContent()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedContent = "ADR template content";
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
+        _fileSystem.FileExists(expectedPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(expectedPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
+
+        // Act
+        var result = await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
+
+        // Assert
+        result.Should().Be(expectedContent);
+    }
+
+    [Fact]
+    public async Task GetConfigAdrTemplateAsync_WhenFileDoesNotExist_ThrowsFileNotFoundException()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
+        _fileSystem.FileExists(expectedPath).Returns(false);
+
+        // Act
+        var act = async () => await validator.GetConfigAdrTemplateAsync(CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    [Fact]
+    public async Task GetConfigAdrTemplateAsync_WithCancellationToken_PassesTokenCorrectly()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedContent = "ADR template content";
+        var expectedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
+        var cts = new CancellationTokenSource();
+        _fileSystem.FileExists(expectedPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(expectedPath, cts.Token).Returns(expectedContent);
+
+        // Act
+        var result = await validator.GetConfigAdrTemplateAsync(cts.Token);
+
+        // Assert
+        result.Should().Be(expectedContent);
+        await _fileSystem.Received(1).ReadAllTextAsync(expectedPath, cts.Token);
+    }
+
+    #endregion
+
+    #region InitializeTemplateAsync Tests
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithEnglishCulture_CreatesEnglishTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(false);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+
+        // Assert
+        _fileSystem.Received(1).CreateDirectory(templateDir);
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithPortugueseCulture_CreatesPortugueseTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync("pt-BR", CancellationToken.None);
+
+        // Assert
+        _fileSystem.DidNotReceive().CreateDirectory(Arg.Any<string>());
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WhenTemplateExists_DoesNotOverwrite()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(true);
+
+        // Act
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+
+        // Assert
+        await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithNullCulture_CreatesEnglishTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync(null, CancellationToken.None);
+
+        // Assert
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithEmptyString_CreatesEnglishTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync(string.Empty, CancellationToken.None);
+
+        // Assert
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_CreatesDirectoryWhenNotExists()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(false);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync("en-US", CancellationToken.None);
+
+        // Assert
+        _fileSystem.Received(1).CreateDirectory(templateDir);
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithPortuguesePortugalCulture_CreatesPortugueseTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync("pt-PT", CancellationToken.None);
+
+        // Assert
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitializeTemplateAsync_WithInvalidCulture_CreatesEnglishTemplate()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName));
+        var templateFile = Path.Combine(templateDir, AppConstants.AdrTemplateFileName);
+        _fileSystem.DirectoryExists(templateDir).Returns(true);
+        _fileSystem.FileExists(templateFile).Returns(false);
+
+        // Act
+        await validator.InitializeTemplateAsync("invalid-culture", CancellationToken.None);
+
+        // Assert
+        await _fileSystem.Received().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
+    #region GetConfigDefaultRepoContentAsync Tests
+
+    [Fact]
+    public async Task GetConfigDefaultRepoContentAsync_WhenFileExists_ReturnsFileContent()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var expectedContent = "existing content";
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        _fileSystem.FileExists(configPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(expectedContent);
+
+        // Act
+        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
+
+        // Assert
+        result.Should().Be(expectedContent);
+    }
 
     [Fact]
     public async Task GetConfigDefaultRepoContentAsync_WhenTemplateThrows_PropagatesException()
     {
         // Arrange
         var validator = CreateValidator([]);
-        var config = new AdrPlusConfig { FolderRepo = "docs/adr"};
-        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template", "adr-config.adrplus"));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
 
-        _fileSystem.FileExists(configPath).Returns(false, true);
-        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>())
+        _fileSystem.FileExists(configPath).Returns(false);
+        _fileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns<string>(x => throw new FileNotFoundException("Template not found"));
 
         // Act
-        var act = async () => await validator.GetConfigDefaultRepoContentAsync(config, CancellationToken.None);
+        var act = async () => await validator.GetConfigDefaultRepoContentAsync("doc/adr", CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    #endregion
+
+    #region Validation Rules - App Config
+
+    [Fact]
+    public void ValidateAppStructure_WithInvalidLanguageCode_ReturnsError()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var jsonContent = """
+        {
+            "DefaultSettings": {
+                "Language": "invalid-lang",
+                "OpenAdr": "command {0}"
+            }
+        }
+        """;
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(jsonContent);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Language", StringComparison.OrdinalIgnoreCase));
+    }
+
+    #endregion
+
+    #region Validation Rules - Repo Config
+
+    [Fact]
+    public void ValidateRepoStructure_WithInvalidSeparator_ReturnsError()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var invalidJson = CreateValidRepoJson();
+        var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
+        jsonObj![AppConstants.FieldSeparator] = "|"; // Invalid separator
+        var jsonContent = JsonSerializer.Serialize(jsonObj);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Separator", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithInvalidCaseTransform_ReturnsError()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var invalidJson = CreateValidRepoJson();
+        var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
+        jsonObj![AppConstants.FieldCaseTransform] = "UPPERCASE"; // Invalid case transform
+        var jsonContent = JsonSerializer.Serialize(jsonObj);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("CaseTransform", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithLenSeqTooSmall_ReturnsError()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var invalidJson = CreateValidRepoJson();
+        var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
+        jsonObj![AppConstants.FieldLenSeq] = 2; // Too small, minimum is 3
+        var jsonContent = JsonSerializer.Serialize(jsonObj);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("LenSeq", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithScopesMissingWhenLenScopeZero_IsValid()
+    {
+        // Arrange - Scopes is empty when LenScope is 0, which is valid
+        var validator = CreateValidator([]);
+        var validJson = CreateValidRepoJson();
+
+        // Act
+        var (IsValid, _) = validator.ValidateRepoStructure(validJson);
+
+        // Assert - should be valid because scopes is empty when lenscope = 0
+        IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ValidateRepoStructure_WithScopesEmptyWhenLenScopePositive_ReturnsError()
+    {
+        // Arrange - Scopes is empty when LenScope > 0, which is invalid
+        var validator = CreateValidator([]);
+        var invalidJson = CreateValidRepoJson();
+        var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
+        jsonObj![AppConstants.FieldLenScope] = 2;
+        jsonObj![AppConstants.FieldScopes] = ""; // Must not be empty when LenScope > 0
+        var jsonContent = JsonSerializer.Serialize(jsonObj);
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Scopes", StringComparison.OrdinalIgnoreCase));
+    }
+
+    #endregion
+
+    #region GetMaxNumberVersionRevision Tests
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithEmptyAdrList_ReturnsZeros()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(Array.Empty<AdrFileNameComponents>());
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(0);
+        result.MaxVersion.Should().Be(0);
+        result.MaxRevision.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithSingleAdr_ReturnsThatAdrValues()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adr = new AdrFileNameComponents
+        {
+            FileName = "ADR-0001-v01-r01.md",
+            Number = 5,
+            Version = 3,
+            Revision = 2,
+            Header = new AdrHeader()
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns([adr]);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(5);
+        result.MaxVersion.Should().Be(3);
+        result.MaxRevision.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithMultipleAdrs_ReturnsMaxValues()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adrs = new[]
+        {
+            new AdrFileNameComponents { FileName = "ADR-0001-v01.md", Number = 1, Version = 1, Revision = null, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0003-v02-r01.md", Number = 3, Version = 2, Revision = 1, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0005-v03-r02.md", Number = 5, Version = 3, Revision = 2, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0002-v02.md", Number = 2, Version = 2, Revision = null, Header = new AdrHeader() }
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(adrs);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(5);      // Maximum number from all ADRs
+        result.MaxVersion.Should().Be(3);     // Maximum version from all ADRs
+        result.MaxRevision.Should().Be(2);    // Maximum revision from all ADRs
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithNullRevisions_TreatsAsZero()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adrs = new[]
+        {
+            new AdrFileNameComponents { FileName = "ADR-0001-v01.md", Number = 1, Version = 1, Revision = null, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0002-v01.md", Number = 2, Version = 1, Revision = null, Header = new AdrHeader() }
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(adrs);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(2);
+        result.MaxVersion.Should().Be(1);
+        result.MaxRevision.Should().Be(0);    // No revisions were set, so max should be 0
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_CallsReadAllAdrFilesWithCorrectParameters()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(Array.Empty<AdrFileNameComponents>());
+
+        // Act
+        await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        await _adrQueryService.Received(1).ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true);
     }
 
     #endregion

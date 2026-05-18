@@ -1,3 +1,6 @@
+---
+# [Brief title of the decision]
+
 ## Issue
 
 Describe the architectural design issue you're addressing, leaving no questions about why you're addressing this issue now. Following a minimalist approach, address and document only the issues that need addressing at various points in the life cycle.

@@ -8,7 +8,7 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Tests.Helpers;
 
-namespace AdrPlus.Tests.Commands;
+namespace AdrPlus.Tests.Core;
 
 public class AdrQueryServiceTests
 {
@@ -21,7 +21,7 @@ public class AdrQueryServiceTests
     public AdrQueryServiceTests()
     {
         _queryService = new AdrQueryService(_fileParser);
-        _config = new AdrPlusRepoConfig("# {0}", _directoryPath)
+        _config = new AdrPlusRepoConfig("# {0}", "doc/adr")
         {
             Prefix = "ADR",
             LenSeq = 4,
@@ -47,13 +47,14 @@ public class AdrQueryServiceTests
         const string fileName2 = "ADR-0001-v02-Decision1.md";
         var filePath1 = PathHelper.GetAdrFilePath(fileName1);
         var filePath2 = PathHelper.GetAdrFilePath(fileName2);
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([filePath1, filePath2]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([filePath1, filePath2]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, fileName: fileName1);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 2, fileName: fileName2);
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, fileName: fileName1, isValid: true, headerIsValid: true);
+        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 2, fileName: fileName2, isValid: true, headerIsValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
@@ -72,10 +73,11 @@ public class AdrQueryServiceTests
     {
         // Arrange
         const int sequence = 99;
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([]);
 
         // Act
         var result = await _queryService.ReadAllAdrByNumber(sequence, _fileSystemService, _directoryPath, _config);
@@ -93,13 +95,14 @@ public class AdrQueryServiceTests
         const string fileName2 = "ADR-0001-Invalid.md";
         var filePath1 = PathHelper.GetAdrFilePath(fileName1);
         var filePath2 = PathHelper.GetAdrFilePath(fileName2);
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([filePath1, filePath2]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([filePath1, filePath2]);
 
-        var validComponent = CreateAdrFileNameComponents(number: 1, fileName: fileName1, isValid: true);
-        var invalidComponent = CreateAdrFileNameComponents(number: 1, fileName: fileName2, isValid: false);
+        var validComponent = CreateAdrFileNameComponents(number: 1, fileName: fileName1, isValid: true, headerIsValid: true);
+        var invalidComponent = CreateAdrFileNameComponents(number: 1, fileName: fileName2, isValid: false, headerIsValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(validComponent);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(invalidComponent);
@@ -119,10 +122,11 @@ public class AdrQueryServiceTests
         const int sequence = 1;
         const string filePath1 = "ADR-0001-Valid.md";
         const string filePath2 = "ADR-0001-InvalidHeader.md";
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([filePath1, filePath2]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([filePath1, filePath2]);
 
         var validComponent = CreateAdrFileNameComponents(number: 1, isValid: true, headerIsValid: true);
         var invalidHeaderComponent = CreateAdrFileNameComponents(number: 1, isValid: true, headerIsValid: false);
@@ -163,7 +167,7 @@ public class AdrQueryServiceTests
         // Act & Assert
         var action = () => _queryService.ReadAllAdrByNumber(1, _fileSystemService, emptyPath, _config);
         await action.Should().ThrowAsync<ArgumentException>()
-            .WithParameterName("directoryPath");
+            .WithParameterName("rootpath");
     }
 
     [Fact]
@@ -188,9 +192,10 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0002-Decision2.md");
         var filePath3 = PathHelper.GetAdrFilePath("subfolder/ADR-0003-Decision3.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories)
             .Returns([filePath1, filePath2, filePath3]);
 
         var adrComponent1 = CreateAdrFileNameComponents(number: 1);
@@ -206,15 +211,20 @@ public class AdrQueryServiceTests
 
         // Assert
         result.Should().HaveCount(3);
-        result.Should().ContainInOrder(adrComponent1, adrComponent2, adrComponent3);
+        // Results are ordered by IsMigrated (false first) then Number descending
+        result[0].Number.Should().Be(3);
+        result[1].Number.Should().Be(2);
+        result[2].Number.Should().Be(1);
     }
 
     [Fact]
     public async Task ReadAllAdrFiles_WithEmptyDirectory_ReturnsEmptyArray()
     {
         // Arrange
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
+
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([]);
 
         // Act
         var result = await _queryService.ReadAllAdrFiles(_fileSystemService, _directoryPath, _config);
@@ -229,9 +239,10 @@ public class AdrQueryServiceTests
         // Arrange
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Valid.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0002-Invalid.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories)
             .Returns([filePath1, filePath2]);
 
         var validComponent = CreateAdrFileNameComponents(number: 1, isValid: true);
@@ -269,107 +280,6 @@ public class AdrQueryServiceTests
 
     #endregion
 
-    #region ReadLatestAdrFiles Tests
-
-    [Fact]
-    public async Task ReadLatestAdrFiles_WithMultipleVersions_ReturnsLatestVersionOfEachAdr()
-    {
-        // Arrange
-        var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
-        var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v02-Decision1.md");
-        var filePath3 = PathHelper.GetAdrFilePath("ADR-0002-Decision2.md");
-
-        _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
-            .Returns([filePath1, filePath2, filePath3]);
-
-        var adrComponent1V1 = CreateAdrFileNameComponents(number: 1, version: 1, statusUpdate: AdrStatus.Proposed);
-        var adrComponent1V2 = CreateAdrFileNameComponents(number: 1, version: 2, statusUpdate: AdrStatus.Proposed);
-        var adrComponent2V1 = CreateAdrFileNameComponents(number: 2, version: 1, statusUpdate: AdrStatus.Proposed);
-
-        _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1V1);
-        _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent1V2);
-        _fileParser.ParseFileName(filePath3, _config, _fileSystemService).Returns(adrComponent2V1);
-
-        // Act
-        var result = await _queryService.ReadLatestAdrFiles(_fileSystemService, _directoryPath, _config);
-
-        // Assert
-        result.Should().HaveCount(2);
-        result[0].Number.Should().Be(2); // Ordered by number descending
-        result[1].Number.Should().Be(1);
-        result[1].Version.Should().Be(2); // V2 selected for ADR 1
-    }
-
-    [Fact]
-    public async Task ReadLatestAdrFiles_WithMultipleRevisionsAndVersions_ReturnsLatestRevision()
-    {
-        // Arrange
-        _config.LenRevision = 2;
-        var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
-        var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v01-rev01-Decision1.md");
-        var filePath3 = PathHelper.GetAdrFilePath("ADR-0001-v01-rev02-Decision1.md");
-
-        _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
-            .Returns([filePath1, filePath2, filePath3]);
-
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, revision: null, statusUpdate: AdrStatus.Proposed);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 1, revision: 1, statusUpdate: AdrStatus.Proposed);
-        var adrComponent3 = CreateAdrFileNameComponents(number: 1, version: 1, revision: 2, statusUpdate: AdrStatus.Proposed);
-
-        _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
-        _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
-        _fileParser.ParseFileName(filePath3, _config, _fileSystemService).Returns(adrComponent3);
-
-        // Act
-        var result = await _queryService.ReadLatestAdrFiles(_fileSystemService, _directoryPath, _config);
-
-        // Assert
-        result.Should().HaveCount(1);
-        result[0].Revision.Should().Be(2); // Latest revision
-    }
-
-    [Fact]
-    public async Task ReadLatestAdrFiles_WithDifferentStatusUpdates_GroupsByNumberAndStatusUpdate()
-    {
-        // Arrange
-        var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Proposed.md");
-        var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-Accepted.md");
-
-        _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
-            .Returns([filePath1, filePath2]);
-
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, statusUpdate: AdrStatus.Proposed);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 1, statusUpdate: AdrStatus.Accepted);
-
-        _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
-        _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
-
-        // Act
-        var result = await _queryService.ReadLatestAdrFiles(_fileSystemService, _directoryPath, _config);
-
-        // Assert
-        result.Should().HaveCount(2); // Both statuses present
-    }
-
-    [Fact]
-    public async Task ReadLatestAdrFiles_WithEmptyDirectory_ReturnsEmptyArray()
-    {
-        // Arrange
-        _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([]);
-
-        // Act
-        var result = await _queryService.ReadLatestAdrFiles(_fileSystemService, _directoryPath, _config);
-
-        // Assert
-        result.Should().BeEmpty();
-    }
-
-    #endregion
-
     #region GetFileByUniqueTitle Tests
 
     [Fact]
@@ -378,13 +288,12 @@ public class AdrQueryServiceTests
         // Arrange
         const string title = "Decision";
         const string domain = "Enterprise";
-        var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(
-            title.ToCase(_config.CaseTransform),
-            domain.ToCase(_config.CaseTransform));
 
         var filePath = PathHelper.GetAdrFilePath("ADR-0001-Decision.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
+
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([filePath]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([filePath]);
 
         var adrComponent = CreateAdrFileNameComponents(number: 1, title: "Decision", domain: "Enterprise", fileName: "ADR-0001-Decision.md");
         _fileParser.ParseFileName(filePath, _config, _fileSystemService).Returns(adrComponent);
@@ -403,9 +312,10 @@ public class AdrQueryServiceTests
         const string title = "NonExistent";
         const string domain = "Unknown";
         var filePath = PathHelper.GetAdrFilePath("ADR-0001-DecisionEnterprise.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([filePath]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([filePath]);
 
         var adrComponent = CreateAdrFileNameComponents(number: 1, title: "Decision", domain: "Enterprise");
         _fileParser.ParseFileName(filePath, _config, _fileSystemService).Returns(adrComponent);
@@ -421,8 +331,10 @@ public class AdrQueryServiceTests
     public async Task GetFileByUniqueTitle_WithEmptyDirectory_ReturnsEmptyString()
     {
         // Arrange
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
+
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([]);
 
         // Act
         var result = await _queryService.GetFileByUniqueTitle("Title", "Domain", _fileSystemService, _directoryPath, _config);
@@ -442,9 +354,10 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0003-Decision3.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0002-Decision2.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories)
             .Returns([filePath1, filePath2, filePath3]);
 
         var adrComponent1 = CreateAdrFileNameComponents(number: 1);
@@ -466,8 +379,10 @@ public class AdrQueryServiceTests
     public async Task GetNextNumber_WithEmptyDirectory_ReturnsOne()
     {
         // Arrange
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
+
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([]);
 
         // Act
         var result = await _queryService.GetNextNumber(_fileSystemService, _directoryPath, _config);
@@ -483,9 +398,10 @@ public class AdrQueryServiceTests
         var filePaths = Enumerable.Range(1, 10)
             .Select(i => PathHelper.GetAdrFilePath($"ADR-{i:D4}-Decision{i}.md"))
             .ToArray();
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns(filePaths);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns(filePaths);
 
         for (int i = 1; i <= 10; i++)
         {
@@ -512,14 +428,15 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-v01-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v03-Decision1.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0001-v02-Decision1.md");
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([filePath1, filePath2, filePath3]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([filePath1, filePath2, filePath3]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 3);
-        var adrComponent3 = CreateAdrFileNameComponents(number: 1, version: 2);
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, isValid: true, headerIsValid: true);
+        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 3, isValid: true, headerIsValid: true);
+        var adrComponent3 = CreateAdrFileNameComponents(number: 1, version: 2, isValid: true, headerIsValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
@@ -542,14 +459,15 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-v01-rev01-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v02-rev03-Decision1.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0001-v02-rev01-Decision1.md");
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([filePath1, filePath2, filePath3]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([filePath1, filePath2, filePath3]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, revision: 1);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 2, revision: 3);
-        var adrComponent3 = CreateAdrFileNameComponents(number: 1, version: 2, revision: 1);
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, version: 1, revision: 1, isValid: true, headerIsValid: true);
+        var adrComponent2 = CreateAdrFileNameComponents(number: 1, version: 2, revision: 3, isValid: true, headerIsValid: true);
+        var adrComponent3 = CreateAdrFileNameComponents(number: 1, version: 2, revision: 1, isValid: true, headerIsValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
@@ -569,10 +487,11 @@ public class AdrQueryServiceTests
     {
         // Arrange
         const int sequence = 99;
-        var searchPattern = $"{_config.Prefix}{sequence:D4}{_config.Separator}*.md";
+        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, searchPattern).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, searchPattern).Returns([]);
 
         // Act & Assert
         var action = () => _queryService.GetLatestADRSequence(sequence, _fileSystemService, _directoryPath, _config);
@@ -591,15 +510,16 @@ public class AdrQueryServiceTests
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0002-Decision2.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0003-Decision3.md");
         var filePath4 = PathHelper.GetAdrFilePath("ADR-0004-Decision4.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories)
             .Returns([filePath1, filePath2, filePath3, filePath4]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: "Enterprise");
-        var adrComponent2 = CreateAdrFileNameComponents(number: 2, domain: "Team");
-        var adrComponent3 = CreateAdrFileNameComponents(number: 3, domain: "Enterprise");
-        var adrComponent4 = CreateAdrFileNameComponents(number: 4, domain: "Project");
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: "Enterprise", isValid: true);
+        var adrComponent2 = CreateAdrFileNameComponents(number: 2, domain: "Team", isValid: true);
+        var adrComponent3 = CreateAdrFileNameComponents(number: 3, domain: "Enterprise", isValid: true);
+        var adrComponent4 = CreateAdrFileNameComponents(number: 4, domain: "Project", isValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);
@@ -611,7 +531,7 @@ public class AdrQueryServiceTests
 
         // Assert
         result.Should().HaveCount(3);
-        result.Should().Contain(new[] { "Enterprise", "Team", "Project" });
+        result.Should().Contain(["Enterprise", "Team", "Project"]);
         result.Distinct().Should().HaveCount(result.Length);
     }
 
@@ -620,11 +540,12 @@ public class AdrQueryServiceTests
     {
         // Arrange
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([filePath1]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([filePath1]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: null);
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: null, isValid: true);
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
 
         // Act
@@ -638,8 +559,10 @@ public class AdrQueryServiceTests
     public async Task GetDomains_WithEmptyDirectory_ReturnsEmptyArray()
     {
         // Arrange
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
+
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories).Returns([]);
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories).Returns([]);
 
         // Act
         var result = await _queryService.GetDomains(_fileSystemService, _directoryPath, _config);
@@ -654,13 +577,14 @@ public class AdrQueryServiceTests
         // Arrange
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0002-Decision2.md");
+        var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
-        _fileSystemService.GetFiles(_directoryPath, "*.md", SearchOption.AllDirectories)
+        _fileSystemService.GetFiles(adrFolderPath, "*.md", SearchOption.AllDirectories)
             .Returns([filePath1, filePath2]);
 
-        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: string.Empty);
-        var adrComponent2 = CreateAdrFileNameComponents(number: 2, domain: "Enterprise");
+        var adrComponent1 = CreateAdrFileNameComponents(number: 1, domain: string.Empty, isValid: true);
+        var adrComponent2 = CreateAdrFileNameComponents(number: 2, domain: "Enterprise", isValid: true);
 
         _fileParser.ParseFileName(filePath1, _config, _fileSystemService).Returns(adrComponent1);
         _fileParser.ParseFileName(filePath2, _config, _fileSystemService).Returns(adrComponent2);

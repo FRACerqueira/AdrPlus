@@ -14,10 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C
 		CONTRIBUTING.md = CONTRIBUTING.md
 		FAQ.md = FAQ.md
 		LICENSE = LICENSE
+		MigrationGuide.md = MigrationGuide.md
 		NugetREADME.md = NugetREADME.md
 		README.md = README.md
 		SECURITY.md = SECURITY.md
 		StepByStepGuide.md = StepByStepGuide.md
+		tests\TEST_ARCHITECTURE.md = tests\TEST_ARCHITECTURE.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{3CB3A6EC-87F9-4116-BB06-693CA2CBBDA8}"

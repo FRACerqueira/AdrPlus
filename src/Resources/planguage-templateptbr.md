@@ -1,3 +1,6 @@
+---
+# [Título breve da decisão]
+
 ## Essência
 
 Um breve resumo do requisito ou área abordada
