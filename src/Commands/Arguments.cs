@@ -55,6 +55,9 @@ namespace AdrPlus.Commands
         [CommandArgument("-r", "--repository")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigRepo")]
         WizardConfigRepository,
+        [CommandArgument("-p", "--path")]
+        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
+        TargetRepo,
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileConfig")]
         FileConfig,
@@ -64,9 +67,6 @@ namespace AdrPlus.Commands
         [CommandArgument("-s", "--sequence")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageSequenceAdr")]
         SequenceAdr,
-        [CommandArgument("-p", "--path")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
-        TargetRepo,
         [CommandArgument("-t", "--title")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]
         TitleAdr,

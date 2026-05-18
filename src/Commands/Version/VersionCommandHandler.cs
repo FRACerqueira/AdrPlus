@@ -187,10 +187,15 @@ namespace AdrPlus.Commands.Version
                 {
                     throw new InvalidDataException(infolastadr.Header.ErrorMessage);
                 }
-                if (infolastadr.UniqueTitle != infoadr.UniqueTitle || infoadr.Number != infolastadr.Number)
+                if (infoadr.Number != infolastadr.Number)
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrorSequenceAdrNotFound, infoadr.Number, infolastadr.FileName));
                 }
+                if ((infolastadr.Version+1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenVersion)
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenVerGreatConfigSetting, infolastadr.Version + 1, repoconfig.LenVersion));
+                }
+
                 if (infolastadr.FileName != infoadr.FileName)
                 {
                     if (repoconfig.LenRevision == 0)

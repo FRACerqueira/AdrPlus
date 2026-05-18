@@ -181,57 +181,106 @@ namespace AdrPlus.Commands.Explorer
             report.AppendLine(null,$"# {Resources.AdrPlus.ReportTitle}");
             report.AppendLine(null,$"## {DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)} : {repoconfig.FolderAdr}");
             report.AppendLine("---");
+            //1)File,
+            //2)Current Status,
+            //3)Folder,
+            //4)Format,
+            //5)Prefix,
+            //6)Version,
+            //7)Revision,
+            //8)Status Created,
+            //9)Status Updated,
+            //10)Scope,
+            //11)Domain
             report.Append(null,$"|{Resources.AdrPlus.File}");
-            if (fields.Any(x => x.StartsWith('2')))
+            report.Append(null, $"|{Resources.AdrPlus.CurrentStatus}");
+            if (fields.Any(x => x.StartsWith("3)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.Folder}");
             }
-            if (fields.Any(x => x.StartsWith('3')))
+            if (fields.Any(x => x.StartsWith("4)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.Format}");
             }
-            report.Append(null,$"|{Resources.AdrPlus.CurrentStatus}");
-            if (fields.Any(x => x.StartsWith('5')))
+            if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append(null, $"|{Resources.AdrPlus.Prefix}");
+            }
+            if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append(null, $"|{Resources.AdrPlus.Version}");
+            }
+            if (fields.Any(x => x.StartsWith("7)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append(null, $"|{Resources.AdrPlus.Revision}");
+            }
+            if (fields.Any(x => x.StartsWith("8)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.StatusCreated}");
             }
-            if (fields.Any(x => x.StartsWith('6')))
+            if (fields.Any(x => x.StartsWith("9)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.StatusUpdated}");
             }
-            if (fields.Any(x => x.StartsWith('7')))
+            if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.Scope}");
             }
-            if (fields.Any(x => x.StartsWith('8')))
+            if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append(null,$"|{Resources.AdrPlus.Domain}");
             }
             report.AppendLine("|");
 
+            //1)File,
+            //2)Current Status,
+            //3)Folder,
+            //4)Format,
+            //5)Prefix,
+            //6)Version,
+            //7)Revision,
+            //8)Status Created,
+            //9)Status Updated,
+            //10)Scope,
+            //11)Domain
+            
             report.Append("|---");
-            if (fields.Any(x => x.StartsWith('2')))
+            report.Append("|---");
+
+            if (fields.Any(x => x.StartsWith("3)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
-            if (fields.Any(x => x.StartsWith('3')))
+            if (fields.Any(x => x.StartsWith("4)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
             report.Append("|---");
-            if (fields.Any(x => x.StartsWith('5')))
+            if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
-            if (fields.Any(x => x.StartsWith('6')))
+            if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
-            if (fields.Any(x => x.StartsWith('7')))
+            if (fields.Any(x => x.StartsWith("7)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
-            if (fields.Any(x => x.StartsWith('8')))
+            if (fields.Any(x => x.StartsWith("8)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append("|---");
+            }
+            if (fields.Any(x => x.StartsWith("9)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append("|---");
+            }
+            if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
+            {
+                report.Append("|---");
+            }
+            if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
             {
                 report.Append("|---");
             }
@@ -240,36 +289,62 @@ namespace AdrPlus.Commands.Explorer
 
             foreach (var field in foundfiles)
             {
+                //1)File,
+                //2)Current Status,
+                //3)Folder,
+                //4)Format,
+                //5)Prefix,
+                //6)Version,
+                //7)Revision,
+                //8)Status Created,
+                //9)Status Updated,
+                //10)Scope,
+                //11)Domain
                 report.Append('|');
                 report.Append(Path.GetFileName(field.FileName));
-                if (fields.Any(x => x.StartsWith('2')))
+                report.Append('|');
+                report.Append(Helper.FmtStatus(field, repoconfig));
+                if (fields.Any(x => x.StartsWith("3)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(Helper.FmtFolder(field, folderadr));
                 }
-                if (fields.Any(x => x.StartsWith('3')))
+                if (fields.Any(x => x.StartsWith("4)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(Helper.FmtFormat(field));
                 }
-                report.Append('|');
-                report.Append(Helper.FmtStatus(field, repoconfig));
-                if (fields.Any(x => x.StartsWith('5')))
+                if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
+                {
+                    report.Append('|');
+                    report.Append(field.Prefix);
+                }
+                if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
+                {
+                    report.Append('|');
+                    report.Append(field.Version);
+                }
+                if (fields.Any(x => x.StartsWith("7)", false, CultureInfo.InvariantCulture)))
+                {
+                    report.Append('|');
+                    report.Append(field.Revision);
+                }
+                if (fields.Any(x => x.StartsWith("8)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(field.Header.DateCreate == null ? string.Empty : $"{field.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{Helper.GetResourceStatus(field.Header.StatusCreate)}");
                 }
-                if (fields.Any(x => x.StartsWith('6')))
+                if (fields.Any(x => x.StartsWith("9)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(field.Header.DateUpdate == null ? string.Empty : $"{field.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{Helper.GetResourceStatus(field.Header.StatusUpdate)}");
                 }
-                if (fields.Any(x => x.StartsWith('7')))
+                if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(field.Header.Scope);
                 }
-                if (fields.Any(x => x.StartsWith('8')))
+                if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
                 {
                     report.Append('|');
                     report.Append(field.Header.Domain);

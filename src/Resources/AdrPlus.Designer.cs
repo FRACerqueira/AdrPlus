@@ -142,7 +142,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initialize a repository for ADRs for the first time.
+        ///   Looks up a localized string similar to Initialize or update a repository with ADRs settings.
         /// </summary>
         internal static string CmdDescInit {
             get {
@@ -201,15 +201,6 @@ namespace AdrPlus.Resources {
         internal static string CmdDescUndoStatus {
             get {
                 return ResourceManager.GetString("CmdDescUndoStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Upgrade repository&apos;s settings.
-        /// </summary>
-        internal static string CmdDescUpgrade {
-            get {
-                return ResourceManager.GetString("CmdDescUpgrade", resourceCulture);
             }
         }
         
@@ -894,6 +885,33 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgInvalidRepoConfigMigrationPattern {
             get {
                 return ResourceManager.GetString("ErrMsgInvalidRepoConfigMigrationPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is a revision ({0}) greater than Configured ({1}).
+        /// </summary>
+        internal static string ErrMsgNewLenRevGreatConfigSetting {
+            get {
+                return ResourceManager.GetString("ErrMsgNewLenRevGreatConfigSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is a number ({0}) greater than the Configured ({1}).
+        /// </summary>
+        internal static string ErrMsgNewLenSeqGreatConfigSetting {
+            get {
+                return ResourceManager.GetString("ErrMsgNewLenSeqGreatConfigSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is a version ({0}) greater than Configured ({1}).
+        /// </summary>
+        internal static string ErrMsgNewLenVerGreatConfigSetting {
+            get {
+                return ResourceManager.GetString("ErrMsgNewLenVerGreatConfigSetting", resourceCulture);
             }
         }
         
@@ -1978,6 +1996,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configuration file already exists. Do you want to update?.
+        /// </summary>
+        internal static string InitCmdConfigUpdateFileAlreadyExists {
+            get {
+                return ResourceManager.GetString("InitCmdConfigUpdateFileAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid application JSON file structure.
         /// </summary>
         internal static string InvalidAppStructure {
@@ -2014,7 +2041,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1)File,2)Folder,3)Format,4)Current Status,5)Status Created,6)Status Updated,7)Scope,8)Domain.
+        ///   Looks up a localized string similar to 1)File,2)Current Status,3)Folder,4)Format,5)Prefix,6)Version,7)Revision,8)Status Created,9)Status Updated,10)Scope,11)Domain.
         /// </summary>
         internal static string ListFieldReport {
             get {
@@ -2451,15 +2478,6 @@ namespace AdrPlus.Resources {
         internal static string PromptSelectFolderForReport {
             get {
                 return ResourceManager.GetString("PromptSelectFolderForReport", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select options to upgrade.
-        /// </summary>
-        internal static string PromptSelectRepoActions {
-            get {
-                return ResourceManager.GetString("PromptSelectRepoActions", resourceCulture);
             }
         }
         
@@ -2950,7 +2968,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initialize a repository for ADRs for the first time.
+        ///   Looks up a localized string similar to Initialize or update a repository with ADRs settings.
         /// </summary>
         internal static string WizardAdrInitTitle {
             get {
@@ -3189,24 +3207,6 @@ namespace AdrPlus.Resources {
         internal static string WizardConfigTemplateTitle {
             get {
                 return ResourceManager.GetString("WizardConfigTemplateTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to After selected, press [ESC] if you want to return to the wizard.
-        /// </summary>
-        internal static string WizardConfigUpgradeDescription {
-            get {
-                return ResourceManager.GetString("WizardConfigUpgradeDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Upgrade repository&apos;s settings.
-        /// </summary>
-        internal static string WizardConfigUpgradeTitle {
-            get {
-                return ResourceManager.GetString("WizardConfigUpgradeTitle", resourceCulture);
             }
         }
         

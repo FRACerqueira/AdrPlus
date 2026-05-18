@@ -65,8 +65,8 @@ namespace AdrPlus.Core
             {
                 { "P", match.Groups[1].Value ?? string.Empty },
                 { "N", match.Groups[2].Value ?? string.Empty },
-                { "V", match.Groups[3].Value ?? string.Empty },
-                { "R", match.Groups[4].Value ?? string.Empty },
+                { "V", match.Groups[3].Success ? match.Groups[3].Value : string.Empty },
+                { "R", match.Groups[4].Success ? match.Groups[4].Value : string.Empty },
                 { "S", match.Groups[5].Value ?? string.Empty }
             };
         }
@@ -142,7 +142,7 @@ namespace AdrPlus.Core
         [GeneratedRegex(@"^(N)(\d{2}):(\d{2})(T)(\d{2})(V(\d{2}):(\d{2}))?(R(\d{2}):(\d{2}))?(P(\d{2}):(\d{2}))?$", RegexOptions.CultureInvariant)]
         private static partial Regex ExpMigratePattern();
 
-        [GeneratedRegex(@"^([A-Za-z]*)(\d+)V(\d+)(?:R(\d+))?([A-Za-z]*)$", RegexOptions.CultureInvariant)]
+        [GeneratedRegex(@"^([A-Za-z]*)(\d+)(?:[Vv](\d+)(?:[Rr](\d+))?)?([A-Za-z]*)$", RegexOptions.CultureInvariant)]
         private static partial Regex ExpAdrPattern();
 
     }

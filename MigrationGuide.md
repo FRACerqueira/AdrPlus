@@ -573,6 +573,8 @@ git commit -m "backup: before ADR migration"
 
 ```bash
 adrplus config --repository
+adrplus config --migration
+
 ```
 
 Output shows:
@@ -581,7 +583,8 @@ Output shows:
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
-  "folderadr": "doc/adr"
+  "folderadr": "doc/adr",
+  "migrationpattern": "N04:03T08P00:03" //sample,
 }
 ```
 

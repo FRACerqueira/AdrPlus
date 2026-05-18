@@ -340,32 +340,6 @@ namespace AdrPlus.Tests.Core
         }
 
         [Fact]
-        public void ParseAdrPattern_WithoutNumberBeforeVersion_ReturnsNull()
-        {
-            // Arrange
-            var pattern = "V2";  // Missing N
-
-            // Act
-            var result = PatternParser.ParseAdrPattern(pattern);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public void ParseAdrPattern_WithoutAnyVersion_ReturnsNull()
-        {
-            // Arrange
-            var pattern = "ABC1";  // Missing V entirely
-
-            // Act
-            var result = PatternParser.ParseAdrPattern(pattern);
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
         public void ParseAdrPattern_WithInvalidCharacters_ReturnsNull()
         {
             // Arrange
@@ -383,16 +357,6 @@ namespace AdrPlus.Tests.Core
         {
             // Act
             var result = PatternParser.ParseAdrPattern("ABC");
-
-            // Assert
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public void ParseAdrPattern_WithOnlyNumbers_ReturnsNull()
-        {
-            // Act
-            var result = PatternParser.ParseAdrPattern("12345");
 
             // Assert
             result.Should().BeNull();

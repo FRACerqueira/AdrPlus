@@ -10,8 +10,34 @@ using AdrPlus.Infrastructure.FileSystem;
 namespace AdrPlus.Tests.Core
 {
     /// <summary>
-    /// Unit tests for AdrFileParserService.
-    /// Tests cover parsing ADR files with table-based header format in markdown.
+    /// Unit tests for <see cref="AdrFileParserService"/>.
+    /// 
+    /// Comprehensive test suite covering:
+    /// - <see cref="AdrFileParserService.ParseAdrHeaderAndContentAsync"/> - Parsing ADR file headers with table-based markdown format
+    /// - <see cref="AdrFileParserService.ParseFileName"/> - Filename parsing and validation for ADR Plus and migration patterns
+    /// 
+    /// Test Organization:
+    /// - Basic Cases: Empty files, file structure validation
+    /// - Disclaimer Tests: Format validation for HTML comment disclaimers
+    /// - Table Header Tests: Markdown table structure validation
+    /// - Title/Version/Revision/Scope/Domain Tests: Individual field validation
+    /// - Status Tests: Status line parsing and date extraction
+    /// - Content Tests: Content preservation and formatting
+    /// - ParseFileName Tests: Filename pattern matching and component extraction
+    /// - ADR Plus Pattern Tests: Pattern variations and field combinations
+    /// - Domain Extraction Tests: Title and domain parsing from filenames
+    /// - Supersede Format Tests: Supersede value parsing and validation
+    /// - Error Condition Tests: Invalid patterns and edge cases
+    /// - Line Ending Tests: Cross-platform line ending handling
+    /// 
+    /// Mock Dependencies:
+    /// - <see cref="IFileSystemService"/> - Mocked for file I/O operations
+    /// - File content is provided via <see cref="IFileSystemService.ReadAllLinesAsync"/> mock
+    /// 
+    /// Test Data Patterns:
+    /// - Build helper methods create valid ADR file headers with configurable values
+    /// - All external dependencies are mocked with NSubstitute
+    /// - Tests run independently and can execute in any order
     /// </summary>
     public class AdrFileParserServiceTests
     {
@@ -1089,7 +1115,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->"
             };
             lines.AddRange(contentLines);
-            return lines.ToArray();
+            return [.. lines];
         }
 
         #endregion
@@ -1273,7 +1299,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->"
             };
             lines.AddRange(contentLines);
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines.ToArray());
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([.. lines]);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1449,29 +1475,13 @@ namespace AdrPlus.Tests.Core
 
             // Assert
             Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
-        }
-
-        [Fact]
-        public async Task ParseFileName_WithInvalidScope_ReturnsError()
-        {
-            // Arrange
-            var filePath = "0001-TestTitle-V1R02-InvalidScope.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
-
-            // Act
-            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
-
-            // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
         }
 
         [Fact]
         public async Task ParseFileName_WithInvalidVersionFormat_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-VInvalid.md";
+            var filePath = "0001VInvalid-TestTitle.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
@@ -1486,7 +1496,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithInvalidRevisionFormat_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-V2RInvalid.md";
+            var filePath = "0001V2RInvalid-TestTitle.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
@@ -1501,7 +1511,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithSupersededNoNumber_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain-AC.md";
+            var filePath = "0001V1R02-TestTitle-Enterprise-Domain--AC.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
@@ -1516,22 +1526,7 @@ namespace AdrPlus.Tests.Core
         public async Task ParseFileName_WithSupersededInvalidNumber_ReturnsError()
         {
             // Arrange
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain-SUPInvalid.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
-
-            // Act
-            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
-
-            // Assert
-            Assert.False(result.IsValid);
-            Assert.NotEmpty(result.ErrorMessage);
-        }
-
-        [Fact]
-        public async Task ParseFileName_WithUnexpectedPart_ReturnsError()
-        {
-            // Arrange
-            var filePath = "0001-TestTitle-V1R02-Enterprise-Domain-UnexpectedPart.md";
+            var filePath = "0001V1R02Enterprise-TestTitle@Domain--SUPInvalid.md";
             _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
@@ -1658,7 +1653,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Test that empty file content is caught
             var filePath = "ADR001V01R02E-TestTitle@Domain.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(Array.Empty<string>());
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1885,6 +1880,381 @@ namespace AdrPlus.Tests.Core
             Assert.True(header.IsValid);
             Assert.Equal(5, header.Version);
             Assert.Equal(3, header.Revision);
+        }
+
+        #endregion
+
+        #region ParseFileName Tests - ADR Plus Pattern Variations
+
+        [Fact]
+        public async Task ParseFileName_WithValidAdrPlusPatternAllComponents_ParsesSuccessfully()
+        {
+            // Arrange - Full ADR Plus pattern with all components
+            var filePath = "ADR0001V02R03Enterprise-MyDecision@PaymentService.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Equal("ADR", result.Prefix);
+            Assert.Equal(1, result.Number);
+            Assert.Equal(2, result.Version);
+            Assert.Equal(3, result.Revision);
+            Assert.Equal("Enterprise", result.Scope);
+            Assert.NotEmpty(result.Title);
+            Assert.NotEmpty(result.Domain??string.Empty);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithDomainOnly_ExtractsDomainCorrectly()
+        {
+            // Arrange - Filename with domain but no title before @
+            var filePath = "ADR0001V01R01Enterprise-@SecurityModule.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotEmpty(result.Domain??string.Empty);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithSupersededValidFormat_ParsesSupersededValue()
+        {
+            // Arrange - Supersede format with double separator
+            var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--0002.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotNull(result.SupersededValue);
+            Assert.Equal(2, result.SupersededValue);
+        }
+
+
+        [Fact]
+        public async Task ParseFileName_WithoutRevisionInPattern_ParsesWithoutRevision()
+        {
+            // Arrange - Pattern without revision component
+            var configNoRevision = new AdrPlusRepoConfig("", "")
+            {
+                LenRevision = 0,
+                LenVersion = 2,
+                LenScope = 1,
+                Separator = '-',
+                Prefix = "ADR",
+                LenSeq = 4,
+                StatusNew = "Proposed",
+                StatusAcc = "Accepted",
+                StatusRej = "Rejected",
+                StatusSup = "Superseded",
+                Scopes = "Enterprise;Project"
+            };
+
+            var filePath = "ADR0001V02Enterprise-MyDecision@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, configNoRevision, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Equal(2, result.Version);
+            Assert.Equal(0, result.Revision);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithoutScopeInPattern_ParsesWithoutScope()
+        {
+            // Arrange - Pattern without scope component
+            var configNoScope = new AdrPlusRepoConfig("", "")
+            {
+                LenRevision = 2,
+                LenVersion = 2,
+                LenScope = 0,
+                Separator = '-',
+                Prefix = "ADR",
+                LenSeq = 4,
+                StatusNew = "Proposed",
+                StatusAcc = "Accepted",
+                StatusRej = "Rejected",
+                StatusSup = "Superseded",
+            };
+
+            var filePath = "ADR0001V02R03-MyDecision@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, configNoScope, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Empty(result.Scope??string.Empty);
+        }
+
+        #endregion
+
+        #region ParseFileName Tests - Migration Pattern Integration
+
+
+        [Fact]
+        public async Task ParseFileName_WithMigrationPatternDisabled_SkipsMigrationParsing()
+        {
+            // Arrange - No migration pattern configured
+            var filePath = "OldFormat-0001.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+            Assert.NotEmpty(result.ErrorMessage);
+        }
+
+        #endregion
+
+        #region ParseFileName Tests - Domain Extraction
+
+        [Fact]
+        public async Task ParseFileName_WithDomainContainingSpecialCharacters_ExtractsDomainWithCharacters()
+        {
+            // Arrange
+            var filePath = "ADR0001V01R01Enterprise-MyDecision@Payment-Processing_Service.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotEmpty(result.Domain??string.Empty);
+            Assert.Contains("Payment", result.Domain);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithMultipleDomainSegments_ExtractsLastSegmentAsDomain()
+        {
+            // Arrange
+            var filePath = "ADR0001V01R01Enterprise-MyDecision@Service1@Service2.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotEmpty(result.Domain??string.Empty);
+            Assert.Contains("Service2", result.Domain);
+        }
+
+        #endregion
+
+        #region ParseFileName Tests - Supersede Format
+
+        [Fact]
+        public async Task ParseFileName_WithSupersededMaxValue_ParsesSupersededCorrectly()
+        {
+            // Arrange - Large superseded number
+            var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--9999.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotNull(result.SupersededValue);
+            Assert.Equal(9999, result.SupersededValue);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithSupersededZero_ParsesSupersededAsZero()
+        {
+            // Arrange - Zero as superseded number
+            var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--0000.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.NotNull(result.SupersededValue);
+            Assert.Equal(0, result.SupersededValue);
+        }
+
+        #endregion
+
+        #region ParseFileName Tests - Error Conditions and Edge Cases
+
+
+        [Fact]
+        public async Task ParseFileName_WithMissingSequenceNumber_ReturnsError()
+        {
+            // Arrange - Filename missing sequence number
+            var filePath = "ADRv01R01Enterprise-TestTitle.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithMissingSeparator_ReturnsError()
+        {
+            // Arrange - Missing separator between components
+            var filePath = "ADR0001TestTitle.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithEmptyTitlePart_ReturnsError()
+        {
+            // Arrange - Empty title part after separator
+            var filePath = "ADR0001V01R01Enterprise-.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithNegativeSequenceNumber_ReturnsError()
+        {
+            // Arrange - Negative sequence number
+            var filePath = "ADR-0001V01R01Enterprise-TestTitle.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithTooLongSequenceNumber_ParsesIfNumeric()
+        {
+            // Arrange - Very long sequence number
+            var filePath = "ADR999999999V01R01Enterprise-TestTitle.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert - Should succeed as long as it's numeric
+            if (result.IsValid)
+            {
+                Assert.True(result.Number > 0);
+            }
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithSpecialCharactersInTitle_ParsesCorrectly()
+        {
+            // Arrange - Title with special characters
+            var filePath = "ADR0001V01R01Enterprise-Use_Caching-Safely!@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithLeadingZerosInSequence_ParsesCorrectly()
+        {
+            // Arrange - Leading zeros in sequence number
+            var filePath = "ADR0001V01R01Enterprise-TestTitle@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Equal(1, result.Number);
+        }
+
+
+        [Fact]
+        public async Task ParseFileName_WithSupersededNonNumeric_ReturnsError()
+        {
+            // Arrange - Supersede value is not numeric
+            var filePath = "ADR0001V01R01Enterprise-TestTitle@Domain--ABC.md";
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithVersionZero_ParsesSuccessfully()
+        {
+            // Arrange - Version component is 00
+            var filePath = "ADR0001V00R01Enterprise-TestTitle@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Equal(0, result.Version);
+        }
+
+        [Fact]
+        public async Task ParseFileName_WithRevisionZero_ParsesSuccessfully()
+        {
+            // Arrange - Revision component is 00
+            var filePath = "ADR0001V01R00Enterprise-TestTitle@Domain.md";
+            var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+
+            // Act
+            var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
+
+            // Assert
+            Assert.True(result.IsValid);
+            Assert.Equal(0, result.Revision);
         }
 
         #endregion

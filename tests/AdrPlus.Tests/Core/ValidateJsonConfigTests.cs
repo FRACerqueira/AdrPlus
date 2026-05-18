@@ -4,6 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Core;
+using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -13,10 +14,12 @@ namespace AdrPlus.Tests.Core;
 public class ValidateJsonConfigTests
 {
     private readonly IFileSystemService _fileSystem;
+    private readonly IAdrQueryService _adrQueryService;
 
     public ValidateJsonConfigTests()
     {
         _fileSystem = Substitute.For<IFileSystemService>();
+        _adrQueryService = Substitute.For<IAdrQueryService>();
     }
 
     private ValidateJsonConfig CreateValidator(Dictionary<string, string?> configValues)
@@ -25,7 +28,7 @@ public class ValidateJsonConfigTests
             .AddInMemoryCollection(configValues!)
             .Build();
 
-        return new ValidateJsonConfig(_fileSystem, configuration);
+        return new ValidateJsonConfig(_fileSystem, _adrQueryService, configuration);
     }
 
     private static string CreateValidRepoJson()
@@ -1604,11 +1607,11 @@ public class ValidateJsonConfigTests
         """;
 
         // Act
-        var result = validator.ValidateAppStructure(jsonContent);
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(jsonContent);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("Language", StringComparison.OrdinalIgnoreCase));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Language", StringComparison.OrdinalIgnoreCase));
     }
 
     #endregion
@@ -1626,11 +1629,11 @@ public class ValidateJsonConfigTests
         var jsonContent = JsonSerializer.Serialize(jsonObj);
 
         // Act
-        var result = validator.ValidateRepoStructure(jsonContent);
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("Separator", StringComparison.OrdinalIgnoreCase));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Separator", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -1644,11 +1647,11 @@ public class ValidateJsonConfigTests
         var jsonContent = JsonSerializer.Serialize(jsonObj);
 
         // Act
-        var result = validator.ValidateRepoStructure(jsonContent);
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("CaseTransform", StringComparison.OrdinalIgnoreCase));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("CaseTransform", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -1662,11 +1665,11 @@ public class ValidateJsonConfigTests
         var jsonContent = JsonSerializer.Serialize(jsonObj);
 
         // Act
-        var result = validator.ValidateRepoStructure(jsonContent);
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("LenSeq", StringComparison.OrdinalIgnoreCase));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("LenSeq", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -1677,10 +1680,10 @@ public class ValidateJsonConfigTests
         var validJson = CreateValidRepoJson();
 
         // Act
-        var result = validator.ValidateRepoStructure(validJson);
+        var (IsValid, _) = validator.ValidateRepoStructure(validJson);
 
         // Assert - should be valid because scopes is empty when lenscope = 0
-        result.IsValid.Should().BeTrue();
+        IsValid.Should().BeTrue();
     }
 
     [Fact]
@@ -1695,11 +1698,134 @@ public class ValidateJsonConfigTests
         var jsonContent = JsonSerializer.Serialize(jsonObj);
 
         // Act
-        var result = validator.ValidateRepoStructure(jsonContent);
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.ErrorReport.Should().Contain(e => e.Contains("Scopes", StringComparison.OrdinalIgnoreCase));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("Scopes", StringComparison.OrdinalIgnoreCase));
+    }
+
+    #endregion
+
+    #region GetMaxNumberVersionRevision Tests
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithEmptyAdrList_ReturnsZeros()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(Array.Empty<AdrFileNameComponents>());
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(0);
+        result.MaxVersion.Should().Be(0);
+        result.MaxRevision.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithSingleAdr_ReturnsThatAdrValues()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adr = new AdrFileNameComponents
+        {
+            FileName = "ADR-0001-v01-r01.md",
+            Number = 5,
+            Version = 3,
+            Revision = 2,
+            Header = new AdrHeader()
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns([adr]);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(5);
+        result.MaxVersion.Should().Be(3);
+        result.MaxRevision.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithMultipleAdrs_ReturnsMaxValues()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adrs = new[]
+        {
+            new AdrFileNameComponents { FileName = "ADR-0001-v01.md", Number = 1, Version = 1, Revision = null, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0003-v02-r01.md", Number = 3, Version = 2, Revision = 1, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0005-v03-r02.md", Number = 5, Version = 3, Revision = 2, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0002-v02.md", Number = 2, Version = 2, Revision = null, Header = new AdrHeader() }
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(adrs);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(5);      // Maximum number from all ADRs
+        result.MaxVersion.Should().Be(3);     // Maximum version from all ADRs
+        result.MaxRevision.Should().Be(2);    // Maximum revision from all ADRs
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_WithNullRevisions_TreatsAsZero()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+
+        var adrs = new[]
+        {
+            new AdrFileNameComponents { FileName = "ADR-0001-v01.md", Number = 1, Version = 1, Revision = null, Header = new AdrHeader() },
+            new AdrFileNameComponents { FileName = "ADR-0002-v01.md", Number = 2, Version = 1, Revision = null, Header = new AdrHeader() }
+        };
+
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(adrs);
+
+        // Act
+        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        result.MaxNumber.Should().Be(2);
+        result.MaxVersion.Should().Be(1);
+        result.MaxRevision.Should().Be(0);    // No revisions were set, so max should be 0
+    }
+
+    [Fact]
+    public async Task GetMaxNumberVersionRevision_CallsReadAllAdrFilesWithCorrectParameters()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var rootPath = "/repo";
+        var repoConfig = new AdrPlusRepoConfig("", "");
+        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+            .Returns(Array.Empty<AdrFileNameComponents>());
+
+        // Act
+        await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+
+        // Assert
+        await _adrQueryService.Received(1).ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true);
     }
 
     #endregion

@@ -34,7 +34,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
-- ⚙️ **Config editor** for application and repository settings
+- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 🗂️ **Multiple ADR** model options for different project needs and for each team

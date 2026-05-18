@@ -3,6 +3,8 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Domain;
+
 namespace AdrPlus.Core
 {
     /// <summary>
@@ -10,6 +12,14 @@ namespace AdrPlus.Core
     /// </summary>
     internal interface IValidateJsonConfig
     {
+        /// <summary>
+        /// Retrieves the maximum number, version, and revision values from the existing ADR files in the specified root path. 
+        /// </summary>
+        /// <param name="rootPath">The root path of the ADR repository.</param>
+        /// <param name="repoconfig">The repository configuration.</param>
+        /// <returns>A Task that represents the asynchronous operation, containing a tuple of (MaxNumber, MaxVersion, MaxRevision)</returns>
+        Task<(int MaxNumber, int MaxVersion, int MaxRevision)> GetMaxNumberVersionRevision(string rootPath, AdrPlusRepoConfig repoconfig);
+
         /// <summary>
         /// Loads the migration pattern configuration from default template file. 
         /// </summary>

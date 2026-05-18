@@ -202,9 +202,13 @@ namespace AdrPlus.Commands.Review
                 {
                     throw new InvalidDataException(infolastadr.Header.ErrorMessage);
                 }
-                if (infolastadr.UniqueTitle != infoadr.UniqueTitle || infoadr.Number != infolastadr.Number)
+                if (infoadr.Number != infolastadr.Number)
                 {
                     throw new InvalidOperationException(string.Format(null,FormatMessages.ErrorSequenceAdrNotFound,infoadr.Number, infolastadr.FileName));
+                }
+                if ((infolastadr.Revision??0 + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenRevGreatConfigSetting, infolastadr.Revision + 1, repoconfig.LenRevision));
                 }
                 if (infolastadr.FileName != infoadr.FileName)
                 {

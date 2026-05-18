@@ -60,7 +60,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
-- ⚙️ **Config editor** for application and repository settings
+- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
@@ -201,7 +201,7 @@ You can also execute commands directly, one by one, without the wizard and witho
 
     adrplus explorer --path "path/to/repository"
 
-# Initialize ADR structure (only for the first time you set up the repository)
+# Initialize ADR structure (if the first time you set up the repository)
 
     adrplus init --path "path/to/repository"
 
@@ -246,8 +246,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `config`    | Application configuration editor, repository, and default ADR template       |
 | `explorer`  | Launch the file viewer explorer and report for the ADR repository            |
 | `migrate`   | Migrate existing ADRs to use the tool                   |
-| `init`      | Initialize the ADR repository folder structure                               |
-| `upgrade`   | Upgrade repository's settings                                                |
+| `init`      | Initialize or update the ADR repository folder structure                               |
 | `new`       | Create a new ADR with an incremental number                                  |
 | `version`   | Create a new version of an  ADR (increment version)                          |
 | `review`    | Create a new revision of an ADR (increment revision)                         |

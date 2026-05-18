@@ -321,11 +321,16 @@ namespace AdrPlus.Core
             var parseResult = ParseAdrPlusFileNameAsync(filePath, config);
             if (parseResult.Success)
             {
+                result = parseResult.Result;
                 var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
                 result.Header = header;
                 result.ContentAdr = content;
                 result.IsValid = true;
                 return result;
+            }
+            else
+            {
+                result = parseResult.Result;
             }
             if (config.MigrationPattern.Length > 0 && PatternParser.ParseMigratePattern(config.MigrationPattern) != null)
             {
@@ -339,11 +344,12 @@ namespace AdrPlus.Core
                     result.IsValid = true;
                     return result;
                 }
+                else
+                {
+                    result = resultMigration;
+                }
             }
-            // If filename parsing failed, try to load the file header anyway to report header errors
-            var (fileHeader, _) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
-            result.Header = fileHeader;
-            result.ErrorMessage = parseResult.Result.ErrorMessage;
+            // If filename parsing failed, try to load the file header anyway to report header errors ?
             return result;
         }
         private static (bool Success, AdrFileNameComponents Result) ParseMigrationFileNameAsync(string filePath, AdrPlusRepoConfig config)
@@ -354,7 +360,7 @@ namespace AdrPlus.Core
             };
             var nameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
             var pattern = PatternParser.ParseMigratePattern(config.MigrationPattern)!;
-            if (!pattern.TryGetValue("P", out var valueprefix) || nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
+            if (!pattern.TryGetValue("P", out var valueprefix) && nameWithoutExtension.Length < valueprefix.Position + valueprefix.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
@@ -364,12 +370,12 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("V", out var valueversion) || nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
+            if (!pattern.TryGetValue("V", out var valueversion) && nameWithoutExtension.Length < valueversion.Position + valueversion.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (!pattern.TryGetValue("R", out var valuerevison) || nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
+            if (!pattern.TryGetValue("R", out var valuerevison) && nameWithoutExtension.Length < valuerevison.Position + valuerevison.Length)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
@@ -404,9 +410,17 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            if (supersedeParts.Length == 2 && int.TryParse(supersedeParts[1], out _))
+            if (supersedeParts.Length == 2)
             {
-                supersedeNumber = supersedeParts[1];
+                if (int.TryParse(supersedeParts[1], out var supersedeNumberValue))
+                {
+                    supersedeNumber = supersedeParts[1];
+                }
+                else
+                {
+                    result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                    return (false, result);
+                }
             }
             var index = supersedeParts[0].IndexOf(separator, ordinalIgnoreCase);
             if (index < 0)
@@ -423,6 +437,11 @@ namespace AdrPlus.Core
                 parts.Add(supersedeParts[0][..index]);
                 parts.Add(part1);
             }
+            if (parts.Count != 2)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
             //first part is prefix, number, version, revision and scope
             string part = parts[0] ?? string.Empty;
             var pattern = PatternParser.ParseAdrPattern(part);
@@ -434,30 +453,49 @@ namespace AdrPlus.Core
             //prefix
             result.Prefix = pattern["P"];
             //number
-            if (string.IsNullOrWhiteSpace(pattern["N"]) || !int.TryParse(pattern["N"], CultureInfo.InvariantCulture, out var number))
+            if (!int.TryParse(pattern["N"], CultureInfo.InvariantCulture, out var _))
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            result.Number = number;
+            if (pattern["V"].Length > 0 && !int.TryParse(pattern["V"], CultureInfo.InvariantCulture, out var _))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            if (pattern["R"].Length > 0 && !int.TryParse(pattern["R"], CultureInfo.InvariantCulture, out var _))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            result.Number = int.Parse(pattern["N"], CultureInfo.InvariantCulture);
             //version
-            if (string.IsNullOrWhiteSpace(pattern["V"]) || !int.TryParse(pattern["V"], CultureInfo.InvariantCulture, out var version))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-            result.Version = version;
+            result.Version = pattern["V"].Length == 0  ? 0 : int.Parse(pattern["V"], CultureInfo.InvariantCulture);
             //revision
-            if (!string.IsNullOrWhiteSpace(pattern["R"]) && !int.TryParse(pattern["R"], CultureInfo.InvariantCulture, out var revision))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-            result.Revision = string.IsNullOrWhiteSpace(pattern["R"]) ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
+            result.Revision = pattern["R"].Length == 0 ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
             //scope
             result.Scope = pattern["S"].Length == 0 ? "" : pattern["S"];
+
+            //invalid version
+            if (result.Scope.Length > 0 && pattern["V"].Length == 0 && config.LenVersion > 0 && result.Scope.StartsWith("V", StringComparison.OrdinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+
+            //invalid revision
+            if (result.Scope.Length > 0 && pattern["R"].Length == 0 && config.LenRevision > 0 && result.Scope.StartsWith("R",StringComparison.OrdinalIgnoreCase))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
             //title and domain
             part = parts[1];
+            if (part.Length == 0)
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }   
             index = part.LastIndexOf('@');
             if (index != -1)
             {

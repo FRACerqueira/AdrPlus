@@ -278,10 +278,6 @@ namespace AdrPlus.Commands.Wizard
             {
                 commandAlias = GetCommandAlias(CommandsAdr.Migrate);
             }
-            else if (itemSelected!.Id == "1.07")
-            {
-                commandAlias = GetCommandAlias(CommandsAdr.Upgrade);
-            }
             string[] args = itemSelected.Id switch
             {
                 "1.01" => ["-a"],
@@ -290,7 +286,6 @@ namespace AdrPlus.Commands.Wizard
                 "1.04" => ["-r"],
                 "1.05" => ["-w"],
                 "1.06" => ["-w"],
-                "1.07" => ["-w"],
                 _ => throw await CreateInvalidMenuExceptionAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken),
             };
             try
@@ -389,14 +384,13 @@ namespace AdrPlus.Commands.Wizard
                 "3.02" => CommandsAdr.Init,
                 "3.03" => CommandsAdr.Explorer,
                 "3.04" => CommandsAdr.Migrate,
-                "3.05" => CommandsAdr.Upgrade,
-                "3.06" => CommandsAdr.New,
-                "3.07" => CommandsAdr.Approve,
-                "3.08" => CommandsAdr.Reject,
-                "3.09" => CommandsAdr.Version,
-                "3.10" => CommandsAdr.Review,
-                "3.11" => CommandsAdr.Supersede,
-                "3.12" => CommandsAdr.UndoStatus,
+                "3.05" => CommandsAdr.New,
+                "3.06" => CommandsAdr.Approve,
+                "3.07" => CommandsAdr.Reject,
+                "3.08" => CommandsAdr.Version,
+                "3.09" => CommandsAdr.Review,
+                "3.10" => CommandsAdr.Supersede,
+                "3.11" => CommandsAdr.UndoStatus,
                 _ => throw await CreateInvalidMenuExceptionAsync(HelpMenuHistoryKey, itemSelected, cancellationToken),
             };
             await _commandRouter.RouteAsync(GetCommandAlias(command), ["-h"], cancellationToken);
@@ -596,13 +590,6 @@ namespace AdrPlus.Commands.Wizard
                     Title = Resources.AdrPlus.WizardConfigMigratedTitle,
                     Description = Resources.AdrPlus.WizardConfigMigratedDescription,
                     EnabledWhenNotConfigured = false
-                },
-                new ItemMenuWizard
-                {
-                    Id = "1.07",
-                    Title = Resources.AdrPlus.WizardConfigUpgradeTitle,
-                    Description = Resources.AdrPlus.WizardConfigUpgradeDescription,
-                    EnabledWhenNotConfigured = false
                 }
             ];
         }
@@ -653,55 +640,48 @@ namespace AdrPlus.Commands.Wizard
                 new ItemMenuWizard
                 {
                     Id = "3.05",
-                    Title = Resources.AdrPlus.WizardConfigUpgradeTitle,
-                    Description = Resources.AdrPlus.WizardConfigUpgradeDescription,
-                    EnabledWhenNotConfigured = true
-                },
-                new ItemMenuWizard
-                {
-                    Id = "3.06",
                     Title = Resources.AdrPlus.WizardHelpNewTitle,
                     Description = Resources.AdrPlus.WizardHelpNewDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.07",
+                    Id = "3.06",
                     Title = Resources.AdrPlus.WizardHelpApproveTitle,
                     Description = Resources.AdrPlus.WizardHelpApproveDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.08",
+                    Id = "3.07",
                     Title = Resources.AdrPlus.WizardHelpRejectTitle,
                     Description = Resources.AdrPlus.WizardHelpRejectDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.09",
+                    Id = "3.08",
                     Title = Resources.AdrPlus.WizardHelpVersionTitle,
                     Description = Resources.AdrPlus.WizardHelpVersionDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.10",
+                    Id = "3.09",
                     Title = Resources.AdrPlus.WizardHelpRevisionTitle,
                     Description = Resources.AdrPlus.WizardHelpRevisionDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.11",
+                    Id = "3.10",
                     Title = Resources.AdrPlus.WizardHelpSupersedeTitle,
                     Description = Resources.AdrPlus.WizardHelpSupersedeDescription,
                     EnabledWhenNotConfigured = true
                 },
                 new ItemMenuWizard
                 {
-                    Id = "3.12",
+                    Id = "3.11",
                     Title = Resources.AdrPlus.WizardHelpUndoTitle,
                     Description = Resources.AdrPlus.WizardHelpUndoDescription,
                     EnabledWhenNotConfigured = true

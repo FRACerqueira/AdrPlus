@@ -10,6 +10,8 @@ using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
+using System.Text.Json;
 
 namespace AdrPlus.Commands.Init
 {
@@ -37,7 +39,11 @@ namespace AdrPlus.Commands.Init
         private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private static readonly Arguments[] ValidCommandArgs = [Arguments.WizardInit, Arguments.TargetRepo, Arguments.Help];
+        private static readonly Arguments[] ValidCommandArgs = [
+            Arguments.WizardInit, 
+            Arguments.TargetRepo,
+            Arguments.FileConfig,
+            Arguments.Help];
 
         /// <summary>
         /// Executes the <c>init</c> command asynchronously to initialize the ADR repository structure.
@@ -67,6 +73,7 @@ namespace AdrPlus.Commands.Init
                         [
                             "adrplus init --wizard",
                             "adrplus init --path \"path/to/repository\"",
+                            "adrplus init --path \"path/to/repository\" -file \"path/to/file-config\"",
                         ]));
                     return;
                 }
@@ -81,17 +88,21 @@ namespace AdrPlus.Commands.Init
                     parsedArgs =  InitWizard(cancellationToken);
                 }
 
+                parsedArgs.TryGetValue(Arguments.FileConfig, out var fileConfig);
+                fileConfig ??= string.Empty;
+
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
                 targetPath ??= string.Empty;
 
-                LogMessages.LogInitializingRepository(_logger, targetPath);
 
                 if (!_fileSystem.DirectoryExists(targetPath))
                 {
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
                 }
 
-                var result = await InitializeRepositoryAsync(targetPath, cancellationToken);
+                LogMessages.LogInitializingRepository(_logger, targetPath);
+
+                var result = await InitializeRepositoryAsync(targetPath, fileConfig, cancellationToken);
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
@@ -133,7 +144,6 @@ namespace AdrPlus.Commands.Init
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
             }
-
             parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
             return parsedArgs;
         }
@@ -171,26 +181,73 @@ namespace AdrPlus.Commands.Init
         /// and creates optional scope sub-folders.
         /// </summary>
         /// <param name="targetPath">The root directory where the repository will be initialized.</param>
+        /// <param name="fileConfig">The path to the configuration file.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>An array of fully qualified paths for all files and directories that were created.</returns>
         /// <exception cref="InvalidOperationException">Thrown when a configuration file already exists at the computed config path.</exception>
-        private async Task<string[]> InitializeRepositoryAsync(string targetPath,CancellationToken cancellationToken)
+        private async Task<string[]> InitializeRepositoryAsync(string targetPath, string fileConfig, CancellationToken cancellationToken)
         {
             var result = new List<string>();
 
             var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
-            if (_fileSystem.FileExists(configPath))
+            string jsonrepoconfig;
+            string filecfg;
+            if (_fileSystem.FileExists(configPath) && fileConfig.Length == 0)
             {
-                throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+                filecfg = configPath;
+                var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
+                if (IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                }
+                if (!ConfirmYes)
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+                }
+                jsonrepoconfig = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
+            }
+            else
+            {
+                if (fileConfig.Length > 0)
+                {
+                    filecfg = Path.GetFullPath(fileConfig);
+                    if (!_fileSystem.FileExists(fileConfig))
+                    {
+                        throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfig));
+                    }
+                    jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                }
+                else
+                {
+                    filecfg = _validateconfig.GetDefaultConfigRepoFilePath();
+                    jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                }
             }
 
-            var repoPath = Path.GetFullPath(Path.Combine(targetPath));
-            if (!_fileSystem.DirectoryExists(repoPath))
+            var (isValid, errorMessage) = _validateconfig.ValidateRepoStructure(jsonrepoconfig);
+            if (!isValid)
             {
-                repoPath = _fileSystem.CreateDirectory(repoPath);
+                LogMessages.LogInvalidRepoConfiguration(_logger, string.Join("; ", errorMessage));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgInvalidRepoConfig, filecfg));
+            }
+            var newrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonrepoconfig, AppConstants.RepoSerializerOptions)!;
+
+            //ensure if new configutation is valid (check existent number,version and revision)
+            (int maxnumber, int maxversion, int maxrevision) = await _validateconfig.GetMaxNumberVersionRevision(targetPath, newrepoconfig);
+            if (maxnumber.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenSeq)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenSeqGreatConfigSetting, maxnumber, newrepoconfig.LenSeq));
+            }
+            if (maxversion.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenVersion)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenVerGreatConfigSetting, maxversion, newrepoconfig.LenVersion));
+            }
+            if (maxrevision.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenRevision && newrepoconfig.LenRevision > 0)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenRevGreatConfigSetting, maxrevision, newrepoconfig.LenRevision));
             }
 
-            await CreateNewConfigAsync(targetPath, repoPath, result, cancellationToken);
+            await CreateNewConfigAsync(jsonrepoconfig, targetPath, result, cancellationToken);
 
             return [.. result];
         }
@@ -199,34 +256,26 @@ namespace AdrPlus.Commands.Init
         /// Reads the default repository configuration template, validates its structure, writes it to
         /// <paramref name="rootrepoPath"/>, and creates scope sub-folders when required.
         /// </summary>
+        /// <param name="jsonrepoconfig">The JSON string representing the repository configuration.</param>
         /// <param name="rootrepoPath">The destination root path repository for the new configuration file.</param>
-        /// <param name="repoPath">The repository root path used for scope folder creation.</param>
         /// <param name="result">The list to which the created file path (and any scope folder paths) are appended.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <exception cref="InvalidOperationException">Thrown when the default configuration template fails structure validation.</exception>
-        private async Task CreateNewConfigAsync(string rootrepoPath, string repoPath, List<string> result, CancellationToken cancellationToken)
+        private async Task CreateNewConfigAsync(string jsonrepoconfig, string rootrepoPath,  List<string> result, CancellationToken cancellationToken)
         {
-            var jsonrepoconfig = await _fileSystem.ReadAllTextAsync(_validateconfig.GetDefaultConfigRepoFilePath(), cancellationToken);
-            var (isValid, errorMessage) =  _validateconfig.ValidateRepoStructure(jsonrepoconfig);
-
-            if (!isValid)
-            {
-                LogMessages.LogInvalidRepoConfiguration(_logger, string.Join("; ", errorMessage));
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgInvalidRepoConfig, _validateconfig.GetDefaultConfigRepoFilePath()));
-            }
             var filepath = Path.GetFullPath(Path.Combine(rootrepoPath, _validateconfig.GetFileNameRepoConfig()));
             await _fileSystem.WriteAllTextAsync(filepath, jsonrepoconfig, cancellationToken);
             result.Add(filepath);
 
             var config = _adrServices.FromJson(jsonrepoconfig, "")!;
 
-            var folderadr = Path.GetFullPath(Path.Combine(repoPath, config.FolderAdr));
+            var folderadr = Path.GetFullPath(Path.Combine(rootrepoPath, config.FolderAdr));
             if (!_fileSystem.DirectoryExists(folderadr))
             {
                 _fileSystem.CreateDirectory(folderadr);
                 result.Add(folderadr);
             }
-            CreateScopeDirectories(config, repoPath, result);
+            CreateScopeDirectories(config, folderadr, result);
         }
     }
 }

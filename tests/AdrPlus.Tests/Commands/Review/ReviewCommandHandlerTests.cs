@@ -575,6 +575,85 @@ public class ReviewCommandHandlerTests
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WhenNewRevisionExceedsLenRevision_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var configPath = "/repo/.adrplus";
+        var args = new[] { "--file", AdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, AdrFilePath }
+        };
+
+        SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
+
+        // Create ADR with revision 9, so revision+1 = 10 (2 chars) exceeds LenRevision of 1
+        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 9);
+
+        _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(Task.FromResult(infoadr));
+        _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult(Array.Empty<AdrFileNameComponents>()));
+
+        var latestAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0001-v1-r9.md", AdrStatus.Accepted);
+        latestAdr.Number = 1;
+        latestAdr.Version = 1;
+        latestAdr.Revision = 9;
+
+        _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult<AdrFileNameComponents?>(latestAdr));
+
+        // Override the config to have LenRevision = 1 so that revision 9+1=10 (2 chars) exceeds the limit
+        var repoConfig = CreateMockAdrPlusRepoConfig();
+        repoConfig.LenRevision = 1;
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenNewRevisionExceedsLenRevision_ContainsRevisionAndLimitInErrorMessage()
+    {
+        // Arrange
+        var configPath = "/repo/.adrplus";
+        var args = new[] { "--file", AdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, AdrFilePath }
+        };
+
+        SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
+
+        // Create ADR with revision 999, so revision+1 = 1000 (4 chars) far exceeds LenRevision of 1
+        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 999);
+
+        _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(Task.FromResult(infoadr));
+        _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult(Array.Empty<AdrFileNameComponents>()));
+
+        var latestAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0001-v1-r999.md", AdrStatus.Accepted);
+        latestAdr.Number = 1;
+        latestAdr.Version = 1;
+        latestAdr.Revision = 999;
+
+        _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult<AdrFileNameComponents?>(latestAdr));
+
+        // Override the config to have LenRevision = 1 so that revision 999+1=1000 (4 chars) exceeds the limit
+        var repoConfig = CreateMockAdrPlusRepoConfig();
+        repoConfig.LenRevision = 1;
+        _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            .Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*1000*1*", because: "the error message should contain the new revision (1000) and the configured limit (1)");
+    }
+
     #endregion
 
     #region ExecuteAsync - Successful Creation Tests

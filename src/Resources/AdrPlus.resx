@@ -658,7 +658,7 @@
     <value>Application configuration editor, repository, and default template ADR</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Initialize a repository for ADRs for the first time</value>
+    <value>Initialize or update a repository with ADRs settings</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
     <value>Create a new ADR with a new number (incremental number)</value>
@@ -793,7 +793,7 @@
     <value>Return to main menu</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Initialize a repository for ADRs for the first time</value>
+    <value>Initialize or update a repository with ADRs settings</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
     <value>After selected, press [ESC] if you want to return to the wizard</value>
@@ -930,9 +930,6 @@
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>The ADR has been rejected. Do you want to continue?</value>
   </data>
-  <data name="CmdDescUpgrade" xml:space="preserve">
-    <value>Upgrade repository's settings</value>
-  </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
     <value>Use only the empty template when creating it</value>
   </data>
@@ -975,17 +972,8 @@
   <data name="Template" xml:space="preserve">
     <value>Template</value>
   </data>
-  <data name="PromptSelectRepoActions" xml:space="preserve">
-    <value>Select options to upgrade</value>
-  </data>
   <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
     <value>The version size value must be larger than the current version</value>
-  </data>
-  <data name="WizardConfigUpgradeTitle" xml:space="preserve">
-    <value>Upgrade repository's settings</value>
-  </data>
-  <data name="WizardConfigUpgradeDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Wizard to update the ADR settings of a repository</value>
@@ -1123,7 +1111,7 @@
     <value>Confirm the explorer with this parameters?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
-    <value>1)File,2)Folder,3)Format,4)Current Status,5)Status Created,6)Status Updated,7)Scope,8)Domain</value>
+    <value>1)File,2)Current Status,3)Folder,4)Format,5)Prefix,6)Version,7)Revision,8)Status Created,9)Status Updated,10)Scope,11)Domain</value>
   </data>
   <data name="ErrFileReportEmpty" xml:space="preserve">
     <value>Path to file name report is empty</value>
@@ -1268,5 +1256,17 @@
   </data>
   <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
     <value>The file already exists</value>
+  </data>
+  <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
+    <value>Configuration file already exists. Do you want to update?</value>
+  </data>
+  <data name="ErrMsgNewLenSeqGreatConfigSetting" xml:space="preserve">
+    <value>There is a number ({0}) greater than the Configured ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenVerGreatConfigSetting" xml:space="preserve">
+    <value>There is a version ({0}) greater than Configured ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
+    <value>There is a revision ({0}) greater than Configured ({1})</value>
   </data>
 </root>

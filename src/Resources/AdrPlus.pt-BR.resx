@@ -658,7 +658,7 @@
     <value>Editor de configuração do aplicativo, repositório e modelo padrão de ADR</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Iniciar um repositório para ADRs pela primeira vez</value>
+    <value>Inicializa ou atualiza um repositório com as configurações de ADRs</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
     <value>Criar um novo ADR com um novo número (número incremental)</value>
@@ -793,7 +793,7 @@
     <value>Retornar ao menu principal</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Iniciar um repositório para ADRs pela primeira vez</value>
+    <value>Inicializa ou atualiza um repositório com as configurações de ADRs</value>
   </data>
   <data name="WizardAdrInitDescription" xml:space="preserve">
     <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
@@ -1123,7 +1123,7 @@
     <value>Confirmar o explorador com estes parâmetros?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
-    <value>1)Arquivo,2)Pasta,3)Formato,4)Status atual,5)Status criação,6)Status atualização,7)Escopo,8)Domínio</value>
+    <value>1)Arquivo,2)Status atual,3)Pasta,4)Formato,5)Prefixo,6)Versão,7)Revisão,8)Status criado,9)Status atualizado,10)Escopo,11)Domínio</value>
   </data>
   <data name="ErrFileReportEmpty" xml:space="preserve">
     <value>O caminho para o arquivo de relatório está vazio</value>
@@ -1268,5 +1268,17 @@
   </data>
   <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
     <value>O arquivo já existe</value>
+  </data>
+  <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
+    <value>Arquivo de configuração já existe. Deseja atualizar?</value>
+  </data>
+  <data name="ErrMsgNewLenSeqGreatConfigSetting" xml:space="preserve">
+    <value>Existe um número({0}) maior que o Configurado ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenVerGreatConfigSetting" xml:space="preserve">
+    <value>Existe uma versão({0}) maior que o Configurado ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
+    <value>Existe uma revisão({0}) maior que o Configurado ({1})</value>
   </data>
 </root>

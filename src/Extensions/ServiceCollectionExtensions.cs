@@ -20,7 +20,6 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
-using AdrPlus.Commands.Upgrade;
 using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.Explorer;
 
@@ -54,7 +53,6 @@ namespace AdrPlus.Extensions
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
             services.AddSingleton<MigrateCommandHandler>();
-            services.AddSingleton<UpgradeCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
             services.AddSingleton<ConfigCommandHandler>();
             services.AddSingleton<NewAdrCommandHandler>();

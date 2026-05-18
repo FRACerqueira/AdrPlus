@@ -23,6 +23,10 @@ namespace AdrPlus.Infrastructure.Formatting
             var cacheKey = $"{culture}:{key}";
             return Cache.GetOrAdd(cacheKey, _ => CompositeFormat.Parse(resourceAccessor()));
         }
+
+        public static CompositeFormat ErrMsgNewLenSeqGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenSeqGreatConfigSetting);
+        public static CompositeFormat ErrMsgNewLenVerGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenVerGreatConfigSetting);
+        public static CompositeFormat ErrMsgNewLenRevGreatConfigSetting => Get(() => Resources.AdrPlus.ErrMsgNewLenRevGreatConfigSetting);
         public static CompositeFormat ErrMsgFileAlreadyExists => Get(() => Resources.AdrPlus.ErrMsgFileAlreadyExists);
         public static CompositeFormat ErrMsgInvalidRepoConfigMigrationPattern => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfigMigrationPattern);
         public static CompositeFormat ErrorLenFileSampleMigration => Get(() => Resources.AdrPlus.ErrorLenFileSampleMigration);

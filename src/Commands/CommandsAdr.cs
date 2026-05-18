@@ -14,7 +14,6 @@ using AdrPlus.Commands.Reject;
 using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
-using AdrPlus.Commands.Upgrade;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 
@@ -51,15 +50,10 @@ namespace AdrPlus.Commands
         [Command("migrate", typeof(MigrateCommandHandler), "CmdDescMigrate")]
         Migrate,
         /// <summary>
-        /// Initializes the repository with folders for ADRs.
+        /// Initializes or updates configuration for the repository.
         /// </summary>
         [Command("init", typeof(InitCommandHandler), "CmdDescInit")]
         Init,
-        /// <summary>
-        /// Upgrade repository's settings.
-        /// </summary>
-        [Command("upgrade", typeof(UpgradeCommandHandler), "CmdDescUpgrade")]
-        Upgrade,
         /// <summary>
         /// Creates a new ADR with a new number (incremental number).
         /// </summary>

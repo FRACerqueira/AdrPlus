@@ -12,6 +12,7 @@ using System.Collections.Frozen;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace AdrPlus.Infrastructure.UI
 {
@@ -891,8 +892,18 @@ namespace AdrPlus.Infrastructure.UI
             var fields = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsReport}: ")
                 .Interaction(fieldsresources, (item, ctx) =>
                 {
-                    //1)File, 2)Folder, 3)Format, 4)Current Status, 5)Status Created, 6)Status Updated, 7)Scope, 8)Domain
-                    if (item.StartsWith('1') || item.StartsWith('4'))
+                    //1)File,
+                    //2)Current Status,
+                    //3)Folder,
+                    //4)Format,
+                    //5)Prefix,
+                    //6)Version,
+                    //7)Revision,
+                    //8)Status Created,
+                    //9)Status Updated,
+                    //10)Scope,
+                    //11)Domain
+                    if (item.StartsWith("1)",false,CultureInfo.InvariantCulture) || item.StartsWith("2)",false  ,CultureInfo.InvariantCulture))
                     {
                         ctx.AddItem(item, true, true);
                     }
@@ -920,30 +931,56 @@ namespace AdrPlus.Infrastructure.UI
                     if (onstart)
                     {
                         onstart = false;
+                        //1)File,
+                        //2)Current Status,
+                        //3)Folder,
+                        //4)Format,
+                        //5)Prefix,
+                        //6)Version,
+                        //7)Revision,
+                        //8)Status Created,
+                        //9)Status Updated,
+                        //10)Scope,
+                        //11)Domain
                         ctx.TextSelector((item) => Path.GetFileName(item.FileName));
-                        ctx.AddColumn(Resources.AdrPlus.File, 40, (item) => Path.GetFileName(item.FileName), maxslidinglines: 3);
-                        if (fields.Any(x => x.StartsWith('2')))
+                        ctx.AddColumn(Resources.AdrPlus.File, 40, (item) => 
+                        {
+                            return $"{Path.GetFileName(item.FileName)} ({item.Number})";
+                        }, maxslidinglines: 3);
+                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 25, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
+                        if (fields.Any(x => x.StartsWith("3)",false,CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Folder, 20, (item) => Helper.FmtFolder(item, folderrepoadr), maxslidinglines: 2);
                         }
-                        if (fields.Any(x => x.StartsWith('3')))
+                        if (fields.Any(x => x.StartsWith("4)",false,CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Format, 20, (item) => Helper.FmtFormat(item), maxslidinglines: 2);
                         }
-                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 30, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
-                        if (fields.Any(x => x.StartsWith('5')))
+                        if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Prefix, 10, (item) => item.Prefix, maxslidinglines: 2);
+                        }
+                        if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Version, 5, (item) => item.Version.ToString(CultureInfo.InvariantCulture));
+                        }
+                        if (fields.Any(x => x.StartsWith("7)", false, CultureInfo.InvariantCulture)))
+                        {
+                            ctx.AddColumn(Resources.AdrPlus.Revision, 5, (item) => (item.Revision??0).ToString(CultureInfo.InvariantCulture));
+                        }
+                        if (fields.Any(x => x.StartsWith("8)", false, CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.StatusCreated, 25, (item) => item.Header.DateCreate == null ? string.Empty : $"{item.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusCreate}");
                         }
-                        if (fields.Any(x => x.StartsWith('6')))
+                        if (fields.Any(x => x.StartsWith("9)", false, CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.StatusUpdated, 25, (item) => item.Header.DateUpdate == null ? string.Empty : $"{item.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusUpdate}");
                         }
-                        if (fields.Any(x => x.StartsWith('7')))
+                        if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Scope, 20, (item) => item.Scope ?? string.Empty, maxslidinglines: 2);
                         }
-                        if (fields.Any(x => x.StartsWith('8')))
+                        if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Domain, 20, (item) => item.Domain ?? string.Empty, maxslidinglines: 2);
                         }
@@ -1012,19 +1049,6 @@ namespace AdrPlus.Infrastructure.UI
                 .SuggestionHandler(input => [sugestion])
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        public (bool IsAborted, RepoActions[] Content) PromptSelectRepoActions(CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.PromptSelectRepoActions}: ";
-            var result = PromptPlus.Controls
-                .MultiSelect<RepoActions>(message)
-                .TextSelector(action => TextForRepoActions(action))
-                .DefaultHistory()
-                .Range(1)
-                .EnabledHistory("AdrPlusRepoActionsSelection")
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? [] : result.Content!);
         }
 
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)

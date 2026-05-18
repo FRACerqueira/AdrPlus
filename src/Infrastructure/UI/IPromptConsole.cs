@@ -494,13 +494,6 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to select repository actions from a list of options. 
-        /// </summary>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected repository actions.</returns>
-        (bool IsAborted, RepoActions[] Content) PromptSelectRepoActions(CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Prompts the user to edit the title of an ADR.
         /// </summary>
         /// <param name="defaultTitle">The default title to display.</param>

@@ -785,6 +785,147 @@ namespace AdrPlus.Tests.Commands.Version
                 .Should().ThrowAsync<InvalidOperationException>();
         }
 
+        [Fact]
+        public async Task ExecuteAsync_WhenNewVersionExceedsLenVersion_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath }
+            };
+
+            // Create ADR with version 99, so version+1 = 100 (3 chars) exceeds LenVersion of 2
+            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+            infoadr.Version = 99;
+            var latestAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0001-v99.md", AdrStatus.Accepted);
+            latestAdr.Number = 1;
+            latestAdr.Version = 99;
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the version length validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(latestAdr));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+
+            // Act & Assert
+            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+                .Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_WhenNewVersionExceedsLenVersion_ContainsVersionAndLimitInErrorMessage()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath }
+            };
+
+            // Create ADR with version 9, so version+1 = 10 (2 chars) equals LenVersion, and we'll test with version 99 -> 100 (3 chars)
+            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+            infoadr.Version = 999; // version+1 = 1000 (4 chars) far exceeds LenVersion of 2
+            var latestAdr = CommandHandlerMockHelper.CreateValidAdrFileNameComponents("ADR-0001-v999.md", AdrStatus.Accepted);
+            latestAdr.Number = 1;
+            latestAdr.Version = 999;
+
+            // Setup: config path mocks
+            _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+            _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
+
+            // Setup: file system path mocks
+            var configNormalized = Path.GetFullPath(configPath);
+            var adrNormalized = Path.GetFullPath(AdrFilePath);
+            _mockFileSystem.FileExists(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var path = callInfo.Arg<string>();
+                var normalized = Path.GetFullPath(path);
+                if (normalized == configNormalized || normalized == adrNormalized) return true;
+                return path.EndsWith(".adrplus");
+            });
+
+            _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo =>
+                {
+                    var path = callInfo.Arg<string>();
+                    return Task.FromResult(path.EndsWith(".adrplus") ? BasicJsonConfig : "");
+                });
+            _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
+            _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns(configPath);
+            _mockFileSystem.GetFullNameDirectoryByFile(Arg.Any<string>()).Returns("/repo/adr");
+            _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(AdrFilePath);
+
+            // Setup: console mocks
+            var cursorPos = (0, 0);
+            _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
+            _mockConsole.PromptWriteWait(Arg.Any<string>());
+            _mockConsole.PromptClearWaitText(cursorPos);
+
+            // Setup: config parsing
+            var repoConfig = CreateMockAdrPlusRepoConfig();
+            _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
+
+            // Setup: Test-specific mocks that cause the version length validation error
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.ParseFileName(Path.GetFullPath(AdrFilePath), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns(Task.FromResult<AdrFileNameComponents?>(latestAdr));
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, "/repo/adr", Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+
+            // Act & Assert
+            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+                .Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*1000*2*", because: "the error message should contain the new version (1000) and the configured limit (2)");
+        }
+
         #endregion
 
         #region ExecuteAsync - Successful Creation Tests
