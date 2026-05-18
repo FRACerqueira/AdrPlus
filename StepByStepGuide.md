@@ -234,7 +234,29 @@ Before initializing your repository, let's understand some important concepts:
    adrplus config --migrate
    ```
 
-2. Execute the migration process using one of these methods:
+2. Execute the init or update process using one of these methods:
+- **Interactive wizard (recommended)**:
+    ```bash
+    adrplus init --wizard
+    ```
+- **Direct path**:
+    ```bash
+    adrplus init --path "./path/to/existing/adrs" --file "./path/to/config"
+    ```
+- This process:
+    - Creates the folder specified in `folderadr` (e.g., `doc/adr`)
+    - Creates the `adr-config.adrplus` configuration file in the repository root
+    - Prepares your repository for ADR management
+
+- **What gets created:**
+    ```
+    your-project/
+    ├── doc/
+    │   └── adr/                    # ADR storage folder
+    └── adr-config.adrplus          # Repository configuration
+    ```
+
+3. Execute the migration process using one of these methods:
    - **Interactive wizard (recommended)**:
      ```bash
      adrplus migrate --wizard
@@ -244,32 +266,9 @@ Before initializing your repository, let's understand some important concepts:
      adrplus migrate --path "./path/to/existing/adrs"
      ```
 
-3. For detailed migration instructions, see: [Migration Guide](MigrationGuide.md)
+4. For detailed migration instructions, see: [Migration Guide](MigrationGuide.md)
 
 **After migration is complete**, proceed with the repository initialization below.
-
----
-
-### Initialize Your Repository
-
-Now initialize the ADR repository structure in your project:
-
-```bash
-adrplus init --wizard
-```
-
-This command:
-- Creates the folder specified in `folderadr` (e.g., `doc/adr`)
-- Creates the `adr-config.adrplus` configuration file in the repository root
-- Prepares your repository for ADR management
-
-**What gets created:**
-```
-your-project/
-├── doc/
-│   └── adr/                    # ADR storage folder
-└── adr-config.adrplus          # Repository configuration
-```
 
 ---
 

@@ -40,9 +40,9 @@ Before migrating your ADRs, ensure you have:
    - This must be done BEFORE attempting any migration operation
    - This step configures where the tool will look for ADRs to migrate
 
-✅ **Repository already initialized with AdrPlus**
+✅ **Repository already initialized or updated with AdrPlus**
    - Run: `adrplus init` (if not already done)
-   - This creates the `adr-config.adrplus` configuration file
+   - This creates or update the `adr-config.adrplus` configuration file
 
 ✅ **No ADRs created by AdrPlus tool yet** ⚠️ **CRITICAL**
    - Migration can ONLY be executed if no ADRs have been created using `adrplus new`
@@ -471,14 +471,25 @@ git status
   git commit -m "backup: before ADR migration"
   ```
 
-- ✅ **Test with wizard mode first**: Preview the migration before committing
+  
+- ✅ Enshures run command 'config --migrate' before command 'init' to create or update the migration configuration
   ```bash
-  adrplus migrate --wizard
+  adrplus config --migrate
   ```
 
 - ✅ **Review configuration**: Ensure naming conventions match your existing files
   ```bash
   adrplus config --repository
+  ```
+
+- ✅ Enshures run command 'init' before migration to create or update the configuration file, otherwise the migration will not run and you will need to run 'init' and then 'config --migrate' before running migration again.
+  ```bash
+  adrplus init --wizard
+  ```
+
+- ✅ **Test with wizard mode first**: Preview the migration before committing
+  ```bash
+  adrplus migrate --wizard
   ```
 
 - ✅ **Verify each step**: After migration, open files to confirm format
