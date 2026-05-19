@@ -2005,6 +2005,285 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Let&apos;s start with the initial configuration. (Press &lt;ESC&gt; to skip initial configuration).
+        /// </summary>
+        internal static string InitConfigBannerMessage {
+            get {
+                return ResourceManager.GetString("InitConfigBannerMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to create folder for each scope?.
+        /// </summary>
+        internal static string InitConfigCreateFolderByScope {
+            get {
+                return ResourceManager.GetString("InitConfigCreateFolderByScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the default folder for ADRs.
+        /// </summary>
+        internal static string InitConfigDefaultFolderADR {
+            get {
+                return ResourceManager.GetString("InitConfigDefaultFolderADR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string InitConfigEditorNone {
+            get {
+                return ResourceManager.GetString("InitConfigEditorNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to without global path.
+        /// </summary>
+        internal static string InitConfigEditorNoneDesc {
+            get {
+                return ResourceManager.GetString("InitConfigEditorNoneDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter text transform.
+        /// </summary>
+        internal static string InitConfigEnterCaseTransform {
+            get {
+                return ResourceManager.GetString("InitConfigEnterCaseTransform", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the length for number ADR.
+        /// </summary>
+        internal static string InitConfigEnterNumberLength {
+            get {
+                return ResourceManager.GetString("InitConfigEnterNumberLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the prefix for the ADR file name.
+        /// </summary>
+        internal static string InitConfigEnterPrefix {
+            get {
+                return ResourceManager.GetString("InitConfigEnterPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the length for revision ADR.
+        /// </summary>
+        internal static string InitConfigEnterRevisionLength {
+            get {
+                return ResourceManager.GetString("InitConfigEnterRevisionLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the length for scope ADR.
+        /// </summary>
+        internal static string InitConfigEnterScopeLength {
+            get {
+                return ResourceManager.GetString("InitConfigEnterScopeLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Special cases (Scope,Folder by Scope).
+        /// </summary>
+        internal static string InitConfigEnterSpecialCases {
+            get {
+                return ResourceManager.GetString("InitConfigEnterSpecialCases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the length for version ADR.
+        /// </summary>
+        internal static string InitConfigEnterVersionLength {
+            get {
+                return ResourceManager.GetString("InitConfigEnterVersionLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to English.
+        /// </summary>
+        internal static string InitConfigLanguageEnglish {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageEnglish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in English.
+        /// </summary>
+        internal static string InitConfigLanguageEnglishDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageEnglishDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        internal static string InitConfigLanguageOther {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageOther", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool will be in English, status and header custom by user.
+        /// </summary>
+        internal static string InitConfigLanguageOtherDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageOtherDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portuguese.
+        /// </summary>
+        internal static string InitConfigLanguagePortuguese {
+            get {
+                return ResourceManager.GetString("InitConfigLanguagePortuguese", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Portuguese.
+        /// </summary>
+        internal static string InitConfigLanguagePortugueseDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguagePortugueseDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the list of scopes.
+        /// </summary>
+        internal static string InitConfigListScopes {
+            get {
+                return ResourceManager.GetString("InitConfigListScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to migrate existing ADRs?.
+        /// </summary>
+        internal static string InitConfigMigrationQuestion {
+            get {
+                return ResourceManager.GetString("InitConfigMigrationQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press any key to continue....
+        /// </summary>
+        internal static string InitConfigPressAnyKeyToContinue {
+            get {
+                return ResourceManager.GetString("InitConfigPressAnyKeyToContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember to set the status and header texts to your language.
+        /// </summary>
+        internal static string InitConfigRemindCustomLanguage {
+            get {
+                return ResourceManager.GetString("InitConfigRemindCustomLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a custom template file.
+        /// </summary>
+        internal static string InitConfigSelectCustomTemplate {
+            get {
+                return ResourceManager.GetString("InitConfigSelectCustomTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the editor to open ADR when creating/superseding a ADR.
+        /// </summary>
+        internal static string InitConfigSelectEditor {
+            get {
+                return ResourceManager.GetString("InitConfigSelectEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the language for the interface.
+        /// </summary>
+        internal static string InitConfigSelectLanguage {
+            get {
+                return ResourceManager.GetString("InitConfigSelectLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the desired patterns in the ADR files.
+        /// </summary>
+        internal static string InitConfigSelectPatterns {
+            get {
+                return ResourceManager.GetString("InitConfigSelectPatterns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a file markdown template for new ADRs.
+        /// </summary>
+        internal static string InitConfigSelectTemplate {
+            get {
+                return ResourceManager.GetString("InitConfigSelectTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to skip the initial configuration?.
+        /// </summary>
+        internal static string InitConfigSkipConfirmation {
+            get {
+                return ResourceManager.GetString("InitConfigSkipConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom template.
+        /// </summary>
+        internal static string InitConfigTemplateCustom {
+            get {
+                return ResourceManager.GetString("InitConfigTemplateCustom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default by tool(madr).
+        /// </summary>
+        internal static string InitConfigTemplateDefault {
+            get {
+                return ResourceManager.GetString("InitConfigTemplateDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other embedded templates.
+        /// </summary>
+        internal static string InitConfigTemplateEmbedded {
+            get {
+                return ResourceManager.GetString("InitConfigTemplateEmbedded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid application JSON file structure.
         /// </summary>
         internal static string InvalidAppStructure {
@@ -2154,6 +2433,15 @@ namespace AdrPlus.Resources {
         internal static string NewVerChooseAdr {
             get {
                 return ResourceManager.GetString("NewVerChooseAdr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
             }
         }
         
@@ -2671,11 +2959,128 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Case transform for ADR file name.
+        /// </summary>
+        internal static string SummaryCaseTransformForAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryCaseTransformForAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Folder by scope.
+        /// </summary>
+        internal static string SummaryFolderByScope {
+            get {
+                return ResourceManager.GetString("SummaryFolderByScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Folder for ADR files.
+        /// </summary>
+        internal static string SummaryFolderForAdrFiles {
+            get {
+                return ResourceManager.GetString("SummaryFolderForAdrFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        internal static string SummaryLanguage {
+            get {
+                return ResourceManager.GetString("SummaryLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length for Number in ADR file name.
+        /// </summary>
+        internal static string SummaryLengthForNumberInAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryLengthForNumberInAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length for Revision in ADR file name.
+        /// </summary>
+        internal static string SummaryLengthForRevisionInAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryLengthForRevisionInAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length for Scope in ADR file name.
+        /// </summary>
+        internal static string SummaryLengthForScopeInAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryLengthForScopeInAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length for Version in ADR file name.
+        /// </summary>
+        internal static string SummaryLengthForVersionInAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryLengthForVersionInAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open ADR with.
+        /// </summary>
+        internal static string SummaryOpenAdrWith {
+            get {
+                return ResourceManager.GetString("SummaryOpenAdrWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefix in ADR file name.
+        /// </summary>
+        internal static string SummaryPrefixInAdrFileName {
+            get {
+                return ResourceManager.GetString("SummaryPrefixInAdrFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sample filename.
         /// </summary>
         internal static string SummarySampleFilename {
             get {
                 return ResourceManager.GetString("SummarySampleFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sample migration.
+        /// </summary>
+        internal static string SummarySampleMigration {
+            get {
+                return ResourceManager.GetString("SummarySampleMigration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scopes.
+        /// </summary>
+        internal static string SummaryScopes {
+            get {
+                return ResourceManager.GetString("SummaryScopes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip domain check for scopes.
+        /// </summary>
+        internal static string SummarySkipDomainCheckForScopes {
+            get {
+                return ResourceManager.GetString("SummarySkipDomainCheckForScopes", resourceCulture);
             }
         }
         
@@ -3513,6 +3918,15 @@ namespace AdrPlus.Resources {
         internal static string WizardHelpVersionTitle {
             get {
                 return ResourceManager.GetString("WizardHelpVersionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

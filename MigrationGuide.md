@@ -662,12 +662,12 @@ Verify new ADR is created with correct format.
 
 Congratulations! You've successfully migrated your ADRs to AdrPlus format. Your ADRs now benefit from:
 
-✅ Structured metadata (version, domain, status, dates)
-✅ Automatic numbering and file naming
-✅ Version and revision tracking
-✅ Status management (Proposed, Accepted, Rejected, Superseded)
-✅ Scope/domain organization
-✅ Integration with AdrPlus tools for creation, review, and approval
+- ✅ Structured metadata (version, domain, status, dates)
+- ✅ Automatic numbering and file naming
+- ✅ Version and revision tracking
+- ✅ Status management (Proposed, Accepted, Rejected, Superseded)
+- ✅ Scope/domain organization
+- ✅ Integration with AdrPlus tools for creation, review, and approval
 
 Happy documenting! 🎉
 

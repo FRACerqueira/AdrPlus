@@ -1269,4 +1269,142 @@
   <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
     <value>There is a revision ({0}) greater than Configured ({1})</value>
   </data>
+  <data name="InitConfigBannerMessage" xml:space="preserve">
+    <value>Let's start with the initial configuration. (Press &lt;ESC&gt; to skip initial configuration)</value>
+  </data>
+  <data name="InitConfigSkipConfirmation" xml:space="preserve">
+    <value>Do you want to skip the initial configuration?</value>
+  </data>
+  <data name="InitConfigSelectLanguage" xml:space="preserve">
+    <value>Select the language for the interface</value>
+  </data>
+  <data name="InitConfigLanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="InitConfigLanguagePortuguese" xml:space="preserve">
+    <value>Portuguese</value>
+  </data>
+  <data name="InitConfigLanguageOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="InitConfigLanguageEnglishDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in English</value>
+  </data>
+  <data name="InitConfigLanguagePortugueseDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Portuguese</value>
+  </data>
+  <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
+    <value>Interface tool will be in English, status and header custom by user</value>
+  </data>
+  <data name="InitConfigSelectEditor" xml:space="preserve">
+    <value>Select the editor to open ADR when creating/superseding a ADR</value>
+  </data>
+  <data name="InitConfigEditorNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="InitConfigEditorNoneDesc" xml:space="preserve">
+    <value>without global path</value>
+  </data>
+  <data name="InitConfigSelectPatterns" xml:space="preserve">
+    <value>Select the desired patterns in the ADR files</value>
+  </data>
+  <data name="InitConfigEnterPrefix" xml:space="preserve">
+    <value>Enter the prefix for the ADR file name</value>
+  </data>
+  <data name="InitConfigEnterNumberLength" xml:space="preserve">
+    <value>Enter the length for number ADR</value>
+  </data>
+  <data name="InitConfigEnterVersionLength" xml:space="preserve">
+    <value>Enter the length for version ADR</value>
+  </data>
+  <data name="InitConfigEnterRevisionLength" xml:space="preserve">
+    <value>Enter the length for revision ADR</value>
+  </data>
+  <data name="InitConfigEnterCaseTransform" xml:space="preserve">
+    <value>Enter text transform</value>
+  </data>
+  <data name="InitConfigEnterScopeLength" xml:space="preserve">
+    <value>Enter the length for scope ADR</value>
+  </data>
+  <data name="InitConfigCreateFolderByScope" xml:space="preserve">
+    <value>Do you want to create folder for each scope?</value>
+  </data>
+  <data name="InitConfigSelectTemplate" xml:space="preserve">
+    <value>Select a file markdown template for new ADRs</value>
+  </data>
+  <data name="InitConfigTemplateDefault" xml:space="preserve">
+    <value>Default by tool(madr)</value>
+  </data>
+  <data name="InitConfigTemplateEmbedded" xml:space="preserve">
+    <value>Other embedded templates</value>
+  </data>
+  <data name="InitConfigTemplateCustom" xml:space="preserve">
+    <value>Custom template</value>
+  </data>
+  <data name="InitConfigSelectCustomTemplate" xml:space="preserve">
+    <value>Select a custom template file</value>
+  </data>
+  <data name="InitConfigMigrationQuestion" xml:space="preserve">
+    <value>Do you want to migrate existing ADRs?</value>
+  </data>
+  <data name="InitConfigPressAnyKeyToContinue" xml:space="preserve">
+    <value>Press any key to continue...</value>
+  </data>
+  <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
+    <value>Remember to set the status and header texts to your language</value>
+  </data>
+  <data name="InitConfigDefaultFolderADR" xml:space="preserve">
+    <value>Enter the default folder for ADRs</value>
+  </data>
+  <data name="InitConfigEnterSpecialCases" xml:space="preserve">
+    <value>Special cases (Scope,Folder by Scope)</value>
+  </data>
+  <data name="InitConfigListScopes" xml:space="preserve">
+    <value>Enter the list of scopes</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="SummaryLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="SummaryOpenAdrWith" xml:space="preserve">
+    <value>Open ADR with</value>
+  </data>
+  <data name="SummaryFolderForAdrFiles" xml:space="preserve">
+    <value>Folder for ADR files</value>
+  </data>
+  <data name="SummaryPrefixInAdrFileName" xml:space="preserve">
+    <value>Prefix in ADR file name</value>
+  </data>
+  <data name="SummaryLengthForNumberInAdrFileName" xml:space="preserve">
+    <value>Length for Number in ADR file name</value>
+  </data>
+  <data name="SummaryLengthForVersionInAdrFileName" xml:space="preserve">
+    <value>Length for Version in ADR file name</value>
+  </data>
+  <data name="SummaryLengthForRevisionInAdrFileName" xml:space="preserve">
+    <value>Length for Revision in ADR file name</value>
+  </data>
+  <data name="SummaryLengthForScopeInAdrFileName" xml:space="preserve">
+    <value>Length for Scope in ADR file name</value>
+  </data>
+  <data name="SummaryScopes" xml:space="preserve">
+    <value>Scopes</value>
+  </data>
+  <data name="SummarySkipDomainCheckForScopes" xml:space="preserve">
+    <value>Skip domain check for scopes</value>
+  </data>
+  <data name="SummaryFolderByScope" xml:space="preserve">
+    <value>Folder by scope</value>
+  </data>
+  <data name="SummaryCaseTransformForAdrFileName" xml:space="preserve">
+    <value>Case transform for ADR file name</value>
+  </data>
+  <data name="SummarySampleMigration" xml:space="preserve">
+    <value>Sample migration</value>
+  </data>
 </root>

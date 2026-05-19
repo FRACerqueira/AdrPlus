@@ -930,9 +930,6 @@
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
     <value>O ADR foi rejeitado. Deseja continuar?</value>
   </data>
-  <data name="CmdDescUpgrade" xml:space="preserve">
-    <value>Atualizar configurações do repositório</value>
-  </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
     <value>Usar apenas o modelo vazio na criação</value>
   </data>
@@ -975,17 +972,8 @@
   <data name="Template" xml:space="preserve">
     <value>Modelo</value>
   </data>
-  <data name="PromptSelectRepoActions" xml:space="preserve">
-    <value>Selecione opções para atualizar</value>
-  </data>
   <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
     <value>O valor do tamanho da versão deve ser maior que a versão atual</value>
-  </data>
-  <data name="WizardConfigUpgradeTitle" xml:space="preserve">
-    <value>Atualizar configurações do repositório</value>
-  </data>
-  <data name="WizardConfigUpgradeDescription" xml:space="preserve">
-    <value>Após selecionar, pressione [ESC] se quiser retornar ao wizard</value>
   </data>
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Assistente para atualizar as configurações de ADR de um repositório</value>
@@ -1280,5 +1268,143 @@
   </data>
   <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
     <value>Existe uma revisão({0}) maior que o Configurado ({1})</value>
+  </data>
+  <data name="InitConfigBannerMessage" xml:space="preserve">
+    <value>Vamos começar com a configuração inicial. (Pressione &lt;ESC&gt; para pular a configuração inicial)</value>
+  </data>
+  <data name="InitConfigSkipConfirmation" xml:space="preserve">
+    <value>Deseja pular a configuração inicial?</value>
+  </data>
+  <data name="InitConfigSelectLanguage" xml:space="preserve">
+    <value>Selecione o idioma para interface</value>
+  </data>
+  <data name="InitConfigLanguageEnglish" xml:space="preserve">
+    <value>Inglês</value>
+  </data>
+  <data name="InitConfigLanguagePortuguese" xml:space="preserve">
+    <value>Português</value>
+  </data>
+  <data name="InitConfigLanguageOther" xml:space="preserve">
+    <value>Outro</value>
+  </data>
+  <data name="InitConfigLanguageEnglishDesc" xml:space="preserve">
+    <value>Interface da ferramenta, status e cabeçalho estarão em inglês</value>
+  </data>
+  <data name="InitConfigLanguagePortugueseDesc" xml:space="preserve">
+    <value>Interface da ferramenta, status e cabeçalho estarão em português</value>
+  </data>
+  <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
+    <value>Interface da ferramenta estará em inglês, status e cabeçalho personalizados pelo usuário</value>
+  </data>
+  <data name="InitConfigSelectEditor" xml:space="preserve">
+    <value>Selecione o editor para abrir ADR ao criar/substituir um ADR</value>
+  </data>
+  <data name="InitConfigEditorNone" xml:space="preserve">
+    <value>Nenhum</value>
+  </data>
+  <data name="InitConfigEditorNoneDesc" xml:space="preserve">
+    <value>sem caminho global</value>
+  </data>
+  <data name="InitConfigSelectPatterns" xml:space="preserve">
+    <value>Selecione os padrões desejados nos arquivos ADR</value>
+  </data>
+  <data name="InitConfigEnterPrefix" xml:space="preserve">
+    <value>Digite o prefixo para o nome do arquivo ADR</value>
+  </data>
+  <data name="InitConfigEnterNumberLength" xml:space="preserve">
+    <value>Digite o comprimento para o número ADR</value>
+  </data>
+  <data name="InitConfigEnterVersionLength" xml:space="preserve">
+    <value>Digite o comprimento para a versão ADR</value>
+  </data>
+  <data name="InitConfigEnterRevisionLength" xml:space="preserve">
+    <value>Digite o comprimento para a revisão ADR</value>
+  </data>
+  <data name="InitConfigEnterCaseTransform" xml:space="preserve">
+    <value>Digite transformação de texto</value>
+  </data>
+  <data name="InitConfigEnterScopeLength" xml:space="preserve">
+    <value>Digite o comprimento para o escopo ADR</value>
+  </data>
+  <data name="InitConfigCreateFolderByScope" xml:space="preserve">
+    <value>Deseja criar pasta para cada escopo?</value>
+  </data>
+  <data name="InitConfigSelectTemplate" xml:space="preserve">
+    <value>Selecione um modelo de arquivo markdown para novos ADRs</value>
+  </data>
+  <data name="InitConfigTemplateDefault" xml:space="preserve">
+    <value>Padrão da ferramenta (madr)</value>
+  </data>
+  <data name="InitConfigTemplateEmbedded" xml:space="preserve">
+    <value>Outros modelos incorporados</value>
+  </data>
+  <data name="InitConfigTemplateCustom" xml:space="preserve">
+    <value>Modelo customizado</value>
+  </data>
+  <data name="InitConfigSelectCustomTemplate" xml:space="preserve">
+    <value>Selecione um arquivo de modelo customizado</value>
+  </data>
+  <data name="InitConfigMigrationQuestion" xml:space="preserve">
+    <value>Deseja migrar ADRs existentes?</value>
+  </data>
+  <data name="InitConfigPressAnyKeyToContinue" xml:space="preserve">
+    <value>Pressione qualquer tecla para continuar...</value>
+  </data>
+  <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
+    <value>Lembre-se de definir os textos de status e cabeçalho para seu idioma</value>
+  </data>
+  <data name="InitConfigDefaultFolderADR" xml:space="preserve">
+    <value>Digite a pasta padrão para ADRs</value>
+  </data>
+  <data name="InitConfigEnterSpecialCases" xml:space="preserve">
+    <value>Casos especiais (Escopo, Pasta por Escopo)</value>
+  </data>
+  <data name="InitConfigListScopes" xml:space="preserve">
+    <value>Digite a lista de escopos</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Sim</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Não</value>
+  </data>
+  <data name="SummaryLanguage" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="SummaryOpenAdrWith" xml:space="preserve">
+    <value>Abrir ADR com</value>
+  </data>
+  <data name="SummaryFolderForAdrFiles" xml:space="preserve">
+    <value>Pasta para arquivos ADR</value>
+  </data>
+  <data name="SummaryPrefixInAdrFileName" xml:space="preserve">
+    <value>Prefixo no nome do arquivo ADR</value>
+  </data>
+  <data name="SummaryLengthForNumberInAdrFileName" xml:space="preserve">
+    <value>Comprimento para Número no nome do arquivo ADR</value>
+  </data>
+  <data name="SummaryLengthForVersionInAdrFileName" xml:space="preserve">
+    <value>Comprimento para Versão no nome do arquivo ADR</value>
+  </data>
+  <data name="SummaryLengthForRevisionInAdrFileName" xml:space="preserve">
+    <value>Comprimento para Revisão no nome do arquivo ADR</value>
+  </data>
+  <data name="SummaryLengthForScopeInAdrFileName" xml:space="preserve">
+    <value>Comprimento para Escopo no nome do arquivo ADR</value>
+  </data>
+  <data name="SummaryScopes" xml:space="preserve">
+    <value>Escopos</value>
+  </data>
+  <data name="SummarySkipDomainCheckForScopes" xml:space="preserve">
+    <value>Pular verificação de domínio para escopos</value>
+  </data>
+  <data name="SummaryFolderByScope" xml:space="preserve">
+    <value>Pasta por escopo</value>
+  </data>
+  <data name="SummaryCaseTransformForAdrFileName" xml:space="preserve">
+    <value>Transformação de caso para nome do arquivo ADR</value>
+  </data>
+  <data name="SummarySampleMigration" xml:space="preserve">
+    <value>Amostra de migração</value>
   </data>
 </root>

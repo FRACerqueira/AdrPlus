@@ -15,6 +15,13 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal interface IPromptConsole
     {
+       /// <summary>
+       /// Attempts to execute the first-time installation process. 
+       /// </summary>
+       /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+       /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
+       /// installation was executed successfully; otherwise, <see langword="false"/>.</returns>
+        Task<bool> TryExecuteFistInstall(CancellationToken cancellationToken);
 
         /// <summary>
         /// Clears the console history related to migration operations, ensuring that any previous migration logs or messages are removed from the console output. This method is typically used to maintain a clean and organized console display during migration processes, allowing users to focus on current migration activities without being distracted by past logs. 

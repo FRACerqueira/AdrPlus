@@ -7,6 +7,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
+using Microsoft.Extensions.Configuration;
 using PromptPlusLibrary;
 using System.Collections.Frozen;
 using System.Globalization;
@@ -18,7 +19,7 @@ namespace AdrPlus.Infrastructure.UI
     /// <summary>
     /// Console writer implementation using PromptPlus library.
     /// </summary>
-    internal sealed class PromptConsole(IAdrServices adrServices) : IPromptConsole
+    internal sealed partial class PromptConsole(IConfiguration configuration, IFileSystemService fileSystemService, IValidateJsonConfig validate, IAdrServices adrServices) : IPromptConsole
     {
         /// <summary>
         /// Console color for help messages.
@@ -56,7 +57,15 @@ namespace AdrPlus.Infrastructure.UI
         private const string ColorSummary = "navajowhite1";
 
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IFileSystemService _fileSystemService = fileSystemService;
+        private readonly IValidateJsonConfig _validate = validate;
 
+        /// <inheritdoc/>
+        public async Task<bool> TryExecuteFistInstall(CancellationToken cancellationToken)
+        {
+            return await FistInstall(cancellationToken);
+        }
 
         /// <inheritdoc/>
         public void ClearHistoryMigration()
@@ -415,8 +424,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptConfigure(AdrPlusConfig config)
         {
-            var cultureInfo = new CultureInfo(config.Language);
-            PromptPlus.Config.DefaultCulture = cultureInfo;
+            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language);
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
@@ -425,14 +433,13 @@ namespace AdrPlus.Infrastructure.UI
 
         public void PromptEnsureCulture(AdrPlusConfig config)
         {
-            var cultureInfo = new CultureInfo(config.Language);
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(config.Language);
             Thread.CurrentThread.CurrentCulture = new CultureInfo(config.Language);
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-            CultureInfo.CurrentCulture = cultureInfo;
-            CultureInfo.CurrentUICulture = cultureInfo;
-            PromptPlus.Config.DefaultCulture = cultureInfo; 
+            CultureInfo.CurrentCulture = new CultureInfo(config.Language);
+            CultureInfo.CurrentUICulture = new CultureInfo(config.Language);
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(config.Language);
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(config.Language);
+            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language); 
         }
 
         /// <inheritdoc/>
@@ -597,7 +604,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
                 .MaxLength(50)
-                .SuggestionHandler(input => ["doc/adr"])
+                .SuggestionHandler(input => [AppConstants.DefaultFolderAdr])
                 .PredicateSelected(input =>
                 {
                     if (input.Trim().Length == 0)

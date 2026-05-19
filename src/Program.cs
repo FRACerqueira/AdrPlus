@@ -112,6 +112,11 @@ namespace AdrPlus
                     if (Helper.HasAppConfigChange)
                     {
                         host.Dispose();
+                        if (Command.Length == 0)
+                        {
+                            Command = "wizard";
+                            args = [];
+                        }
                     }
 
                 }

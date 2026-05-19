@@ -231,6 +231,8 @@ namespace AdrPlus.Commands.Config
                 {
                     largestep = maxlen;
                 }
+                configrecord.Sample = filename;
+
                 (Curleft, Curtop) = _prompt.PromptGetCursorPosition();
 
                 _prompt.PromptWriteSummary($"{Resources.AdrPlus.SummarySampleFilename}: {filename}");
