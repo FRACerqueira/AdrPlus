@@ -1025,7 +1025,7 @@ public class HelperTests
         var result = Helper.FmtFormat(adrFile);
 
         // Assert
-        result.Should().Contain("Invalid");
+        result.Should().Contain("Unknown");
     }
 
     [Fact]
