@@ -169,11 +169,11 @@ namespace AdrPlus.Infrastructure.UI
                         }
                         catch (ArgumentException)
                         {
-                            return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                            return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                         }
                         catch (NotSupportedException)
                         {
-                            return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                            return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                         }
                         return (true, string.Empty);
                     })
@@ -434,7 +434,7 @@ namespace AdrPlus.Infrastructure.UI
                     continue;
                 }
 
-                PromptWriteSummary($"{Resources.AdrPlus.SummaryLanguage} : {languagesetting}");
+                PromptWriteSummary($"{Resources.AdrPlus.FieldTitleLanguage} : {languagesetting}");
                 if (!string.IsNullOrEmpty(openadrsetting))
                 {
                     PromptWriteSummary($"{Resources.AdrPlus.SummaryOpenAdrWith} : {openadrsetting}");
@@ -544,7 +544,7 @@ namespace AdrPlus.Infrastructure.UI
             await _fileSystemService.WriteAllTextAsync(filepath, jsoncontent, cancellationToken);
             PromptWriteSuccess(filepath);
             PromptEnabledEscToAbort(false);
-            var anykey = PromptPlus.Controls.KeyPress(Resources.AdrPlus.InitConfigPressAnyKeyToContinue)
+            var anykey = PromptPlus.Controls.KeyPress(Resources.AdrPlus.PressAnyKey)
                 .Options(x => x.ShowTooltip(false))
                 .Run(cancellationToken);
             if (anykey.IsAborted)
@@ -558,7 +558,7 @@ namespace AdrPlus.Infrastructure.UI
             {
                 Id = "1.05",
                 Title = Resources.AdrPlus.WizardAdrInitTitle,
-                Description = Resources.AdrPlus.WizardAdrInitDescription,
+                Description = Resources.AdrPlus.EscForReturnWizard,
                 EnabledWhenNotConfigured = false
             };
             if (otherlanguage)
@@ -567,7 +567,7 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     Id = "1.04",
                     Title = Resources.AdrPlus.WizardConfigRepositoryTitle,
-                    Description = Resources.AdrPlus.WizardConfigRepositoryDescription,
+                    Description = Resources.AdrPlus.EscForReturnWizard,
                     EnabledWhenNotConfigured = true
                 };
             }

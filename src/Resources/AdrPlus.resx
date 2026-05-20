@@ -136,7 +136,7 @@
     <value>Usage</value>
   </data>
   <data name="ErrMsgInvalidLanguageCode" xml:space="preserve">
-    <value>'language' contains an invalid language code: '{0}'. Expected format: e.g., 'en-US', 'pt-BR'</value>
+    <value>'language' contains an invalid language code: '{0}'. </value>
   </data>
   <data name="ExceptionDirectoryNotFound" xml:space="preserve">
     <value>Directory not found: {0}</value>
@@ -154,7 +154,7 @@
     <value>Arguments</value>
   </data>
   <data name="ErrMsgTemplateRepoFileNotFound" xml:space="preserve">
-    <value>ADR configuration file (template/adr-config.adrplus) not found. Please run the 'config' command first</value>
+    <value>ADR configuration file (template/adr-config.adrplus) not found. </value>
   </data>
   <data name="ExceptionInvalidArgumentToken" xml:space="preserve">
     <value>Invalid Argument: {0}</value>
@@ -194,9 +194,6 @@
   </data>
   <data name="FieldTitleFolderRepo" xml:space="preserve">
     <value>ADR Repository Folder</value>
-  </data>
-  <data name="FieldTitleTemplate" xml:space="preserve">
-    <value>Template</value>
   </data>
   <data name="FieldTitlePrefix" xml:space="preserve">
     <value>File Prefix</value>
@@ -276,35 +273,11 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Invalid filename format. Expected at least number and title</value>
   </data>
-  <data name="ErrorFilenameNoPrefix" xml:space="preserve">
-    <value>Filename does not start with expected prefix: {0}</value>
-  </data>
-  <data name="ErrorInvalidNumberFormat" xml:space="preserve">
-    <value>Invalid number format: {0}</value>
-  </data>
-  <data name="ErrorInvalidVersionFormat" xml:space="preserve">
-    <value>Invalid version format: {0}</value>
-  </data>
-  <data name="ErrorInvalidRevisionFormat" xml:space="preserve">
-    <value>Invalid revision format: {0}</value>
-  </data>
   <data name="ErrorInvalidScopeFormat" xml:space="preserve">
     <value>Invalid scope format: {0}</value>
   </data>
-  <data name="ErrorInvalidSupersededNumberFormat" xml:space="preserve">
-    <value>Invalid Superseded number format: {0}</value>
-  </data>
-  <data name="ErrorUnexpectedPartInFilename" xml:space="preserve">
-    <value>Unexpected part in filename: {0}</value>
-  </data>
-  <data name="ErrorParsingFilename" xml:space="preserve">
-    <value>Error parsing filename: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Missing required field: '{0}'</value>
-  </data>
-  <data name="ValidationFieldMustBeBoolean" xml:space="preserve">
-    <value>Field '{0}' must be a boolean, but found: {1}</value>
   </data>
   <data name="ValidationFieldWrongType" xml:space="preserve">
     <value>Field '{0}' must be of type {1}, but found: {2}</value>
@@ -331,7 +304,7 @@
     <value>Each scope in '{0}' must be at least as long as the '{1}' value ({2})</value>
   </data>
   <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>The following scopes in '{0}' are not defined in '{1}': {2}</value>
+    <value>The following scopes are not defined: {0}</value>
   </data>
   <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
     <value>Field '{0}' cannot be true when '{1}' is empty</value>
@@ -351,9 +324,6 @@
   <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
     <value>Invalid culture: {0}</value>
   </data>
-  <data name="ValidationFieldMaxCharValue" xml:space="preserve">
-    <value>The field '{0}' must have a maximum of 1 character</value>
-  </data>
   <data name="FieldTitleLanguage" xml:space="preserve">
     <value>Language</value>
   </data>
@@ -370,7 +340,7 @@
     <value>Save configuration and exit</value>
   </data>
   <data name="ConfigErrorInvalidBoolean" xml:space="preserve">
-    <value>Invalid boolean value. Please enter 'true' or 'false'</value>
+    <value>Invalid boolean value. Please enter 'true' or 'false' ({0})</value>
   </data>
   <data name="ConfigErrorInvalidNumber" xml:space="preserve">
     <value>Invalid number format. Please enter a valid number</value>
@@ -481,7 +451,7 @@
     <value>Duplicate scope entries found</value>
   </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
-    <value>Init command has not been executed. Run 'adrplus init' first</value>
+    <value>The repository is not initialized</value>
   </data>
   <data name="ExceptionConfigFileNotFound" xml:space="preserve">
     <value>Configuration file not found: {0}</value>
@@ -550,7 +520,7 @@
     <value>Sample Title</value>
   </data>
   <data name="Welcome" xml:space="preserve">
-    <value>Welcome to AdrPlus v{0}</value>
+    <value>Welcome to AdrPlus ({0})</value>
   </data>
   <data name="HelpUsageSequenceAdr" xml:space="preserve">
     <value>Sequence ID from ADR</value>
@@ -600,26 +570,8 @@
   <data name="ErrMsgAdrFileEmpty" xml:space="preserve">
     <value>The ADR file is empty</value>
   </data>
-  <data name="ErrMsgAdrHeaderDisclaimerInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected disclaimer header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderVersionInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected version header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderRevisionInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected revision header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderScopeInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected scope header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderStatusCreateLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected created status</value>
-  </data>
-  <data name="ErrMsgAdrHeaderStatusChangeLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected changed status</value>
-  </data>
-  <data name="ErrMsgAdrHeaderTitleInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected title header</value>
+  <data name="ErrMsgAdrFieldHeaderNotFound" xml:space="preserve">
+    <value>The ADR file does not have the expected {0} header</value>
   </data>
   <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
     <value>Status line does not have the expected format</value>
@@ -666,9 +618,6 @@
   <data name="CmdDescVersion" xml:space="preserve">
     <value>Create a new ADR with a new version (incremental version, same number)</value>
   </data>
-  <data name="CmdDescReview" xml:space="preserve">
-    <value>Create a new ADR with a new revision (incremental revision, same number and version)</value>
-  </data>
   <data name="CmdDescAccepted" xml:space="preserve">
     <value>Update the status of an ADR to 'accepted'</value>
   </data>
@@ -676,7 +625,7 @@
     <value>Update the status of an ADR to 'rejected'</value>
   </data>
   <data name="CmdDescSupersede" xml:space="preserve">
-    <value>Supersede an ADR (incremental number, reset revision and version)</value>
+    <value>Supersede an ADR (incremental number)</value>
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Undo the status (accepted/rejected) of an ADR</value>
@@ -775,10 +724,7 @@
     <value>Create and manage your ADRs</value>
   </data>
   <data name="WizardGroupCommandHelpTitle" xml:space="preserve">
-    <value>Command Help</value>
-  </data>
-  <data name="WizardGroupCommandHelpDescription" xml:space="preserve">
-    <value>Show command help information</value>
+    <value>Command help</value>
   </data>
   <data name="WizardGroupExitTitle" xml:space="preserve">
     <value>Exit</value>
@@ -786,86 +732,44 @@
   <data name="WizardGroupExitDescription" xml:space="preserve">
     <value>Exit the wizard</value>
   </data>
-  <data name="WizardAdrMainMenuTitle" xml:space="preserve">
+  <data name="WizardMainMenu" xml:space="preserve">
     <value>Main menu</value>
-  </data>
-  <data name="WizardAdrMainMenuDescription" xml:space="preserve">
-    <value>Return to main menu</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
     <value>Initialize or update a repository with ADRs settings</value>
   </data>
-  <data name="WizardAdrInitDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
   <data name="WizardAdrNewTitle" xml:space="preserve">
     <value>Create a new ADR</value>
-  </data>
-  <data name="WizardAdrNewDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardAdrApproveTitle" xml:space="preserve">
     <value>Approve an existing ADR</value>
   </data>
-  <data name="WizardAdrApproveDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
+  <data name="EscForReturnWizard" xml:space="preserve">
+    <value>After selected, press 'ESC' if you want to return to the wizard</value>
   </data>
   <data name="WizardAdrRejectTitle" xml:space="preserve">
     <value>Reject an existing ADR</value>
   </data>
-  <data name="WizardAdrRejectDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
   <data name="WizardAdrVersionTitle" xml:space="preserve">
     <value>Create a new version an existing ADR</value>
-  </data>
-  <data name="WizardAdrVersionDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardAdrRevisionTitle" xml:space="preserve">
     <value>Create a new revision an existing ADR</value>
   </data>
-  <data name="WizardAdrRevisionDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
   <data name="WizardAdrSupersedeTitle" xml:space="preserve">
     <value>Supersede an existing ADR</value>
-  </data>
-  <data name="WizardAdrSupersedeDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
     <value>Undo accepted/reject an existing ADR</value>
   </data>
-  <data name="WizardAdrUndoStatusDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
-  <data name="WizardConfigMainMenuTitle" xml:space="preserve">
-    <value>Main menu</value>
-  </data>
-  <data name="WizardConfigMainMenuDescription" xml:space="preserve">
-    <value>Return to main menu</value>
-  </data>
   <data name="WizardConfigApplicationTitle" xml:space="preserve">
     <value>Configure this application</value>
-  </data>
-  <data name="WizardConfigApplicationDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
   </data>
   <data name="WizardConfigTemplateTitle" xml:space="preserve">
     <value>Config default content template</value>
   </data>
-  <data name="WizardConfigTemplateDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
   <data name="WizardConfigRepositoryTitle" xml:space="preserve">
     <value>Configure the default ADR repository</value>
-  </data>
-  <data name="WizardConfigRepositoryDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
-  <data name="WizardHelpMainMenuTitle" xml:space="preserve">
-    <value>Main menu</value>
   </data>
   <data name="WizardHelpMainMenuDescription" xml:space="preserve">
     <value>Return to main menu</value>
@@ -873,56 +777,32 @@
   <data name="WizardHelpConfigTitle" xml:space="preserve">
     <value>Config command help</value>
   </data>
-  <data name="WizardHelpConfigDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="WizardHelpInitTitle" xml:space="preserve">
     <value>Init command help</value>
-  </data>
-  <data name="WizardHelpInitDescription" xml:space="preserve">
-    <value>Show help information</value>
   </data>
   <data name="WizardHelpNewTitle" xml:space="preserve">
     <value>New command help</value>
   </data>
-  <data name="WizardHelpNewDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="WizardHelpApproveTitle" xml:space="preserve">
     <value>Approve command help</value>
   </data>
-  <data name="WizardHelpApproveDescription" xml:space="preserve">
+  <data name="ShowHelpInfo" xml:space="preserve">
     <value>Show help information</value>
   </data>
   <data name="WizardHelpRejectTitle" xml:space="preserve">
     <value>Reject command help</value>
   </data>
-  <data name="WizardHelpRejectDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="WizardHelpVersionTitle" xml:space="preserve">
     <value>Version command help</value>
-  </data>
-  <data name="WizardHelpVersionDescription" xml:space="preserve">
-    <value>Show help information</value>
   </data>
   <data name="WizardHelpRevisionTitle" xml:space="preserve">
     <value>Revision command help</value>
   </data>
-  <data name="WizardHelpRevisionDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="WizardHelpSupersedeTitle" xml:space="preserve">
     <value>Supersede command help</value>
   </data>
-  <data name="WizardHelpSupersedeDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="WizardHelpUndoTitle" xml:space="preserve">
     <value>Undo command help</value>
-  </data>
-  <data name="WizardHelpUndoDescription" xml:space="preserve">
-    <value>Show help information</value>
   </data>
   <data name="PressAnyKey" xml:space="preserve">
     <value>Press any key to continue</value>
@@ -931,49 +811,16 @@
     <value>The ADR has been rejected. Do you want to continue?</value>
   </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
-    <value>Use only the empty template when creating it</value>
+    <value>Use only template when creating it (not copy content)</value>
   </data>
   <data name="PromptEmptyTemplate" xml:space="preserve">
     <value>Use model without data</value>
-  </data>
-  <data name="ErrMsgFileTemplateNotFound" xml:space="preserve">
-    <value>Template file not found</value>
-  </data>
-  <data name="ErrMsgRepoVersionValueMustBeIntegerAndRangeVersion" xml:space="preserve">
-    <value>The version size value must be an integer between 2 and 3</value>
-  </data>
-  <data name="ErrMsgRepoVersionValueNotFound" xml:space="preserve">
-    <value>Value of the argument for version size not found</value>
-  </data>
-  <data name="ErrMsgRepoRevisionValueNotFound" xml:space="preserve">
-    <value>Argument value for revision size not found</value>
-  </data>
-  <data name="ErrMsgRepoScopeValueNotFound" xml:space="preserve">
-    <value>Argument value for scope size not found</value>
-  </data>
-  <data name="ErrMsgRepoScopeitemsValueNotFound" xml:space="preserve">
-    <value>Argument value for scope list not found</value>
-  </data>
-  <data name="ErrMsgRepoScopeAlreadySet" xml:space="preserve">
-    <value>Repository scope already set</value>
-  </data>
-  <data name="ErrMsgRepoRevisionAlreadySet" xml:space="preserve">
-    <value>Repository revision already set</value>
-  </data>
-  <data name="ErrMsgRepoRevisionValueMustBeIntegerAndRangeRevision" xml:space="preserve">
-    <value>The revision size value must be an integer between 1 and 3</value>
-  </data>
-  <data name="ErrMsgRepoScopeValueMustBeIntegerAndRangeScope" xml:space="preserve">
-    <value>The scope size value must be an integer between 1 and 5</value>
   </data>
   <data name="PromptSelectAdrRepositoryAdr" xml:space="preserve">
     <value>Select ADR repository path</value>
   </data>
   <data name="Template" xml:space="preserve">
     <value>Template</value>
-  </data>
-  <data name="ErrMsgRepoVersionValueMustBeGreaterThanCurrent" xml:space="preserve">
-    <value>The version size value must be larger than the current version</value>
   </data>
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Wizard to update the ADR settings of a repository</value>
@@ -1003,7 +850,7 @@
     <value>Migrate existing ADRs to use the tool (create header)</value>
   </data>
   <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
-    <value>Cannot determine root path with ADR config</value>
+    <value>Cannot determine root path with ADR config: {0}</value>
   </data>
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
     <value>Wizard for migrating ADRs to use the AdrPlus tool (header creation)</value>
@@ -1053,15 +900,6 @@
   <data name="Superseded" xml:space="preserve">
     <value>Superseded</value>
   </data>
-  <data name="ErrMsgAdrInvalidHeader" xml:space="preserve">
-    <value>Invalid header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderDomainInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected domain header</value>
-  </data>
-  <data name="ErrMsgAdrHeaderStatusSupersededLineInvalid" xml:space="preserve">
-    <value>The ADR file does not have the expected superseded status</value>
-  </data>
   <data name="PromptConfirmMigration" xml:space="preserve">
     <value>Confirm the ADR migration to these files?</value>
   </data>
@@ -1078,7 +916,7 @@
     <value>AdrPlus Format</value>
   </data>
   <data name="InvalidFormatHeader" xml:space="preserve">
-    <value>Invalid header format</value>
+    <value>Invalid header</value>
   </data>
   <data name="ReadyToMigrate" xml:space="preserve">
     <value>Ready to migrate</value>
@@ -1089,14 +927,8 @@
   <data name="WizardConfigMigratedTitle" xml:space="preserve">
     <value>Migrate existing ADRs to ADRs Plus compatibility</value>
   </data>
-  <data name="WizardConfigMigratedDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
   <data name="WizardHelpMigrateTitle" xml:space="preserve">
     <value>Migrate command help</value>
-  </data>
-  <data name="WizardHelpMigrateDescription" xml:space="preserve">
-    <value>Show help information</value>
   </data>
   <data name="CmdDescExplorer" xml:space="preserve">
     <value>ADR file explorer ,viewer and report</value>
@@ -1176,9 +1008,6 @@
   <data name="WizardHelpExplorerTitle" xml:space="preserve">
     <value>Explorer command help</value>
   </data>
-  <data name="WizardHelpExplorerDescription" xml:space="preserve">
-    <value>Show help information</value>
-  </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
     <value>Migration pattern</value>
   </data>
@@ -1240,22 +1069,16 @@
     <value>Select a position for the 'Title' element at filename</value>
   </data>
   <data name="PromptConfirmParamMigration" xml:space="preserve">
-    <value>Confirm your parameters?</value>
+    <value>Confirm this parameters?</value>
   </data>
   <data name="WizardConfigMigration" xml:space="preserve">
     <value>Configure the ADR migration</value>
-  </data>
-  <data name="WizardConfigMigrationDescription" xml:space="preserve">
-    <value>After selected, press [ESC] if you want to return to the wizard</value>
-  </data>
-  <data name="ErrMsgInvalidRepoConfigMigrationPattern" xml:space="preserve">
-    <value>Empty migration pattern configuration : {0}</value>
   </data>
   <data name="AlredyAdrPlusCreated" xml:space="preserve">
     <value>There are already ADRs that were created using this tool</value>
   </data>
   <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
-    <value>The file already exists</value>
+    <value>The file already exists {0}</value>
   </data>
   <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
     <value>Configuration file already exists. Do you want to update?</value>
@@ -1347,9 +1170,6 @@
   <data name="InitConfigMigrationQuestion" xml:space="preserve">
     <value>Do you want to migrate existing ADRs?</value>
   </data>
-  <data name="InitConfigPressAnyKeyToContinue" xml:space="preserve">
-    <value>Press any key to continue...</value>
-  </data>
   <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
     <value>Remember to set the status and header texts to your language</value>
   </data>
@@ -1367,9 +1187,6 @@
   </data>
   <data name="No" xml:space="preserve">
     <value>No</value>
-  </data>
-  <data name="SummaryLanguage" xml:space="preserve">
-    <value>Language</value>
   </data>
   <data name="SummaryOpenAdrWith" xml:space="preserve">
     <value>Open ADR with</value>
@@ -1406,5 +1223,14 @@
   </data>
   <data name="SummarySampleMigration" xml:space="preserve">
     <value>Sample migration</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>comment</value>
+  </data>
+  <data name="StatusSuperseded" xml:space="preserve">
+    <value>Status superseded</value>
+  </data>
+  <data name="CmdDescReview" xml:space="preserve">
+    <value>Create a new ADR with a new revison (incremental review, same number and version)</value>
   </data>
 </root>

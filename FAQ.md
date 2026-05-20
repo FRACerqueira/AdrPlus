@@ -25,7 +25,9 @@ Yes. If scopes are enabled, ADRs with the same title can coexist as long as they
 
 ### Is the wizard mandatory to use AdrPlus?
 
-No. The wizard is optional; you can run commands directly.
+On **first use**, the initial setup wizard runs automatically when you execute any command (except `help`). This ensures your configuration is set up correctly.
+
+After the initial setup is complete, the interactive wizard (`--wizard`) is optional for subsequent commands. You can run commands directly with their arguments without using the wizard.
 
 ### What file stores application-level settings?
 

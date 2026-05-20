@@ -97,7 +97,7 @@ namespace AdrPlus.Commands.Init
 
                 if (!_fileSystem.DirectoryExists(targetPath))
                 {
-                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
+                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
 
                 LogMessages.LogInitializingRepository(_logger, targetPath);
@@ -202,9 +202,10 @@ namespace AdrPlus.Commands.Init
                 }
                 if (!ConfirmYes)
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.InitCmdConfigFileAlreadyExists, configPath));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrConfigFileAlreadyExists, configPath));
                 }
-                jsonrepoconfig = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
+                filecfg = _validateconfig.GetDefaultConfigRepoFilePath();
+                jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
             }
             else
             {
@@ -213,7 +214,7 @@ namespace AdrPlus.Commands.Init
                     filecfg = Path.GetFullPath(fileConfig);
                     if (!_fileSystem.FileExists(fileConfig))
                     {
-                        throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfig));
+                        throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, fileConfig));
                     }
                     jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
                 }
@@ -228,7 +229,7 @@ namespace AdrPlus.Commands.Init
             if (!isValid)
             {
                 LogMessages.LogInvalidRepoConfiguration(_logger, string.Join("; ", errorMessage));
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgInvalidRepoConfig, filecfg));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, filecfg));
             }
             var newrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonrepoconfig, AppConstants.RepoSerializerOptions)!;
 
@@ -236,15 +237,15 @@ namespace AdrPlus.Commands.Init
             (int maxnumber, int maxversion, int maxrevision) = await _validateconfig.GetMaxNumberVersionRevision(targetPath, newrepoconfig);
             if (maxnumber.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenSeq)
             {
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenSeqGreatConfigSetting, maxnumber, newrepoconfig.LenSeq));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenSeqGreaterThanConfig, maxnumber, newrepoconfig.LenSeq));
             }
             if (maxversion.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenVersion)
             {
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenVerGreatConfigSetting, maxversion, newrepoconfig.LenVersion));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenVersionGreaterThanConfig, maxversion, newrepoconfig.LenVersion));
             }
             if (maxrevision.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenRevision && newrepoconfig.LenRevision > 0)
             {
-                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenRevGreatConfigSetting, maxrevision, newrepoconfig.LenRevision));
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenRevisionGreaterThanConfig, maxrevision, newrepoconfig.LenRevision));
             }
 
             await CreateNewConfigAsync(jsonrepoconfig, targetPath, result, cancellationToken);

@@ -77,7 +77,7 @@ namespace AdrPlus.Commands.Review
         /// <returns>A formatted error string listing the required statuses (Accepted/Rejected).</returns>
         private static string MessageNotValidStatusForUpdate()
         {
-            return string.Format(null, FormatMessages.NotValidStatusForUpdate, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}/{Helper.GetResourceStatus(AdrStatus.Rejected)}");
+            return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}/{Helper.GetResourceStatus(AdrStatus.Rejected)}");
         }
 
         /// <summary>
@@ -134,10 +134,10 @@ namespace AdrPlus.Commands.Review
                 }
                 if (!_filesystem.FileExists(fileadr))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, fileadr));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, fileadr));
                 }
                 var configrootPath = _filesystem.GetFileRootRepositoryPath(fileadr)
-                                ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorCannotDetermineRootPath, fileadr));
+                                ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrCannotDetermineRootPath, fileadr));
                 string jsonString = await _filesystem.ReadAllTextAsync(configrootPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
                 if (!IsValid)
@@ -150,7 +150,7 @@ namespace AdrPlus.Commands.Review
 
                 if (repoconfig.LenRevision == 0)
                 {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorRevisionNotconfig, configrootPath));
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrRevisionNotConfigured, configrootPath));
                 }
 
                 var rootPath = _filesystem.GetFullNameDirectoryByFile(configrootPath);
@@ -204,11 +204,11 @@ namespace AdrPlus.Commands.Review
                 }
                 if (infoadr.Number != infolastadr.Number)
                 {
-                    throw new InvalidOperationException(string.Format(null,FormatMessages.ErrorSequenceAdrNotFound,infoadr.Number, infolastadr.FileName));
+                    throw new InvalidOperationException(string.Format(null,FormatMessages.ErrAdrSequenceNotFound,infoadr.Number, infolastadr.FileName));
                 }
                 if ((infolastadr.Revision??0 + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgNewLenRevGreatConfigSetting, infolastadr.Revision + 1, repoconfig.LenRevision));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenRevisionGreaterThanConfig, infolastadr.Revision + 1, repoconfig.LenRevision));
                 }
                 if (infolastadr.FileName != infoadr.FileName)
                 {
@@ -253,7 +253,7 @@ namespace AdrPlus.Commands.Review
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgFileAlreadyExists, Path.GetFileName(filePath)));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrFileAlreadyExists, Path.GetFileName(filePath)));
                 }
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
@@ -278,7 +278,7 @@ namespace AdrPlus.Commands.Review
         /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
-            return string.Format(null, FormatMessages.NotValidStatusForUpdate, $"{Helper.GetResourceStatus(adrStatus)}");
+            return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(adrStatus)}");
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace AdrPlus.Commands.Review
             var culture = CultureInfo.GetCultureInfo(_config.Language);
             if (!DateTime.TryParse(dateRef, culture, DateTimeStyles.None, out var dateAdr))
             {
-                throw new FormatException(string.Format(null, FormatMessages.ErrorDateFormat, _config.Language));
+                throw new FormatException(string.Format(null, FormatMessages.ErrInvalidDateFormat, _config.Language));
             }
             return dateAdr;
         }
@@ -398,14 +398,14 @@ namespace AdrPlus.Commands.Review
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, _filesystem.GetFullNameFile(configPath)));
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configPath));
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 if (repoconfig.LenRevision == 0)
                 {
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorRevisionNotconfig, configPath));
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrRevisionNotConfigured, configPath));
                 }
 
 

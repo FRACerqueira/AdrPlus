@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -301,7 +301,7 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     if (input.Length < 10)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrorLenFileSampleMigration, 10));
+                        return (false, string.Format(null, FormatMessages.ErrLenFileSampleMigration, 10));
                     }
                     return (true, string.Empty);
                 })
@@ -417,7 +417,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptShowWellcome(string appVersion)
         {
-            PromptPlus.Console.WriteLine($"[{ColorInfo}]{string.Format(null, FormatMessages.WelcomeFormat, appVersion)}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorInfo}]{string.Format(null, FormatMessages.MsgWelcome, appVersion)}[/]");
             PromptPlus.Console.WriteLine("");
         }
 
@@ -512,7 +512,6 @@ namespace AdrPlus.Infrastructure.UI
                 { AppConstants.FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
                 { AppConstants.FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
                 { AppConstants.FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
-                { AppConstants.FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
                 { AppConstants.FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
                 { AppConstants.FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },
                 { AppConstants.FieldLenVersion, Resources.AdrPlus.FieldTitleLenVersion },
@@ -549,7 +548,10 @@ namespace AdrPlus.Infrastructure.UI
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .AddItems(fields.Where(x => x.IsEnabled), false)
+                .Interaction(fields,(item,ctx) => 
+                 {
+                     ctx.AddItem(item, !item.IsEnabled);
+                 })
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
@@ -588,7 +590,7 @@ namespace AdrPlus.Infrastructure.UI
                     }
                     if (!isvalid)
                     {
-                        return (false, string.Format(null, FormatMessages.ValidationLanguageInvalidFormat, input));
+                        return (false, string.Format(null, FormatMessages.ValidationLanguageInvalid, input));
                     }
                     return (true, string.Empty);
                 })
@@ -618,11 +620,11 @@ namespace AdrPlus.Infrastructure.UI
                     }
                     catch (ArgumentException)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                        return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                     }
                     catch (NotSupportedException)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                        return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                     }
                     return (true, string.Empty);
                 })
@@ -953,7 +955,7 @@ namespace AdrPlus.Infrastructure.UI
                         {
                             return $"{Path.GetFileName(item.FileName)} ({item.Number})";
                         }, maxslidinglines: 3);
-                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 25, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
+                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 29, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
                         if (fields.Any(x => x.StartsWith("3)",false,CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Folder, 20, (item) => Helper.FmtFolder(item, folderrepoadr), maxslidinglines: 2);
@@ -964,7 +966,7 @@ namespace AdrPlus.Infrastructure.UI
                         }
                         if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Prefix, 10, (item) => item.Prefix, maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Prefix, 5, (item) => item.Prefix, maxslidinglines: 2);
                         }
                         if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
                         {
@@ -1189,7 +1191,7 @@ namespace AdrPlus.Infrastructure.UI
                     var targetconfigPath = Path.Combine(input.FullPath,validateJsonConfig.GetFileNameRepoConfig());
                     if (!fileSystemService.FileExists(targetconfigPath))
                     {
-                        return (false, string.Format(null, FormatMessages.ExceptionFileNotFound, targetconfigPath));
+                        return (false, string.Format(null, FormatMessages.ErrFileNotFound, targetconfigPath));
                     }
                     return (true, "");
                 })

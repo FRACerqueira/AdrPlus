@@ -75,25 +75,61 @@ You should see the help menu with available commands.
 
 ## Initial Configuration
 
-AdrPlus uses a wizard to guide you through initial setup. This is the **recommended approach** for first-time users.
+**AdrPlus automates the initial setup on first run!**
 
-### Quick Setup with the Wizard
+When you execute any AdrPlus command for the first time (except `help`), an interactive wizard will automatically guide you through the setup process. This ensures your application and repository are configured correctly before you start using the tool.
 
-Run the interactive wizard:
+### Automatic First-Time Setup
+
+The first time you run an AdrPlus command, the setup wizard will automatically:
+
+1. **Select your preferred language** (`en-US`, `pt-BR`, or other)
+2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
+3. **Set your ADR repository folder** (default: `doc/adr`)
+4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
+5. **Configure migration pattern 
+6. **Create the configuration files**:
+   - `adrplus.json` (application settings)
+   - `adr-config.adrplus` (repository settings)
+
+**Example - Just run any command:**
 
 ```bash
-adrplus wizard
+# Just run without command and the initial setup wizard starts automatically
+adrplus new --wizard
+
+# Or any other command - the first-time wizard will run before it executes
+adrplus explorer --path "."
 ```
 
-The wizard will guide you through:
-1. **Application settings** (language, editor preferences, folder location)
-2. **Repository settings** (ADR naming convention, versioning, status labels)
-3. **Repository initialization**
-4. **Creating your first ADR**
+### What Happens Next
 
-### Manual Setup (Optional)
+After the initial setup completes:
+- Your configuration files are created
+- You're ready to create, manage, and approve ADRs
+- You can use the wizard (`--wizard`) with commands for guided operations, or run commands directly with arguments
 
-If you prefer to configure manually instead of using the wizard:
+### Optional: Manual Configuration Later
+
+If you need to adjust your settings after the initial setup, you can reconfigure at any time:
+
+```bash
+# Edit application settings (language, editor preferences)
+adrplus config --application
+
+# Edit repository settings (ADR naming, structure, status labels)
+adrplus config --repository
+
+# Edit migration patterns (for migrating existing ADRs)
+adrplus config --migrate
+
+# Edit the default ADR template
+adrplus config --template
+```
+
+### Manual Setup (Advanced / Optional)
+
+If you prefer to configure manually instead of using the automatic wizard:
 
 #### Step 1: Configure Application Settings
 

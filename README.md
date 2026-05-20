@@ -136,51 +136,79 @@ dotnet tool update -g adrplus --add-source ./nupkg
 
 ## Quick Start
 
-```bash
-# 1. Run the command wizard to configure and use the tool
-adrplus wizard
-```
-Using this for the first time? Follow the step-by-step guide to set up and create your first ADR:
+**AdrPlus automates the initial setup on first run!** 
 
-[Step-by-Step Guide](StepByStepGuide.md)
+When you run any command for the first time (except `help`), an interactive wizard will automatically guide you through:
+- Selecting your preferred language
+- Configuring your editor to open ADR files
+- Setting up your ADR repository structure and naming conventions
+- Creating your ADR folder and configuration files
+
+To get started, simply run any command, and the setup wizard will appear:
+
+```bash
+# Just run any command and the initial setup wizard starts automatically
+adrplus new --wizard
+```
+
+After initial setup completes, you can use any command directly:
+
+```bash
+# Create a new ADR with the wizard
+adrplus new --wizard
+
+# Or explore and manage your ADRs
+adrplus explorer --path "path/to/repository"
+adrplus approve --file "path/to/adr/ADR0001.md"
+```
 
 > **Note**: If you have existing ADR files in a different format, see [Migration Guide](MigrationGuide.md) for detailed prerequisites and migration instructions before creating new ADRs with the tool.
 
+For a detailed walkthrough, see the [Step-by-Step Guide](StepByStepGuide.md).
+
 ---
 
-## Manual Setup with the Wizard
+## Advanced Configuration (Optional)
+
+**Note:** The initial setup wizard runs automatically on first use. The commands below are optional if you want to reconfigure or adjust settings after the initial setup.
+
+### Reconfigure Application Settings
+
+You can modify application settings at any time:
 
 ```bash
-# 1. Configure the tool (optional, you can edit the config file directly or use the config command later)
+# Edit language, editor preferences, and other application settings
+adrplus config --application
 
-    # Configure application settings (optional: language, prompts, defaults)
-    adrplus config --application
+# Edit the default template used for new ADRs
+adrplus config --template
 
-    # Configure the base template used for new ADRs (optional: default template is madr)
-    adrplus config --template
+# Edit patterns for migrating existing ADRs (used with the migrate command)
+adrplus config --migrate
 
-    # Configure pattern migrated ADRs (optional: used when migrating existing ADRs) 
-    adrplus config --migrate
-
-    # Configure repository settings (ADR naming, template, statuses, and structure)
-    adrplus config --repository
-
-# 2. Initialize a new ADR repository in the current directory
-    
-    adrplus init --wizard
-
-# 3. Create your first ADR
-
-    adrplus new --wizard
-
-# 4. Approve it
-
-    adrplus approve --wizard
-
-# 5. List available commands
-
-    adrplus help
+# Edit repository-specific settings (ADR naming, statuses, structure)
+adrplus config --repository
 ```
+
+### Reinitialize or Update Repository Structure
+
+The `init` command can be run multiple times to reinitialize or update your ADR repository structure:
+
+```bash
+# Initialize repository for the first time (or with wizard guidance)
+adrplus init --wizard
+
+# Reinitialize with specific configuration file
+adrplus init --path "path/to/repository" --file "path/to/config"
+
+# Reinitialize current directory
+adrplus init --path "."
+```
+
+This is useful when:
+- You need to update the folder structure for scope changes
+- You want to recreate default configuration files
+- You're adjusting naming conventions or patterns
 
 ---
 
@@ -246,7 +274,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `config`    | Application configuration editor,migrate repository,repository and default ADR template |
 | `explorer`  | Launch the file viewer explorer and report for the ADR repository |
 | `migrate`   | Migrate existing ADRs to use the tool |
-| `init`      | Initialize or update the ADR repository folder structure |
+| `init`      | Initialize or reinitialize the ADR repository folder structure (can be run multiple times) |
 | `new`       | Create a new ADR with an incremental number |
 | `version`   | Create a new version of an  ADR (increment version) |
 | `review`    | Create a new revision of an ADR (increment revision) |

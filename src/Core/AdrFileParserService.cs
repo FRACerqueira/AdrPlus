@@ -1,10 +1,11 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
+using AdrPlus.Infrastructure.Formatting;
 using System.Globalization;
 using System.Text;
 
@@ -37,7 +38,7 @@ namespace AdrPlus.Core
                 //disclaimer
                 if (!lines[0].StartsWith("<!-- ", ordinal) || !lines[0].TrimEnd().EndsWith(" -->", ordinal))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDisclaimerInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Comment);
                     return (result, string.Empty);
                 }
                 result.Disclaimer = lines[0].Replace("<!-- ", string.Empty, ordinal).Replace(" -->", string.Empty, ordinal).Trim();
@@ -45,7 +46,7 @@ namespace AdrPlus.Core
                 //table header
                 if (!lines[1].StartsWith("|Adr-Plus ", ordinal))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
+                    result.ErrorMessage = Resources.AdrPlus.InvalidFormatHeader;
                     return (result, string.Empty);
                 }
                 if (lines[1].TrimEnd().EndsWith(" -->|", ordinal) && lines[1].Contains("<!-- ", ordinal))
@@ -55,26 +56,26 @@ namespace AdrPlus.Core
                 //table header separator
                 if (!lines[2].StartsWith("|--|--|", ordinal))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrInvalidHeader;
+                    result.ErrorMessage = Resources.AdrPlus.InvalidFormatHeader;
                     return (result, string.Empty);
                 }
 
                 //title header
                 if (!lines[3].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrFieldHeaderNotFound;
                     return (result, string.Empty);
                 }
                 var indexstart = lines[3].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Title);
                     return (result, string.Empty);
                 }
                 var indexend = lines[3].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderTitleInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Title);
                     return (result, string.Empty);
                 }
                 result.Title = lines[3][(indexstart + 1)..indexend].Trim();
@@ -82,19 +83,19 @@ namespace AdrPlus.Core
                 //version header
                 if (!lines[4].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Version);
                     return (result, string.Empty);
                 }
                 indexstart = lines[4].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Version);
                     return (result, string.Empty);
                 }
                 indexend = lines[4].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Version);
                     return (result, string.Empty);
                 }
                 var versionText = lines[4][(indexstart + 1)..indexend].Trim();
@@ -104,26 +105,26 @@ namespace AdrPlus.Core
                 }
                 else if (versionText.Length > 0)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderVersionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Version);
                     return (result, string.Empty);
                 }
 
                 // revision header
                 if (!lines[5].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Revision);
                     return (result, string.Empty);
                 }
                 indexstart = lines[5].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Revision);
                     return (result, string.Empty);
                 }
                 indexend = lines[5].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Revision);
                     return (result, string.Empty);
                 }
                 var revisionText = lines[5][(indexstart + 1)..indexend].Trim();
@@ -133,26 +134,26 @@ namespace AdrPlus.Core
                 }
                 else if (revisionText.Length > 0)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderRevisionInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Revision);
                     return (result, string.Empty);
                 }
 
                 //scope header
                 if (!lines[6].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Scope);
                     return (result, string.Empty);
                 }
                 indexstart = lines[6].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Scope);
                     return (result, string.Empty);
                 }
                 indexend = lines[6].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderScopeInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Scope);
                     return (result, string.Empty);
                 }
                 result.Scope = lines[6][(indexstart + 1)..indexend].Trim();
@@ -160,19 +161,19 @@ namespace AdrPlus.Core
                 //domain header
                 if (!lines[7].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Domain);
                     return (result, string.Empty);
                 }
                 indexstart = lines[7].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Domain);
                     return (result, string.Empty);
                 }
                 indexend = lines[7].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDomainInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Domain);
                     return (result, string.Empty);
                 }
                 result.Domain = lines[7][(indexstart + 1)..indexend].Trim();
@@ -180,19 +181,19 @@ namespace AdrPlus.Core
                 //status create header
                 if (!lines[8].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusCreated);
                     return (result, string.Empty);
                 }
                 indexstart = lines[8].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusCreated);
                     return (result, string.Empty);
                 }
                 indexend = lines[8].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusCreateLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusCreated);
                     return (result, string.Empty);
                 }
                 var linestatus = lines[8][(indexstart + 1)..indexend].Trim();
@@ -212,19 +213,19 @@ namespace AdrPlus.Core
                 // status update header 
                 if (!lines[9].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusUpdated);
                     return (result, string.Empty);
                 }
                 indexstart = lines[9].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusUpdated);
                     return (result, string.Empty);
                 }
                 indexend = lines[9].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusChangeLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusUpdated);
                     return (result, string.Empty);
                 }
                 linestatus = lines[9][(indexstart + 1)..indexend].Trim();
@@ -243,19 +244,19 @@ namespace AdrPlus.Core
                 // status Superseded header 
                 if (!lines[10].StartsWith('|'))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusSuperseded);
                     return (result, string.Empty);
                 }
                 indexstart = lines[10].IndexOf('|', 1);
                 if (indexstart == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusSuperseded);
                     return (result, string.Empty);
                 }
                 indexend = lines[10].IndexOf('|', indexstart + 1);
                 if (indexend == -1)
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderStatusSupersededLineInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.StatusSuperseded);
                     return (result, string.Empty);
                 }
                 linestatus = lines[10][(indexstart + 1)..indexend].Trim();
@@ -282,7 +283,7 @@ namespace AdrPlus.Core
                 //disclaimer
                 if (!lines[11].StartsWith("<!-- ", ordinal) || !lines[11].TrimEnd().EndsWith(" -->", ordinal))
                 {
-                    result.ErrorMessage = Resources.AdrPlus.ErrMsgAdrHeaderDisclaimerInvalid;
+                    result.ErrorMessage = string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrAdrFieldHeaderNotFound, Resources.AdrPlus.Comment);
                     return (result, string.Empty);
                 }
                 result.IsValid = true;
