@@ -81,7 +81,7 @@ namespace AdrPlus.Core
             var language = section[AppConstants.FieldLanguage];
             if (string.IsNullOrWhiteSpace(language) || !Helper.IsValidCultureName(language))
             {
-                errors.Add(string.Format(null, FormatMessages.ErrMsgInvalidLanguageCodeFormat, language));
+                errors.Add(string.Format(null, FormatMessages.ErrInvalidLanguageCodeFormat, language));
             }
 
             // Validate content (required for the generation of the ADR)
@@ -136,7 +136,7 @@ namespace AdrPlus.Core
             {
                 return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
             }
-            throw new FileNotFoundException(string.Format(null, FormatMessages.ErrMsgConfigFileNotFoundFormat, fullpath));
+            throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace AdrPlus.Core
             {
                 return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
             }
-            throw new FileNotFoundException(string.Format(null, FormatMessages.ErrMsgConfigFileNotFoundFormat, fullpath));
+            throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, fullpath));
         }
 
         /// <summary>
@@ -217,15 +217,15 @@ namespace AdrPlus.Core
             }
             catch (ArgumentException ex)
             {
-                errors.Add(string.Format(null, FormatMessages.ErrMsgContentInvalidPathFormat, ex.Message));
+                errors.Add(string.Format(null, FormatMessages.ErrContentInvalidPathFormat, ex.Message));
             }
             catch (PathTooLongException)
             {
-                errors.Add(string.Format(null, FormatMessages.ErrMsgContentPathTooLongFormat, content));
+                errors.Add(string.Format(null, FormatMessages.ErrContentPathTooLongFormat, content));
             }
             catch (NotSupportedException)
             {
-                errors.Add(string.Format(null, FormatMessages.ErrMsgContentPathNotSupportedFormat, content));
+                errors.Add(string.Format(null, FormatMessages.ErrContentPathNotSupportedFormat, content));
             }
             return [.. errors];
         }
@@ -466,7 +466,7 @@ namespace AdrPlus.Core
                 {
                     if (!root.TryGetProperty(field.Key, out var property))
                     {
-                        errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredFieldFormat, field.Key));
+                        errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredField, field.Key));
                         continue;
                     }
                     // Validate type - special handling for migrationpattern 
@@ -488,12 +488,12 @@ namespace AdrPlus.Core
                     {
                         if (property.ValueKind != JsonValueKind.True && property.ValueKind != JsonValueKind.False)
                         {
-                            errors.Add(string.Format(null, FormatMessages.ValidationFieldMustBeBooleanFormat, field.Key, property.ValueKind));
+                            errors.Add(string.Format(null, FormatMessages.ErrConfigInvalidBoolean, field.Key));
                         }
                     }
                     else if (property.ValueKind != field.Value)
                     {
-                        errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongTypeFormat, field.Key, field.Value, property.ValueKind));
+                        errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongType, field.Key, field.Value, property.ValueKind));
                     }
                 }
 
@@ -507,7 +507,7 @@ namespace AdrPlus.Core
                 var extraFields = actualFields.Except(requiredFields.Keys, StringComparer.OrdinalIgnoreCase).ToList();
                 if (extraFields.Count > 0)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFieldsFormat, string.Join(", ", extraFields)));
+                    errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFields, string.Join(", ", extraFields)));
                 }
                 if (errors.Count == 0)
                 {
@@ -517,7 +517,7 @@ namespace AdrPlus.Core
             }
             catch (JsonException ex)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationInvalidJsonFormatMsg, ex.Message));
+                errors.Add(string.Format(null, FormatMessages.ValidationInvalidJsonFormat, ex.Message));
             }
 
             if (errors.Count > 0)
@@ -578,7 +578,7 @@ namespace AdrPlus.Core
             {
                 if (numvalue < 3)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMinimumValueFormat, AppConstants.FieldLenSeq, 3));
+                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMinimumValue, AppConstants.FieldLenSeq, 3));
                 }
             }
 
@@ -587,7 +587,7 @@ namespace AdrPlus.Core
             {
                 if (numvalue < 2)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMinimumValueFormat, AppConstants.FieldLenVersion, 2));
+                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMinimumValue, AppConstants.FieldLenVersion, 2));
                 }
             }
 
@@ -596,7 +596,7 @@ namespace AdrPlus.Core
             {
                 if (numvalue < 0)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMustBeNonNegativeFormat, AppConstants.FieldLenRevision));
+                    errors.Add(string.Format(null, FormatMessages.ValidationFieldMustBeNonNegative, AppConstants.FieldLenRevision));
                 }
             }
 
@@ -606,18 +606,18 @@ namespace AdrPlus.Core
             {
                 if (lenscope == 0 && (property.GetString() ?? string.Empty).Length > 0)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustBeEmptyWhenLenScopeZeroFormat, AppConstants.FieldScopes, AppConstants.FieldLenScope));
+                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustBeEmptyWhenLenScopeZero, AppConstants.FieldScopes, AppConstants.FieldLenScope));
                 }
                 if (lenscope > 0 && (property.GetString() ?? string.Empty).Length == 0)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustNotBeEmptyWhenLenScopePositiveFormat, AppConstants.FieldScopes, AppConstants.FieldLenScope));
+                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustNotBeEmptyWhenLenScopePositive, AppConstants.FieldScopes, AppConstants.FieldLenScope));
                 }
                 if (lenscope > 0 && (property.GetString() ?? string.Empty).Length > 0)
                 {
                     var minlen = property.GetString()!.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Length).Min();
                     if (minlen < lenscope)
                     {
-                        errors.Add(string.Format(null, FormatMessages.ValidationScopeMinLengthFormat, AppConstants.FieldScopes, AppConstants.FieldLenScope, lenscope));
+                        errors.Add(string.Format(null, FormatMessages.ValidationScopeMinLength, AppConstants.FieldScopes, AppConstants.FieldLenScope, lenscope));
                     }
                 }
             }
@@ -631,7 +631,7 @@ namespace AdrPlus.Core
                 var invalidskipdomains = skipdomainScopes.Except(definedScopes, StringComparer.OrdinalIgnoreCase);
                 if (invalidskipdomains.Any())
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationskipdomainInvalidScopesFormat, AppConstants.FieldSkipDomain, AppConstants.FieldScopes, string.Join(", ", invalidskipdomains)));
+                    errors.Add(string.Format(null, FormatMessages.ValidationSkipDomainInvalidScopes, string.Join(", ", invalidskipdomains)));
                 }
             }
 
@@ -639,7 +639,7 @@ namespace AdrPlus.Core
             var foldervalue = property.GetBoolean();
             if (foldervalue && (propertyscope.GetString() ?? string.Empty).Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFolderByScopeRequiresScopesFormat, AppConstants.FieldFolderByScope, AppConstants.FieldScopes));
+                errors.Add(string.Format(null, FormatMessages.ValidationFolderByScopeRequiresScopes, AppConstants.FieldFolderByScope, AppConstants.FieldScopes));
             }
 
 
@@ -648,7 +648,7 @@ namespace AdrPlus.Core
             var valuestring = property.GetString() ?? string.Empty;
             if (!validSeparators.Contains(valuestring))
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldSeparator, string.Join(", ", validSeparators)));
+                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldSeparator, string.Join(", ", validSeparators)));
             }
 
             property = root.GetProperty(AppConstants.FieldCaseTransform);
@@ -656,119 +656,119 @@ namespace AdrPlus.Core
             valuestring = property.GetString() ?? string.Empty;
             if (!validCaseTransforms.Contains(valuestring))
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldCaseTransform, string.Join(", ", validCaseTransforms)));
+                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldCaseTransform, string.Join(", ", validCaseTransforms)));
             }
 
             property = root.GetProperty(AppConstants.FieldStatusNew);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldStatusNew));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldStatusNew));
             }
 
             property = root.GetProperty(AppConstants.FieldStatusAccepted);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldStatusAccepted));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldStatusAccepted));
             }
 
             property = root.GetProperty(AppConstants.FieldStatusRejected);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldStatusRejected));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldStatusRejected));
             }
 
             property = root.GetProperty(AppConstants.FieldStatusSuperseded);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldStatusSuperseded));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldStatusSuperseded));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderDisclaimer);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderDisclaimer));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderDisclaimer));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderTitleFile);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTitleFile));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderTitleFile));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderVersion);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderVersion));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderVersion));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderRevision);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderRevision));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderRevision));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderScope);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderScope));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderScope));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderDomain);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderDomain));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderDomain));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderStatusCreated);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusCreated));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderStatusCreated));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderStatusChanged);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusChanged));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderStatusChanged));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderStatusSuperseded);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderStatusSuperseded));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderStatusSuperseded));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderMigrated);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderMigrated));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderMigrated));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderTableFields);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTableFields));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderTableFields));
             }
 
             property = root.GetProperty(AppConstants.FieldHeaderTableValues);
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldHeaderTableValues));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldHeaderTableValues));
             }
 
             // Migration pattern can be empty
@@ -779,7 +779,7 @@ namespace AdrPlus.Core
             valuestring = property.GetString() ?? string.Empty;
             if (valuestring.Length == 0)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmptyFormat, AppConstants.FieldFolderAdr));
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldCannotBeEmpty, AppConstants.FieldFolderAdr));
             }
 
             return [.. errors];
@@ -848,13 +848,13 @@ namespace AdrPlus.Core
                 {
                     if (!root.GetProperty(AppConstants.DefaultSettingsRoot).TryGetProperty(field.Key, out var property))
                     {
-                        errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredFieldFormat, field.Key));
+                        errors.Add(string.Format(null, FormatMessages.ValidationMissingRequiredField, field.Key));
                         continue;
                     }
 
                     if (property.ValueKind != field.Value)
                     {
-                        errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongTypeFormat, field.Key, field.Value, property.ValueKind));
+                        errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongType, field.Key, field.Value, property.ValueKind));
                     }
                 }
 
@@ -868,7 +868,7 @@ namespace AdrPlus.Core
                 var extraFields = actualFields.Except(requiredFields.Keys).ToList();
                 if (extraFields.Count > 0)
                 {
-                    errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFieldsFormat, string.Join(", ", extraFields)));
+                    errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFields, string.Join(", ", extraFields)));
                 }
                 if (errors.Count == 0)
                 {
@@ -878,7 +878,7 @@ namespace AdrPlus.Core
             }
             catch (JsonException ex)
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationInvalidJsonFormatMsg, ex.Message));
+                errors.Add(string.Format(null, FormatMessages.ValidationInvalidJsonFormat, ex.Message));
             }
 
             if (errors.Count > 0)
@@ -902,14 +902,14 @@ namespace AdrPlus.Core
             var languageValue = property.GetString() ?? string.Empty;
             if (languageValue.Length > 0 &&  !Helper.IsValidCultureName(languageValue))
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationLanguageInvalidFormat, languageValue));
+                errors.Add(string.Format(null, FormatMessages.ValidationLanguageInvalid, languageValue));
             }
 
             property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldOpenAdr);
             var openAdrValue = property.GetString() ?? string.Empty;
             if (openAdrValue.Length > 0 && !openAdrValue.Contains("{0}"))
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationMustbeFollowing, AppConstants.FieldOpenAdr, "{0}"));
+                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldOpenAdr, "{0}"));
             }
             return [.. errors];
         }

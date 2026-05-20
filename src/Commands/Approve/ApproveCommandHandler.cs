@@ -71,7 +71,7 @@ namespace AdrPlus.Commands.Approve
         /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
-            return string.Format(null, FormatMessages.NotValidStatusForApproveAndReject, $"{Helper.GetResourceStatus(adrStatus)}");
+            return string.Format(null, FormatMessages.ErrInvalidStatusForApproveReject, $"{Helper.GetResourceStatus(adrStatus)}");
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace AdrPlus.Commands.Approve
                 }
                 if (!_filesystem.FileExists(fileadr))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, fileadr));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, fileadr));
                 }
                 var configrootPath = _filesystem.GetFileRootRepositoryPath(fileadr) 
-                        ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrorCannotDetermineRootPath, fileadr));
+                        ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrCannotDetermineRootPath, fileadr));
                 var rootrepo = _filesystem.GetFullNameDirectoryByFile(configrootPath);
                 
                 string jsonString = await _filesystem.ReadAllTextAsync(configrootPath, cancellationToken);
@@ -135,7 +135,7 @@ namespace AdrPlus.Commands.Approve
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
-                    throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configrootPath));
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
@@ -208,7 +208,7 @@ namespace AdrPlus.Commands.Approve
             if (!DateTime.TryParse(dateRef, culture, DateTimeStyles.None, out var dateAdr))
             {
                 LogMessages.LogErrorFormatDateForCulture(_logger, _config.Language);
-                throw new FormatException(string.Format(null, FormatMessages.ErrorDateFormat, _config.Language));
+                throw new FormatException(string.Format(null, FormatMessages.ErrInvalidDateFormat, _config.Language));
             }
             return dateAdr;
         }
@@ -256,7 +256,7 @@ namespace AdrPlus.Commands.Approve
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
-                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrorInConfigFile, _filesystem.GetFullNameFile(configPath)));
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configPath));
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;

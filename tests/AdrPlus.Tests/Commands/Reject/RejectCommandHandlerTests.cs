@@ -1,4 +1,4 @@
-﻿// ***************************************************************************************
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -84,7 +84,7 @@ public class RejectCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -105,7 +105,7 @@ public class RejectCommandHandlerTests
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -130,7 +130,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -161,7 +161,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockFileSystem.Received().FileExists(Arg.Is<string>(s => s.EndsWith(".md")));
@@ -192,7 +192,7 @@ public class RejectCommandHandlerTests
                 .Returns((true, string.Empty));
 
             // Act
-            await _handler.ExecuteAsync(args, CancellationToken.None);
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
             // Assert
             await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -217,7 +217,7 @@ public class RejectCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -234,7 +234,7 @@ public class RejectCommandHandlerTests
         _mockFileSystem.GetFileRootRepositoryPath(Arg.Any<string>()).Returns((string?)null);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -257,7 +257,7 @@ public class RejectCommandHandlerTests
             .Returns(Task.FromException<string>(new FileNotFoundException($"File not found: {configPath}")));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -281,7 +281,7 @@ public class RejectCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
 
         _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
@@ -314,7 +314,7 @@ public class RejectCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Invalid file name format");
     }
@@ -350,7 +350,7 @@ public class RejectCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Invalid header format");
     }
@@ -370,7 +370,7 @@ public class RejectCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -397,7 +397,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -429,7 +429,7 @@ public class RejectCommandHandlerTests
             .Returns(adrInfo);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -466,7 +466,7 @@ public class RejectCommandHandlerTests
             .Returns([supersededAdrInfo]);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
     }
 
@@ -487,7 +487,7 @@ public class RejectCommandHandlerTests
             .Returns((false, "Update failed"));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Update failed");
     }
@@ -514,7 +514,7 @@ public class RejectCommandHandlerTests
                 .Returns(adrInfo);
 
             // Act & Assert
-            await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
                 .Should().ThrowAsync<FormatException>();
         });
     }
@@ -546,7 +546,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).GetLatestADRSequence(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>());
@@ -583,7 +583,7 @@ public class RejectCommandHandlerTests
             .Returns((false, "Undo failed"));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>()
             .WithMessage("Undo failed");
     }
@@ -639,7 +639,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - StatusUpdateAdrAsync should be called once (on second confirmation)
         await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -698,7 +698,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -769,7 +769,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Verify the operation completes successfully
         await _mockAdrServices.Received(1).StatusUpdateAdrAsync(
@@ -801,7 +801,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -820,7 +820,7 @@ public class RejectCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -858,7 +858,7 @@ public class RejectCommandHandlerTests
             .Returns((true, eligibleAdr));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -901,7 +901,7 @@ public class RejectCommandHandlerTests
         _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(x => throw exception);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Test exception");
     }
@@ -927,4 +927,5 @@ public class RejectCommandHandlerTests
 
     #endregion
 }
+
 

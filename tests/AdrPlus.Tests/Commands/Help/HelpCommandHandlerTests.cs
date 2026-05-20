@@ -76,7 +76,7 @@ public class HelpCommandHandlerTests
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received().PromptWriteHelp(Resources.AdrPlus.HelpHeaderAvailableCommands);
@@ -96,7 +96,7 @@ public class HelpCommandHandlerTests
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         // Verify console was called multiple times (header + 3 commands)
@@ -117,7 +117,7 @@ public class HelpCommandHandlerTests
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         var receivedCalls = _mockConsole.ReceivedCalls().ToList();
@@ -129,12 +129,11 @@ public class HelpCommandHandlerTests
     {
         // Arrange
         var args = Array.Empty<string>();
-        var cts = new CancellationTokenSource();
         var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, cts.Token);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
@@ -149,14 +148,13 @@ public class HelpCommandHandlerTests
     {
         // Arrange
         var args = new[] { "new" };
-        var cts = new CancellationTokenSource();
 
         // Act & Assert
         // This should route to the command router without throwing
         // The router will fail because it tries to get the handler from DI,
         // but we're testing that the help handler passes through correctly
         var ex = await Record.ExceptionAsync(
-            () => _handler.ExecuteAsync(args, cts.Token));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
 
         // The exception is expected because CommandRouter will try to resolve the handler
         // from an empty service provider, but that doesn't affect our test of ExecuteAsync
@@ -178,7 +176,7 @@ public class HelpCommandHandlerTests
         // Act & Assert
         // Just verify that it doesn't throw for null/single arg check
         var ex = await Record.ExceptionAsync(
-            () => _handler.ExecuteAsync(args, CancellationToken.None));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         
         // The handler should either route successfully or throw from routing,
         // not from argument validation
@@ -196,7 +194,7 @@ public class HelpCommandHandlerTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.ExecuteAsync(args, CancellationToken.None));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         ex.Message.Should().Contain(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
     }
 
@@ -208,7 +206,7 @@ public class HelpCommandHandlerTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.ExecuteAsync(args, CancellationToken.None));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         ex.Message.Should().Contain(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
     }
 
@@ -224,7 +222,7 @@ public class HelpCommandHandlerTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(
-            () => _handler.ExecuteAsync(args, CancellationToken.None));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         ex.ParamName.Should().Be("args");
     }
 
@@ -422,7 +420,7 @@ public class HelpCommandHandlerTests
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - Should work the same on all platforms
         _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
@@ -433,12 +431,11 @@ public class HelpCommandHandlerTests
     {
         // Arrange
         var args = Array.Empty<string>();
-        using var cts = new CancellationTokenSource();
         var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act
-        await _handler.ExecuteAsync(args, cts.Token);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
@@ -474,7 +471,7 @@ public class HelpCommandHandlerTests
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.ExecuteAsync(args, CancellationToken.None));
+            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         ex.Message.Should().Contain(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
     }
 
@@ -487,7 +484,7 @@ public class HelpCommandHandlerTests
         _mockAdrServices.GetCommands().Returns(commands);
 
         // Act - Execute with different tokens to ensure consistent behavior
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
         
         _mockConsole.ClearReceivedCalls();
         
@@ -500,3 +497,4 @@ public class HelpCommandHandlerTests
 
     #endregion
 }
+

@@ -15,6 +15,8 @@ namespace AdrPlus.Core
     {
         public static  bool HasAppConfigChange = true;
 
+        public static int CountError;
+
         #region Trsanformation
         public static string FmtStatus(AdrFileNameComponents arg, AdrPlusRepoConfig adrPlusRepoConfig)
         {
@@ -72,18 +74,11 @@ namespace AdrPlus.Core
                     return Resources.AdrPlus.InvalidFormatHeader;
                 }
             }
-            else if (info.StatusCreate != AdrStatus.Unknown)
+            if (info.IsValid && info.StatusCreate != AdrStatus.Unknown)
             {
-                if (info.IsValid)
-                {
-                    return Resources.AdrPlus.AdrPlusFormat;
-                }
-                else
-                {
-                    return Resources.AdrPlus.InvalidFormatHeader;
-                }
+                return Resources.AdrPlus.AdrPlusFormat;
             }
-            else if (info.StatusCreate == AdrStatus.Unknown && !info.IsMigrated && !info.IsValid)
+            if (!info.IsValid && info.StatusCreate == AdrStatus.Unknown && !info.IsMigrated)
             {
                 return Resources.AdrPlus.ReadyToMigrate;
             }

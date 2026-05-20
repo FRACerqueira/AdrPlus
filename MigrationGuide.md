@@ -28,21 +28,21 @@ Before migrating your ADRs, ensure you have:
    - Install with: `dotnet tool install -g adrplus`
    - Verify: `adrplus help`
 
-✅ **Application configuration set up**
-   - Run: `adrplus config --application` to configure language and editor preferences
-
-✅ **Repository configuration already set up**
-   - Run: `adrplus config --repository` to configure your ADR naming conventions
-   - Your configuration file exists at the repository root
+✅ **Initial setup completed**
+   - On first run of any AdrPlus command, the setup wizard runs automatically
+   - This creates `adrplus.json` (application settings) and `adr-config.adrplus` (repository settings)
+   - The setup wizard handles language selection, editor configuration, and ADR naming conventions
+   - Simply run any command (e.g., `adrplus init --path "."`), and the automatic setup will start
 
 ✅ **Migration configuration set up** ⚠️ **REQUIRED**
-   - Run: `adrplus config --migrate` to configure migration source settings
+   - After initial setup, run: `adrplus config --migrate` to configure migration source settings
    - This must be done BEFORE attempting any migration operation
    - This step configures where the tool will look for ADRs to migrate
 
-✅ **Repository already initialized with AdrPlus**
-   - Run: `adrplus init` (if not already done)
-   - This creates the `adr-config.adrplus` configuration file
+✅ **Repository initialized with AdrPlus** ⚠️ **IMPORTANT**
+   - Run: `adrplus init --path "." --file "adr-config.adrplus"` (if not already done)
+   - This ensures the `adr-config.adrplus` configuration file exists in your repository root
+   - Note: `init` can be run multiple times safely to update repository structure
 
 ✅ **No ADRs created by AdrPlus tool yet** ⚠️ **CRITICAL**
    - Migration can ONLY be executed if no ADRs have been created using `adrplus new`
@@ -143,13 +143,18 @@ We have decided to use PostgreSQL...
 
 Before starting migration, **you MUST**:
 
-1. **Configure migration settings**:
+1. **Complete the AdrPlus initial setup**:
+   - On first run without command, the automatic setup wizard will start
+   - This creates your `adrplus.json` and `adr-config.adrplus` configuration files
+   - If you haven't run the setup yet, simply run: `adrplus init --path "."` to trigger it
+
+2. **Configure migration settings**:
    ```bash
    adrplus config --migrate
    ```
-   This command must be executed before any migration operation. It configures how AdrPlus will discover and process your existing ADRs.
+   This command must be executed after initial setup, before any migration operation. It configures how AdrPlus will discover and process your existing ADRs.
 
-2. **Ensure NO ADRs have been created with AdrPlus tool**:
+3. **Ensure NO ADRs have been created with AdrPlus tool**:
    - Migration can ONLY run when your repository contains zero ADRs created by `adrplus new`
    - If you've already created ADRs using the tool, you cannot migrate
    - Migration is a one-time operation for repositories with only manually-created ADRs
@@ -471,14 +476,25 @@ git status
   git commit -m "backup: before ADR migration"
   ```
 
-- ✅ **Test with wizard mode first**: Preview the migration before committing
+  
+- ✅ Enshures run command 'config --migrate' before command 'init' to create or update the migration configuration
   ```bash
-  adrplus migrate --wizard
+  adrplus config --migrate
   ```
 
 - ✅ **Review configuration**: Ensure naming conventions match your existing files
   ```bash
   adrplus config --repository
+  ```
+
+- ✅ Enshures run command 'init' before migration to create or update the configuration file, otherwise the migration will not run and you will need to run 'init' and then 'config --migrate' before running migration again.
+  ```bash
+  adrplus init --wizard
+  ```
+
+- ✅ **Test with wizard mode first**: Preview the migration before committing
+  ```bash
+  adrplus migrate --wizard
   ```
 
 - ✅ **Verify each step**: After migration, open files to confirm format
@@ -651,12 +667,12 @@ Verify new ADR is created with correct format.
 
 Congratulations! You've successfully migrated your ADRs to AdrPlus format. Your ADRs now benefit from:
 
-✅ Structured metadata (version, domain, status, dates)
-✅ Automatic numbering and file naming
-✅ Version and revision tracking
-✅ Status management (Proposed, Accepted, Rejected, Superseded)
-✅ Scope/domain organization
-✅ Integration with AdrPlus tools for creation, review, and approval
+- ✅ Structured metadata (version, domain, status, dates)
+- ✅ Automatic numbering and file naming
+- ✅ Version and revision tracking
+- ✅ Status management (Proposed, Accepted, Rejected, Superseded)
+- ✅ Scope/domain organization
+- ✅ Integration with AdrPlus tools for creation, review, and approval
 
 Happy documenting! 🎉
 

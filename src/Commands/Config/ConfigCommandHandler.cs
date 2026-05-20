@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -150,7 +150,7 @@ namespace AdrPlus.Commands.Config
             {
                 if (!_fileSystem.FileExists(fileConfigPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfigPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, fileConfigPath));
                 }
                 jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
             }
@@ -231,6 +231,8 @@ namespace AdrPlus.Commands.Config
                 {
                     largestep = maxlen;
                 }
+                configrecord.Sample = filename;
+
                 (Curleft, Curtop) = _prompt.PromptGetCursorPosition();
 
                 _prompt.PromptWriteSummary($"{Resources.AdrPlus.SummarySampleFilename}: {filename}");
@@ -406,7 +408,7 @@ namespace AdrPlus.Commands.Config
                 }
                 if (!_fileSystem.FileExists(filetemplate))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, filetemplate));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, filetemplate));
                 }
                 jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
             }
@@ -452,7 +454,7 @@ namespace AdrPlus.Commands.Config
             }
             if (!_fileSystem.FileExists(Content))
             {
-                throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, Content));
+                throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, Content));
             }
             return await _fileSystem.ReadAllTextAsync(Content, cancellationToken)!;
         }
@@ -473,14 +475,14 @@ namespace AdrPlus.Commands.Config
             var filePath = _validateConfig.GetConfigAppFilePath();
             if (!_fileSystem.FileExists(filePath))
             {
-                throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, filePath));
+                throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, filePath));
             }
             string? jsoncontent;
             if (!string.IsNullOrEmpty(fileConfigPath))
             {
                 if (!_fileSystem.FileExists(fileConfigPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfigPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, fileConfigPath));
                 }
                 jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
             }
@@ -522,7 +524,7 @@ namespace AdrPlus.Commands.Config
             {
                 if (!_fileSystem.FileExists(fileConfigPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionInvalidFilename, fileConfigPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrConfigFileNotFound, fileConfigPath));
                 }
                 jsoncontent = await _fileSystem.ReadAllTextAsync(fileConfigPath, cancellationToken);
             }
@@ -660,15 +662,39 @@ namespace AdrPlus.Commands.Config
             foreach (var property in root.EnumerateObject())
             {
                 var enabled = true;
+                var value = GetJsonValueAsString(property.Value);
                 if (property.Name.Equals(AppConstants.FieldTemplate, StringComparison.OrdinalIgnoreCase))
                 {
-                    enabled = false;
+                    continue;
                 }
                 else if (property.Name.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase))
                 {
-                    enabled = false;
+                    continue;
                 }
-                var value = GetJsonValueAsString(property.Value);
+                else if (property.Name.Equals(AppConstants.FieldScopes, StringComparison.OrdinalIgnoreCase))
+                {
+                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
+                    if (GetJsonValueAsString(item.Value) == "0")
+                    {
+                        enabled = false;
+                    } 
+                }
+                else if (property.Name.Equals(AppConstants.FieldFolderByScope, StringComparison.OrdinalIgnoreCase))
+                {
+                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
+                    if (GetJsonValueAsString(item.Value) == "0")
+                    {
+                        enabled = false;
+                    }
+                }
+                else if (property.Name.Equals(AppConstants.FieldSkipDomain, StringComparison.OrdinalIgnoreCase))
+                {
+                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
+                    if (GetJsonValueAsString(item.Value) == "0")
+                    {
+                        enabled = false;
+                    }
+                }
                 fields.Add(new FieldsJson
                 {
                     Name = property.Name,
@@ -1015,7 +1041,7 @@ namespace AdrPlus.Commands.Config
                     }
                     else
                     {
-                        throw new ArgumentException(string.Format(null, FormatMessages.ConfigErrorInvalidNumber, value));
+                        throw new ArgumentException(string.Format(null, FormatMessages.ErrConfigInvalidNumber, propertyName));
                     }
                     break;
 
@@ -1027,7 +1053,7 @@ namespace AdrPlus.Commands.Config
                     }
                     else
                     {
-                        throw new ArgumentException(string.Format(null, FormatMessages.ConfigErrorInvalidBoolean, value));
+                        throw new ArgumentException(string.Format(null, FormatMessages.ErrConfigInvalidBoolean, propertyName));
                     }
                     break;
                 default:

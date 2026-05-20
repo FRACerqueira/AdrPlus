@@ -77,7 +77,7 @@ namespace AdrPlus.Commands.Migrate
 
                 if (!_fileSystem.DirectoryExists(targetPath))
                 {
-                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
+                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
 
                 if (!_validateConfig.HasTemplateRepoFile())
@@ -88,7 +88,7 @@ namespace AdrPlus.Commands.Migrate
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, configPath));
                 }
 
                 string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
@@ -96,7 +96,7 @@ namespace AdrPlus.Commands.Migrate
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
-                    throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configPath));
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
                 var hasChanges = false;
@@ -224,7 +224,7 @@ namespace AdrPlus.Commands.Migrate
                 var configPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, configPath));
                 }
 
                 string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);

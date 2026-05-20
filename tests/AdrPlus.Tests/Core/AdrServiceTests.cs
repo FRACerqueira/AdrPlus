@@ -87,7 +87,7 @@ public class AdrServiceTests
         var dref = new DateTime(2024, 1, 1);
         var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
         var fileSystemService = Substitute.For<IFileSystemService>();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _statusService.StatusUpdateAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken)
             .Returns(Task.FromResult((true, "")));
@@ -110,7 +110,7 @@ public class AdrServiceTests
         var dref = new DateTime(2024, 1, 1);
         var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
         var fileSystemService = Substitute.For<IFileSystemService>();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
         const string errorMessage = "File not found";
 
         _statusService.StatusUpdateAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken)
@@ -137,7 +137,7 @@ public class AdrServiceTests
         var dref = new DateTime(2024, 1, 1);
         var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
         var fileSystemService = Substitute.For<IFileSystemService>();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _statusService.StatusChangeSupersedeAdrAsync(fullpath, filename, dref, config, fileSystemService, cancellationToken)
             .Returns(Task.FromResult((true, "")));
@@ -160,7 +160,7 @@ public class AdrServiceTests
         var dref = new DateTime(2024, 1, 1);
         var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
         var fileSystemService = Substitute.For<IFileSystemService>();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
         const string errorMessage = "Invalid file";
 
         _statusService.StatusChangeSupersedeAdrAsync(fullpath, filename, dref, config, fileSystemService, cancellationToken)
@@ -187,7 +187,7 @@ public class AdrServiceTests
         var dref = new DateTime(2024, 1, 1);
         var config = new AdrPlusRepoConfig("# {0}", "doc/adr");
         var fileSystemService = Substitute.For<IFileSystemService>();
-        var cancellationToken = CancellationToken.None;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         _statusService.StatusChangeAdrAsync(fullpath, adrStatus, dref, config, fileSystemService, cancellationToken)
             .Returns(Task.FromResult((true, "")));
@@ -647,3 +647,4 @@ public class AdrServiceTests
 
     #endregion
 }
+

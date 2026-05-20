@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -27,7 +27,7 @@ namespace AdrPlus.Core
 
             if (!fileSystemService.DirectoryExists(rootpath))
             {
-                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFoundPathFormat, rootpath));
+                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFoundFormat, rootpath));
             }
 
             var result = new List<AdrFileNameComponents>();
@@ -59,7 +59,7 @@ namespace AdrPlus.Core
 
             if (!fileSystemService.DirectoryExists(directoryPath))
             {
-                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFoundPathFormat, directoryPath));
+                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFoundFormat, directoryPath));
             }
             var result = new List<AdrFileNameComponents>();
             var folderadr = Path.GetFullPath(Path.Combine(directoryPath, config.FolderAdr));
@@ -74,7 +74,12 @@ namespace AdrPlus.Core
                 }
                 result.Add(parsedComponents);
             }
-            return [.. result.OrderByDescending(x => x.Header.IsValid).ThenBy(x => x.Header.IsMigrated).ThenByDescending(x=> x.Number)];
+            return [.. result
+                .OrderByDescending(x => x.Header.IsValid)
+                .ThenBy(x => x.Header.IsMigrated)
+                .ThenByDescending(x=> x.Number)
+                .ThenByDescending(x=> x.Version)
+                .ThenByDescending(x=> x.Revision ?? 0)];
         }
 
         /// <inheritdoc/>

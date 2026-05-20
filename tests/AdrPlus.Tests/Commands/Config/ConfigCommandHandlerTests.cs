@@ -1,4 +1,4 @@
-﻿// ***************************************************************************************
+// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -75,7 +75,7 @@ public class ConfigCommandHandlerTests
     public async Task ExecuteAsync_WithNullArgs_ThrowsArgumentNullException()
     {
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(null!, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(null!, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<ArgumentNullException>();
     }
 
@@ -94,7 +94,7 @@ public class ConfigCommandHandlerTests
             .Returns("Help text");
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp("Help text");
@@ -124,7 +124,7 @@ public class ConfigCommandHandlerTests
             .Returns((false, field));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -151,7 +151,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.ValidateAppStructure(jsonContent).Returns((true, []));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -175,7 +175,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.ValidateAppStructure(jsonContent).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
 
         _mockConsole.Received(1).PromptWriteError("Missing Language field");
@@ -194,7 +194,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists(configPath).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -216,7 +216,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists("missing.json").Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -259,7 +259,7 @@ public class ConfigCommandHandlerTests
             .Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -303,7 +303,7 @@ public class ConfigCommandHandlerTests
             .Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.Received(1).PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -322,7 +322,7 @@ public class ConfigCommandHandlerTests
             .Returns((false, false));
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -341,7 +341,7 @@ public class ConfigCommandHandlerTests
             .Returns((true, false));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -366,7 +366,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -389,7 +389,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists("missing.json").Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -413,7 +413,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.ValidateRepoStructure(jsonContent).Returns((false, errors));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidDataException>();
 
         _mockConsole.Received(1).PromptWriteError("Missing Prefix field");
@@ -442,7 +442,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetConfigAdrTemplatePath().Returns(configPath);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -464,7 +464,7 @@ public class ConfigCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>();
     }
 
@@ -483,7 +483,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -510,7 +510,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetConfigAdrTemplatePath().Returns(configPath);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, templateContent, Arg.Any<CancellationToken>());
@@ -537,7 +537,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetConfigAdrTemplatePath().Returns(configPath);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert
         _mockConsole.DidNotReceive().PromptSelectLogicalDrive(Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<CancellationToken>());
@@ -558,7 +558,7 @@ public class ConfigCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -576,7 +576,7 @@ public class ConfigCommandHandlerTests
             .Returns((true, string.Empty));
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
     }
 
@@ -596,7 +596,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.FileExists(templatePath).Returns(false);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<FileNotFoundException>();
     }
 
@@ -643,7 +643,7 @@ public class ConfigCommandHandlerTests
             .Returns(repoConfig);
 
         // Act
-        await _handler.ExecuteAsync(args, CancellationToken.None);
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         // Assert - repository config should be processed
         await _mockFileSystem.Received(1).WriteAllTextAsync(configPath, Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -663,7 +663,7 @@ public class ConfigCommandHandlerTests
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<NotImplementedException>();
     }
 
@@ -707,7 +707,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.When(x => x.GetConfigAppFilePath()).Do(x => throw exception);
 
         // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, CancellationToken.None))
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Test exception");
     }
@@ -882,4 +882,5 @@ public class ConfigCommandHandlerTests
 
     #endregion
 }
+
 

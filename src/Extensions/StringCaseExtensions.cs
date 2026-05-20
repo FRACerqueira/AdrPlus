@@ -136,7 +136,7 @@ namespace AdrPlus.Core
                 CaseFormat.PascalCase => input.ToPascalCase(),
                 CaseFormat.SnakeCase => input.ToSnakeCase(),
                 CaseFormat.KebabCase => input.ToKebabCase(),
-                _ => throw new NotImplementedException(string.Format(null, FormatMessages.ExceptionInvalidCaseFormatMsg, caseFormat))
+                _ => throw new NotImplementedException(string.Format(null, FormatMessages.ErrInvalidCaseFormat, caseFormat))
             };
         }
 

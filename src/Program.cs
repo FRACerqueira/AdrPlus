@@ -66,7 +66,12 @@ namespace AdrPlus
                         .ConfigureAppConfiguration((hostingContext, config) =>
                         {
                             config.SetBasePath(basepath);
-                            var assemblyver = assembly.GetName()?.Version?.ToString() ?? "0.0.0.0";
+                            var assemblyver = "0.0.0";
+                            var structver = assembly.GetName()?.Version;
+                            if (structver != null)
+                            {
+                                assemblyver = $"{structver.Major}.{structver.Minor}.{structver.Build}";
+                            }
                             config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: false);
                             config.AddInMemoryCollection(new Dictionary<string, string?>
                             {
@@ -112,6 +117,11 @@ namespace AdrPlus
                     if (Helper.HasAppConfigChange)
                     {
                         host.Dispose();
+                        if (Command.Length == 0)
+                        {
+                            Command = "wizard";
+                            args = [];
+                        }
                     }
 
                 }

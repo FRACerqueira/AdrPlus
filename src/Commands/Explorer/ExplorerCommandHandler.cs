@@ -84,13 +84,13 @@ namespace AdrPlus.Commands.Explorer
 
                 if (!_fileSystem.DirectoryExists(targetPath))
                 {
-                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
+                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
 
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, configPath));
                 }
 
                 string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);
@@ -102,6 +102,11 @@ namespace AdrPlus.Commands.Explorer
                 }
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
+                if (!IsValid)
+                {
+                    LogAndWriteErrors(ErrorReport);
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configPath));
+                }
 
                 parsedArgs.TryGetValue(Arguments.FileReport, out var targetreport);
                 targetreport ??= string.Empty;
@@ -175,7 +180,7 @@ namespace AdrPlus.Commands.Explorer
             var dirreport = Path.GetDirectoryName(targetreport)!;
             if (!_fileSystem.DirectoryExists(dirreport))
             {
-                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, dirreport));
+                throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, dirreport));
             }
             var report = new StringBuilder();
             report.AppendLine(null,$"# {Resources.AdrPlus.ReportTitle}");
@@ -384,7 +389,7 @@ namespace AdrPlus.Commands.Explorer
                     rootPath = Content;
                 }
 
-                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, false, rootPath, _fileSystem, _validateConfig, cancellationToken);
+                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _fileSystem, _validateConfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -395,7 +400,7 @@ namespace AdrPlus.Commands.Explorer
                 var configPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {
-                    throw new FileNotFoundException(string.Format(null, FormatMessages.ExceptionFileNotFound, configPath));
+                    throw new FileNotFoundException(string.Format(null, FormatMessages.ErrFileNotFound, configPath));
                 }
 
                 string jsonString = await _fileSystem.ReadAllTextAsync(configPath, cancellationToken);

@@ -5,8 +5,8 @@
 
 using AdrPlus.Commands;
 using AdrPlus.Core;
-using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Logging;
+using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,15 +27,13 @@ namespace AdrPlus
             ILogger<MainProgram> logger,
             CommandRouter commandRouter,
             IConfiguration configuration,
-            IFileSystemService fileSystemService,
-            IFirstInstall firstInstall,
+            IPromptConsole prompt,
             IHostApplicationLifetime appLifetime) : BackgroundService
     {
         private readonly ILogger<MainProgram> _logger = logger;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IConfiguration _configuration = configuration;
-        private readonly IFileSystemService _fileSystemService = fileSystemService;
-        private readonly IFirstInstall _firstInstall = firstInstall;    
+        private readonly IPromptConsole _prompt = prompt;
         private readonly IHostApplicationLifetime _applicationLifetime = appLifetime;
 
 
@@ -47,25 +45,30 @@ namespace AdrPlus
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var appToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, _applicationLifetime.ApplicationStopping);
-
-            var baseDirectory = AppContext.BaseDirectory;
-            var filePath = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.FileFirstInstall));
-            //if (_fileSystemService.FileExists(filePath))
-            //{
-            //    if (await _firstInstall.Install(appToken.Token))
-            //    {
-            //        _fileSystemService.RemoveFile(filePath);
-            //    }
-            //    else
-            //    {
-            //        LogMessages.LogStoppedAdrPlus(_logger);
-            //        _applicationLifetime.StopApplication();
-            //        return;
-            //    }
-            //}
             var commandName = _configuration[AppConstants.CfgCommandName] ?? string.Empty;
             var argsString = _configuration[AppConstants.CfgCommandArgs] ?? string.Empty;
             var args = argsString.Split(AppConstants.CommandArgsSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+            if (commandName.Length == 0 || commandName != "help")
+            {
+                if (!await _prompt.TryExecuteFistInstall(appToken.Token))
+                {
+                    if (_prompt.PromptIsAbortedByCtrlC())
+                    {
+                        _prompt.PromptWriteError(Resources.AdrPlus.CancelledByUser);
+                        LogMessages.LogStoppedAdrPlus(_logger);
+                        _applicationLifetime.StopApplication();
+                        return;
+                    }
+                }
+                else
+                {
+                    Helper.HasAppConfigChange = true;
+                    LogMessages.LogStoppedAdrPlus(_logger);
+                    _applicationLifetime.StopApplication();
+                    return;
+                }
+            }
             try
             {
                 await _commandRouter.RouteAsync(commandName, args, appToken.Token);

@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -30,7 +30,6 @@ namespace AdrPlus.Commands
         private readonly ILogger<CommandRouter> _logger = logger;
         private readonly IPromptConsole _prompt = prompt;
         private readonly Dictionary<string, Type> _commandMap = adrServices.GenerateCommandsMap();
-
         /// <summary>
         /// Routes a command to its handler and executes it.
         /// </summary>
@@ -46,9 +45,9 @@ namespace AdrPlus.Commands
                 {
                     LogMessages.LogExecutingCommand(_logger, "help");
                     var helpHandler = _serviceProvider.GetRequiredService<HelpCommandHandler>();
-                    _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, "help"));
+                    _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStarted, "help"));
                     await helpHandler.ExecuteAsync([], cancellationToken);
-                    _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, "help"));
+                    _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinished, "help"));
                     LogMessages.LogCommandCompleted(_logger, "help" );
                 }
                 catch (Exception ex)
@@ -65,7 +64,7 @@ namespace AdrPlus.Commands
             if (handlerType == null)
             {
                 LogMessages.LogUnknownCommand(_logger, commandName);
-                var msg = string.Format(null, FormatMessages.ExceptionUnknownCommandFormat, commandName);
+                var msg = string.Format(null, FormatMessages.ErrUnknownCommandFormat, commandName);
                 _prompt.PromptWriteError(msg);
                 throw new InvalidOperationException(msg);
             }
@@ -73,20 +72,24 @@ namespace AdrPlus.Commands
             try
             {
                 LogMessages.LogExecutingCommand(_logger, logcmd);
-                _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStartedFormat, commandName));
+                _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStarted, commandName));
                 var handler = (ICommandHandler)_serviceProvider.GetRequiredService(handlerType);
                 await handler.ExecuteAsync(args, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex );
-                _prompt.PromptWriteError(ex.Message);
+                if (Helper.CountError == 0)
+                {
+                    _prompt.PromptWriteError(ex.Message);
+                }
+                Helper.CountError++;
                 throw;
             }
             finally
             {
                 LogMessages.LogCommandCompleted(_logger, logcmd);
-                _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinishedFormat, commandName));
+                _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinished, commandName));
             }
         }
 

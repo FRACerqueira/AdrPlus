@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -104,7 +104,7 @@ namespace AdrPlus.Commands.NewAdr
 
                 if (!_filesystem.DirectoryExists(targetPath))
                 {
-                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ExceptionDirectoryNotFound, targetPath));
+                    throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
 
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateconfig.GetFileNameRepoConfig()));
@@ -118,7 +118,7 @@ namespace AdrPlus.Commands.NewAdr
                 if (!IsValid)
                 {
                     LogAndWriteErrors(ErrorReport);
-                    throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
+                    throw new InvalidDataException(string.Format(null, FormatMessages.ErrInvalidRepositoryConfig, configPath));
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
@@ -139,7 +139,7 @@ namespace AdrPlus.Commands.NewAdr
                 }
                 if (!string.IsNullOrEmpty(existfile))
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.NewAdrErrorUniqueTitleAlreadyExists, Path.GetFileName(existfile)));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrAdrUniqueTitleAlreadyExists, Path.GetFileName(existfile)));
                 }
 
                 curpos = _prompt.PromptGetCursorPosition();
@@ -167,7 +167,7 @@ namespace AdrPlus.Commands.NewAdr
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMsgFileAlreadyExists, Path.GetFileName(filePath)));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrFileAlreadyExists, Path.GetFileName(filePath)));
                 }
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
@@ -232,12 +232,12 @@ namespace AdrPlus.Commands.NewAdr
 
             if (!parsedArgs.TryGetValue(Arguments.ScopeAdr, out string? scopeArg))
             {
-                throw new ArgumentException(string.Format(null, FormatMessages.ExceptionMissingRequiredArgument, "--scope", "-s"));
+                throw new ArgumentException(string.Format(null, FormatMessages.ErrMissingRequiredArgumentFormat, "--scope", "-s"));
             }
 
             if (auxconfig.Scopes != null && !auxconfig.GetScopes().Any(x => x.Equals(scopeArg, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new ArgumentException(string.Format(null, FormatMessages.InvalidScopeError, scopeArg, auxconfig.Scopes));
+                throw new ArgumentException(string.Format(null, FormatMessages.ErrInvalidScope, scopeArg, auxconfig.Scopes));
             }
 
             string domainArg = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? valueArg) ? valueArg : string.Empty;
@@ -245,7 +245,7 @@ namespace AdrPlus.Commands.NewAdr
 
             if (domainArg.Length == 0 && !skipdomains)
             {
-                throw new ArgumentException(string.Format(null, FormatMessages.ExceptionMissingRequiredArgument, "--domain", "-d"));
+                throw new ArgumentException(string.Format(null, FormatMessages.ErrMissingRequiredArgumentFormat, "--domain", "-d"));
             }
 
             if (domainArg.Length > 0 && skipdomains)
@@ -273,7 +273,7 @@ namespace AdrPlus.Commands.NewAdr
             if (!DateTime.TryParse(dateRef, culture, DateTimeStyles.None, out var dateAdr))
             {
                 LogMessages.LogErrorFormatDateForCulture(_logger, _config.Language);
-                throw new FormatException(string.Format(null, FormatMessages.ErrorDateFormat, _config.Language));
+                throw new FormatException(string.Format(null, FormatMessages.ErrInvalidDateFormat, _config.Language));
             }
             return dateAdr;
         }
@@ -392,7 +392,7 @@ namespace AdrPlus.Commands.NewAdr
 
                 if (!IsValid)
                 {
-                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrorInConfigFile, _filesystem.GetFullNameFile(configPath)));
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrConfigFileInvalid, _filesystem.GetFullNameFile(configPath)));
                 }
 
                 var auxconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;

@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -7,19 +7,19 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
+using Microsoft.Extensions.Configuration;
 using PromptPlusLibrary;
 using System.Collections.Frozen;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace AdrPlus.Infrastructure.UI
 {
     /// <summary>
     /// Console writer implementation using PromptPlus library.
     /// </summary>
-    internal sealed class PromptConsole(IAdrServices adrServices) : IPromptConsole
+    internal sealed partial class PromptConsole(IConfiguration configuration, IFileSystemService fileSystemService, IValidateJsonConfig validate, IAdrServices adrServices) : IPromptConsole
     {
         /// <summary>
         /// Console color for help messages.
@@ -57,7 +57,15 @@ namespace AdrPlus.Infrastructure.UI
         private const string ColorSummary = "navajowhite1";
 
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IFileSystemService _fileSystemService = fileSystemService;
+        private readonly IValidateJsonConfig _validate = validate;
 
+        /// <inheritdoc/>
+        public async Task<bool> TryExecuteFistInstall(CancellationToken cancellationToken)
+        {
+            return await FistInstall(cancellationToken);
+        }
 
         /// <inheritdoc/>
         public void ClearHistoryMigration()
@@ -293,7 +301,7 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     if (input.Length < 10)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrorLenFileSampleMigration, 10));
+                        return (false, string.Format(null, FormatMessages.ErrLenFileSampleMigration, 10));
                     }
                     return (true, string.Empty);
                 })
@@ -409,15 +417,14 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptShowWellcome(string appVersion)
         {
-            PromptPlus.Console.WriteLine($"[{ColorInfo}]{string.Format(null, FormatMessages.WelcomeFormat, appVersion)}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorInfo}]{string.Format(null, FormatMessages.MsgWelcome, appVersion)}[/]");
             PromptPlus.Console.WriteLine("");
         }
 
         /// <inheritdoc/>
         public void PromptConfigure(AdrPlusConfig config)
         {
-            var cultureInfo = new CultureInfo(config.Language);
-            PromptPlus.Config.DefaultCulture = cultureInfo;
+            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language);
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.EnableMessageAbortCtrlC = false;
             PromptPlus.Config.HideAfterFinish = true;
@@ -426,14 +433,13 @@ namespace AdrPlus.Infrastructure.UI
 
         public void PromptEnsureCulture(AdrPlusConfig config)
         {
-            var cultureInfo = new CultureInfo(config.Language);
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(config.Language);
             Thread.CurrentThread.CurrentCulture = new CultureInfo(config.Language);
-            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-            CultureInfo.CurrentCulture = cultureInfo;
-            CultureInfo.CurrentUICulture = cultureInfo;
-            PromptPlus.Config.DefaultCulture = cultureInfo; 
+            CultureInfo.CurrentCulture = new CultureInfo(config.Language);
+            CultureInfo.CurrentUICulture = new CultureInfo(config.Language);
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(config.Language);
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(config.Language);
+            PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language); 
         }
 
         /// <inheritdoc/>
@@ -506,7 +512,6 @@ namespace AdrPlus.Infrastructure.UI
                 { AppConstants.FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
                 { AppConstants.FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
                 { AppConstants.FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
-                { AppConstants.FieldTemplate, Resources.AdrPlus.FieldTitleTemplate },
                 { AppConstants.FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
                 { AppConstants.FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },
                 { AppConstants.FieldLenVersion, Resources.AdrPlus.FieldTitleLenVersion },
@@ -543,7 +548,10 @@ namespace AdrPlus.Infrastructure.UI
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
-                .AddItems(fields.Where(x => x.IsEnabled), false)
+                .Interaction(fields,(item,ctx) => 
+                 {
+                     ctx.AddItem(item, !item.IsEnabled);
+                 })
                 .AddItem(new FieldsJson { Name = Resources.AdrPlus.ConfigActionSaveAndFinish, IsEndEdit = true })
                 .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
@@ -582,7 +590,7 @@ namespace AdrPlus.Infrastructure.UI
                     }
                     if (!isvalid)
                     {
-                        return (false, string.Format(null, FormatMessages.ValidationLanguageInvalidFormat, input));
+                        return (false, string.Format(null, FormatMessages.ValidationLanguageInvalid, input));
                     }
                     return (true, string.Empty);
                 })
@@ -598,7 +606,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
                 .MaxLength(50)
-                .SuggestionHandler(input => ["doc/adr"])
+                .SuggestionHandler(input => [AppConstants.DefaultFolderAdr])
                 .PredicateSelected(input =>
                 {
                     if (input.Trim().Length == 0)
@@ -612,11 +620,11 @@ namespace AdrPlus.Infrastructure.UI
                     }
                     catch (ArgumentException)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                        return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                     }
                     catch (NotSupportedException)
                     {
-                        return (false, string.Format(null, FormatMessages.ErrMsgFolderRepoMustBeRelativeFormat, input));
+                        return (false, string.Format(null, FormatMessages.ErrFolderRepositoryMustBeRelativeFormat, input));
                     }
                     return (true, string.Empty);
                 })
@@ -947,7 +955,7 @@ namespace AdrPlus.Infrastructure.UI
                         {
                             return $"{Path.GetFileName(item.FileName)} ({item.Number})";
                         }, maxslidinglines: 3);
-                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 25, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
+                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 29, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
                         if (fields.Any(x => x.StartsWith("3)",false,CultureInfo.InvariantCulture)))
                         {
                             ctx.AddColumn(Resources.AdrPlus.Folder, 20, (item) => Helper.FmtFolder(item, folderrepoadr), maxslidinglines: 2);
@@ -958,7 +966,7 @@ namespace AdrPlus.Infrastructure.UI
                         }
                         if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Prefix, 10, (item) => item.Prefix, maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Prefix, 5, (item) => item.Prefix, maxslidinglines: 2);
                         }
                         if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
                         {
@@ -1183,7 +1191,7 @@ namespace AdrPlus.Infrastructure.UI
                     var targetconfigPath = Path.Combine(input.FullPath,validateJsonConfig.GetFileNameRepoConfig());
                     if (!fileSystemService.FileExists(targetconfigPath))
                     {
-                        return (false, string.Format(null, FormatMessages.ExceptionFileNotFound, targetconfigPath));
+                        return (false, string.Format(null, FormatMessages.ErrFileNotFound, targetconfigPath));
                     }
                     return (true, "");
                 })

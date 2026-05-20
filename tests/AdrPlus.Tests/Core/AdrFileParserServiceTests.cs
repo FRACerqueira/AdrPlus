@@ -1,4 +1,4 @@
-// ***************************************************************************************
+﻿// ***************************************************************************************
 // MIT LICENCE
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
@@ -70,7 +70,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "test.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -87,7 +87,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "test.md";
             var lines = new[] { "<!-- Test Disclaimer -->" };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -103,7 +103,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "test.md";
             var lines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -143,7 +143,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->",
                 "This is the content of the ADR."
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -177,7 +177,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->",
                 "This is the content of the ADR."
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -215,7 +215,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -245,7 +245,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -275,7 +275,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -309,7 +309,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -339,7 +339,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -373,7 +373,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -403,7 +403,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -437,7 +437,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -467,7 +467,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -501,7 +501,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -526,7 +526,7 @@ namespace AdrPlus.Tests.Core
                 Scopes = "Enterprise;Project"
             };
             var lines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, configNoRevision, _fileSystemService);
@@ -560,7 +560,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -590,7 +590,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -620,7 +620,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -650,7 +650,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -684,7 +684,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -714,7 +714,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -745,7 +745,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->",
                 "Content"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -801,7 +801,7 @@ namespace AdrPlus.Tests.Core
                     "|StatusSuperseded | | |",
                     "<!-- End Header -->"
                 };
-                _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+                _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
                 // Act
                 var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, customConfig, _fileSystemService);
@@ -839,7 +839,7 @@ namespace AdrPlus.Tests.Core
                 "Line 2 of content",
                 "Line 3 of content"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -872,7 +872,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -906,7 +906,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -922,7 +922,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "test.md";
             var lines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -956,7 +956,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded |Superseded (2025-04-19) |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -986,7 +986,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded |Superseded (2025-04-19): 0002 |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1007,7 +1007,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - ReadAllLinesAsync normalizes line endings
             var filePath = "test.md";
             var lines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1023,7 +1023,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Windows line endings are normalized by ReadAllLinesAsync
             var filePath = "test.md";
             var lines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1128,7 +1128,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "0002-RejectedDecision.md";
             var lines = BuildTableHeaderLinesWithRejected("2025-04-20", "Rejected");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1147,7 +1147,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "0001-OldDecision.md";
             var lines = BuildTableHeaderLinesWithSuperseded("2025-04-20", "0003.md");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1189,7 +1189,7 @@ namespace AdrPlus.Tests.Core
                 "Enterprise",
                 "API-Management",
                 contentLines);
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1232,7 +1232,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "Invalid Footer"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1262,7 +1262,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1299,7 +1299,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- End Header -->"
             };
             lines.AddRange(contentLines);
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([.. lines]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([.. lines]);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1333,7 +1333,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1367,7 +1367,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1397,7 +1397,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1419,7 +1419,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1434,7 +1434,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001-TestTitle.txt";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1449,7 +1449,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "   ";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1468,7 +1468,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "ABC-TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1482,7 +1482,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001VInvalid-TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1497,7 +1497,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001V2RInvalid-TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1512,7 +1512,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001V1R02-TestTitle-Enterprise-Domain--AC.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1527,7 +1527,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange
             var filePath = "0001V1R02Enterprise-TestTitle@Domain--SUPInvalid.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1578,7 +1578,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "ADR001V01R02E-TestTitle@Domain.md";
             var invalidHeaderLines = new[] { "Invalid header content" };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(invalidHeaderLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(invalidHeaderLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1608,7 +1608,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1638,7 +1638,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1653,7 +1653,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Test that empty file content is caught
             var filePath = "ADR001V01R02E-TestTitle@Domain.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1673,7 +1673,7 @@ namespace AdrPlus.Tests.Core
                 "<!-- Test Disclaimer -->",
                 "|Adr-Plus |Field |Value |"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1707,7 +1707,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, content) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1737,7 +1737,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1768,7 +1768,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1802,7 +1802,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded |Superseded (2025-04-19): 0002 |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1838,7 +1838,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1871,7 +1871,7 @@ namespace AdrPlus.Tests.Core
                 "|StatusSuperseded | | |",
                 "<!-- End Header -->"
             };
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(lines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(lines);
 
             // Act
             var (header, _) = await _parser.ParseAdrHeaderAndContentAsync(filePath, _config, _fileSystemService);
@@ -1892,7 +1892,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Full ADR Plus pattern with all components
             var filePath = "ADR0001V02R03Enterprise-MyDecision@PaymentService.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1914,7 +1914,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Filename with domain but no title before @
             var filePath = "ADR0001V01R01Enterprise-@SecurityModule.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1930,7 +1930,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Supersede format with double separator
             var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--0002.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -1963,7 +1963,7 @@ namespace AdrPlus.Tests.Core
 
             var filePath = "ADR0001V02Enterprise-MyDecision@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, configNoRevision, _fileSystemService);
@@ -1994,7 +1994,7 @@ namespace AdrPlus.Tests.Core
 
             var filePath = "ADR0001V02R03-MyDecision@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, configNoScope, _fileSystemService);
@@ -2014,7 +2014,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - No migration pattern configured
             var filePath = "OldFormat-0001.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2034,7 +2034,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "ADR0001V01R01Enterprise-MyDecision@Payment-Processing_Service.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2051,7 +2051,7 @@ namespace AdrPlus.Tests.Core
             // Arrange
             var filePath = "ADR0001V01R01Enterprise-MyDecision@Service1@Service2.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2072,7 +2072,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Large superseded number
             var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--9999.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2089,7 +2089,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Zero as superseded number
             var filePath = "ADR0001V01R01Enterprise-OldDecision@Domain--0000.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2110,7 +2110,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Filename missing sequence number
             var filePath = "ADRv01R01Enterprise-TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2124,7 +2124,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Missing separator between components
             var filePath = "ADR0001TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2138,7 +2138,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Empty title part after separator
             var filePath = "ADR0001V01R01Enterprise-.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2152,7 +2152,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Negative sequence number
             var filePath = "ADR-0001V01R01Enterprise-TestTitle.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2167,7 +2167,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Very long sequence number
             var filePath = "ADR999999999V01R01Enterprise-TestTitle.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2185,7 +2185,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Title with special characters
             var filePath = "ADR0001V01R01Enterprise-Use_Caching-Safely!@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2200,7 +2200,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Leading zeros in sequence number
             var filePath = "ADR0001V01R01Enterprise-TestTitle@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2216,7 +2216,7 @@ namespace AdrPlus.Tests.Core
         {
             // Arrange - Supersede value is not numeric
             var filePath = "ADR0001V01R01Enterprise-TestTitle@Domain--ABC.md";
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns([]);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2231,7 +2231,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Version component is 00
             var filePath = "ADR0001V00R01Enterprise-TestTitle@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);
@@ -2247,7 +2247,7 @@ namespace AdrPlus.Tests.Core
             // Arrange - Revision component is 00
             var filePath = "ADR0001V01R00Enterprise-TestTitle@Domain.md";
             var headerLines = BuildValidTableHeaderLines("2025-04-17", "Proposed");
-            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>()).Returns(headerLines);
+            _fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(headerLines);
 
             // Act
             var result = await _parser.ParseFileName(filePath, _config, _fileSystemService);

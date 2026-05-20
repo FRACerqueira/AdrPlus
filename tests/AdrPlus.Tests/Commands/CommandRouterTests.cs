@@ -56,7 +56,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().BeOfType<InvalidOperationException>();
@@ -76,7 +76,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().NotBeNull();
@@ -97,7 +97,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("nonexistent", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("nonexistent", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().NotBeNull();
@@ -122,7 +122,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("NEW", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("NEW", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert - command lookup is case-sensitive
         ex.Should().BeOfType<InvalidOperationException>();
@@ -146,7 +146,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("new", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert - command should be found and handler called
         ex.Should().BeNull();
@@ -174,7 +174,7 @@ public class CommandRouterTests
 
         // Act
         await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert
         // The finally block should execute and call WriteFinishedCommand
@@ -198,7 +198,7 @@ public class CommandRouterTests
         var router = new CommandRouter(serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("new", Array.Empty<string>(), CancellationToken.None);
+        await router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken);
 
         // Assert
         console.Received().PromptWriteStartCommand(Arg.Is<string>(s => s.Contains("new")));
@@ -221,7 +221,7 @@ public class CommandRouterTests
         var router = new CommandRouter(serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("review", Array.Empty<string>(), CancellationToken.None);
+        await router.RouteAsync("review", Array.Empty<string>(), TestContext.Current.CancellationToken);
 
         // Assert
         console.Received().PromptWriteFinishedCommand(Arg.Is<string>(s => s.Contains("review")));
@@ -248,10 +248,10 @@ public class CommandRouterTests
         var router = new CommandRouter(serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("init", Array.Empty<string>(), CancellationToken.None);
+        await router.RouteAsync("init", Array.Empty<string>(), TestContext.Current.CancellationToken);
 
         // Assert
-        await mockHandler.Received().ExecuteAsync(Array.Empty<string>(), CancellationToken.None);
+        await mockHandler.Received().ExecuteAsync(Array.Empty<string>(), TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -273,10 +273,10 @@ public class CommandRouterTests
         var args = new[] { "arg1", "arg2", "arg3" };
 
         // Act
-        await router.RouteAsync("new", args, CancellationToken.None);
+        await router.RouteAsync("new", args, TestContext.Current.CancellationToken);
 
         // Assert
-        await mockHandler.Received().ExecuteAsync(args, CancellationToken.None);
+        await mockHandler.Received().ExecuteAsync(args, TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -298,10 +298,10 @@ public class CommandRouterTests
         var args = new[] { "path/to/file", "--option=value", "@special" };
 
         // Act
-        await router.RouteAsync("review", args, CancellationToken.None);
+        await router.RouteAsync("review", args, TestContext.Current.CancellationToken);
 
         // Assert
-        await mockHandler.Received().ExecuteAsync(args, CancellationToken.None);
+        await mockHandler.Received().ExecuteAsync(args, TestContext.Current.CancellationToken);
     }
 
     #endregion
@@ -324,13 +324,11 @@ public class CommandRouterTests
         adrServices.GenerateCommandsMap().Returns(commandMap);
         var router = new CommandRouter(serviceProvider, logger, console, adrServices);
 
-        var cts = new CancellationTokenSource();
-
         // Act
-        await router.RouteAsync("new", Array.Empty<string>(), cts.Token);
+        await router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken);
 
         // Assert
-        await mockHandler.Received().ExecuteAsync(Arg.Any<string[]>(), cts.Token);
+        await mockHandler.Received().ExecuteAsync(Arg.Any<string[]>(), Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -355,7 +353,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("init", Array.Empty<string>(), CancellationToken.None));
+            () => router.RouteAsync("init", Array.Empty<string>(), TestContext.Current.CancellationToken));
 
         // Assert - no platform-specific exceptions
         ex.Should().BeNull();
@@ -381,7 +379,7 @@ public class CommandRouterTests
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("review", args, CancellationToken.None));
+            () => router.RouteAsync("review", args, TestContext.Current.CancellationToken));
 
         // Assert - args passed as-is without platform interpretation
         ex.Should().BeNull();
@@ -389,3 +387,4 @@ public class CommandRouterTests
 
     #endregion
 }
+

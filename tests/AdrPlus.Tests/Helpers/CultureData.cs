@@ -16,11 +16,11 @@ internal static class CultureData
     /// <summary>
     /// Culture names used for date and confirmation tests.
     /// </summary>
-    public static readonly TheoryData<string> Cultures =
-    [
+    public static readonly TheoryData<string> Cultures = new()
+    {
         "en-US",
         "pt-BR"
-    ];
+    };
 
     /// <summary>
     /// Runs <paramref name="action"/> with the thread's current culture and UI culture temporarily
