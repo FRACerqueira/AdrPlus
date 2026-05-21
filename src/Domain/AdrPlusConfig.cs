@@ -22,5 +22,10 @@ namespace AdrPlus.Domain
         /// Gets the command used to open an ADR.
         /// </summary>
         public string ComandOpenAdr { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Gets the behavior of the application when no arguments are provided.
+        /// </summary>
+        public BehaviorWithoutArg WithoutArgs { get; init; } = BehaviorWithoutArg.Help;
     }
 }

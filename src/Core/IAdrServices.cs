@@ -184,13 +184,14 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="args">The raw command-line tokens to parse.</param>
         /// <param name="argsForCommand">The set of <see cref="Arguments"/> recognised by the current command.</param>
+        /// <param name="defaultarg">An optional default argument to use if no arguments are provided.</param>
         /// <returns>A dictionary mapping each recognised <see cref="Arguments"/> to its value string (empty for flags).</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="args"/> or <paramref name="argsForCommand"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">
         /// Thrown when an unrecognised token is encountered, a required value is missing for an option,
         /// or a required argument is absent outside wizard mode.
         /// </exception>
-        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand);
+        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null);
 
         /// <summary>
         /// Builds formatted help text for the given command, including usage line, description, argument list with valid values, and examples.

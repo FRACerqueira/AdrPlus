@@ -4,15 +4,19 @@
 // ***************************************************************************************
 
 using AdrPlus.Commands;
+using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Process;
+using Microsoft.Extensions.Configuration;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus.Core
 {
     /// <inheritdoc/>
-    internal sealed class CommandMetadataService(IProcessService processService) : ICommandMetadataService
+    internal sealed class CommandMetadataService(IConfiguration configuration, IProcessService processService) : ICommandMetadataService
     {
         private readonly IProcessService _processService = processService ?? throw new ArgumentNullException(nameof(processService));
+        private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
         /// <inheritdoc/>
         public Dictionary<string, Type> GenerateCommandsMap()
@@ -48,14 +52,43 @@ namespace AdrPlus.Core
         }
 
         /// <inheritdoc/>
-        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand)
+        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand,string? defaultarg = null)
         {
             ArgumentNullException.ThrowIfNull(args);
             ArgumentNullException.ThrowIfNull(argsForCommand);
 
             var parsedArgs = new Dictionary<Arguments, string>(args.Length);
 
-            if (args.Length == 0 || Array.IndexOf(args, "-h") >= 0 || Array.IndexOf(args, "--help") >= 0)
+            if (args.Length == 0)
+            {
+                var section = _configuration.GetSection(AppConstants.DefaultSettingsRoot);
+                if (!section.Exists())
+                {
+                    throw new InvalidDataException(Resources.AdrPlus.ErrMsgDefaultSettingsMissing);
+                }
+                var behaviorWithoutArgs = section[AppConstants.FieldBehaviorWithoutArgs];
+                Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out var behavior);
+                switch (behavior)
+                {
+                    case BehaviorWithoutArg.Help:
+                        args = ["-h"];
+                        break;
+                    case BehaviorWithoutArg.Wizard:
+                        if (defaultarg != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(defaultarg))
+                            {
+                                args = [defaultarg];
+                            }
+                        }
+                        else
+                        {
+                            args = ["-w"];
+                        }
+                        break;
+                }   
+            }
+            if (Array.IndexOf(args, "-h") >= 0 || Array.IndexOf(args, "--help") >= 0)
             {
                 parsedArgs[Arguments.Help] = string.Empty;
                 return parsedArgs;

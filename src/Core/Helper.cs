@@ -100,7 +100,7 @@ namespace AdrPlus.Core
 
             // Get the filename from the normalized path
             var lastSeparatorIndex = normalizedPath.LastIndexOf('/');
-            var fileName = lastSeparatorIndex >= 0 ? normalizedPath.Substring(lastSeparatorIndex + 1) : normalizedPath;
+            var fileName = lastSeparatorIndex >= 0 ? normalizedPath[(lastSeparatorIndex + 1)..] : normalizedPath;
 
             // Remove the filename from the result
             result = result.Replace(fileName, string.Empty, StringComparison.Ordinal);
@@ -134,6 +134,15 @@ namespace AdrPlus.Core
             {
                 return false;
             }
+        }
+
+        public static bool IsValidBehaviorWithoutArgs(string? behaviorWithoutArgs)
+        {
+            if (string.IsNullOrWhiteSpace(behaviorWithoutArgs))
+            {
+                return false;
+            }
+            return Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out _);
         }
 
         #endregion

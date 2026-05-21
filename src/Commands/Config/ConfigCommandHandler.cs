@@ -68,7 +68,7 @@ namespace AdrPlus.Commands.Config
             try
             {
                 ArgumentNullException.ThrowIfNull(args);
-                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
+                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs, "-r");
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(
@@ -124,7 +124,7 @@ namespace AdrPlus.Commands.Config
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException(string.Format(null, FormatMessages.ErrMsgNotFoundArgsOrMissing, string.Join(", ", args)));
                 }
             }
             catch (Exception ex)
@@ -799,6 +799,8 @@ namespace AdrPlus.Commands.Config
             {
                 AppConstants.FieldLanguage => HandleEditField(() =>
                     _prompt.PromptEditFieldLanguage(selection, cancellationToken), selection, v => v.Trim()),
+                AppConstants.FieldBehaviorWithoutArgs => HandleEditField(() =>
+                    _prompt.PromptEditFieldBehaviorWithoutArgs(selection, cancellationToken), selection, v => v.ToString()),
                 AppConstants.FieldFolderAdr => HandleEditField(() =>
                     _prompt.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),
                 AppConstants.FieldOpenAdr => HandleEditField(() =>
@@ -822,7 +824,7 @@ namespace AdrPlus.Commands.Config
                 AppConstants.FieldCaseTransform => HandleEditField(() =>
                     _prompt.PromptEditFieldCaseTransform(selection, cancellationToken), selection, v => v.ToString()!),
                 AppConstants.FieldSeparator => HandleEditField(() =>
-                    _prompt.PromptEditFieldSeparator(selection, cancellationToken), selection, v => v.ToString()!),
+                    _prompt.PromptEditFieldSeparator(selection, cancellationToken), selection, v => v.ToString()),
                 AppConstants.FieldStatusNew => HandleEditField(() =>
                     _prompt.PromptEditFieldStatus(selection, cancellationToken), selection, v => v.ToString()!.ToPascalCase()),
                 AppConstants.FieldStatusAccepted => HandleEditField(() =>

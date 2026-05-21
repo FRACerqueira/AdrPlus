@@ -363,6 +363,14 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptEditFieldLanguage(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Prompts the user to edit the behavior when no arguments are provided and returns the result along with an abort status.
+        /// </summary>
+        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered behavior content.</returns>
+        (bool IsAborted, string Content) PromptEditFieldBehaviorWithoutArgs(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Prompts the user to edit the repository folder path and returns the result along with an abort status.
         /// </summary>
         /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>

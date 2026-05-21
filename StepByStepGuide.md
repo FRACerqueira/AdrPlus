@@ -81,25 +81,25 @@ When you execute any AdrPlus command for the first time (except `help`), an inte
 
 ### Automatic First-Time Setup
 
-The first time you run an AdrPlus command, the setup wizard will automatically:
+The **first time you run an AdrPlus command**, the setup wizard will automatically:
 
 1. **Select your preferred language** (`en-US`, `pt-BR`, or other)
 2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
 3. **Set your ADR repository folder** (default: `doc/adr`)
 4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
-5. **Configure migration pattern 
-6. **Create the configuration files**:
+6. **Configure migration pattern** 
+7. **Create the configuration files**:
    - `adrplus.json` (application settings)
    - `adr-config.adrplus` (repository settings)
 
 **Example - Just run any command:**
 
 ```bash
-# Just run without command and the initial setup wizard starts automatically
-adrplus new --wizard
+# Just run without command and the first-time setup will run
+adrplus
 
 # Or any other command - the first-time wizard will run before it executes
-adrplus explorer --path "."
+adrplus init --wizard
 ```
 
 ### What Happens Next
@@ -140,12 +140,14 @@ adrplus config --application
 This creates/edits `adrplus.json` with:
 - **Language**: UI language for prompts and messages (`en-US`, `pt-BR`, etc.)
 - **ComandOpenAdr**: Command to open files after creation (e.g., `code {0}` for VS Code)
+- **WithoutArgs**: Behavior when no arguments are provided (`Help`, `Wizard`, or `None`)
 
 Example `adrplus.json`:
 ```json
 {
   "Language": "en-US",
-  "ComandOpenAdr": "code {0}"
+  "ComandOpenAdr": "code {0}",
+  "WithoutArgs": "Help"
 }
 ```
 

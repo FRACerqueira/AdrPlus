@@ -41,6 +41,15 @@ After the initial setup is complete, the interactive wizard (`--wizard`) is opti
 
 Yes. Language is configurable (for example, `en-US` and `pt-BR`).
 
+### What happens when I run AdrPlus without arguments?
+
+The behavior is controlled by the `WithoutArgs` setting in `adrplus.json`:
+- **`Help`** (default): Displays the help information with all available commands
+- **`Wizard`**: Launches the interactive wizard for guided operations
+- **`None`**: Requires you to explicitly provide a command; otherwise, an error is shown
+
+You can change this behavior anytime by running `adrplus config --application`.
+
 ## Configuration
 
 ### Can I customize ADR headers?

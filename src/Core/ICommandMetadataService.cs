@@ -34,8 +34,9 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="args">The command-line arguments to parse.</param>
         /// <param name="argsForCommand">The expected argument definitions for the command.</param>
+        /// <param name="defaultarg">An optional default argument to use if no arguments are provided.</param>
         /// <returns>A dictionary mapping argument types to their parsed values.</returns>
-        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand);
+        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null);
 
         /// <summary>
         /// Generates help text for a command.
