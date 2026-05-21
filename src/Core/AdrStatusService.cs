@@ -33,7 +33,7 @@ namespace AdrPlus.Core
             }
 
             var record = Helper.CreateAdrRecord(parsefile, config);
-            var contentfile = $"{record.GetHeader(config)}{record.Template}";
+            var contentfile = $"{record.GetHeader(config,null, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
             return (true, string.Empty);
         }
@@ -56,7 +56,7 @@ namespace AdrPlus.Core
             parsefile.Header.StatusChange = AdrStatus.Superseded;
             parsefile.Header.DateChange = dref;
             var record = Helper.CreateAdrRecord(parsefile, config);
-            var contentfile = $"{record.GetHeader(config, seqsupersede)}{record.Template}";
+            var contentfile = $"{record.GetHeader(config, seqsupersede, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
             return (true, string.Empty);
         }
@@ -78,7 +78,7 @@ namespace AdrPlus.Core
             parsefile.Header.StatusChange = adrStatus;
             parsefile.Header.DateChange = dref;
             var record = Helper.CreateAdrRecord(parsefile, config);
-            var contentfile = $"{record.GetHeader(config)}{record.Template}";
+            var contentfile = $"{record.GetHeader(config,null, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
             return (true, string.Empty);
         }

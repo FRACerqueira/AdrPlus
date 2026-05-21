@@ -246,16 +246,12 @@ namespace AdrPlus.Commands.Migrate
                 {
                     throw new InvalidDataException(Resources.AdrPlus.NotFoundADR);
                 }
-                if (foundfiles.Any(x => x.IsValid && x.Header.IsValid && !x.Header.IsMigrated))
-                {
-                    throw new InvalidDataException(Resources.AdrPlus.AlredyAdrPlusCreated);
-                }
                 if (!foundfiles.Any(x => x.IsValid))
                 {
                     throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
                 }
 
-                var adrselectedPrompt = _prompt.PromptShowAdrsMigrations(foundfiles, repoconfig, cancellationToken);
+                var adrselectedPrompt = _prompt.PromptShowAdrsMigrations([.. foundfiles.OrderBy(x => x.Header.IsMigrated).ThenBy(x => x.Header.IsValid)], repoconfig, cancellationToken);
                 if (adrselectedPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

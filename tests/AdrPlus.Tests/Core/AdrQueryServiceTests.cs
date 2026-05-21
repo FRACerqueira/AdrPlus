@@ -47,7 +47,7 @@ public class AdrQueryServiceTests
         const string fileName2 = "ADR-0001-v02-Decision1.md";
         var filePath1 = PathHelper.GetAdrFilePath(fileName1);
         var filePath2 = PathHelper.GetAdrFilePath(fileName2);
-        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var searchPattern = $"*{sequence}*.md";  // Pattern used by implementation
         var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
@@ -95,7 +95,7 @@ public class AdrQueryServiceTests
         const string fileName2 = "ADR-0001-Invalid.md";
         var filePath1 = PathHelper.GetAdrFilePath(fileName1);
         var filePath2 = PathHelper.GetAdrFilePath(fileName2);
-        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var searchPattern = $"*{sequence}*.md";  // Pattern used by implementation
         var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
@@ -122,7 +122,7 @@ public class AdrQueryServiceTests
         const int sequence = 1;
         const string filePath1 = "ADR-0001-Valid.md";
         const string filePath2 = "ADR-0001-InvalidHeader.md";
-        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var searchPattern = $"*{sequence}*.md";  // Pattern used by implementation
         var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
@@ -428,7 +428,7 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-v01-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v03-Decision1.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0001-v02-Decision1.md");
-        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var searchPattern = $"*{sequence}*.md";  // Pattern used by implementation
         var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);
@@ -459,7 +459,7 @@ public class AdrQueryServiceTests
         var filePath1 = PathHelper.GetAdrFilePath("ADR-0001-v01-rev01-Decision1.md");
         var filePath2 = PathHelper.GetAdrFilePath("ADR-0001-v02-rev03-Decision1.md");
         var filePath3 = PathHelper.GetAdrFilePath("ADR-0001-v02-rev01-Decision1.md");
-        var searchPattern = $"*{sequence:D4}*.md";  // Pattern used by implementation
+        var searchPattern = $"*{sequence}*.md";  // Pattern used by implementation
         var adrFolderPath = Path.GetFullPath(Path.Combine(_directoryPath, _config.FolderAdr));
 
         _fileSystemService.DirectoryExists(_directoryPath).Returns(true);

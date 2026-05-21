@@ -15,8 +15,6 @@ namespace AdrPlus.Core
     {
         public static  bool HasAppConfigChange = true;
 
-        public static int CountError;
-
         #region Trsanformation
         public static string FmtStatus(AdrFileNameComponents arg, AdrPlusRepoConfig adrPlusRepoConfig)
         {
@@ -182,32 +180,6 @@ namespace AdrPlus.Core
         #endregion
 
         #region Parsing
-
-        public static string Humanize(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            string texto = input;
-
-            // 1. Detectar e converter PascalCase ou camelCase
-            // Insere espaço antes de letras maiúsculas (exceto no início)
-            texto = RegexConvertPascalAndCamelCase().Replace(texto, " $1");
-
-            // 2. Converter snake_case e kebab-case para espaços
-            texto = texto.Replace("_", " ").Replace("-", " ");
-
-            // 3. Normalizar múltiplos espaços
-            texto = RegexSpaces().Replace(texto, " ").Trim();
-
-            // 4. Capitalizar primeira letra
-            if (texto.Length > 0)
-            {
-                texto = char.ToUpper(texto[0], CultureInfo.CurrentCulture) + texto[1..].ToLower(CultureInfo.CurrentCulture);
-            }
-
-            return texto;
-        }
 
         [GeneratedRegex("(?<!^)([A-Z])")]
         private static partial Regex RegexConvertPascalAndCamelCase();

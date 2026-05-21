@@ -142,6 +142,8 @@ namespace AdrPlus
             {
                 host?.Dispose();
             }
+            // Flushes any buffered output directly to the console window
+            Console.Out.Flush();
             return exitcode;
         }
     }

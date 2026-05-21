@@ -3,6 +3,8 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Core;
+
 namespace AdrPlus.Domain
 {
     /// <summary>
@@ -89,7 +91,7 @@ namespace AdrPlus.Domain
         /// <returns>A concatenated unique title string of the form <c>&lt;title&gt;&lt;domain&gt;</c>.</returns>
         public static string CreateUniqueTitle(string title, string? domain)
         {
-            return $"{title}{domain ?? string.Empty}";
+            return $"{title}{domain ?? string.Empty}".ToPascalCase();
         }
     }
 }

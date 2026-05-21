@@ -324,6 +324,12 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
+        public void FlushOutput()
+        {
+            Console.Out.Flush();
+        }
+
+        /// <inheritdoc/>
         public (int left, int top) PromptCursorPosition()
         { 
             return PromptPlus.Console.GetCursorPosition();

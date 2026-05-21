@@ -390,7 +390,7 @@ namespace AdrPlus.Core
             result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length),CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
             result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
             result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
-            result.Title = valuetitle.Length > 0 ? Helper.Humanize(nameWithoutExtension[valuetitle.Position..]) : string.Empty;
+            result.Title = valuetitle.Length > 0 ? nameWithoutExtension[valuetitle.Position..] : string.Empty;
             return (true, result);
         }
 
@@ -500,15 +500,15 @@ namespace AdrPlus.Core
             index = part.LastIndexOf('@');
             if (index != -1)
             {
-                result.Title = Helper.Humanize(part[..index]);
+                result.Title = part[..index];
                 if (index + 1 < part.Length)
                 {
-                    result.Domain = Helper.Humanize(part[(index + 1)..]);
+                    result.Domain = part[(index + 1)..];
                 }
             }
             else
             {
-                result.Title = Helper.Humanize(part);
+                result.Title = part;
             }
             result.SupersededValue = string.IsNullOrEmpty(supersedeNumber) ? null : int.Parse(supersedeNumber, CultureInfo.InvariantCulture);
             return (true, result);
