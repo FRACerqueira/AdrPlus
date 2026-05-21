@@ -20,7 +20,7 @@ public class AdrFileNameComponentsTests
         var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
 
         // Assert
-        result.Should().Be("UseNewDatabaseBackend");
+        result.Should().Be("UseNewDatabaseBackend"); // ToPascalCase("UseNewDatabase" + "Backend")
     }
 
     [Fact]
@@ -146,34 +146,6 @@ public class AdrFileNameComponentsTests
     }
 
     #region Additional Edge Cases
-
-    [Fact]
-    public void CreateUniqueTitle_WithSpecialCharactersInTitle_PreservesCharacters()
-    {
-        // Arrange
-        var title = "Use-New_Database.v2";
-        var domain = "Back-End";
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be("Use-New_Database.v2Back-End");
-    }
-
-    [Fact]
-    public void CreateUniqueTitle_WithWhitespaceInTitle_PreservesWhitespace()
-    {
-        // Arrange
-        var title = "Use New Database";
-        var domain = "Back End";
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be("Use New DatabaseBack End");
-    }
 
     [Fact]
     public void CreateUniqueTitle_WithEmptyTitle_CombinesWithDomain()
@@ -399,20 +371,21 @@ public class AdrFileNameComponentsTests
     public void AdrFileNameComponents_SettersWorkAfterInstantiation()
     {
         // Arrange
-        var components = new AdrFileNameComponents();
-
-        // Act
-        components.Prefix = "PREFIX";
-        components.Number = 42;
-        components.Title = "Title";
-        components.Version = 2;
-        components.Revision = 1;
-        components.Scope = "Scope";
-        components.Domain = "Domain";
-        components.SupersededValue = 40;
-        components.IsValid = true;
-        components.ErrorMessage = "Error";
-        components.FileName = "file.md";
+        var components = new AdrFileNameComponents
+        {
+            // Act
+            Prefix = "PREFIX",
+            Number = 42,
+            Title = "Title",
+            Version = 2,
+            Revision = 1,
+            Scope = "Scope",
+            Domain = "Domain",
+            SupersededValue = 40,
+            IsValid = true,
+            ErrorMessage = "Error",
+            FileName = "file.md"
+        };
         var newHeader = new AdrHeader { Title = "New Header" };
         components.Header = newHeader;
         components.ContentAdr = "Content";
@@ -510,38 +483,6 @@ public class AdrFileNameComponentsTests
         finalResult.Should().Be("TestTitle");
     }
 
-    [Fact]
-    public void CreateUniqueTitle_WithWhitespaceOnlyStrings_ConcatenatesAsIs()
-    {
-        // Arrange - whitespace strings are preserved as-is in concatenation
-        var title = "A";  // Use actual character to ensure proper counting
-        var domain = "B";
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be("AB");
-        result.Length.Should().Be(2);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_TitleSetToWhitespaceOnly_StoresAsIs()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "   ",
-            Domain = "Domain"
-        };
-
-        // Act
-        var result = components.UniqueTitle;
-
-        // Assert
-        result.Should().Be("   Domain");
-        components.Title.Should().Be("   ");
-    }
 
     [Fact]
     public void AdrFileNameComponents_PrefixSetToWhitespaceOnly_StoresAsIs()
@@ -770,7 +711,7 @@ public class AdrFileNameComponentsTests
         components.Prefix.Should().Be("ADR-日本語");
         components.Scope.Should().Be("Σκοπός");
         components.ErrorMessage.Should().Be("Ошибка");
-        components.UniqueTitle.Should().Be("Título em PortuguêsDomínio");
+        components.UniqueTitle.Should().Be("TítuloEmPortuguêsDomínio");
     }
 
     [Fact]
@@ -812,6 +753,65 @@ public class AdrFileNameComponentsTests
         result1.Should().Be(result2);
         result2.Should().Be(result3);
         result1.Should().Be("TitleDomain");
+    }
+
+    [Fact]
+    public void CreateUniqueTitle_WithKebabCaseTitle_NormalizesProperly()
+    {
+        // Arrange
+        var title = "use-new-database";
+        var domain = "backend";
+
+        // Act
+        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+
+        // Assert
+        result.Should().Be("UseNewDatabasebackend");
+    }
+
+    [Fact]
+    public void CreateUniqueTitle_WithSnakeCaseTitle_NormalizesProperly()
+    {
+        // Arrange
+        var title = "use_new_database";
+        var domain = "backend";
+
+        // Act
+        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+
+        // Assert
+        result.Should().Be("UseNewDatabasebackend");
+    }
+
+    [Fact]
+    public void CreateUniqueTitle_WithSpacesInTitle_NormalizesProperly()
+    {
+        // Arrange
+        var title = "use new database";
+        var domain = "backend";
+
+        // Act
+        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+
+        // Assert
+        result.Should().Be("UseNewDatabasebackend");
+    }
+
+    [Fact]
+    public void UniqueTitle_Property_WithMixedSeparators_NormalizesProperly()
+    {
+        // Arrange
+        var components = new AdrFileNameComponents
+        {
+            Title = "use-new_database",
+            Domain = "back end"
+        };
+
+        // Act
+        var result = components.UniqueTitle;
+
+        // Assert
+        result.Should().Be("UseNewDatabasebackEnd");
     }
 
     #endregion
