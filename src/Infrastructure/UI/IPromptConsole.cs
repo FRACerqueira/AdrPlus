@@ -15,12 +15,18 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal interface IPromptConsole
     {
-       /// <summary>
-       /// Attempts to execute the first-time installation process. 
-       /// </summary>
-       /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
-       /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
-       /// installation was executed successfully; otherwise, <see langword="false"/>.</returns>
+
+        /// <summary>
+        /// Flushes any buffered output directly to the console window.
+        /// </summary>
+        void FlushOutput();
+
+        /// <summary>
+        /// Attempts to execute the first-time installation process. 
+        /// </summary>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the
+        /// installation was executed successfully; otherwise, <see langword="false"/>.</returns>
         Task<bool> TryExecuteFistInstall(CancellationToken cancellationToken);
 
         /// <summary>

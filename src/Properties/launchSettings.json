@@ -2,7 +2,7 @@
   "profiles": {
     "AdrPlus": {
       "commandName": "Project",
-      "commandLineArgs": "new"
+      "commandLineArgs": "wizard"
     },
     "WSL": {
       "commandName": "WSL2",

@@ -178,7 +178,7 @@ namespace AdrPlus.Commands.Supersede
                 var adrRecord = new AdrRecord
                 {
                     Number = nextNumber,
-                    Title = infoadr.Header.Title,
+                    Title = infoadr.Title,
                     Scope = infoadr.Header.Scope ?? string.Empty,
                     Domain = infoadr.Header.Domain ?? string.Empty,
                     StatusCreate = AdrStatus.Proposed,

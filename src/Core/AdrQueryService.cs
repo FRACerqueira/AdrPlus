@@ -31,7 +31,7 @@ namespace AdrPlus.Core
             }
 
             var result = new List<AdrFileNameComponents>();
-            var searchPattern = $"*{sequence.ToString($"D{config.LenSeq}", CultureInfo.CurrentCulture)}*.md";
+            var searchPattern = $"*{sequence}*.md";
             var adrfolder = Path.GetFullPath(Path.Combine(rootpath, config.FolderAdr));
             var mdFiles = fileSystemService.GetFiles(adrfolder, searchPattern);
 
