@@ -57,6 +57,8 @@ namespace AdrPlus
                     {
                         _prompt.PromptWriteError(Resources.AdrPlus.CancelledByUser);
                         LogMessages.LogStoppedAdrPlus(_logger);
+                        // Flushes any buffered output directly to the console window
+                        _prompt.FlushOutput();
                         _applicationLifetime.StopApplication();
                         return;
                     }
@@ -65,6 +67,8 @@ namespace AdrPlus
                 {
                     Helper.HasAppConfigChange = true;
                     LogMessages.LogStoppedAdrPlus(_logger);
+                    // Flushes any buffered output directly to the console window
+                    _prompt.FlushOutput();
                     _applicationLifetime.StopApplication();
                     return;
                 }
@@ -76,6 +80,8 @@ namespace AdrPlus
             finally
             {
                 LogMessages.LogStoppedAdrPlus(_logger);
+                // Flushes any buffered output directly to the console window
+                _prompt.FlushOutput();
                 _applicationLifetime.StopApplication();
             }
         }

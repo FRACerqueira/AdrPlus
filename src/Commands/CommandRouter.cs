@@ -79,11 +79,7 @@ namespace AdrPlus.Commands
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex );
-                if (Helper.CountError == 0)
-                {
-                    _prompt.PromptWriteError(ex.Message);
-                }
-                Helper.CountError++;
+                _prompt.PromptWriteError(ex.Message);
                 throw;
             }
             finally
