@@ -622,6 +622,50 @@ public class AdrServiceTests
         result.Should().BeEmpty();
     }
 
+    [Fact]
+    public void ParseArgs_WithValidArgsAndDefaultArg_DelegatesWithDefaultArgAndReturnsParsedDictionary()
+    {
+        // Arrange
+        var args = new[] { "-t", "my-title" };
+        var argsForCommand = new[] { Arguments.TitleAdr, Arguments.DomainAdr };
+        const string defaultArg = "Help";
+        var expectedParsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.TitleAdr, "my-title" }
+        };
+
+        _commandMetadataService.ParseArgs(args, argsForCommand, defaultArg).Returns(expectedParsedArgs);
+
+        // Act
+        var result = _adrService.ParseArgs(args, argsForCommand, defaultArg);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedParsedArgs);
+        _commandMetadataService.Received(1).ParseArgs(args, argsForCommand, defaultArg);
+    }
+
+    [Fact]
+    public void ParseArgs_WithNullDefaultArg_DelegatesWithNullAndReturnsParsedDictionary()
+    {
+        // Arrange
+        var args = new[] { "-t", "my-title", "-d", "Enterprise" };
+        var argsForCommand = new[] { Arguments.TitleAdr, Arguments.DomainAdr };
+        var expectedParsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.TitleAdr, "my-title" },
+            { Arguments.DomainAdr, "Enterprise" }
+        };
+
+        _commandMetadataService.ParseArgs(args, argsForCommand, null).Returns(expectedParsedArgs);
+
+        // Act
+        var result = _adrService.ParseArgs(args, argsForCommand, null);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedParsedArgs);
+        _commandMetadataService.Received(1).ParseArgs(args, argsForCommand, null);
+    }
+
     #endregion
 
     #region GetHelpText Tests

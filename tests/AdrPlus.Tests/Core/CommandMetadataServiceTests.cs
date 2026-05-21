@@ -8,6 +8,7 @@ using AdrPlus.Core;
 using AdrPlus.Infrastructure.Process;
 using AdrPlus.Tests.Helpers;
 using AdrPlus.Tests.Infrastructure.Process;
+using Microsoft.Extensions.Configuration;
 
 namespace AdrPlus.Tests.Core;
 
@@ -18,21 +19,36 @@ namespace AdrPlus.Tests.Core;
 /// </summary>
 public class CommandMetadataServiceTests
 {
+    private readonly IConfiguration _configurationMock = Substitute.For<IConfiguration>();
     private readonly IProcessService _processServiceMock = IProcessServiceMock.CreateUnconfigured();
     private readonly CommandMetadataService _service;
 
     public CommandMetadataServiceTests()
     {
-        _service = new CommandMetadataService(_processServiceMock);
+        _service = new CommandMetadataService(_configurationMock, _processServiceMock);
     }
 
     #region Constructor Tests
 
     [Fact]
+    public void Constructor_WithNullConfiguration_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var processService = IProcessServiceMock.Create();
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentNullException>(() => new CommandMetadataService(null!, processService));
+        ex.ParamName.Should().Be("configuration");
+    }
+
+    [Fact]
     public void Constructor_WithNullProcessService_ThrowsArgumentNullException()
     {
+        // Arrange
+        var configuration = Substitute.For<IConfiguration>();
+
         // Act & Assert
-        var ex = Assert.Throws<ArgumentNullException>(() => new CommandMetadataService(null!));
+        var ex = Assert.Throws<ArgumentNullException>(() => new CommandMetadataService(configuration, null!));
         ex.ParamName.Should().Be("processService");
     }
 
@@ -40,10 +56,11 @@ public class CommandMetadataServiceTests
     public void Constructor_WithValidProcessService_CreatesInstance()
     {
         // Arrange
+        var configuration = Substitute.For<IConfiguration>();
         var processService = IProcessServiceMock.Create();
 
         // Act
-        var service = new CommandMetadataService(processService);
+        var service = new CommandMetadataService(configuration, processService);
 
         // Assert
         service.Should().NotBeNull();
@@ -197,9 +214,10 @@ public class CommandMetadataServiceTests
         // Arrange
         var filepath = PathHelper.GetAdrFilePath("test.md");
         var command = "notepad";
+        var configuration = Substitute.For<IConfiguration>();
         var processService = Substitute.For<IProcessService>();
         processService.OpenFile(filepath, command).Returns("success");
-        var service = new CommandMetadataService(processService);
+        var service = new CommandMetadataService(configuration, processService);
 
         // Act
         var result = service.OpenFile(filepath, command);
@@ -216,9 +234,10 @@ public class CommandMetadataServiceTests
         var filepath = PathHelper.GetAdrFilePath("ADR-0001.md");
         var command = "code";
         var expectedResult = "File opened successfully";
+        var configuration = Substitute.For<IConfiguration>();
         var processService = Substitute.For<IProcessService>();
         processService.OpenFile(filepath, command).Returns(expectedResult);
-        var service = new CommandMetadataService(processService);
+        var service = new CommandMetadataService(configuration, processService);
 
         // Act
         var result = service.OpenFile(filepath, command);
@@ -234,9 +253,10 @@ public class CommandMetadataServiceTests
         var filepath = PathHelper.GetAlternativeFolderFilePath("nonexistent.md");
         var command = "vim";
         var errorMessage = "File not found";
+        var configuration = Substitute.For<IConfiguration>();
         var processService = Substitute.For<IProcessService>();
         processService.OpenFile(filepath, command).Returns(errorMessage);
-        var service = new CommandMetadataService(processService);
+        var service = new CommandMetadataService(configuration, processService);
 
         // Act
         var result = service.OpenFile(filepath, command);
@@ -495,6 +515,58 @@ public class CommandMetadataServiceTests
 
     #endregion
 
+    #region ParseArgs Tests - Default Argument Scenarios
+
+    [Fact]
+    public void ParseArgs_WithValidArgsAndDefaultArg_ParsesSuccessfully()
+    {
+        // Arrange
+        var args = new[] { "-t", "my-title" };
+        var supportedArgs = new[] { Arguments.TitleAdr, Arguments.DomainAdr };
+        const string defaultArg = "Help";
+
+        // Act
+        var result = _service.ParseArgs(args, supportedArgs, defaultArg);
+
+        // Assert
+        result.Should().ContainKey(Arguments.TitleAdr);
+        result[Arguments.TitleAdr].Should().Be("my-title");
+    }
+
+    [Fact]
+    public void ParseArgs_WithEmptyArgsAndDefaultArg_ReturnsDefaultArg()
+    {
+        // Arrange
+        var args = Array.Empty<string>();
+        var supportedArgs = new[] { Arguments.FileAdr, Arguments.TitleAdr };
+        const string defaultArg = "Help";
+
+        // Act
+        var result = _service.ParseArgs(args, supportedArgs, defaultArg);
+
+        // Assert
+        // When args are empty and defaultarg is provided, it should use the default behavior
+        // (which typically returns Help flag based on empty args)
+        result.Should().ContainKey(Arguments.Help);
+    }
+
+    [Fact]
+    public void ParseArgs_WithValidArgsAndNullDefaultArg_ParsesSuccessfully()
+    {
+        // Arrange
+        var args = new[] { "-w" };
+        var supportedArgs = new[] { Arguments.WizardNew };
+
+        // Act
+        var result = _service.ParseArgs(args, supportedArgs, null);
+
+        // Assert
+        result.Should().ContainKey(Arguments.WizardNew);
+        result[Arguments.WizardNew].Should().Be(string.Empty);
+    }
+
+    #endregion
+
     #region GetHelpText Tests
 
     [Fact]
@@ -736,9 +808,10 @@ public class CommandMetadataServiceTests
         // Arrange
         var filepath = PathHelper.GetAdrFilePath("test.md");
         var command = "notepad";
+        var configuration = Substitute.For<IConfiguration>();
         var processService = Substitute.For<IProcessService>();
         processService.OpenFile(filepath, command).Returns("success");
-        var service = new CommandMetadataService(processService);
+        var service = new CommandMetadataService(configuration, processService);
 
         // Act
         var result = service.OpenFile(filepath, command);

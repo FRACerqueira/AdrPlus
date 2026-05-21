@@ -75,6 +75,59 @@ public class HelperTests
 
     #endregion
 
+    #region IsValidBehaviorWithoutArgs Tests
+
+    [Theory]
+    [InlineData("Help")]
+    [InlineData("help")]
+    [InlineData("HELP")]
+    [InlineData("Wizard")]
+    [InlineData("wizard")]
+    [InlineData("WIZARD")]
+    [InlineData("None")]
+    [InlineData("none")]
+    [InlineData("NONE")]
+    public void IsValidBehaviorWithoutArgs_WithValidBehavior_ReturnsTrue(string behavior)
+    {
+        // Act
+        var result = Helper.IsValidBehaviorWithoutArgs(behavior);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("InvalidBehavior")]
+    [InlineData("Abort")]
+    [InlineData("Continue")]
+    [InlineData("Exit")]
+    [InlineData("Stop")]
+    [InlineData("Random")]
+    public void IsValidBehaviorWithoutArgs_WithInvalidBehavior_ReturnsFalse(string behavior)
+    {
+        // Act
+        var result = Helper.IsValidBehaviorWithoutArgs(behavior);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("\t")]
+    public void IsValidBehaviorWithoutArgs_WithNullOrWhitespace_ReturnsFalse(string? behavior)
+    {
+        // Act
+        var result = Helper.IsValidBehaviorWithoutArgs(behavior);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    #endregion
+
     #region CreateAdrRecord Tests
 
     [Fact]

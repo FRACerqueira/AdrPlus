@@ -101,6 +101,11 @@ namespace AdrPlus.Core
 
 
         /// <summary>
+        /// Configuration field name for behavior without arguments, which defines the default behavior of the application when no command-line arguments are provided. This setting allows users to specify what action the application should take (e.g., show help, create a new ADR, list existing ADRs) when it is run without any specific commands or options. 
+        /// </summary>
+        public const string FieldBehaviorWithoutArgs = "behaviorwithoutargs";
+
+        /// <summary>
         /// Configuration field name for open ADR command.
         /// </summary>
         public const string FieldOpenAdr = "comandopenadr";

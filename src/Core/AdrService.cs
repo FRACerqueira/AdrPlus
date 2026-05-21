@@ -79,8 +79,8 @@ namespace AdrPlus.Core
             => _commandMetadataService.GetCommands();
 
         /// <inheritdoc/>
-        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand)
-            => _commandMetadataService.ParseArgs(args, argsForCommand);
+        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null)
+            => _commandMetadataService.ParseArgs(args, argsForCommand, defaultarg);
 
         /// <inheritdoc/>
         public string GetHelpText(string command, Arguments[] argsForCommand, string[] examples)

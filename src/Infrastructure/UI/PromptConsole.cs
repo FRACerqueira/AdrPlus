@@ -83,6 +83,20 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Controls.History("AdrPlusMigrationTitlePosition").Remove();
         }
 
+        public (bool IsAborted, string Content) PromptEditFieldBehaviorWithoutArgs(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var enumlist = Enum.GetNames<BehaviorWithoutArg>();
+            var result = PromptPlus.Controls
+                .Select<string>(message, ShowDescField(fieldsJson))
+                .Default(fieldsJson.Value)
+                .MaxWidth(10)
+                .AddItems(enumlist)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
+        }
+
+
         public (bool IsAborted, int Value) PromptSelectTitlePosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
             var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptTitlePosition}: ")
@@ -510,6 +524,7 @@ namespace AdrPlus.Infrastructure.UI
         private static FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
         {
                 { AppConstants.FieldLanguage, Resources.AdrPlus.FieldTitleLanguage },
+                { AppConstants.FieldBehaviorWithoutArgs, Resources.AdrPlus.FieldTitleBehaviorWithoutArgs },
                 { AppConstants.FieldOpenAdr, Resources.AdrPlus.FieldTitleOpenAdr },
                 { AppConstants.FieldFolderAdr, Resources.AdrPlus.FieldTitleFolderRepo },
                 { AppConstants.FieldPrefix, Resources.AdrPlus.FieldTitlePrefix },
@@ -1292,6 +1307,7 @@ namespace AdrPlus.Infrastructure.UI
             return field.Name switch
             {
                 AppConstants.FieldLanguage => Resources.AdrPlus.ConfigFieldDescLanguage,
+                AppConstants.FieldBehaviorWithoutArgs => Resources.AdrPlus.ConfigFieldDescBehaviorWithoutArgs,
                 AppConstants.FieldFolderAdr => Resources.AdrPlus.ConfigFieldDescFolderRepo,
                 AppConstants.FieldMigrationPattern => Resources.AdrPlus.ConfigFieldDescMigrationPattern,
                 AppConstants.FieldOpenAdr => Resources.AdrPlus.ConfigFieldDescOpenAdr,

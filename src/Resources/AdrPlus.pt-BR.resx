@@ -1233,4 +1233,16 @@
   <data name="CmdDescReview" xml:space="preserve">
     <value>Criar um novo ADR com uma nova revisão (revisão incremental, mesmo número e versão)</value>
   </data>
+  <data name="ErrMsgWithoutArgs" xml:space="preserve">
+    <value>Valor do comportamento inválido ({0}). Deve ser 'Help', 'Wizard' ou 'None'</value>
+  </data>
+  <data name="ConfigFieldDescBehaviorWithoutArgs" xml:space="preserve">
+    <value>Comportamento da ferramenta quando nenhum argumento é fornecido</value>
+  </data>
+  <data name="FieldTitleBehaviorWithoutArgs" xml:space="preserve">
+    <value>Comportamento sem argumentos</value>
+  </data>
+  <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
+    <value>Argumentos não encontrados ou argumentos ausentes: {0}</value>
+  </data>
 </root>

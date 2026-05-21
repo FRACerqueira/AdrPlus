@@ -84,6 +84,13 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ErrInvalidLanguageCodeFormat, language));
             }
 
+            // Validate behavior
+            var behaviorWithoutArgs = section[AppConstants.FieldBehaviorWithoutArgs];
+            if (string.IsNullOrWhiteSpace(behaviorWithoutArgs) || !Helper.IsValidBehaviorWithoutArgs(behaviorWithoutArgs))
+            {
+                errors.Add(string.Format(null, FormatMessages.ErrInvalidWithoutArgsFormat, behaviorWithoutArgs));
+            }
+
             // Validate content (required for the generation of the ADR)
             var contentpath = Path.Combine(AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
             errors.AddRange(await ValidateTemplateFileAsync(language, contentpath, cancellationToken));
@@ -841,6 +848,7 @@ namespace AdrPlus.Core
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
                     { AppConstants.FieldOpenAdr, JsonValueKind.String },
+                    { AppConstants.FieldBehaviorWithoutArgs, JsonValueKind.String },
                 };
 
                 // Check for missing required fields
@@ -911,6 +919,15 @@ namespace AdrPlus.Core
             {
                 errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldOpenAdr, "{0}"));
             }
+
+            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldBehaviorWithoutArgs);
+            var behaviorWithoutArgsValue = property.GetString() ?? string.Empty;
+            if (behaviorWithoutArgsValue.Length > 0 && !Helper.IsValidBehaviorWithoutArgs(behaviorWithoutArgsValue))
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldBehaviorWithoutArgs, "Help,Wizard,None"));
+            }
+
+
             return [.. errors];
         }
     }

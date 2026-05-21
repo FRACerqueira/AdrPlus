@@ -1233,4 +1233,16 @@
   <data name="CmdDescReview" xml:space="preserve">
     <value>Create a new ADR with a new revison (incremental review, same number and version)</value>
   </data>
+  <data name="ErrMsgWithoutArgs" xml:space="preserve">
+    <value>Invalid behavior value ({0}). Must be 'Help', 'Wizard' or 'None'</value>
+  </data>
+  <data name="ConfigFieldDescBehaviorWithoutArgs" xml:space="preserve">
+    <value>Behavior of the application when no arguments are provided</value>
+  </data>
+  <data name="FieldTitleBehaviorWithoutArgs" xml:space="preserve">
+    <value>Behavior without arguments</value>
+  </data>
+  <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
+    <value>Not found arguments or missing arguments: {0}</value>
+  </data>
 </root>

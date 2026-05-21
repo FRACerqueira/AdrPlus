@@ -89,7 +89,7 @@ public class ConfigCommandHandlerTests
         // Arrange
         var args = new[] { "--help" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.Help, string.Empty } };
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockAdrServices.GetHelpText(Arg.Any<string>(), Arg.Any<Arguments[]>(), Arg.Any<string[]>())
             .Returns("Help text");
 
@@ -113,7 +113,7 @@ public class ConfigCommandHandlerTests
         var configPath = AppConfigPath;
         var jsonContent = """{"DefaultSettings": {"Language": "en"}}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
         _mockFileSystem.FileExists(configPath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(jsonContent);
@@ -144,7 +144,7 @@ public class ConfigCommandHandlerTests
         var configPath = AppConfigPath;
         var jsonContent = """{"DefaultSettings": {"Language": "en"}}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
@@ -168,7 +168,7 @@ public class ConfigCommandHandlerTests
         var jsonContent = """{"DefaultSettings": {}}""";
         var errors = new[] { "Missing Language field" };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
         _mockFileSystem.FileExists(configPath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(jsonContent);
@@ -189,7 +189,7 @@ public class ConfigCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigApplication, string.Empty } };
         var configPath = AppConfigPath;
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
         _mockFileSystem.FileExists(configPath).Returns(false);
 
@@ -210,7 +210,7 @@ public class ConfigCommandHandlerTests
         };
         var configPath = AppConfigPath;
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns(configPath);
         _mockFileSystem.FileExists(configPath).Returns(true);
         _mockFileSystem.FileExists("missing.json").Returns(false);
@@ -233,7 +233,7 @@ public class ConfigCommandHandlerTests
         var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR", "LenSeq": 4}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
         _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
@@ -275,7 +275,7 @@ public class ConfigCommandHandlerTests
         var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR"}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
@@ -316,7 +316,7 @@ public class ConfigCommandHandlerTests
         var args = new[] { "--repository" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigRepository, string.Empty } };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, false));
@@ -335,7 +335,7 @@ public class ConfigCommandHandlerTests
         var args = new[] { "--repository" };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigRepository, string.Empty } };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(true);
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, false));
@@ -358,7 +358,7 @@ public class ConfigCommandHandlerTests
         var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR"}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
@@ -384,7 +384,7 @@ public class ConfigCommandHandlerTests
             { Arguments.FileConfig, "missing.json" }
         };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
         _mockFileSystem.FileExists("missing.json").Returns(false);
 
@@ -406,7 +406,7 @@ public class ConfigCommandHandlerTests
         var jsonContent = """{"Invalid": "data"}""";
         var errors = new[] { "Missing Prefix field" };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonContent);
@@ -436,7 +436,7 @@ public class ConfigCommandHandlerTests
         var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith("template.md"))).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(templateContent);
         _mockValidateConfig.GetConfigAdrTemplatePath().Returns(configPath);
@@ -461,7 +461,7 @@ public class ConfigCommandHandlerTests
             { Arguments.FileConfig, "template.txt" }
         };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
@@ -479,7 +479,7 @@ public class ConfigCommandHandlerTests
             { Arguments.FileConfig, "missing.md" }
         };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
 
         // Act & Assert
@@ -499,7 +499,7 @@ public class ConfigCommandHandlerTests
         var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive));
@@ -528,7 +528,7 @@ public class ConfigCommandHandlerTests
         var configPath = AdrTemplateConfigPath;
         var templateContent = "# Template content";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
@@ -552,7 +552,7 @@ public class ConfigCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
         var drives = new[] { SingleTestDrive };
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -570,7 +570,7 @@ public class ConfigCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigTemplate, string.Empty } };
         var drives = MultipleTestDrives;
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -589,7 +589,7 @@ public class ConfigCommandHandlerTests
         var drives = new[] { SingleTestDrive };
         var templatePath = PathHelper.GetTemplateFilePath("missing.md");
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
@@ -617,7 +617,7 @@ public class ConfigCommandHandlerTests
         var configPath = RepoConfigPath;
         var jsonContent = """{"Prefix": "ADR", "LenSeq": 4}""";
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.HasTemplateRepoFile().Returns(false);
         _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(jsonContent);
@@ -660,7 +660,7 @@ public class ConfigCommandHandlerTests
         var args = Array.Empty<string>();
         var parsedArgs = new Dictionary<Arguments, string>();
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
@@ -680,7 +680,7 @@ public class ConfigCommandHandlerTests
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.GetConfigAppFilePath().Returns("app.json");
         _mockFileSystem.FileExists("app.json").Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -703,7 +703,7 @@ public class ConfigCommandHandlerTests
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardConfigApplication, string.Empty } };
         var exception = new InvalidOperationException("Test exception");
 
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockValidateConfig.When(x => x.GetConfigAppFilePath()).Do(x => throw exception);
 
         // Act & Assert

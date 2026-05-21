@@ -516,7 +516,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptShowBanner(AppConstants.BannerText);
             PromptShowWellcome(_configuration[AppConstants.CfgNameVersionApp]!);
             //write config file application
-            var jsoncontent = $"{{\"DefaultSettings\":{{\"language\": \"{languagesetting}\",\"comandopenadr\": \"{openadrsetting}\"}}}}";
+            var jsoncontent = $"{{\"DefaultSettings\":{{\"language\": \"{languagesetting}\",\"comandopenadr\": \"{openadrsetting}\",\"behaviorwithoutargs\": \"Help\"}}}}";
 
             using (var jsonDoc = JsonDocument.Parse(jsoncontent))
             {

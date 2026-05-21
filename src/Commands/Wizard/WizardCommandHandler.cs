@@ -69,7 +69,7 @@ namespace AdrPlus.Commands.Wizard
             try
             {
                 ArgumentNullException.ThrowIfNull(args);
-                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
+                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs,"");
                 if (parsedArgs.ContainsKey(Arguments.Help) && args.Length != 0)
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(

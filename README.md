@@ -144,11 +144,14 @@ When you run any command for the first time (except `help`), an interactive wiza
 - Setting up your ADR repository structure and naming conventions
 - Creating your ADR folder and configuration files
 
-To get started, simply run any command, and the setup wizard will appear:
+To get started, simply run run without command, and the setup wizard will appear:
 
 ```bash
-# Just run any command and the initial setup wizard starts automatically
-adrplus new --wizard
+# Just run without command and the first-time setup will run
+adrplus
+
+# Or any other command - the first-time wizard will run before it executes
+adrplus init --wizard
 ```
 
 After initial setup completes, you can use any command directly:
@@ -321,7 +324,8 @@ adrplus config --application
 ```json
 {
   "Language": "en-US",
-  "ComandOpenAdr": "code {0}"
+  "ComandOpenAdr": "code {0}",
+  "WithoutArgs": "Help"
 }
 ```
 
@@ -329,6 +333,7 @@ adrplus config --application
 |-----|-------------|
 |`Language`| UI language/culture used by the tool (`en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
 |`ComandOpenAdr`| Command to open an ADR file after creation/update when supported. See examples below. |
+|`WithoutArgs`| Behavior when no arguments are provided (`Help`, `Wizard`, or `None`). Default is `Help`. |
 
 ##### Examples for `ComandOpenAdr`
 
@@ -341,6 +346,34 @@ adrplus config --application
 - **Disabled**: `""` (empty string) — Disables automatic opening of ADR files.
 
 > **Note**: The command must be available as a global PATH variable in your system to work properly. Test it manually in your terminal before configuring it here.
+
+##### Behavior when no arguments are provided (`WithoutArgs`)
+
+The `WithoutArgs` setting determines how AdrPlus behaves when executed without any arguments or commands:
+
+- **`Help`** (default): Displays the help information with available commands and options.
+- **`Wizard`**: Launches the interactive wizard for guided operations (useful for agile experienced users).
+- **`None`**: Requires the user to explicitly provide a command; if no command is given, an error message is shown.
+
+Example configurations:
+
+```json
+{
+  "WithoutArgs": "Help"    // Display help when no arguments provided
+}
+```
+
+```json
+{
+  "WithoutArgs": "Wizard"  // Launch wizard when no arguments provided
+}
+```
+
+```json
+{
+  "WithoutArgs": "None"    // Require explicit command
+}
+```
 
 
 ### `adr-config.adrplus` example

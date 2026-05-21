@@ -277,6 +277,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Behavior of the application when no arguments are provided.
+        /// </summary>
+        internal static string ConfigFieldDescBehaviorWithoutArgs {
+            get {
+                return ResourceManager.GetString("ConfigFieldDescBehaviorWithoutArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Text transformation applied to file names.
         /// </summary>
         internal static string ConfigFieldDescCaseTransform {
@@ -835,6 +844,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not found arguments or missing arguments: {0}.
+        /// </summary>
+        internal static string ErrMsgNotFoundArgsOrMissing {
+            get {
+                return ResourceManager.GetString("ErrMsgNotFoundArgsOrMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command to open ADR must contain the text &apos;{0}&apos;.
         /// </summary>
         internal static string ErrMsgOpenAdrMustContainPlaceholder {
@@ -858,6 +876,15 @@ namespace AdrPlus.Resources {
         internal static string ErrMsgTemplateRepoFileNotFound {
             get {
                 return ResourceManager.GetString("ErrMsgTemplateRepoFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid behavior value ({0}). Must be &apos;Help&apos;, &apos;Wizard&apos; or &apos;None&apos;.
+        /// </summary>
+        internal static string ErrMsgWithoutArgs {
+            get {
+                return ResourceManager.GetString("ErrMsgWithoutArgs", resourceCulture);
             }
         }
         
@@ -1092,6 +1119,15 @@ namespace AdrPlus.Resources {
         internal static string Fields {
             get {
                 return ResourceManager.GetString("Fields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Behavior without arguments.
+        /// </summary>
+        internal static string FieldTitleBehaviorWithoutArgs {
+            get {
+                return ResourceManager.GetString("FieldTitleBehaviorWithoutArgs", resourceCulture);
             }
         }
         
