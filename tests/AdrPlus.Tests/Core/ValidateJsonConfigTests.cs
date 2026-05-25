@@ -73,7 +73,7 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": ""code {0}"",
-                ""behaviorwithoutargs"": ""Help""
+                ""withoutargs"": ""Help""
             }
         }";
     }
@@ -154,7 +154,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldBehaviorWithoutArgs}", "Help" },
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldWithoutArgs}", "Help" },
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -175,7 +175,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldBehaviorWithoutArgs}", "Help" },
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldWithoutArgs}", "Help" },
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -195,7 +195,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldBehaviorWithoutArgs}", "Help" },
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldWithoutArgs}", "Help" },
         });
 
         var templatePath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -218,7 +218,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldBehaviorWithoutArgs}", "Help" },
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldWithoutArgs}", "Help" },
         });
 
         var contentPath = Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName);
@@ -242,7 +242,7 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator(new Dictionary<string, string?>
         {
             { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldLanguage}", "en-US" },
-            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldBehaviorWithoutArgs}", "Help" },
+            { $"{AppConstants.DefaultSettingsRoot}:{AppConstants.FieldWithoutArgs}", "Help" },
         });
 
         var templateDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "template"));
@@ -696,7 +696,7 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""invalid-culture"",
                 ""comandopenadr"": ""code {0}"",
-                ""behaviorwithoutargs"": ""Help""
+                ""withoutargs"": ""Help""
             }
         }";
 
@@ -717,7 +717,7 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": """",
                 ""comandopenadr"": ""code {0}"",
-                ""behaviorwithoutargs"": ""Help""
+                ""withoutargs"": ""Help""
             }
         }";
 
@@ -737,7 +737,7 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": ""code"",
-                ""behaviorwithoutargs"": ""Help""
+                ""withoutargs"": ""Help""
             }
         }";
 
@@ -758,7 +758,7 @@ public class ValidateJsonConfigTests
             ""DefaultSettings"": {
                 ""language"": ""en-US"",
                 ""comandopenadr"": """",
-                ""behaviorwithoutargs"": ""Help""
+                ""withoutargs"": ""Help""
             }
         }";
 

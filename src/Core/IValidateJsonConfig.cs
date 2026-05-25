@@ -13,6 +13,12 @@ namespace AdrPlus.Core
     internal interface IValidateJsonConfig
     {
         /// <summary>
+        /// Gets the path to the template.
+        /// </summary>
+        /// <returns>The template path.</returns>
+        string GetHistoryPath();
+
+        /// <summary>
         /// Retrieves the maximum number, version, and revision values from the existing ADR files in the specified root path. 
         /// </summary>
         /// <param name="rootPath">The root path of the ADR repository.</param>

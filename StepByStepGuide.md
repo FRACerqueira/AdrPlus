@@ -138,16 +138,16 @@ adrplus config --application
 ```
 
 This creates/edits `adrplus.json` with:
-- **Language**: UI language for prompts and messages (`en-US`, `pt-BR`, etc.)
-- **ComandOpenAdr**: Command to open files after creation (e.g., `code {0}` for VS Code)
-- **WithoutArgs**: Behavior when no arguments are provided (`Help`, `Wizard`, or `None`)
+- **language**: UI language for prompts and messages (`en-US`, `pt-BR`, etc.)
+- **comandopenadr**: Command to open files after creation (e.g., `code {0}` for VS Code)
+- **withoutargs**: Behavior when no arguments are provided (`Help`, `Wizard`, or `None`)
 
 Example `adrplus.json`:
 ```json
 {
-  "Language": "en-US",
-  "ComandOpenAdr": "code {0}",
-  "WithoutArgs": "Help"
+  "language": "en-US",
+  "comandopenadr": "code {0}",
+  "withoutargs": "Help"
 }
 ```
 

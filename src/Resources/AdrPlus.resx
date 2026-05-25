@@ -1245,4 +1245,19 @@
   <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
     <value>Not found arguments or missing arguments: {0}</value>
   </data>
+  <data name="NotFoundRecreatedVersionMigration" xml:space="preserve">
+    <value>No existing version file found. Recreated Version  {0}</value>
+  </data>
+  <data name="ErrMigrationVersionFailed" xml:space="preserve">
+    <value>Migration from version {0} to {1} failed</value>
+  </data>
+  <data name="MigrationVersionSuccess" xml:space="preserve">
+    <value>Migration from version {0} to {1} done successfully</value>
+  </data>
+  <data name="WizardGroupInitAndMigrate" xml:space="preserve">
+    <value>Start repository / Migrate ADRs</value>
+  </data>
+  <data name="WizardGroupInitAndMigrateDescription" xml:space="preserve">
+    <value>Initialization configuration for repositories / Migration of existing ADRs</value>
+  </data>
 </root>

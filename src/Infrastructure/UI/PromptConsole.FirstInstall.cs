@@ -515,8 +515,9 @@ namespace AdrPlus.Infrastructure.UI
 
             PromptShowBanner(AppConstants.BannerText);
             PromptShowWellcome(_configuration[AppConstants.CfgNameVersionApp]!);
+
             //write config file application
-            var jsoncontent = $"{{\"DefaultSettings\":{{\"language\": \"{languagesetting}\",\"comandopenadr\": \"{openadrsetting}\",\"behaviorwithoutargs\": \"Help\"}}}}";
+            var jsoncontent = $"{{\"{AppConstants.DefaultSettingsRoot}\":{{\"{AppConstants.FieldLanguage}\": \"{languagesetting}\",\"{AppConstants.FieldOpenAdr}\": \"{openadrsetting}\",\"{AppConstants.FieldWithoutArgs}\": \"Help\"}}}}";
 
             using (var jsonDoc = JsonDocument.Parse(jsoncontent))
             {
@@ -556,7 +557,7 @@ namespace AdrPlus.Infrastructure.UI
             //set init seleceted for menu wizard
             var history = new ItemMenuWizard()
             {
-                Id = "1.05",
+                Id = "5.01",
                 Title = Resources.AdrPlus.WizardAdrInitTitle,
                 Description = Resources.AdrPlus.EscForReturnWizard,
                 EnabledWhenNotConfigured = false

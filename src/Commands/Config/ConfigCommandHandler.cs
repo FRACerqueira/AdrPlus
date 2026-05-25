@@ -5,6 +5,7 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
@@ -35,6 +36,7 @@ namespace AdrPlus.Commands.Config
         IFileSystemService fileSystem,
         IValidateJsonConfig validateconfig,
         IPromptConsole prompt,
+        IConfigurationMigrator configurationMigrator,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<ConfigCommandHandler> _logger = logger;
@@ -42,6 +44,7 @@ namespace AdrPlus.Commands.Config
         private readonly IPromptConsole _prompt = prompt;
         private readonly IValidateJsonConfig _validateConfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
 
         private static readonly Arguments[] ValidCommandArgs = [
             Arguments.WizardConfigApplication,
@@ -126,6 +129,8 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new NotImplementedException(string.Format(null, FormatMessages.ErrMsgNotFoundArgsOrMissing, string.Join(", ", args)));
                 }
+
+                await _configurationMigrator.RecreateVersionFileAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -799,7 +804,7 @@ namespace AdrPlus.Commands.Config
             {
                 AppConstants.FieldLanguage => HandleEditField(() =>
                     _prompt.PromptEditFieldLanguage(selection, cancellationToken), selection, v => v.Trim()),
-                AppConstants.FieldBehaviorWithoutArgs => HandleEditField(() =>
+                AppConstants.FieldWithoutArgs => HandleEditField(() =>
                     _prompt.PromptEditFieldBehaviorWithoutArgs(selection, cancellationToken), selection, v => v.ToString()),
                 AppConstants.FieldFolderAdr => HandleEditField(() =>
                     _prompt.PromptEditFieldFolderRepo(selection, cancellationToken), selection, v => v.Trim()),

@@ -16,16 +16,16 @@ namespace AdrPlus.Domain
         /// <summary>
         /// Language for showing messages, e.g. "en-us", "pt-br". Optional.
         /// </summary>
-        public string Language { get; init; } = AppConstants.GetNeutralLanguage;
+        public string Language { get; set; } = AppConstants.GetNeutralLanguage;
 
         /// <summary>
         /// Gets the command used to open an ADR.
         /// </summary>
-        public string ComandOpenAdr { get; init; } = string.Empty;
+        public string ComandOpenAdr { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the behavior of the application when no arguments are provided.
         /// </summary>
-        public BehaviorWithoutArg WithoutArgs { get; init; } = BehaviorWithoutArg.Help;
+        public BehaviorWithoutArg WithoutArgs { get; set; } = BehaviorWithoutArg.Help;
     }
 }

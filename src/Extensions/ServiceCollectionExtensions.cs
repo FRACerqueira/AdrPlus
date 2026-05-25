@@ -6,22 +6,23 @@
 using AdrPlus.Commands;
 using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
+using AdrPlus.Commands.Explorer;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
+using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
-using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Reject;
+using AdrPlus.Commands.Review;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 using AdrPlus.Core;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
-using AdrPlus.Commands.Migrate;
-using AdrPlus.Commands.Explorer;
 
 namespace AdrPlus.Extensions
 {
@@ -61,6 +62,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ApproveCommandHandler>();
             services.AddSingleton<UndoStatusCommandHandler>();
             services.AddSingleton<SupersedeCommandHandler>();
+            services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             return services;
         }
     }

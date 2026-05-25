@@ -37,7 +37,6 @@ namespace AdrPlus
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
             ILogger? logger = null;
             IHost? host = null;
-            var exitcode = 0;
             try
             {
                 while (Helper.HasAppConfigChange)
@@ -105,8 +104,7 @@ namespace AdrPlus
                             LogMessages.LogError(logger, error);
                             PromptConsole.PromptShowError(error);
                         }
-                        exitcode = 1;
-                        return exitcode;
+                        return 1;
                     }
 
                     var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
@@ -136,7 +134,7 @@ namespace AdrPlus
                 }
                 PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgCritical);
                 PromptConsole.PromptShowError(ex.Message);
-                exitcode = 1;
+                Helper.ExitCode = 1;
             }
             finally
             {
@@ -144,7 +142,7 @@ namespace AdrPlus
             }
             // Flushes any buffered output directly to the console window
             Console.Out.Flush();
-            return exitcode;
+            return Helper.ExitCode;
         }
     }
 }

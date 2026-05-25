@@ -32,6 +32,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
 - [Configuration](#configuration)
+- [Settings and configuration across upgrades](#settings-and-configuration-across-upgrades)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
 - [Security](#security)
@@ -63,6 +64,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
+- 💾 **Preserve settings and configuration** across upgrades and reinitializations
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
 - 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
   - **ADR content can be written in any language!**
@@ -323,19 +325,19 @@ adrplus config --application
 
 ```json
 {
-  "Language": "en-US",
-  "ComandOpenAdr": "code {0}",
-  "WithoutArgs": "Help"
+  "language": "en-US",
+  "comandopenadr": "code {0}",
+  "withoutargs": "Help"
 }
 ```
 
 | Key | Description |
 |-----|-------------|
-|`Language`| UI language/culture used by the tool (`en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
-|`ComandOpenAdr`| Command to open an ADR file after creation/update when supported. See examples below. |
-|`WithoutArgs`| Behavior when no arguments are provided (`Help`, `Wizard`, or `None`). Default is `Help`. |
+|`language`| UI language/culture used by the tool (`en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
+|`comandopenadr`| Command to open an ADR file after creation/update when supported. See examples below. |
+|`withoutargs`| Behavior when no arguments are provided (`Help`, `Wizard`, or `None`). Default is `Help`. |
 
-##### Examples for `ComandOpenAdr`
+##### Examples for `comandopenadr`
 
 - **VS Code**: `code {0}` — Opens the file in VS Code.
 - **Visual Studio**: `devenv.exe {0}` — Opens the file in the associated application (Windows only).
@@ -347,9 +349,9 @@ adrplus config --application
 
 > **Note**: The command must be available as a global PATH variable in your system to work properly. Test it manually in your terminal before configuring it here.
 
-##### Behavior when no arguments are provided (`WithoutArgs`)
+##### Behavior when no arguments are provided (`withoutargs`)
 
-The `WithoutArgs` setting determines how AdrPlus behaves when executed without any arguments or commands:
+The `withoutargs` setting determines how AdrPlus behaves when executed without any arguments or commands:
 
 - **`Help`** (default): Displays the help information with available commands and options.
 - **`Wizard`**: Launches the interactive wizard for guided operations (useful for agile experienced users).
@@ -359,19 +361,19 @@ Example configurations:
 
 ```json
 {
-  "WithoutArgs": "Help"    // Display help when no arguments provided
+  "withoutargs": "Help"    // Display help when no arguments provided
 }
 ```
 
 ```json
 {
-  "WithoutArgs": "Wizard"  // Launch wizard when no arguments provided
+  "withoutargs": "Wizard"  // Launch wizard when no arguments provided
 }
 ```
 
 ```json
 {
-  "WithoutArgs": "None"    // Require explicit command
+  "withoutargs": "None"    // Require explicit command
 }
 ```
 
@@ -562,6 +564,23 @@ Organize ADRs by department with custom headers and folder structure.
 
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.
+
+---
+
+## Settings and configuration across upgrades
+
+When you upgrade AdrPlus to a new version, all your settings and configurations are automatically preserved:
+
+```bash
+# Update to the latest version
+dotnet tool update -g adrplus
+```
+
+Your configuration persists automatically:
+- ✅ **Application settings** (`adrplus.json`): Language, editor preferences, and interface behavior remain unchanged
+- ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns, folder structure, and scope definitions are maintained
+
+No manual reconfiguration is needed after upgrading — simply update the tool and continue using it as before.
 
 ---
 
