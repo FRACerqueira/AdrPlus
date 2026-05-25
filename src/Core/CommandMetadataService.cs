@@ -8,7 +8,6 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Process;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdrPlus.Core
 {
@@ -66,7 +65,7 @@ namespace AdrPlus.Core
                 {
                     throw new InvalidDataException(Resources.AdrPlus.ErrMsgDefaultSettingsMissing);
                 }
-                var behaviorWithoutArgs = section[AppConstants.FieldBehaviorWithoutArgs];
+                var behaviorWithoutArgs = section[AppConstants.FieldWithoutArgs];
                 Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out var behavior);
                 switch (behavior)
                 {

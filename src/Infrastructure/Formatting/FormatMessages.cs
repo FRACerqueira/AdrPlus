@@ -25,6 +25,7 @@ namespace AdrPlus.Infrastructure.Formatting
         }
 
         // ==================== ERROR MESSAGES ====================
+
         public static CompositeFormat ErrMsgNotFoundArgsOrMissing => Get(() => Resources.AdrPlus.ErrMsgNotFoundArgsOrMissing);
         public static CompositeFormat ErrAdrFieldHeaderNotFound => Get(() => Resources.AdrPlus.ErrMsgAdrFieldHeaderNotFound);
         public static CompositeFormat ErrNewLenSeqGreaterThanConfig => Get(() => Resources.AdrPlus.ErrMsgNewLenSeqGreatConfigSetting);
@@ -61,8 +62,12 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ErrContentInvalidPathFormat => Get(() => Resources.AdrPlus.ErrMsgContentInvalidPath);
         public static CompositeFormat ErrContentPathTooLongFormat => Get(() => Resources.AdrPlus.ErrMsgContentPathTooLong);
         public static CompositeFormat ErrContentPathNotSupportedFormat => Get(() => Resources.AdrPlus.ErrMsgContentPathNotSupported);
+        public static CompositeFormat ErrMigrationVersionFailed => Get(() => Resources.AdrPlus.ErrMigrationVersionFailed);
+
 
         // ==================== INFORMATIONAL MESSAGES ====================
+        public static CompositeFormat MigrationVersionSuccess => Get(() => Resources.AdrPlus.MigrationVersionSuccess);
+        public static CompositeFormat NotFoundRecreatedVersionMigration => Get(() => Resources.AdrPlus.NotFoundRecreatedVersionMigration);
         public static CompositeFormat MsgWelcome => Get(() => Resources.AdrPlus.Welcome);
         public static CompositeFormat MsgCommandStarted => Get(() => Resources.AdrPlus.MsgCommandStarted);
         public static CompositeFormat MsgCommandFinished => Get(() => Resources.AdrPlus.MsgCommandFinished);

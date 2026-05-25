@@ -5,6 +5,7 @@
 
 using AdrPlus.Commands;
 using AdrPlus.Core;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace AdrPlus
             ILogger<MainProgram> logger,
             CommandRouter commandRouter,
             IConfiguration configuration,
+            IConfigurationMigrator configurationMigrator,
             IPromptConsole prompt,
             IHostApplicationLifetime appLifetime) : BackgroundService
     {
@@ -34,6 +36,7 @@ namespace AdrPlus
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IConfiguration _configuration = configuration;
         private readonly IPromptConsole _prompt = prompt;
+        private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
         private readonly IHostApplicationLifetime _applicationLifetime = appLifetime;
 
 
@@ -45,6 +48,39 @@ namespace AdrPlus
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var appToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, _applicationLifetime.ApplicationStopping);
+            Exception? error = null;
+            try
+            {
+                if (await _configurationMigrator.CheckAndMigrateConfigAsync(appToken.Token))
+                {
+                    Helper.HasAppConfigChange = true;
+                    LogMessages.LogStoppedAdrPlus(_logger);
+                    // Flushes any buffered output directly to the console window
+                    _prompt.FlushOutput();
+                    _applicationLifetime.StopApplication();
+                    return;
+                }
+            }
+            catch (Exception ex) 
+            {
+                error = ex;
+            }
+            finally
+            {
+                if (error != null)
+                {
+                    LogMessages.LogStoppedAdrPlus(_logger);
+                    // Flushes any buffered output directly to the console window
+                    _prompt.FlushOutput();
+                    _applicationLifetime.StopApplication();
+                }
+            }
+            if (error != null)
+            {
+                Helper.ExitCode = 1;
+                return;
+            }
+
             var commandName = _configuration[AppConstants.CfgCommandName] ?? string.Empty;
             var argsString = _configuration[AppConstants.CfgCommandArgs] ?? string.Empty;
             var args = argsString.Split(AppConstants.CommandArgsSeparator, StringSplitOptions.RemoveEmptyEntries);
@@ -76,6 +112,10 @@ namespace AdrPlus
             try
             {
                 await _commandRouter.RouteAsync(commandName, args, appToken.Token);
+            }
+            catch 
+            {
+                Helper.ExitCode = 1;
             }
             finally
             {

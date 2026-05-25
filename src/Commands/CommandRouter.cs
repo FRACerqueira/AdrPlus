@@ -38,6 +38,7 @@ namespace AdrPlus.Commands
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         public async Task RouteAsync(string commandName, string[] args, CancellationToken cancellationToken)
         {
+            Helper.CountError = 0; 
             var logcmd = string.Join(' ', new[] { commandName }.Concat(args));
             if (string.IsNullOrWhiteSpace(commandName))
             {
@@ -52,8 +53,8 @@ namespace AdrPlus.Commands
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogCommandException(_logger, ex);
                     _prompt.PromptWriteError(ex.Message);
+                    LogMessages.LogCommandException(_logger, ex);
                     throw;
                 }
                 return;
@@ -63,29 +64,33 @@ namespace AdrPlus.Commands
 
             if (handlerType == null)
             {
-                LogMessages.LogUnknownCommand(_logger, commandName);
                 var msg = string.Format(null, FormatMessages.ErrUnknownCommandFormat, commandName);
                 _prompt.PromptWriteError(msg);
+                LogMessages.LogUnknownCommand(_logger, commandName);
                 throw new InvalidOperationException(msg);
             }
 
             try
             {
-                LogMessages.LogExecutingCommand(_logger, logcmd);
                 _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStarted, commandName));
+                LogMessages.LogExecutingCommand(_logger, logcmd);
                 var handler = (ICommandHandler)_serviceProvider.GetRequiredService(handlerType);
                 await handler.ExecuteAsync(args, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex );
-                _prompt.PromptWriteError(ex.Message);
+                if (Helper.CountError == 0 || !_prompt.PromptIsAbortedByCtrlC())
+                {
+                    _prompt.PromptWriteError(ex.Message);
+                }
+                Helper.CountError++;
                 throw;
             }
             finally
             {
-                LogMessages.LogCommandCompleted(_logger, logcmd);
                 _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinished, commandName));
+                LogMessages.LogCommandCompleted(_logger, logcmd);
             }
         }
 

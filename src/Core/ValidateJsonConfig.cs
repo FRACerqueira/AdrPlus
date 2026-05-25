@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using static System.Environment;
 
 namespace AdrPlus.Core
 {
@@ -85,7 +86,7 @@ namespace AdrPlus.Core
             }
 
             // Validate behavior
-            var behaviorWithoutArgs = section[AppConstants.FieldBehaviorWithoutArgs];
+            var behaviorWithoutArgs = section[AppConstants.FieldWithoutArgs];
             if (string.IsNullOrWhiteSpace(behaviorWithoutArgs) || !Helper.IsValidBehaviorWithoutArgs(behaviorWithoutArgs))
             {
                 errors.Add(string.Format(null, FormatMessages.ErrInvalidWithoutArgsFormat, behaviorWithoutArgs));
@@ -105,6 +106,15 @@ namespace AdrPlus.Core
         public bool HasTemplateRepoFile()
         {
             return _fileSystem.FileExists(GetDefaultConfigRepoFilePath());
+        }
+
+        /// <summary>
+        /// Gets the path to the history directory.
+        /// </summary>
+        /// <returns>The history path.</returns>
+        public string GetHistoryPath()
+        {
+            return Path.Combine(GetFolderPath(SpecialFolder.UserProfile), "AdrPlus.History");
         }
 
         /// <summary>
@@ -848,7 +858,7 @@ namespace AdrPlus.Core
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
                     { AppConstants.FieldOpenAdr, JsonValueKind.String },
-                    { AppConstants.FieldBehaviorWithoutArgs, JsonValueKind.String },
+                    { AppConstants.FieldWithoutArgs, JsonValueKind.String },
                 };
 
                 // Check for missing required fields
@@ -920,11 +930,11 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldOpenAdr, "{0}"));
             }
 
-            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldBehaviorWithoutArgs);
+            property = root.GetProperty(AppConstants.DefaultSettingsRoot).GetProperty(AppConstants.FieldWithoutArgs);
             var behaviorWithoutArgsValue = property.GetString() ?? string.Empty;
             if (behaviorWithoutArgsValue.Length > 0 && !Helper.IsValidBehaviorWithoutArgs(behaviorWithoutArgsValue))
             {
-                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldBehaviorWithoutArgs, "Help,Wizard,None"));
+                errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldWithoutArgs, "Help,Wizard,None"));
             }
 
 

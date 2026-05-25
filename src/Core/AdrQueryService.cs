@@ -6,7 +6,6 @@
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
-using System.Globalization;
 
 namespace AdrPlus.Core
 {
@@ -38,7 +37,7 @@ namespace AdrPlus.Core
             foreach (var filePath in mdFiles)
             {
                 var aux = await _fileParser.ParseFileName(filePath, config, fileSystemService);
-                if (aux.IsValid && aux.Header.IsValid && aux.Number == sequence)
+                if (aux.IsValid && (aux.Header.IsValid || aux.Header.IsMigrated) && aux.Number == sequence)
                 {
                     result.Add(aux);
                 }
@@ -116,8 +115,8 @@ namespace AdrPlus.Core
                 ? []
                 : [.. adrFiles
                     .Where(f => !string.IsNullOrWhiteSpace(f.Domain))
-                    .Select(f => f.Domain!)
-                    .Distinct()];
+                    .DistinctBy(x => x.Domain!.ToPascalCase())
+                    .Select(f => f.Domain!)];
         }
     }
 }

@@ -628,6 +628,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migration from version {0} to {1} failed.
+        /// </summary>
+        internal static string ErrMigrationVersionFailed {
+            get {
+                return ResourceManager.GetString("ErrMigrationVersionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The ADR file does not have the expected {0} header.
         /// </summary>
         internal static string ErrMsgAdrFieldHeaderNotFound {
@@ -2122,6 +2131,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migration from version {0} to {1} done successfully.
+        /// </summary>
+        internal static string MigrationVersionSuccess {
+            get {
+                return ResourceManager.GetString("MigrationVersionSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; command finished.
         /// </summary>
         internal static string MsgCommandFinished {
@@ -2235,6 +2253,15 @@ namespace AdrPlus.Resources {
         internal static string NotFoundADR {
             get {
                 return ResourceManager.GetString("NotFoundADR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No existing version file found. Recreated Version  {0}.
+        /// </summary>
+        internal static string NotFoundRecreatedVersionMigration {
+            get {
+                return ResourceManager.GetString("NotFoundRecreatedVersionMigration", resourceCulture);
             }
         }
         
@@ -3315,6 +3342,24 @@ namespace AdrPlus.Resources {
         internal static string WizardGroupExplorerReportTitle {
             get {
                 return ResourceManager.GetString("WizardGroupExplorerReportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start repository / Migrate ADRs.
+        /// </summary>
+        internal static string WizardGroupInitAndMigrate {
+            get {
+                return ResourceManager.GetString("WizardGroupInitAndMigrate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initialization configuration for repositories / Migration of existing ADRs.
+        /// </summary>
+        internal static string WizardGroupInitAndMigrateDescription {
+            get {
+                return ResourceManager.GetString("WizardGroupInitAndMigrateDescription", resourceCulture);
             }
         }
         

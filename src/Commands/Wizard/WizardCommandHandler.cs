@@ -174,6 +174,25 @@ namespace AdrPlus.Commands.Wizard
                                 // If an exception occurs , skip excepion.
                             }
                             break;
+                        case '5':
+                            {
+                                try
+                                {
+                                    currentMenu = await HandleInitMigrateMenuAsync(isRepoConfigured, cancellationToken);
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    if (_prompt.PromptIsAbortedByCtrlC())
+                                    {
+                                        throw;
+                                    }
+                                }
+                                catch
+                                {
+                                    // If an exception occurs , skip excepion.
+                                }
+                                break;
+                            }
                         default:
                             await _filesystem.SaveHistoryAsync(StartMenuHistoryKey, new ItemMenuWizard(), cancellationToken);
                             throw new NotImplementedException(string.Format(null, FormatMessages.ErrInvalidMenuOption, $"{currentMenu.Id} {currentMenu.Title}"));
@@ -270,22 +289,56 @@ namespace AdrPlus.Commands.Wizard
             await _filesystem.SaveHistoryAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken);
 
             var commandAlias = GetCommandAlias(CommandsAdr.Config);
-            if (itemSelected!.Id == "1.05")
-            {
-                commandAlias = GetCommandAlias(CommandsAdr.Init);
-            }
-            else if (itemSelected!.Id == "1.06")
-            {
-                commandAlias = GetCommandAlias(CommandsAdr.Migrate);
-            }
             string[] args = itemSelected.Id switch
             {
                 "1.01" => ["-a"],
                 "1.02" => ["-t"],
                 "1.03" => ["-m"],
                 "1.04" => ["-r"],
-                "1.05" => ["-w"],
-                "1.06" => ["-w"],
+                _ => throw await CreateInvalidMenuExceptionAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken),
+            };
+            try
+            {
+                _prompt.PromptEnabledEscToAbort(true);
+                await _commandRouter.RouteAsync(commandAlias, args, cancellationToken);
+            }
+            finally
+            {
+                _prompt.PromptEnabledEscToAbort(false);
+            }
+            return itemSelected;
+        }
+
+
+        private async Task<ItemMenuWizard> HandleInitMigrateMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
+        {
+            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuInitMigrate(), new ItemMenuWizard(), cancellationToken);
+
+            if (isAborted)
+            {
+                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+            }
+
+            if (itemSelected!.Id == "5.00")
+            {
+                return new ItemMenuWizard();
+            }
+
+            await _filesystem.SaveHistoryAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken);
+
+            var commandAlias = GetCommandAlias(CommandsAdr.Config);
+            if (itemSelected!.Id == "5.01")
+            {
+                commandAlias = GetCommandAlias(CommandsAdr.Init);
+            }
+            else if (itemSelected!.Id == "5.02")
+            {
+                commandAlias = GetCommandAlias(CommandsAdr.Migrate);
+            }
+            string[] args = itemSelected.Id switch
+            {
+                "5.01" => ["-w"],
+                "5.02" => ["-w"],
                 _ => throw await CreateInvalidMenuExceptionAsync(ConfigMenuHistoryKey, itemSelected, cancellationToken),
             };
             try
@@ -437,6 +490,13 @@ namespace AdrPlus.Commands.Wizard
                 },
                 new ItemMenuWizard
                 {
+                    Id = "5",
+                    Title = Resources.AdrPlus.WizardGroupInitAndMigrate,
+                    Description = Resources.AdrPlus.WizardGroupInitAndMigrateDescription,
+                    EnabledWhenNotConfigured = false
+                },
+                new ItemMenuWizard
+                {
                     Id = "2",
                     Title = Resources.AdrPlus.WizardGroupAdrsTitle,
                     Description = Resources.AdrPlus.WizardGroupAdrsDescription,
@@ -465,6 +525,36 @@ namespace AdrPlus.Commands.Wizard
                 },
 
             ];
+        }
+
+        /// <summary>
+        /// Returns the top-level group menu items (Configurations, ADRs, Command Help, Exit).
+        /// </summary>
+        /// <returns>An array of <see cref="ItemMenuWizard"/> representing the top-level menu options.</returns>
+        private static ItemMenuWizard[] GetMenuInitMigrate()
+        {
+            return [
+            new ItemMenuWizard
+                {
+                    Id = "5.00",
+                    Title = Resources.AdrPlus.WizardMainMenu,
+                    Description = Resources.AdrPlus.WizardHelpMainMenuDescription,
+                    EnabledWhenNotConfigured = true
+                },
+            new ItemMenuWizard
+            {
+                Id = "5.01",
+                Title = Resources.AdrPlus.WizardAdrInitTitle,
+                Description = Resources.AdrPlus.EscForReturnWizard,
+                EnabledWhenNotConfigured = false
+            },
+            new ItemMenuWizard
+            {
+                Id = "5.02",
+                Title = Resources.AdrPlus.WizardConfigMigratedTitle,
+                Description = Resources.AdrPlus.EscForReturnWizard,
+                EnabledWhenNotConfigured = false
+            }];
         }
 
         /// <summary>
@@ -576,20 +666,6 @@ namespace AdrPlus.Commands.Wizard
                     Title = Resources.AdrPlus.WizardConfigRepositoryTitle,
                     Description = Resources.AdrPlus.EscForReturnWizard,
                     EnabledWhenNotConfigured = true
-                },
-                new ItemMenuWizard
-                {
-                    Id = "1.05",
-                    Title = Resources.AdrPlus.WizardAdrInitTitle,
-                    Description = Resources.AdrPlus.EscForReturnWizard,
-                    EnabledWhenNotConfigured = false
-                },
-                new ItemMenuWizard
-                {
-                    Id = "1.06",
-                    Title = Resources.AdrPlus.WizardConfigMigratedTitle,
-                    Description = Resources.AdrPlus.EscForReturnWizard,
-                    EnabledWhenNotConfigured = false
                 }
             ];
         }

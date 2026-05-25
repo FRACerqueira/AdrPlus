@@ -7,6 +7,7 @@ using AdrPlus.Commands;
 using AdrPlus.Commands.Config;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
@@ -27,6 +28,7 @@ public class ConfigCommandHandlerTests
     private readonly IPromptConsole _mockConsole;
     private readonly IValidateJsonConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
+    private readonly IConfigurationMigrator _mockConfigMigrationServices;
     private readonly AdrPlusConfig _config;
     private readonly ConfigCommandHandler _handler;
 
@@ -37,6 +39,7 @@ public class ConfigCommandHandlerTests
         _mockConsole = Substitute.For<IPromptConsole>();
         _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
+        _mockConfigMigrationServices = Substitute.For<IConfigurationMigrator>();
 
         _config = new AdrPlusConfig
         {
@@ -47,6 +50,7 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockConfigMigrationServices,
             _mockAdrServices);
     }
 
@@ -61,6 +65,7 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockConfigMigrationServices,
             _mockAdrServices);
 
         // Assert

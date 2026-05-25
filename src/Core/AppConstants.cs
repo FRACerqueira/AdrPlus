@@ -18,13 +18,6 @@ namespace AdrPlus.Core
         /// </summary>
         public const int LenghtHeader = 12;
 
-
-        /// <summary>
-        /// The name of the file used to track whether the application has been run for the first time, allowing the application to perform any necessary setup or initialization tasks on the first run. 
-        /// </summary>
-        public const string FileFirstInstall  = "firstinstall.adrplus";
-
-
         /// <summary>
         /// The name of the directory where ADR templates are stored. This directory is used to store template files that define the structure and content of ADRs, allowing users to create new ADRs based on predefined templates.  
         /// </summary>
@@ -103,7 +96,7 @@ namespace AdrPlus.Core
         /// <summary>
         /// Configuration field name for behavior without arguments, which defines the default behavior of the application when no command-line arguments are provided. This setting allows users to specify what action the application should take (e.g., show help, create a new ADR, list existing ADRs) when it is run without any specific commands or options. 
         /// </summary>
-        public const string FieldBehaviorWithoutArgs = "behaviorwithoutargs";
+        public const string FieldWithoutArgs = "withoutargs";
 
         /// <summary>
         /// Configuration field name for open ADR command.

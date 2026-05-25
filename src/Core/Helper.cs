@@ -15,6 +15,10 @@ namespace AdrPlus.Core
     {
         public static  bool HasAppConfigChange = true;
 
+        public static int CountError;
+
+        public static int ExitCode;
+
         #region Trsanformation
         public static string FmtStatus(AdrFileNameComponents arg, AdrPlusRepoConfig adrPlusRepoConfig)
         {
