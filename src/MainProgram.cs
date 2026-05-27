@@ -23,6 +23,8 @@ namespace AdrPlus
     /// <param name="logger">The logger instance.</param>
     /// <param name="commandRouter">The command router to route commands.</param>
     /// <param name="configuration">The application configuration.</param>
+    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
+    /// <param name="prompt">The prompt console for user interactions.</param>
     /// <param name="appLifetime">The application lifetime manager.</param>
     internal sealed class MainProgram(
             ILogger<MainProgram> logger,
@@ -48,7 +50,6 @@ namespace AdrPlus
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var appToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, _applicationLifetime.ApplicationStopping);
-            Exception? error = null;
             try
             {
                 if (await _configurationMigrator.CheckAndMigrateConfigAsync(appToken.Token))
@@ -63,21 +64,13 @@ namespace AdrPlus
             }
             catch (Exception ex) 
             {
-                error = ex;
-            }
-            finally
-            {
-                if (error != null)
-                {
-                    LogMessages.LogStoppedAdrPlus(_logger);
-                    // Flushes any buffered output directly to the console window
-                    _prompt.FlushOutput();
-                    _applicationLifetime.StopApplication();
-                }
-            }
-            if (error != null)
-            {
                 Helper.ExitCode = 1;
+                _prompt.PromptWriteError(ex.Message);
+                LogMessages.LogCriticalError(_logger, ex);
+                LogMessages.LogStoppedAdrPlus(_logger);
+                // Flushes any buffered output directly to the console window
+                _prompt.FlushOutput();
+                _applicationLifetime.StopApplication();
                 return;
             }
 

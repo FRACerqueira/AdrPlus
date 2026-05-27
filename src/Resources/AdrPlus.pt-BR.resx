@@ -1260,4 +1260,7 @@
   <data name="WizardGroupInitAndMigrateDescription" xml:space="preserve">
     <value>Configuração de inicialização para repositórios / Migração de ADRs existentes</value>
   </data>
+  <data name="ErrMsgCommandMissing" xml:space="preserve">
+    <value>Comando ausente</value>
+  </data>
 </root>

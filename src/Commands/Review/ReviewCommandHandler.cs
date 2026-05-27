@@ -124,7 +124,12 @@ namespace AdrPlus.Commands.Review
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardReview);
                 if (hasWizard)
                 {
-                    parsedArgs = await ReviewAdrWizard(parsedArgs.ContainsKey(Arguments.OpenFile), cancellationToken);
+                    var openafter = parsedArgs.ContainsKey(Arguments.OpenFile);
+                    if (!openafter && _config.ComandOpenAdr.Length > 0)
+                    {
+                        openafter = true;
+                    }
+                    parsedArgs = await ReviewAdrWizard(openafter, cancellationToken);
                 }
 
                 var fileadr = Path.GetFullPath(parsedArgs[Arguments.FileAdr]);
@@ -333,7 +338,7 @@ namespace AdrPlus.Commands.Review
         /// <param name="filePath">The fully qualified path of the ADR file to open.</param>
         private void OpenAdrFileIfRequested(Dictionary<Arguments, string> parsedArgs, string filePath)
         {
-            if (!parsedArgs.ContainsKey(Arguments.OpenFile))
+            if (!parsedArgs.ContainsKey(Arguments.OpenFile) || _config.ComandOpenAdr.Length == 0)
             {
                 return;
             }

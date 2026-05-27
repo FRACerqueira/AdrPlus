@@ -30,6 +30,7 @@ namespace AdrPlus.Commands.Config
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
+    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
     /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class ConfigCommandHandler(
         ILogger<ConfigCommandHandler> logger,
@@ -506,7 +507,6 @@ namespace AdrPlus.Commands.Config
                 jsoncontent = WizardAppConfig(jsoncontent, cancellationToken);
             }
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
-            Helper.HasAppConfigChange = true;
             LogMessages.LogCommandSuccessful(_logger, filePath);
             _prompt.PromptWriteSuccess(filePath);
         }
