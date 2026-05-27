@@ -23,6 +23,8 @@ namespace AdrPlus
     /// <param name="logger">The logger instance.</param>
     /// <param name="commandRouter">The command router to route commands.</param>
     /// <param name="configuration">The application configuration.</param>
+    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
+    /// <param name="prompt">The prompt console for user interactions.</param>
     /// <param name="appLifetime">The application lifetime manager.</param>
     internal sealed class MainProgram(
             ILogger<MainProgram> logger,

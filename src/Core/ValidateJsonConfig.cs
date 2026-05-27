@@ -32,16 +32,13 @@ namespace AdrPlus.Core
         public async Task<(int MaxNumber, int MaxVersion, int MaxRevision)> GetMaxNumberVersionRevision(string rootPath, AdrPlusRepoConfig repoconfig)
         { 
             var foundadrs = await _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoconfig, true);
-            var adrList = foundadrs.ToList();
-
-            if (adrList.Count == 0)
+            if (foundadrs.Length == 0)
             {
                 return (0, 0, 0);
             }
-
-            var maxnumber = adrList.Max(a => a.Number);
-            var maxversion = adrList.Max(a => a.Version);
-            var maxrevision = adrList.Max(a => a.Revision ?? 0);
+            var maxnumber = foundadrs.Max(a => a.Number);
+            var maxversion = foundadrs.Max(a => a.Version);
+            var maxrevision = foundadrs.Max(a => a.Revision ?? 0);
             return (maxnumber, maxversion, maxrevision);
         }
 
