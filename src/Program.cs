@@ -32,7 +32,6 @@ namespace AdrPlus
         {
             //normalize the path of the executing assembly to ensure it works correctly even if the app is run from a different directory
             var assembly = Assembly.GetExecutingAssembly()!;
-            var basepath = Path.GetDirectoryName(assembly.Location)!;
             string Command = args.Length > 0 ? args[0] : string.Empty;
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
             ILogger? logger = null;
@@ -47,7 +46,7 @@ namespace AdrPlus
                         .ConfigureLogging((hostContext, services) =>
                         {
                             services.ClearProviders();
-                            services.AddFile(Path.Combine(basepath, "logs", $"{AppConstants.NameApp}.log"),
+                            services.AddFile(Path.Combine(AppContext.BaseDirectory, "logs", $"{AppConstants.NameApp}.log"),
                                 retainedFileCountLimit: 3,
                                 outputTemplate: "{Timestamp:o} [{Level:u3}-{SourceContext}] {Message} {NewLine}{Exception}");
                             services.AddFilter("Microsoft.AspNetCore", LogLevel.Error);
@@ -64,7 +63,7 @@ namespace AdrPlus
                         })
                         .ConfigureAppConfiguration((hostingContext, config) =>
                         {
-                            config.SetBasePath(basepath);
+                            config.SetBasePath(AppContext.BaseDirectory);
                             var assemblyver = "0.0.0";
                             var structver = assembly.GetName()?.Version;
                             if (structver != null)
@@ -74,9 +73,9 @@ namespace AdrPlus
                             config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: false);
                             config.AddInMemoryCollection(new Dictionary<string, string?>
                             {
-                                                { AppConstants.CfgNameVersionApp,assemblyver },
-                                                { AppConstants.CfgCommandName,Command },
-                                                { AppConstants.CfgCommandArgs,commandArgsString }
+                                { AppConstants.CfgNameVersionApp,assemblyver },
+                                { AppConstants.CfgCommandName,Command },
+                                { AppConstants.CfgCommandArgs,commandArgsString }
                             });
                         }).Build();
 
@@ -112,22 +111,11 @@ namespace AdrPlus
                     consoleservice.PromptShowWellcome(appVersion);
 
                     await host.RunAsync();
-                    if (Helper.HasAppConfigChange)
-                    {
-                        host.Dispose();
-                        if (Command.Length == 0)
-                        {
-                            Command = "wizard";
-                            args = [];
-                        }
-                    }
-
+                    host.Dispose();
                 }
-
             }
             catch (Exception ex)
             {
-                Helper.HasAppConfigChange = false;
                 if (logger is not null)
                 {
                     LogMessages.LogCriticalError(logger, ex);
@@ -138,10 +126,10 @@ namespace AdrPlus
             }
             finally
             {
+                Console.Out.Flush();
                 host?.Dispose();
             }
             // Flushes any buffered output directly to the console window
-            Console.Out.Flush();
             return Helper.ExitCode;
         }
     }

@@ -506,7 +506,6 @@ namespace AdrPlus.Commands.Config
                 jsoncontent = WizardAppConfig(jsoncontent, cancellationToken);
             }
             await _fileSystem.WriteAllTextAsync(filePath, jsoncontent, cancellationToken);
-            Helper.HasAppConfigChange = true;
             LogMessages.LogCommandSuccessful(_logger, filePath);
             _prompt.PromptWriteSuccess(filePath);
         }

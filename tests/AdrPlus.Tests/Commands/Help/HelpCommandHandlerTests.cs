@@ -7,6 +7,7 @@ using AdrPlus.Commands;
 using AdrPlus.Commands.Help;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AdrPlus.Tests.Commands.Help;
@@ -28,10 +29,12 @@ public class HelpCommandHandlerTests
         _mockConsole = Substitute.For<IPromptConsole>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
+        var mockConfiguration = Substitute.For<IConfiguration>();
         var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
         _mockAdrServices = Substitute.For<IAdrServices>();
         
         _mockCommandRouter = new CommandRouter(
+            mockConfiguration,
             mockServiceProvider,
             mockLogger,
             _mockConsole,
@@ -51,7 +54,8 @@ public class HelpCommandHandlerTests
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
         var adrServices = Substitute.For<IAdrServices>();
         var mockHelpLogger = Substitute.For<ILogger<HelpCommandHandler>>();
-        var commandRouter = new CommandRouter(mockServiceProvider, mockLogger, console, adrServices);
+        var mockConfiguration = Substitute.For<IConfiguration>();
+        var commandRouter = new CommandRouter(mockConfiguration, mockServiceProvider, mockLogger, console, adrServices);
 
         // Act
         var handler = new HelpCommandHandler(mockHelpLogger, console, commandRouter, adrServices);

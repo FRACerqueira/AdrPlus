@@ -205,6 +205,7 @@ namespace AdrPlus.Commands.Wizard
                         }
                         if (currentMenu.Id == "1.01")
                         {
+                            Helper.HasAppConfigChange = true;
                             break;
                         }
                     }

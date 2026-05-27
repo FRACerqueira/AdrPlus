@@ -85,7 +85,7 @@ namespace AdrPlus.Core
                             args = ["-w"];
                         }
                         break;
-                }   
+                }
             }
             if (Array.IndexOf(args, "-h") >= 0 || Array.IndexOf(args, "--help") >= 0)
             {

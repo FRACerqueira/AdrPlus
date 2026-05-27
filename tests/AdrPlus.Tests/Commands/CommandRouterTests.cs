@@ -6,6 +6,7 @@
 using AdrPlus.Commands;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -28,11 +29,12 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
 
         // Act
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Assert
         router.Should().NotBeNull();
@@ -51,12 +53,13 @@ public class CommandRouterTests
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
+        var configuration = Substitute.For<IConfiguration>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("unknown", [], TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().BeOfType<InvalidOperationException>();
@@ -70,13 +73,14 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("unknown", [], TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().NotBeNull();
@@ -91,13 +95,14 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("nonexistent", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("nonexistent", [], TestContext.Current.CancellationToken));
 
         // Assert
         ex.Should().NotBeNull();
@@ -117,12 +122,13 @@ public class CommandRouterTests
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(object) } };
+        var configuration = Substitute.For<IConfiguration>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("NEW", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("NEW", [], TestContext.Current.CancellationToken));
 
         // Assert - command lookup is case-sensitive
         ex.Should().BeOfType<InvalidOperationException>();
@@ -141,20 +147,17 @@ public class CommandRouterTests
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };  // Use ICommandHandler type instead
+        var configuration = Substitute.For<IConfiguration>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("new", [], TestContext.Current.CancellationToken));
 
         // Assert - command should be found and handler called
         ex.Should().BeNull();
     }
-
-    #endregion
-
-    #region RouteAsync - Empty/Null Command Name Tests
 
     #endregion
 
@@ -168,13 +171,14 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         await Record.ExceptionAsync(
-            () => router.RouteAsync("unknown", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("unknown", [], TestContext.Current.CancellationToken));
 
         // Assert
         // The finally block should execute and call WriteFinishedCommand
@@ -193,12 +197,13 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken);
+        await router.RouteAsync("new", [], TestContext.Current.CancellationToken);
 
         // Assert
         console.Received().PromptWriteStartCommand(Arg.Is<string>(s => s.Contains("new")));
@@ -216,12 +221,13 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("review", Array.Empty<string>(), TestContext.Current.CancellationToken);
+        await router.RouteAsync("review", [], TestContext.Current.CancellationToken);
 
         // Assert
         console.Received().PromptWriteFinishedCommand(Arg.Is<string>(s => s.Contains("review")));
@@ -243,15 +249,16 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("init", Array.Empty<string>(), TestContext.Current.CancellationToken);
+        await router.RouteAsync("init", [], TestContext.Current.CancellationToken);
 
         // Assert
-        await mockHandler.Received().ExecuteAsync(Array.Empty<string>(), TestContext.Current.CancellationToken);
+        await mockHandler.Received().ExecuteAsync([], TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -266,9 +273,10 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         var args = new[] { "arg1", "arg2", "arg3" };
 
@@ -291,9 +299,10 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         var args = new[] { "path/to/file", "--option=value", "@special" };
 
@@ -320,12 +329,13 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
-        await router.RouteAsync("new", Array.Empty<string>(), TestContext.Current.CancellationToken);
+        await router.RouteAsync("new", [], TestContext.Current.CancellationToken);
 
         // Assert
         await mockHandler.Received().ExecuteAsync(Arg.Any<string[]>(), Arg.Any<CancellationToken>());
@@ -347,13 +357,14 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         // Act
         var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("init", Array.Empty<string>(), TestContext.Current.CancellationToken));
+            () => router.RouteAsync("init", [], TestContext.Current.CancellationToken));
 
         // Assert - no platform-specific exceptions
         ex.Should().BeNull();
@@ -371,9 +382,10 @@ public class CommandRouterTests
         var logger = Substitute.For<ILogger<CommandRouter>>();
         var console = Substitute.For<IPromptConsole>();
         var adrServices = Substitute.For<IAdrServices>();
+        var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
         adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(serviceProvider, logger, console, adrServices);
+        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
 
         var args = new[] { "path\\to\\file", "path/to/file" };
 

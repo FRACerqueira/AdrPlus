@@ -48,7 +48,6 @@ namespace AdrPlus
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var appToken = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, _applicationLifetime.ApplicationStopping);
-            Exception? error = null;
             try
             {
                 if (await _configurationMigrator.CheckAndMigrateConfigAsync(appToken.Token))
@@ -63,21 +62,13 @@ namespace AdrPlus
             }
             catch (Exception ex) 
             {
-                error = ex;
-            }
-            finally
-            {
-                if (error != null)
-                {
-                    LogMessages.LogStoppedAdrPlus(_logger);
-                    // Flushes any buffered output directly to the console window
-                    _prompt.FlushOutput();
-                    _applicationLifetime.StopApplication();
-                }
-            }
-            if (error != null)
-            {
                 Helper.ExitCode = 1;
+                _prompt.PromptWriteError(ex.Message);
+                LogMessages.LogCriticalError(_logger, ex);
+                LogMessages.LogStoppedAdrPlus(_logger);
+                // Flushes any buffered output directly to the console window
+                _prompt.FlushOutput();
+                _applicationLifetime.StopApplication();
                 return;
             }
 

@@ -5,9 +5,11 @@
 
 using AdrPlus.Commands.Help;
 using AdrPlus.Core;
+using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -21,11 +23,13 @@ namespace AdrPlus.Commands
     /// <param name="prompt">The console writer for displaying command execution status and errors.</param>
     /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
     internal class CommandRouter(
+        IConfiguration configuration,
         IServiceProvider serviceProvider,
         ILogger<CommandRouter> logger,
         IPromptConsole prompt,
         IAdrServices adrServices)
     {
+        private readonly IConfiguration _configuration = configuration;
         private readonly IServiceProvider _serviceProvider = serviceProvider;
         private readonly ILogger<CommandRouter> _logger = logger;
         private readonly IPromptConsole _prompt = prompt;
@@ -40,24 +44,23 @@ namespace AdrPlus.Commands
         {
             Helper.CountError = 0; 
             var logcmd = string.Join(' ', new[] { commandName }.Concat(args));
-            if (string.IsNullOrWhiteSpace(commandName))
+            var section = _configuration.GetSection(AppConstants.DefaultSettingsRoot);
+            var behaviorWithoutArgs = section[AppConstants.FieldWithoutArgs];
+            Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out var behavior);
+            switch (behavior)
             {
-                try
-                {
-                    LogMessages.LogExecutingCommand(_logger, "help");
-                    var helpHandler = _serviceProvider.GetRequiredService<HelpCommandHandler>();
-                    _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStarted, "help"));
-                    await helpHandler.ExecuteAsync([], cancellationToken);
-                    _prompt.PromptWriteFinishedCommand(string.Format(null, FormatMessages.MsgCommandFinished, "help"));
-                    LogMessages.LogCommandCompleted(_logger, "help" );
-                }
-                catch (Exception ex)
-                {
-                    _prompt.PromptWriteError(ex.Message);
-                    LogMessages.LogCommandException(_logger, ex);
-                    throw;
-                }
-                return;
+                case BehaviorWithoutArg.Help when string.IsNullOrWhiteSpace(commandName):
+                    commandName = "help";
+                    args = [];
+                    break;
+                case BehaviorWithoutArg.Wizard when string.IsNullOrWhiteSpace(commandName):
+                    commandName = "wizard";
+                    args = [];
+                    break;
+                case BehaviorWithoutArg.None when string.IsNullOrWhiteSpace(commandName):
+                    _prompt.PromptWriteError(Resources.AdrPlus.ErrMsgCommandMissing);
+                    LogMessages.LogError(_logger, Resources.AdrPlus.ErrMsgCommandMissing);
+                    throw new InvalidOperationException(Resources.AdrPlus.ErrMsgCommandMissing);
             }
 
             var handlerType = GetHandlerType(commandName);

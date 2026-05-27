@@ -315,8 +315,6 @@ namespace AdrPlus.Infrastructure.Configuration
             jsoncontent = JsonSerializer.Serialize(newconfigrepo, AppConstants.RepoSerializerOptions);
             filepath = _validateJsonConfig.GetDefaultConfigRepoFilePath();
             await _fileSystem.WriteAllTextAsync(filepath, jsoncontent, cancellationToken);
-            filepath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
-            await _fileSystem.WriteAllTextAsync(filepath, jsoncontent, cancellationToken);
             return true;
         }
 

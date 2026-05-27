@@ -718,6 +718,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command missing.
+        /// </summary>
+        internal static string ErrMsgCommandMissing {
+            get {
+                return ResourceManager.GetString("ErrMsgCommandMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configuration validation failed.
         /// </summary>
         internal static string ErrMsgConfigValidationFailed {
