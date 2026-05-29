@@ -17,11 +17,11 @@ namespace AdrPlus.Core
     /// <summary>
     /// Validates the consistency and fields of the AdrPlus.json configuration file
     /// </summary>
-    internal sealed class ValidateJsonConfig(IFileSystemService fileSystem, IAdrQueryService adrQueryServicerservices,  IConfiguration configuration) : IValidateJsonConfig
+    internal sealed class ValidateJsonConfig(IFileSystemService fileSystem, IAdrServices adrservices,  IConfiguration configuration) : IValidateJsonConfig
     {
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IConfiguration _configuration = configuration;
-        private readonly IAdrQueryService _adrQueryService = adrQueryServicerservices;
+        private readonly IAdrServices _adrServices = adrservices;
 
         /// <summary>
         /// Reads all existing ADR files in the repository to determine the maximum sequence number, version, and revision currently in use. 
@@ -31,7 +31,7 @@ namespace AdrPlus.Core
         /// <returns>A Task that represents the asynchronous operation, containing a tuple of (MaxNumber, MaxVersion, MaxRevision)</returns>
         public async Task<(int MaxNumber, int MaxVersion, int MaxRevision)> GetMaxNumberVersionRevision(string rootPath, AdrPlusRepoConfig repoconfig)
         { 
-            var foundadrs = await _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoconfig, true);
+            var foundadrs = await _adrServices.ReadAllAdr(_fileSystem, rootPath, repoconfig, true);
             if (foundadrs.Length == 0)
             {
                 return (0, 0, 0);

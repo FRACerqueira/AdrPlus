@@ -6,14 +6,10 @@
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Extensions;
-using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Globalization;
 using System.Reflection;
 
 namespace AdrPlus
@@ -23,6 +19,10 @@ namespace AdrPlus
     /// </summary>
     internal sealed class Program
     {
+        // Acts as our manual application lifetime signal
+        private static readonly CancellationTokenSource _cts = new();
+
+
         /// <summary>
         /// Main entry point for the application.
         /// </summary>
@@ -30,96 +30,63 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
-            //normalize the path of the executing assembly to ensure it works correctly even if the app is run from a different directory
-            var assembly = Assembly.GetExecutingAssembly()!;
+            // Hook into Console lifetime events (Ctrl+C / SIGTERM)
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                eventArgs.Cancel = true; // Prevent immediate process termination
+                _cts.Cancel(); // Signal our application to stop
+            };
+
+            //Hook into Process Exit for other termination signals
+            AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+            {
+                if (!_cts.IsCancellationRequested) _cts.Cancel();
+            };
+
             string Command = args.Length > 0 ? args[0] : string.Empty;
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
-            ILogger? logger = null;
-            IHost? host = null;
+
+            var assembly = Assembly.GetExecutingAssembly()!;
+            var assemblyver = "0.0.0";
+            var structver = assembly.GetName()?.Version;
+            if (structver != null)
+            {
+                assemblyver = $"{structver.Major}.{structver.Minor}.{structver.Build}";
+            }
+
             try
             {
-                while (Helper.HasAppConfigChange)
-                {
-                    Helper.HasAppConfigChange = false;
-                    host = Host.CreateDefaultBuilder()
-                        .UseConsoleLifetime()
-                        .ConfigureLogging((hostContext, services) =>
-                        {
-                            services.ClearProviders();
-                            services.AddFile(Path.Combine(AppContext.BaseDirectory, "logs", $"{AppConstants.NameApp}.log"),
-                                retainedFileCountLimit: 3,
-                                outputTemplate: "{Timestamp:o} [{Level:u3}-{SourceContext}] {Message} {NewLine}{Exception}");
-                            services.AddFilter("Microsoft.AspNetCore", LogLevel.Error);
-                        })
-                        .ConfigureServices((hostContext, services) =>
-                        {
-                            services.Configure<AdrPlusConfig>(hostContext.Configuration.GetSection(AppConstants.DefaultSettingsRoot));
-                            services.AddHostedService<MainProgram>();
-                            services.AddAdrPlusServices();
-                        })
-                        .ConfigureHostOptions(options =>
-                        {
-                            options.ShutdownTimeout = TimeSpan.FromSeconds(10);
-                        })
-                        .ConfigureAppConfiguration((hostingContext, config) =>
-                        {
-                            config.SetBasePath(AppContext.BaseDirectory);
-                            var assemblyver = "0.0.0";
-                            var structver = assembly.GetName()?.Version;
-                            if (structver != null)
-                            {
-                                assemblyver = $"{structver.Major}.{structver.Minor}.{structver.Build}";
-                            }
-                            config.AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: false);
-                            config.AddInMemoryCollection(new Dictionary<string, string?>
-                            {
-                                { AppConstants.CfgNameVersionApp,assemblyver },
-                                { AppConstants.CfgCommandName,Command },
-                                { AppConstants.CfgCommandArgs,commandArgsString }
-                            });
-                        }).Build();
 
-                    var configapp = host.Services.GetRequiredService<IOptions<AdrPlusConfig>>().Value;
-                    var consoleservice = host.Services.GetRequiredService<IPromptConsole>();
-                    logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
-                    var appculture = configapp.Language;
-                    var cultureInfo = new CultureInfo("en-us");
-                    if (!string.IsNullOrEmpty(appculture) && Helper.IsValidCultureName(appculture))
+                //Setup anbd Build Configuration
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: true)
+                    .AddInMemoryCollection(new Dictionary<string, string?>
                     {
-                        cultureInfo = new CultureInfo(appculture);
-                    }
-                    consoleservice.PromptEnsureCulture(configapp);
-                    consoleservice.PromptConfigure(configapp);
-                    consoleservice.PromptShowBanner(AppConstants.BannerText);
+                            { AppConstants.CfgNameVersionApp,assemblyver },
+                            { AppConstants.CfgCommandName,Command },
+                            { AppConstants.CfgCommandArgs,commandArgsString }
+                    }).Build();
 
-                    var validator = host.Services.GetRequiredService<IValidateJsonConfig>();
-                    var (isValid, errorReport) = await validator.ValidateAsync();
-                    if (!isValid)
+                //Setup DI Container
+                var serviceProvider = new ServiceCollection()
+                    .Configure<AdrPlusConfig>(configuration.GetSection(AppConstants.DefaultSettingsRoot))
+                    .AddSingleton<IConfiguration>(configuration)
+                    .AddAdrPlusServices()
+                    .AddLogging(builder =>
                     {
-                        PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgConfigValidationFailed);
-                        foreach (var error in errorReport)
-                        {
-                            LogMessages.LogError(logger, error);
-                            PromptConsole.PromptShowError(error);
-                        }
-                        return 1;
-                    }
+                        builder.ClearProviders();
+                        builder.AddFile(Path.Combine(AppContext.BaseDirectory, "logs", $"{AppConstants.NameApp}.log"),
+                            retainedFileCountLimit: 3,
+                            outputTemplate: "{Timestamp:o} [{Level:u3}-{SourceContext}] {Message} {NewLine}{Exception}");
+                        builder.AddFilter("Microsoft.AspNetCore", LogLevel.Error);
+                    }).BuildServiceProvider();
 
-                    var appVersion = host.Services.GetRequiredService<IConfiguration>()[AppConstants.CfgNameVersionApp]!;
-                    LogMessages.LogApplicationStarting(logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
-                    consoleservice.PromptShowWellcome(appVersion);
-
-                    await host.RunAsync();
-                    host.Dispose();
-                }
+                var main = serviceProvider.GetRequiredService<IMainProgram>();
+                await main.ExecuteAsync(_cts.Token);
             }
             catch (Exception ex)
             {
-                if (logger is not null)
-                {
-                    LogMessages.LogCriticalError(logger, ex);
-                }
                 PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgCritical);
                 PromptConsole.PromptShowError(ex.Message);
                 Helper.ExitCode = 1;
@@ -127,7 +94,6 @@ namespace AdrPlus
             finally
             {
                 Console.Out.Flush();
-                host?.Dispose();
             }
             // Flushes any buffered output directly to the console window
             return Helper.ExitCode;

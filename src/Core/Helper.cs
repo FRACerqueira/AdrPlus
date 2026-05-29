@@ -13,7 +13,7 @@ namespace AdrPlus.Core
 {
     internal static partial class Helper
     {
-        public static  bool HasAppConfigChange = true;
+        public static  bool HasAppConfigChange;
 
         public static int CountError;
 

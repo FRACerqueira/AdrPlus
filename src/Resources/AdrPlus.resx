@@ -745,7 +745,7 @@
     <value>Approve an existing ADR</value>
   </data>
   <data name="EscForReturnWizard" xml:space="preserve">
-    <value>After selected, press 'ESC' if you want to return to the wizard</value>
+    <value>After confirming the selection, press ‘ESC’ if you want to return to the wizard</value>
   </data>
   <data name="WizardAdrRejectTitle" xml:space="preserve">
     <value>Reject an existing ADR</value>

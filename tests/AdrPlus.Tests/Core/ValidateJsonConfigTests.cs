@@ -14,12 +14,12 @@ namespace AdrPlus.Tests.Core;
 public class ValidateJsonConfigTests
 {
     private readonly IFileSystemService _fileSystem;
-    private readonly IAdrQueryService _adrQueryService;
+    private readonly IAdrServices _adrService;
 
     public ValidateJsonConfigTests()
     {
         _fileSystem = Substitute.For<IFileSystemService>();
-        _adrQueryService = Substitute.For<IAdrQueryService>();
+        _adrService = Substitute.For<IAdrServices>();
     }
 
     private ValidateJsonConfig CreateValidator(Dictionary<string, string?> configValues)
@@ -28,7 +28,7 @@ public class ValidateJsonConfigTests
             .AddInMemoryCollection(configValues!)
             .Build();
 
-        return new ValidateJsonConfig(_fileSystem, _adrQueryService, configuration);
+        return new ValidateJsonConfig(_fileSystem, _adrService, configuration);
     }
 
     private static string CreateValidRepoJson()
@@ -1724,16 +1724,16 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var rootPath = "/repo";
         var repoConfig = new AdrPlusRepoConfig("", "");
-        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
-            .Returns(Array.Empty<AdrFileNameComponents>());
+        _adrService.ReadAllAdr(_fileSystem, rootPath, repoConfig, true)
+            .Returns([]);
 
         // Act
-        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+        var (MaxNumber, MaxVersion, MaxRevision) = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
 
         // Assert
-        result.MaxNumber.Should().Be(0);
-        result.MaxVersion.Should().Be(0);
-        result.MaxRevision.Should().Be(0);
+        MaxNumber.Should().Be(0);
+        MaxVersion.Should().Be(0);
+        MaxRevision.Should().Be(0);
     }
 
     [Fact]
@@ -1753,16 +1753,16 @@ public class ValidateJsonConfigTests
             Header = new AdrHeader()
         };
 
-        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+        _adrService.ReadAllAdr(_fileSystem, rootPath, repoConfig, true)
             .Returns([adr]);
 
         // Act
-        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+        var (MaxNumber, MaxVersion, MaxRevision) = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
 
         // Assert
-        result.MaxNumber.Should().Be(5);
-        result.MaxVersion.Should().Be(3);
-        result.MaxRevision.Should().Be(2);
+        MaxNumber.Should().Be(5);
+        MaxVersion.Should().Be(3);
+        MaxRevision.Should().Be(2);
     }
 
     [Fact]
@@ -1781,16 +1781,16 @@ public class ValidateJsonConfigTests
             new AdrFileNameComponents { FileName = "ADR-0002-v02.md", Number = 2, Version = 2, Revision = null, Header = new AdrHeader() }
         };
 
-        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+        _adrService.ReadAllAdr(_fileSystem, rootPath, repoConfig, true)
             .Returns(adrs);
 
         // Act
-        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+        var (MaxNumber, MaxVersion, MaxRevision) = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
 
         // Assert
-        result.MaxNumber.Should().Be(5);      // Maximum number from all ADRs
-        result.MaxVersion.Should().Be(3);     // Maximum version from all ADRs
-        result.MaxRevision.Should().Be(2);    // Maximum revision from all ADRs
+        MaxNumber.Should().Be(5);      // Maximum number from all ADRs
+        MaxVersion.Should().Be(3);     // Maximum version from all ADRs
+        MaxRevision.Should().Be(2);    // Maximum revision from all ADRs
     }
 
     [Fact]
@@ -1807,16 +1807,16 @@ public class ValidateJsonConfigTests
             new AdrFileNameComponents { FileName = "ADR-0002-v01.md", Number = 2, Version = 1, Revision = null, Header = new AdrHeader() }
         };
 
-        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
+        _adrService.ReadAllAdr(_fileSystem, rootPath, repoConfig, true)
             .Returns(adrs);
 
         // Act
-        var result = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
+        var (MaxNumber, MaxVersion, MaxRevision) = await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
 
         // Assert
-        result.MaxNumber.Should().Be(2);
-        result.MaxVersion.Should().Be(1);
-        result.MaxRevision.Should().Be(0);    // No revisions were set, so max should be 0
+        MaxNumber.Should().Be(2);
+        MaxVersion.Should().Be(1);
+        MaxRevision.Should().Be(0);    // No revisions were set, so max should be 0
     }
 
     [Fact]
@@ -1826,14 +1826,14 @@ public class ValidateJsonConfigTests
         var validator = CreateValidator([]);
         var rootPath = "/repo";
         var repoConfig = new AdrPlusRepoConfig("", "");
-        _adrQueryService.ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true)
-            .Returns(Array.Empty<AdrFileNameComponents>());
+        _adrService.ReadAllAdr(_fileSystem, rootPath, repoConfig, true)
+            .Returns([]);
 
         // Act
         await validator.GetMaxNumberVersionRevision(rootPath, repoConfig);
 
         // Assert
-        await _adrQueryService.Received(1).ReadAllAdrFiles(_fileSystem, rootPath, repoConfig, true);
+        await _adrService.Received(1).ReadAllAdr(_fileSystem, rootPath, repoConfig, true);
     }
 
     #endregion
