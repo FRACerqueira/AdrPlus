@@ -20,7 +20,6 @@ using AdrPlus.Commands.Wizard;
 using AdrPlus.Core;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
-using AdrPlus.Infrastructure.Process;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,15 +37,11 @@ namespace AdrPlus.Extensions
         /// <returns>The service collection for method chaining.</returns>
         public static IServiceCollection AddAdrPlusServices(this IServiceCollection services)
         {
+            services.AddSingleton<IMainProgram, MainProgram>();
+            services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             services.AddSingleton<IFileSystemService, FileSystemService>();
-            services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
             services.AddSingleton<IPromptConsole, PromptConsole>();
-            services.AddSingleton<IAdrFileParser, AdrFileParserService>();
-            services.AddSingleton<IAdrQueryService, AdrQueryService>();
-            services.AddSingleton<IAdrStatusService, AdrStatusService>();
-            services.AddSingleton<IAdrConfigMapper, AdrConfigMapperService>();
-            services.AddSingleton<ICommandMetadataService, CommandMetadataService>();
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
             services.AddSingleton<ExplorerCommandHandler>();
@@ -62,7 +57,6 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ApproveCommandHandler>();
             services.AddSingleton<UndoStatusCommandHandler>();
             services.AddSingleton<SupersedeCommandHandler>();
-            services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             return services;
         }
     }

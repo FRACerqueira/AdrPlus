@@ -11,7 +11,6 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;

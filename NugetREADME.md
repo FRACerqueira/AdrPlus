@@ -3,7 +3,7 @@
 
 # AdrPlus
 
-Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no revision flow, and hard-to-track status changes).
+Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no version flow, and hard-to-track status changes).
 
 AdrPlus was created to **solve this problem with a practical CLI workflow that keeps ADRs standardized, traceable, and easy to evolve over time**.
 

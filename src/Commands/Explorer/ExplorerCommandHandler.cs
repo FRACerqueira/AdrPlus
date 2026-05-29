@@ -128,10 +128,10 @@ namespace AdrPlus.Commands.Explorer
                     file = await CreateFileAdrReport(foundfiles, fields, targetreport, targetPath, repoconfig, cancellationToken);
                     LogMessages.LogCommandSuccessful(_logger, file);
                     _prompt.PromptWriteSuccess(file);
+                    // Open file if requested
+                    OpenFileIfRequested(parsedArgs, file);
                 }
 
-                // Open file if requested
-                OpenFileIfRequested(parsedArgs, file);
             }
             catch (Exception ex)
             {
@@ -148,7 +148,7 @@ namespace AdrPlus.Commands.Explorer
         /// <param name="filePath">The fully qualified path of the ADR file to open.</param>
         private void OpenFileIfRequested(Dictionary<Arguments, string> parsedArgs, string filePath)
         {
-            if (!parsedArgs.ContainsKey(Arguments.OpenFile))
+            if (!parsedArgs.ContainsKey(Arguments.OpenFile) || _config.Value.ComandOpenAdr.Length == 0)
             {
                 return;
             }
