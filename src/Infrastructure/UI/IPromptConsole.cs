@@ -502,7 +502,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
-        (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
+        (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select a folder.
@@ -512,7 +512,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="validateJsonConfig">The service to validate JSON configuration.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected folder path.</returns>
-        (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default);
+        (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to edit the title of an ADR.

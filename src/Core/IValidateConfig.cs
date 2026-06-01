@@ -10,8 +10,21 @@ namespace AdrPlus.Core
     /// <summary>
     /// Interface for validating the consistency and fields of the AdrPlus.json configuration file
     /// </summary>
-    internal interface IValidateJsonConfig
+    internal interface IValidateConfig
     {
+        /// <summary>
+        /// Removes the old version file and creates a new one with the updated version.
+        /// </summary>
+        /// <param name="currentVersion">The new version to set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task RecreateVersionFileAsync(string currentVersion, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Removes the old version file and creates a new one with the current version.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        Task RecreateVersionFileAsync(CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Gets the path to the template.
         /// </summary>

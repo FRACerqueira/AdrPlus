@@ -24,7 +24,7 @@ public class MigrateCommandHandlerTests
     private ILogger<MigrateCommandHandler> _mockLogger = null!;
     private IFileSystemService _mockFileSystem = null!;
     private IPromptConsole _mockConsole = null!;
-    private IValidateJsonConfig _mockValidateConfig = null!;
+    private IValidateConfig _mockValidateConfig = null!;
     private IAdrServices _mockAdrServices = null!;
     private MigrateCommandHandler _handler = null!;
 
@@ -38,7 +38,7 @@ public class MigrateCommandHandlerTests
         _mockLogger = Substitute.For<ILogger<MigrateCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IPromptConsole>();
-        _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
+        _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
         _handler = new MigrateCommandHandler(

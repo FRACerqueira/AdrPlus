@@ -31,14 +31,14 @@ namespace AdrPlus.Commands.UndoStatus
     internal sealed partial class UndoStatusCommandHandler(
         ILogger<UndoStatusCommandHandler> logger,
         IFileSystemService fileSystem,
-        IValidateJsonConfig validateconfig,
+        IValidateConfig validateconfig,
         IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<UndoStatusCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IPromptConsole _prompt = prompt;
-        private readonly IValidateJsonConfig _validateconfig = validateconfig;
+        private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardUndoStatus,

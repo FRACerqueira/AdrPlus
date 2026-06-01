@@ -5,6 +5,7 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,11 @@ namespace AdrPlus.Infrastructure.UI
     /// <summary>
     /// Console writer implementation using PromptPlus library.
     /// </summary>
-    internal sealed partial class PromptConsole(IConfiguration configuration, IFileSystemService fileSystemService, IValidateJsonConfig validate, IAdrServices adrServices) : IPromptConsole
+    internal sealed partial class PromptConsole(
+        IConfiguration configuration, 
+        IFileSystemService fileSystemService, 
+        IValidateConfig validate, 
+        IAdrServices adrServices) : IPromptConsole
     {
         /// <summary>
         /// Console color for help messages.
@@ -59,7 +64,7 @@ namespace AdrPlus.Infrastructure.UI
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IConfiguration _configuration = configuration;
         private readonly IFileSystemService _fileSystemService = fileSystemService;
-        private readonly IValidateJsonConfig _validate = validate;
+        private readonly IValidateConfig _validate = validate;
 
         /// <inheritdoc/>
         public async Task<bool> TryExecuteFistInstall(CancellationToken cancellationToken)
@@ -1199,7 +1204,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryAdr}: ";
             var result = PromptPlus.Controls
@@ -1223,7 +1228,7 @@ namespace AdrPlus.Infrastructure.UI
 
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateJsonConfig validateJsonConfig, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
             var pronptmessage = $"{message}: ";
             var result = PromptPlus.Controls

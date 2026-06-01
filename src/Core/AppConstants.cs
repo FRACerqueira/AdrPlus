@@ -14,6 +14,11 @@ namespace AdrPlus.Core
     {
 
         /// <summary>
+        /// The prefix used in the version file name for ADR files, allowing users to specify a custom prefix that will be included in the generated version file names for ADRs. This prefix can help differentiate version files from other types of files in the ADR repository and provide a consistent naming convention for version information. 
+        /// </summary>
+        public const string VersionFilePrefix = "adrplus.version.";
+
+        /// <summary>
         /// The length of the header section in generated ADR files, used to determine how many lines to read when parsing the header information from an existing ADR file. 
         /// </summary>
         public const int LenghtHeader = 12;

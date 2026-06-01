@@ -35,17 +35,15 @@ namespace AdrPlus.Commands.Config
     internal sealed class ConfigCommandHandler(
         ILogger<ConfigCommandHandler> logger,
         IFileSystemService fileSystem,
-        IValidateJsonConfig validateconfig,
+        IValidateConfig validateconfig,
         IPromptConsole prompt,
-        IConfigurationMigrator configurationMigrator,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<ConfigCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IPromptConsole _prompt = prompt;
-        private readonly IValidateJsonConfig _validateConfig = validateconfig;
+        private readonly IValidateConfig _validateConfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
-        private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
 
         private static readonly Arguments[] ValidCommandArgs = [
             Arguments.WizardConfigApplication,
@@ -130,8 +128,7 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new NotImplementedException(string.Format(null, FormatMessages.ErrMsgNotFoundArgsOrMissing, string.Join(", ", args)));
                 }
-
-                await _configurationMigrator.RecreateVersionFileAsync(cancellationToken);
+                await _validateConfig.RecreateVersionFileAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -610,7 +607,7 @@ namespace AdrPlus.Commands.Config
 
         /// <summary>
         /// Runs the interactive wizard for editing the repository configuration JSON.
-        /// Normalizes the JSON via <see cref="IValidateJsonConfig.EnsureFieldsRepoStructure"/> before and after each edit,
+        /// Normalizes the JSON via <see cref="IValidateConfig.EnsureFieldsRepoStructure"/> before and after each edit,
         /// displays sample ADR filenames, and loops until the user ends the edit.
         /// </summary>
         /// <param name="content">The current repository configuration JSON string.</param>

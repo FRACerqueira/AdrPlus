@@ -22,13 +22,13 @@ public class ValidateJsonConfigTests
         _adrService = Substitute.For<IAdrServices>();
     }
 
-    private ValidateJsonConfig CreateValidator(Dictionary<string, string?> configValues)
+    private ValidateConfig CreateValidator(Dictionary<string, string?> configValues)
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configValues!)
             .Build();
 
-        return new ValidateJsonConfig(_fileSystem, _adrService, configuration);
+        return new ValidateConfig(_fileSystem, _adrService, configuration);
     }
 
     private static string CreateValidRepoJson()

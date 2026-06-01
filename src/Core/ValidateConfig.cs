@@ -17,11 +17,61 @@ namespace AdrPlus.Core
     /// <summary>
     /// Validates the consistency and fields of the AdrPlus.json configuration file
     /// </summary>
-    internal sealed class ValidateJsonConfig(IFileSystemService fileSystem, IAdrServices adrservices,  IConfiguration configuration) : IValidateJsonConfig
+    internal sealed class ValidateConfig(IFileSystemService fileSystem, IAdrServices adrservices,  IConfiguration configuration) : IValidateConfig
     {
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IConfiguration _configuration = configuration;
         private readonly IAdrServices _adrServices = adrservices;
+
+        /// <summary>
+        /// Removes the old version file and creates a new one with the updated version.
+        /// </summary>
+        /// <param name="currentVersion">The new version to set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task RecreateVersionFileAsync(string currentVersion, CancellationToken cancellationToken = default)
+        {
+            var historyDirectoryPath = GetHistoryPath();
+            var versionFiles = _fileSystem.GetFiles(historyDirectoryPath, $"{AppConstants.VersionFilePrefix}*.txt", SearchOption.TopDirectoryOnly);
+            // Delete all version file
+            foreach (var item in versionFiles)
+            {
+                _fileSystem.RemoveFile(item);
+            }
+            // Create new version file
+            await CreateVersionFileAsync(currentVersion, cancellationToken);
+        }
+
+        public async Task RecreateVersionFileAsync(CancellationToken cancellationToken = default)
+        {
+            var currentVersion = _configuration[AppConstants.CfgNameVersionApp] ?? "0.0.0";
+            await RecreateVersionFileAsync(currentVersion, cancellationToken);
+        }
+
+
+        /// <summary>
+        /// Creates a new version file with the current version.
+        /// </summary>
+        /// <param name="currentVersion">The current application version.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        private async Task CreateVersionFileAsync(string currentVersion, CancellationToken cancellationToken = default)
+        {
+            var historyDirectoryPath = GetHistoryPath();
+            var versionFilePath = Path.Combine(historyDirectoryPath, $"{AppConstants.VersionFilePrefix}{currentVersion}.txt");
+            string jsonapp = await _fileSystem.ReadAllTextAsync(GetConfigAppFilePath(), cancellationToken)!;
+            string jsonrepo;
+            if (!_fileSystem.FileExists(GetDefaultConfigRepoFilePath()))
+            {
+                var templatecontentsetting = await GetConfigAdrTemplateAsync(cancellationToken);
+                var configrecord = new AdrPlusRepoConfig(AppConstants.DefaultFolderAdr, templatecontentsetting);
+                jsonrepo = JsonSerializer.Serialize(configrecord, AppConstants.RepoSerializerOptions)!;
+            }
+            else
+            {
+                jsonrepo = await _fileSystem.ReadAllTextAsync(GetDefaultConfigRepoFilePath(), cancellationToken)!;
+            }
+            string contentversion = JsonSerializer.Serialize<string[]>([jsonapp, jsonrepo], AppConstants.RepoSerializerOptions)!;
+            await _fileSystem.WriteAllTextAsync(versionFilePath, contentversion, cancellationToken);
+        }
 
         /// <summary>
         /// Reads all existing ADR files in the repository to determine the maximum sequence number, version, and revision currently in use. 
@@ -87,6 +137,13 @@ namespace AdrPlus.Core
             if (string.IsNullOrWhiteSpace(behaviorWithoutArgs) || !Helper.IsValidBehaviorWithoutArgs(behaviorWithoutArgs))
             {
                 errors.Add(string.Format(null, FormatMessages.ErrInvalidWithoutArgsFormat, behaviorWithoutArgs));
+            }
+
+            //validate history folder
+            var histfolder = GetHistoryPath();
+            if (!_fileSystem.DirectoryExists(histfolder))
+            {
+                _fileSystem.CreateDirectory(histfolder);
             }
 
             // Validate content (required for the generation of the ADR)

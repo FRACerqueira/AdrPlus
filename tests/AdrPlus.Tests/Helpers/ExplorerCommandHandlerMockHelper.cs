@@ -33,7 +33,7 @@ internal static class ExplorerCommandHandlerMockHelper
     public static void SetupBasicExplorerMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
-        IValidateJsonConfig mockValidateConfig,
+        IValidateConfig mockValidateConfig,
         Dictionary<Arguments, string> parsedArgs,
         string targetPath)
     {
@@ -58,7 +58,7 @@ internal static class ExplorerCommandHandlerMockHelper
     public static void SetupExplorerReportMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
-        IValidateJsonConfig mockValidateConfig,
+        IValidateConfig mockValidateConfig,
         Dictionary<Arguments, string> parsedArgs,
         string targetPath,
         string reportPath,

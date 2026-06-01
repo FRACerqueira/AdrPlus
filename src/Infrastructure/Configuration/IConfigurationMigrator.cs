@@ -16,11 +16,5 @@ namespace AdrPlus.Infrastructure.Configuration
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if migration was successful; false otherwise.</returns>
         Task<bool> CheckAndMigrateConfigAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Recreates the version file in the history directory to reflect the current application version. 
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        Task RecreateVersionFileAsync(CancellationToken cancellationToken = default);
     }
 }
