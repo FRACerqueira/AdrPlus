@@ -26,10 +26,8 @@ public class ConfigCommandHandlerTests
     private readonly ILogger<ConfigCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
     private readonly IPromptConsole _mockConsole;
-    private readonly IValidateJsonConfig _mockValidateConfig;
+    private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
-    private readonly IConfigurationMigrator _mockConfigMigrationServices;
-    private readonly AdrPlusConfig _config;
     private readonly ConfigCommandHandler _handler;
 
     public ConfigCommandHandlerTests()
@@ -37,20 +35,14 @@ public class ConfigCommandHandlerTests
         _mockLogger = Substitute.For<ILogger<ConfigCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IPromptConsole>();
-        _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
+        _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
-        _mockConfigMigrationServices = Substitute.For<IConfigurationMigrator>();
-
-        _config = new AdrPlusConfig
-        {
-        };
 
         _handler = new ConfigCommandHandler(
             _mockLogger,
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockConfigMigrationServices,
             _mockAdrServices);
     }
 
@@ -65,7 +57,6 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockConfigMigrationServices,
             _mockAdrServices);
 
         // Assert

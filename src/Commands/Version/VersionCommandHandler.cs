@@ -35,7 +35,7 @@ namespace AdrPlus.Commands.Version
         ILogger<VersionCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
-        IValidateJsonConfig validateconfig,
+        IValidateConfig validateconfig,
         IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
@@ -43,7 +43,7 @@ namespace AdrPlus.Commands.Version
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IPromptConsole _prompt = prompt;
-        private readonly IValidateJsonConfig _validateconfig = validateconfig;
+        private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardVersion,

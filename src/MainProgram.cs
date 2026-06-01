@@ -27,7 +27,7 @@ namespace AdrPlus
     /// <param name="commandRouter">The command router to route commands.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
-    /// <param name="validateJsonConfig">The JSON configuration validator.</param>
+    /// <param name="validateConfig">The JSON configuration validator.</param>
     /// <param name="prompt">The prompt console for user interactions.</param>
     internal sealed class MainProgram(
             ILogger<MainProgram> logger,
@@ -35,7 +35,7 @@ namespace AdrPlus
             CommandRouter commandRouter,
             IConfiguration configuration,
             IConfigurationMigrator configurationMigrator,
-            IValidateJsonConfig validateJsonConfig,
+            IValidateConfig validateConfig,
             IPromptConsole prompt) : IMainProgram
     {
         private readonly ILogger<MainProgram> _logger = logger;
@@ -44,7 +44,7 @@ namespace AdrPlus
         private readonly IPromptConsole _prompt = prompt;
         private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
         private readonly IOptionsMonitor<AdrPlusConfig> _adrPlusConfig = optionsconfig;
-        private readonly IValidateJsonConfig _validateJsonConfig = validateJsonConfig;
+        private readonly IValidateConfig _validateConfig = validateConfig;
 
         /// <summary>
         /// Executes the background command processing loop for the application host lifecycle.
@@ -61,7 +61,7 @@ namespace AdrPlus
 
             LogMessages.LogApplicationStarting(_logger, AppConstants.NameApp, appVersion, cultureInfo.Name);
 
-            var (isValid, errorReport) = await _validateJsonConfig.ValidateAsync(stoppingToken);
+            var (isValid, errorReport) = await _validateConfig.ValidateAsync(stoppingToken);
             if (!isValid)
             {
                 foreach (var error in errorReport)

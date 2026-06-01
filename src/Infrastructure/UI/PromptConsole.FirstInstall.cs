@@ -5,6 +5,7 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.Formatting;
 using PromptPlusLibrary;
 using System.Text.Json;
@@ -553,6 +554,9 @@ namespace AdrPlus.Infrastructure.UI
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
 
             }
+
+            var currentVersion = _configuration[AppConstants.CfgNameVersionApp] ?? "0.0.0";
+            await _validate.RecreateVersionFileAsync(currentVersion, cancellationToken);
 
             //set init seleceted for menu wizard
             var history = new ItemMenuWizard()

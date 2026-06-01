@@ -28,7 +28,7 @@ internal static class SupersedeCommandHandlerMockHelper
     public static void SetupSupersedeCommandMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
-        IValidateJsonConfig mockValidateConfig,
+        IValidateConfig mockValidateConfig,
         Dictionary<Arguments, string> parsedArgs,
         string jsonConfig)
     {

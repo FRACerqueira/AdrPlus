@@ -25,7 +25,7 @@ public class ReviewCommandHandlerTests
     private readonly ILogger<ReviewCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
     private readonly IPromptConsole _mockConsole;
-    private readonly IValidateJsonConfig _mockValidateConfig;
+    private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
     private readonly ReviewCommandHandler _handler;
@@ -43,7 +43,7 @@ public class ReviewCommandHandlerTests
         _mockLogger = Substitute.For<ILogger<ReviewCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IPromptConsole>();
-        _mockValidateConfig = Substitute.For<IValidateJsonConfig>();
+        _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
         _config = new AdrPlusConfig

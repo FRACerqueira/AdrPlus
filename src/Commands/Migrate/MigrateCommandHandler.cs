@@ -31,13 +31,13 @@ namespace AdrPlus.Commands.Migrate
     internal sealed class MigrateCommandHandler(
         ILogger<MigrateCommandHandler> logger,
         IFileSystemService fileSystem,
-        IValidateJsonConfig validateConfig,
+        IValidateConfig validateConfig,
         IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<MigrateCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
-        private readonly IValidateJsonConfig _validateConfig = validateConfig;
+        private readonly IValidateConfig _validateConfig = validateConfig;
         private readonly IPromptConsole _prompt = prompt;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =

@@ -40,7 +40,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IMainProgram, MainProgram>();
             services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             services.AddSingleton<IFileSystemService, FileSystemService>();
-            services.AddSingleton<IValidateJsonConfig, ValidateJsonConfig>();
+            services.AddSingleton<IValidateConfig, ValidateConfig>();
             services.AddSingleton<IPromptConsole, PromptConsole>();
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();

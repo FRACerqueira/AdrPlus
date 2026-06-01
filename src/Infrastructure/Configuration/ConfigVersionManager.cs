@@ -30,16 +30,16 @@ namespace AdrPlus.Infrastructure.Configuration
     internal sealed partial class ConfigVersionManager(
         IPromptConsole prompt,
         ILogger<ConfigVersionManager> logger,
-        IValidateJsonConfig validateJsonConfig,
+        IValidateConfig validateJsonConfig,
         IFileSystemService fileSystem,
         IConfiguration configuration) : IConfigurationMigrator
     {
         private readonly ILogger<ConfigVersionManager> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        private readonly IValidateJsonConfig _validateJsonConfig = validateJsonConfig ?? throw new ArgumentNullException(nameof(validateJsonConfig));
+        private readonly IValidateConfig _validateJsonConfig = validateJsonConfig ?? throw new ArgumentNullException(nameof(validateJsonConfig));
         private readonly IFileSystemService _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         private readonly IPromptConsole _prompt = prompt ?? throw new ArgumentNullException(nameof(prompt));
-        private const string VersionFilePrefix = "adrplus.version.";
+        
 
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace AdrPlus.Infrastructure.Configuration
 
                 if (existingVersionFile == null)
                 {
-                    await RecreateVersionFileAsync(currentVersion, cancellationToken);
+                    await _validateJsonConfig.RecreateVersionFileAsync(currentVersion, cancellationToken);
                     LogAndWriteSuccess(string.Format(null, FormatMessages.NotFoundRecreatedVersionMigration, currentVersion));
                     return false;
                 }
@@ -69,7 +69,7 @@ namespace AdrPlus.Infrastructure.Configuration
 
                 if (storedVersion == null)
                 {
-                    await RecreateVersionFileAsync(currentVersion, cancellationToken);
+                    await _validateJsonConfig.RecreateVersionFileAsync(currentVersion, cancellationToken);
                     LogAndWriteSuccess(string.Format(null, FormatMessages.NotFoundRecreatedVersionMigration, currentVersion));
                     return false;
                 }
@@ -85,7 +85,7 @@ namespace AdrPlus.Infrastructure.Configuration
                         throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMigrationVersionFailed, storedVersion, currentVersion));
                     }
                     // Recreate version file with new version
-                    await RecreateVersionFileAsync(currentVersion, cancellationToken);
+                    await _validateJsonConfig.RecreateVersionFileAsync(currentVersion, cancellationToken);
                     LogAndWriteSuccess(string.Format(null, FormatMessages.MigrationVersionSuccess, storedVersion, currentVersion));
                     Thread.Sleep(3000);
                     return true;
@@ -99,13 +99,6 @@ namespace AdrPlus.Infrastructure.Configuration
             }
         }
 
-        public async Task RecreateVersionFileAsync(CancellationToken cancellationToken = default)
-        {
-            var currentVersion = _configuration[AppConstants.CfgNameVersionApp] ?? "0.0.0";
-            await RecreateVersionFileAsync(currentVersion, cancellationToken);
-        }
-
-
         /// <summary>
         /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
         /// </summary>
@@ -117,13 +110,13 @@ namespace AdrPlus.Infrastructure.Configuration
         }
 
         /// <summary>
-        /// Finds the existing version file in the template directory.
+        /// Finds the existing version file in the history directory.
         /// </summary>
         /// <returns>The filename if found; null otherwise.</returns>
         private string? FindVersionFile()
         {
             var historyDirectoryPath = _validateJsonConfig.GetHistoryPath();
-            var versionFiles = _fileSystem.GetFiles(historyDirectoryPath, $"{VersionFilePrefix}*.txt", SearchOption.TopDirectoryOnly);
+            var versionFiles = _fileSystem.GetFiles(historyDirectoryPath, $"{AppConstants.VersionFilePrefix}*.txt", SearchOption.TopDirectoryOnly);
             return versionFiles.FirstOrDefault();
         }
 
@@ -147,39 +140,6 @@ namespace AdrPlus.Infrastructure.Configuration
             return null;
         }
 
-        /// <summary>
-        /// Creates a new version file with the current version.
-        /// </summary>
-        /// <param name="currentVersion">The current application version.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task CreateVersionFileAsync(string currentVersion, CancellationToken cancellationToken = default)
-        {
-            var historyDirectoryPath = _validateJsonConfig.GetHistoryPath();
-            var versionFilePath = Path.Combine(historyDirectoryPath, $"{VersionFilePrefix}{currentVersion}.txt");
-            string jsonapp = await _fileSystem.ReadAllTextAsync(_validateJsonConfig.GetConfigAppFilePath(), cancellationToken)!;
-            string jsonrepo = await _fileSystem.ReadAllTextAsync(_validateJsonConfig.GetDefaultConfigRepoFilePath(), cancellationToken)!;
-            string contentversion = JsonSerializer.Serialize<string[]>([jsonapp, jsonrepo], AppConstants.RepoSerializerOptions)!;
-            await _fileSystem.WriteAllTextAsync(versionFilePath, contentversion, cancellationToken);
-        }
-
-        /// <summary>
-        /// Removes the old version file and creates a new one with the updated version.
-        /// </summary>
-        /// <param name="currentVersion">The new version to set.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        private async Task RecreateVersionFileAsync(string currentVersion, CancellationToken cancellationToken = default)
-        {
-            var historyDirectoryPath = _validateJsonConfig.GetHistoryPath();
-            var versionFiles = _fileSystem.GetFiles(historyDirectoryPath, $"{VersionFilePrefix}*.txt", SearchOption.TopDirectoryOnly);
-            // Delete all version file
-            foreach (var item in versionFiles)
-            {
-                _fileSystem.RemoveFile(item);
-            }
-            // Create new version file
-            await CreateVersionFileAsync(currentVersion, cancellationToken);
-        }
-
         private async Task<bool> MigrateAsync(string fromVersion, CancellationToken cancellationToken = default)
         {
             // Convert version strings to comparable numbers (e.g., "0.5.0" -> 500, "0.6.0" -> 600)
@@ -192,7 +152,7 @@ namespace AdrPlus.Infrastructure.Configuration
 
 
             var historyDirectoryPath = _validateJsonConfig.GetHistoryPath();
-            var oldversionFilePath = Path.Combine(historyDirectoryPath, $"{VersionFilePrefix}{fromVersion}.txt");
+            var oldversionFilePath = Path.Combine(historyDirectoryPath, $"{AppConstants.VersionFilePrefix}{fromVersion}.txt");
             var oldjson = await _fileSystem.ReadAllTextAsync(oldversionFilePath, cancellationToken);
             var filesconfig = JsonSerializer.Deserialize<string[]>(oldjson, AppConstants.RepoSerializerOptions)!;
             var jsondocold = JsonDocument.Parse(filesconfig[0], AppConstants.DocumentOptions);

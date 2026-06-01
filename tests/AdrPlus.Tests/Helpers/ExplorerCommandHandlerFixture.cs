@@ -22,7 +22,7 @@ internal class ExplorerCommandHandlerFixture
     private ILogger<ExplorerCommandHandler>? _mockLogger;
     private IFileSystemService? _mockFileSystem;
     private IPromptConsole? _mockConsole;
-    private IValidateJsonConfig? _mockValidateConfig;
+    private IValidateConfig? _mockValidateConfig;
     private IAdrServices? _mockAdrServices;
     private AdrPlusConfig? _config;
     private ExplorerCommandHandler? _handler;
@@ -66,11 +66,11 @@ internal class ExplorerCommandHandlerFixture
     /// <summary>
     /// Gets the mock validate config service, creating it if necessary.
     /// </summary>
-    public IValidateJsonConfig MockValidateConfig
+    public IValidateConfig MockValidateConfig
     {
         get
         {
-            _mockValidateConfig ??= Substitute.For<IValidateJsonConfig>();
+            _mockValidateConfig ??= Substitute.For<IValidateConfig>();
             return _mockValidateConfig;
         }
     }

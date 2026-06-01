@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<Version>0.6.2</Version>
+		<Version>0.6.3</Version>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<AssemblyName>adrplus</AssemblyName>
 		<Authors>Fernando Cerqueira</Authors>
@@ -27,7 +27,7 @@
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PlatformTarget>AnyCPU</PlatformTarget>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -29,7 +29,7 @@ internal static class CommandHandlerMockHelper
     public static void SetupBasicCommandMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
-        IValidateJsonConfig mockValidateConfig,
+        IValidateConfig mockValidateConfig,
         Dictionary<Arguments, string> parsedArgs,
         string jsonConfig)
     {

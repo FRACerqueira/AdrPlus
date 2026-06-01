@@ -34,14 +34,14 @@ namespace AdrPlus.Commands.Wizard
         IConfiguration configuration,
         ILogger<WizardCommandHandler> logger,
         IFileSystemService fileSystem,
-        IValidateJsonConfig validateconfig,
+        IValidateConfig validateconfig,
         IPromptConsole prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<WizardCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IPromptConsole _prompt = prompt;
-        private readonly IValidateJsonConfig _validateconfig = validateconfig;
+        private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IConfiguration _configuration = configuration;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IAdrServices _adrServices = adrServices;
