@@ -819,9 +819,6 @@
   <data name="Template" xml:space="preserve">
     <value>Modelo</value>
   </data>
-  <data name="HelpUsageWizardRepo" xml:space="preserve">
-    <value>Assistente para atualizar as configurações de ADR de um repositório</value>
-  </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrar ADRs existentes para usar a ferramenta (criar cabeçalho)</value>
   </data>

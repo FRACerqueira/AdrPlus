@@ -1699,15 +1699,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to update the ADR settings of a repository.
-        /// </summary>
-        internal static string HelpUsageWizardRepo {
-            get {
-                return ResourceManager.GetString("HelpUsageWizardRepo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Wizard for supersede an ADR (supress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardSupersede {

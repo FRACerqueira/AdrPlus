@@ -35,9 +35,6 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardInit")]
         WizardInit,
         [CommandArgument("-w", "--wizard")]
-        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardRepo")]
-        WizardRepo,
-        [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardMigrate")]
         WizardMigrate,
         [CommandArgument("-w", "--wizard")]
