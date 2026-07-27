@@ -21,7 +21,8 @@ internal class ExplorerCommandHandlerFixture
 {
     private ILogger<ExplorerCommandHandler>? _mockLogger;
     private IFileSystemService? _mockFileSystem;
-    private IPromptConsole? _mockConsole;
+    private IConsoleWriter? _mockConsole;
+    private IExplorerPrompts? _mockExplorerPrompts;
     private IValidateConfig? _mockValidateConfig;
     private IAdrServices? _mockAdrServices;
     private AdrPlusConfig? _config;
@@ -54,12 +55,24 @@ internal class ExplorerCommandHandlerFixture
     /// <summary>
     /// Gets the mock console writer, creating it if necessary.
     /// </summary>
-    public IPromptConsole MockConsole
+    public IConsoleWriter MockConsole
     {
         get
         {
-            _mockConsole ??= Substitute.For<IPromptConsole>();
+            _mockConsole ??= Substitute.For<IConsoleWriter>();
             return _mockConsole;
+        }
+    }
+
+    /// <summary>
+    /// Gets the mock explorer-specific prompts, creating it if necessary.
+    /// </summary>
+    public IExplorerPrompts MockExplorerPrompts
+    {
+        get
+        {
+            _mockExplorerPrompts ??= Substitute.For<IExplorerPrompts>();
+            return _mockExplorerPrompts;
         }
     }
 
@@ -117,6 +130,7 @@ internal class ExplorerCommandHandlerFixture
                 MockFileSystem,
                 MockValidateConfig,
                 MockConsole,
+                MockExplorerPrompts,
                 MockAdrServices);
             return _handler;
         }
@@ -142,6 +156,7 @@ internal class ExplorerCommandHandlerFixture
         _mockLogger = null;
         _mockFileSystem = null;
         _mockConsole = null;
+        _mockExplorerPrompts = null;
         _mockValidateConfig = null;
         _mockAdrServices = null;
         _config = null;

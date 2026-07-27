@@ -25,7 +25,13 @@ namespace AdrPlus.Infrastructure.UI
         IConfiguration configuration, 
         IFileSystemService fileSystemService, 
         IValidateConfig validate, 
-        IAdrServices adrServices) : IPromptConsole
+        IAdrServices adrServices) :
+        IConsoleWriter,
+        IConfigPrompts,
+        IMigratePrompts,
+        INewAdrPrompts,
+        IExplorerPrompts,
+        IWizardMenuPrompts
     {
         /// <summary>
         /// Console color for help messages.
@@ -1182,33 +1188,6 @@ namespace AdrPlus.Infrastructure.UI
                 .Run(cancellationToken);
             return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!.Exception);
         }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryAdr}: ";
-            while (true)
-            {
-                var result = PromptPlus.Controls
-                    .File(message)
-                    .OnlyFolders()
-                    .EnableHistory("AdrPlusRepoPathHistory")
-                    .Root(root)
-                    .Run(cancellationToken);
-                if (result.IsAborted)
-                {
-                    return (true, string.Empty);
-                }
-                var targetconfigPath = Path.Combine(result.Content!.FullPath, validateJsonConfig.GetFileNameRepoConfig());
-                if (!fileSystemService.FileExists(targetconfigPath))
-                {
-                    PromptWriteError(string.Format(null, FormatMessages.ErrFileNotFound, targetconfigPath));
-                    continue;
-                }
-                return (false, result.Content!.FullPath);
-            }
-        }
-
 
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)

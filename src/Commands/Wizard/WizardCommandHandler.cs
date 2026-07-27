@@ -35,12 +35,14 @@ namespace AdrPlus.Commands.Wizard
         ILogger<WizardCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
+        IWizardMenuPrompts wizardMenuPrompts,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<WizardCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
+        private readonly IWizardMenuPrompts _wizardMenuPrompts = wizardMenuPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IConfiguration _configuration = configuration;
         private readonly CommandRouter _commandRouter = commandRouter;
@@ -249,7 +251,7 @@ namespace AdrPlus.Commands.Wizard
         /// <exception cref="OperationCanceledException">Thrown when the user cancels the prompt.</exception>
         private async Task<ItemMenuWizard> HandleMainMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
-            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetGroupMenu(), new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetGroupMenu(), new ItemMenuWizard(), cancellationToken);
             if (isAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -275,7 +277,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleConfigurationMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(ConfigMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuConfigurations(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetMenuConfigurations(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -313,7 +315,7 @@ namespace AdrPlus.Commands.Wizard
 
         private async Task<ItemMenuWizard> HandleInitMigrateMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
-            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuInitMigrate(), new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetMenuInitMigrate(), new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -367,7 +369,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleAdrMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(AdrMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuAdr(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetMenuAdr(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {
@@ -419,7 +421,7 @@ namespace AdrPlus.Commands.Wizard
         private async Task<ItemMenuWizard> HandleHelpMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
         {
             var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(HelpMenuHistoryKey, cancellationToken);
-            var (isAborted, itemSelected) = _prompt.PromptSelectMenu(isRepoConfigured, GetMenuHelp(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetMenuHelp(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
 
             if (isAborted)
             {

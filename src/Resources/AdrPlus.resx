@@ -813,9 +813,6 @@
   <data name="PromptEmptyTemplate" xml:space="preserve">
     <value>Use model without data</value>
   </data>
-  <data name="PromptSelectAdrRepositoryAdr" xml:space="preserve">
-    <value>Select ADR repository path</value>
-  </data>
   <data name="Template" xml:space="preserve">
     <value>Template</value>
   </data>

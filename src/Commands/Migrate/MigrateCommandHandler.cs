@@ -32,13 +32,15 @@ namespace AdrPlus.Commands.Migrate
         ILogger<MigrateCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateConfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
+        IMigratePrompts migratePrompts,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<MigrateCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IValidateConfig _validateConfig = validateConfig;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
+        private readonly IMigratePrompts _migratePrompts = migratePrompts;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardMigrate,
@@ -251,7 +253,7 @@ namespace AdrPlus.Commands.Migrate
                     throw new InvalidDataException(Resources.AdrPlus.NotFoundValidMigrateADR);
                 }
 
-                var adrselectedPrompt = _prompt.PromptShowAdrsMigrations([.. foundfiles.OrderBy(x => x.Header.IsMigrated).ThenBy(x => x.Header.IsValid)], repoconfig, cancellationToken);
+                var adrselectedPrompt = _migratePrompts.PromptShowAdrsMigrations([.. foundfiles.OrderBy(x => x.Header.IsMigrated).ThenBy(x => x.Header.IsValid)], repoconfig, cancellationToken);
                 if (adrselectedPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

@@ -31,14 +31,16 @@ namespace AdrPlus.Commands.Explorer
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateConfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
+        IExplorerPrompts explorerPrompts,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<ExplorerCommandHandler> _logger = logger;
         private readonly IOptions<AdrPlusConfig> _config = config;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IValidateConfig _validateConfig = validateConfig;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
+        private readonly IExplorerPrompts _explorerPrompts = explorerPrompts;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardExplorer,
@@ -362,7 +364,7 @@ namespace AdrPlus.Commands.Explorer
 
         private string ShowSelectExplorerAdr(AdrFileNameComponents[] foundfiles,string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
-            (bool IsAborted, string FileSelectd) = _prompt.PromptTableExplorer(foundfiles,fields,folderrepoadr,adrPlusRepoConfig);
+            (bool IsAborted, string FileSelectd) = _explorerPrompts.PromptTableExplorer(foundfiles,fields,folderrepoadr,adrPlusRepoConfig);
             if (IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -410,20 +412,20 @@ namespace AdrPlus.Commands.Explorer
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
-                var fieldsseleted = _prompt.PromptFieldsExplorer(cancellationToken);
+                var fieldsseleted = _explorerPrompts.PromptFieldsExplorer(cancellationToken);
                 if (fieldsseleted.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                var explorerreport = _prompt.PromptOptionShowOrCreateReport(cancellationToken);
+                var explorerreport = _explorerPrompts.PromptOptionShowOrCreateReport(cancellationToken);
                 if (explorerreport.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
                 if (explorerreport.IsCreatingReport)
                 {
-                    var (IsAborted, Filename) = _prompt.PromptInputFileReport(cancellationToken);
+                    var (IsAborted, Filename) = _explorerPrompts.PromptInputFileReport(cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

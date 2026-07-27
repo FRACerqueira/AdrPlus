@@ -25,13 +25,13 @@ namespace AdrPlus.Commands
         IConfiguration configuration,
         IServiceProvider serviceProvider,
         ILogger<CommandRouter> logger,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
         IAdrServices adrServices)
     {
         private readonly IConfiguration _configuration = configuration;
         private readonly IServiceProvider _serviceProvider = serviceProvider;
         private readonly ILogger<CommandRouter> _logger = logger;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
         private readonly Dictionary<string, Type> _commandMap = adrServices.GenerateCommandsMap();
         /// <summary>
         /// Routes a command to its handler and executes it.

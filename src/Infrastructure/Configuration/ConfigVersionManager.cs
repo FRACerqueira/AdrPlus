@@ -28,7 +28,7 @@ namespace AdrPlus.Infrastructure.Configuration
     /// <param name="fileSystem">The file system service for I/O operations.</param>
     /// <param name="configuration">The configuration service for accessing application settings.</param>
     internal sealed partial class ConfigVersionManager(
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
         ILogger<ConfigVersionManager> logger,
         IValidateConfig validateJsonConfig,
         IFileSystemService fileSystem,
@@ -38,7 +38,7 @@ namespace AdrPlus.Infrastructure.Configuration
         private readonly IValidateConfig _validateJsonConfig = validateJsonConfig ?? throw new ArgumentNullException(nameof(validateJsonConfig));
         private readonly IFileSystemService _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        private readonly IPromptConsole _prompt = prompt ?? throw new ArgumentNullException(nameof(prompt));
+        private readonly IConsoleWriter _prompt = prompt ?? throw new ArgumentNullException(nameof(prompt));
         
 
 

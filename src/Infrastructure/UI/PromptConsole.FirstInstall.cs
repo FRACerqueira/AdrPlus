@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace AdrPlus.Infrastructure.UI
 {
-    internal sealed partial class PromptConsole : IPromptConsole
+    internal sealed partial class PromptConsole
     {
         private readonly JsonSerializerOptions _jsonopt = new()
         {

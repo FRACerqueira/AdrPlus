@@ -2473,15 +2473,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select ADR repository path.
-        /// </summary>
-        internal static string PromptSelectAdrRepositoryAdr {
-            get {
-                return ResourceManager.GetString("PromptSelectAdrRepositoryAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select ADR scope.
         /// </summary>
         internal static string PromptSelectAdrScope {

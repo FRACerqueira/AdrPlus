@@ -24,7 +24,8 @@ public class NewAdrCommandHandlerTests
 {
     private readonly ILogger<NewAdrCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IPromptConsole _mockConsole;
+    private readonly IConsoleWriter _mockConsole;
+    private readonly INewAdrPrompts _mockNewAdrPrompts;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -49,7 +50,8 @@ public class NewAdrCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<NewAdrCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockNewAdrPrompts = Substitute.For<INewAdrPrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -66,6 +68,7 @@ public class NewAdrCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices);
     }
 
@@ -81,6 +84,7 @@ public class NewAdrCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices);
 
         // Assert
@@ -721,7 +725,7 @@ public class NewAdrCommandHandlerTests
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockConsole.PromptClearWaitText(cursorPos);
-        _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -748,7 +752,7 @@ public class NewAdrCommandHandlerTests
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockConsole.PromptClearWaitText(cursorPos);
-        _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
@@ -777,11 +781,11 @@ public class NewAdrCommandHandlerTests
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockConsole.PromptClearWaitText(cursorPos);
-        _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
-        _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -808,13 +812,13 @@ public class NewAdrCommandHandlerTests
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockConsole.PromptClearWaitText(cursorPos);
-        _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
-        _mockConsole.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
-        _mockConsole.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, [], (Exception?)null));
 
         // Act & Assert
@@ -977,7 +981,7 @@ public class NewAdrCommandHandlerTests
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
         _mockConsole.PromptClearWaitText(cursorPos);
-        _mockConsole.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
@@ -1007,6 +1011,7 @@ public class NewAdrCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices);
     }
 

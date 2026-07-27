@@ -31,12 +31,12 @@ namespace AdrPlus.Commands.Init
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs = [

@@ -23,7 +23,8 @@ public class MigrateCommandHandlerTests
 {
     private ILogger<MigrateCommandHandler> _mockLogger = null!;
     private IFileSystemService _mockFileSystem = null!;
-    private IPromptConsole _mockConsole = null!;
+    private IConsoleWriter _mockConsole = null!;
+    private IMigratePrompts _mockMigratePrompts = null!;
     private IValidateConfig _mockValidateConfig = null!;
     private IAdrServices _mockAdrServices = null!;
     private MigrateCommandHandler _handler = null!;
@@ -37,7 +38,8 @@ public class MigrateCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<MigrateCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockMigratePrompts = Substitute.For<IMigratePrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -46,6 +48,7 @@ public class MigrateCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockMigratePrompts,
             _mockAdrServices);
     }
 
@@ -60,6 +63,7 @@ public class MigrateCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockMigratePrompts,
             _mockAdrServices);
 
         // Assert
@@ -453,7 +457,7 @@ public class MigrateCommandHandlerTests
 
         var adrFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([adrFile]);
-        _mockConsole.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockMigratePrompts.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((true, 0)); // IsAborted = true
 
         // Act & Assert
@@ -485,7 +489,7 @@ public class MigrateCommandHandlerTests
 
         var adrFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([adrFile]);
-        _mockConsole.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockMigratePrompts.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, 1));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true)); // Confirm YES
@@ -524,7 +528,7 @@ public class MigrateCommandHandlerTests
 
         var adrFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([adrFile]);
-        _mockConsole.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockMigratePrompts.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, 1));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
@@ -563,7 +567,7 @@ public class MigrateCommandHandlerTests
 
         var adrFile = CreateAdrFileComponentForMigration(Path.Combine(RepositoryPath, "adr-0001.md"), 1, AdrStatus.Unknown, false);
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), true).Returns([adrFile]);
-        _mockConsole.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockMigratePrompts.PromptShowAdrsMigrations(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
             .Returns((false, 1));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, false)); // Confirm NO - will cause loop to repeat

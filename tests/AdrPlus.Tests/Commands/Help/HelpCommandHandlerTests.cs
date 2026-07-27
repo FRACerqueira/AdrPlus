@@ -19,14 +19,14 @@ namespace AdrPlus.Tests.Commands.Help;
 /// </summary>
 public class HelpCommandHandlerTests
 {
-    private readonly IPromptConsole _mockConsole;
+    private readonly IConsoleWriter _mockConsole;
     private readonly CommandRouter _mockCommandRouter;
     private readonly IAdrServices _mockAdrServices;
     private readonly HelpCommandHandler _handler;
 
     public HelpCommandHandlerTests()
     {
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
         var mockConfiguration = Substitute.For<IConfiguration>();
@@ -49,7 +49,7 @@ public class HelpCommandHandlerTests
     public void Constructor_WithValidParameters_CreatesInstance()
     {
         // Arrange
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var mockServiceProvider = Substitute.For<IServiceProvider>();
         var mockLogger = Substitute.For<ILogger<CommandRouter>>();
         var adrServices = Substitute.For<IAdrServices>();

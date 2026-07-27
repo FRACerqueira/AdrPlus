@@ -25,7 +25,8 @@ public class ConfigCommandHandlerTests
 {
     private readonly ILogger<ConfigCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IPromptConsole _mockConsole;
+    private readonly IConsoleWriter _mockConsole;
+    private readonly IConfigPrompts _mockConfigPrompts;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly ConfigCommandHandler _handler;
@@ -34,7 +35,8 @@ public class ConfigCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<ConfigCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockConfigPrompts = Substitute.For<IConfigPrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 
@@ -43,6 +45,7 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockConfigPrompts,
             _mockAdrServices);
     }
 
@@ -57,6 +60,7 @@ public class ConfigCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockConfigPrompts,
             _mockAdrServices);
 
         // Assert
@@ -116,7 +120,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.ValidateAppStructure(jsonContent).Returns((true, []));
 
         var field = new FieldsJson { Name = "Language", Value = "pt", IsEndEdit = true };
-        _mockConsole.PromptConfigJsonAppSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigJsonAppSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
         // Act
@@ -238,7 +242,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
-        _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
         var repoConfig = new AdrPlusRepoConfig("","")
@@ -282,7 +286,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
-        _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
         var repoConfig = new AdrPlusRepoConfig("","")
@@ -499,7 +503,7 @@ public class ConfigCommandHandlerTests
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectLogicalDrive(Arg.Any<string>(), _mockFileSystem, Arg.Any<CancellationToken>())
             .Returns((false, selectedDrive));
-        _mockConsole.PromptConfigTemplateAdrSelect(selectedDrive, Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigTemplateAdrSelect(selectedDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
         _mockFileSystem.FileExists(templatePath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
@@ -526,7 +530,7 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
         _mockFileSystem.FileExists(templatePath).Returns(true);
         _mockFileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns(templateContent);
@@ -550,7 +554,7 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
 
         // Act & Assert
@@ -587,7 +591,7 @@ public class ConfigCommandHandlerTests
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>(), "-r").Returns(parsedArgs);
         _mockFileSystem.GetDrives().Returns(drives);
-        _mockConsole.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigTemplateAdrSelect(SingleTestDrive, Arg.Any<CancellationToken>())
             .Returns((false, templatePath));
         _mockFileSystem.FileExists(templatePath).Returns(false);
 
@@ -622,7 +626,7 @@ public class ConfigCommandHandlerTests
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns(configPath);
 
         var field = new FieldsJson { Name = "Prefix", Value = "ADR", IsEndEdit = true };
-        _mockConsole.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
+        _mockConfigPrompts.PromptConfigJsonRepoSelect(Arg.Any<FieldsJson>(), Arg.Any<List<FieldsJson>>(), Arg.Any<CancellationToken>())
             .Returns((false, field));
 
         var repoConfig = new AdrPlusRepoConfig("","")

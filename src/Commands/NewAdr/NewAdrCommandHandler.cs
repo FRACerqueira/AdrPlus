@@ -36,13 +36,15 @@ namespace AdrPlus.Commands.NewAdr
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
+        INewAdrPrompts newAdrPrompts,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<NewAdrCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
+        private readonly INewAdrPrompts _newAdrPrompts = newAdrPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
@@ -406,7 +408,7 @@ namespace AdrPlus.Commands.NewAdr
                 defFolder = folderPrompt.Content;
 
                 // Get title
-                var titlePrompt = _prompt.PromptEditTitleAdr(defTitle, cancellationToken);
+                var titlePrompt = _newAdrPrompts.PromptEditTitleAdr(defTitle, cancellationToken);
                 if (titlePrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -426,7 +428,7 @@ namespace AdrPlus.Commands.NewAdr
                 // Get scope and domain if configured
                 if (auxconfig.Scopes.Length > 0)
                 {
-                    var scopePrompt = _prompt.PromptEditScopeAdr(defScope, auxconfig, cancellationToken);
+                    var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(defScope, auxconfig, cancellationToken);
                     if (scopePrompt.IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -438,7 +440,7 @@ namespace AdrPlus.Commands.NewAdr
                     {
                         if (oldDefFolder != defFolder)
                         {
-                            var (IsAborted, domains, _) = _prompt.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                            var (IsAborted, domains, _) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
                             if (IsAborted)
                             {
                                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -447,7 +449,7 @@ namespace AdrPlus.Commands.NewAdr
                             defArrDomain = domains;
                         }
 
-                        var domainPrompt = _prompt.PromptEditDomainAdr(defDomain, defArrDomain, cancellationToken);
+                        var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(defDomain, defArrDomain, cancellationToken);
                         if (domainPrompt.IsAborted)
                         {
                             throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

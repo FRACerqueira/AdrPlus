@@ -36,12 +36,12 @@ namespace AdrPlus
             IConfiguration configuration,
             IConfigurationMigrator configurationMigrator,
             IValidateConfig validateConfig,
-            IPromptConsole prompt) : IMainProgram
+            IConsoleWriter prompt) : IMainProgram
     {
         private readonly ILogger<MainProgram> _logger = logger;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IConfiguration _configuration = configuration;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
         private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
         private readonly IOptionsMonitor<AdrPlusConfig> _adrPlusConfig = optionsconfig;
         private readonly IValidateConfig _validateConfig = validateConfig;

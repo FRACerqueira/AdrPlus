@@ -41,7 +41,13 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             services.AddSingleton<IFileSystemService, FileSystemService>();
             services.AddSingleton<IValidateConfig, ValidateConfig>();
-            services.AddSingleton<IPromptConsole, PromptConsole>();
+            services.AddSingleton<PromptConsole>();
+            services.AddSingleton<IConsoleWriter>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<IConfigPrompts>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<IMigratePrompts>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<INewAdrPrompts>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<IExplorerPrompts>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<IWizardMenuPrompts>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
             services.AddSingleton<ExplorerCommandHandler>();
