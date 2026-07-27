@@ -8,6 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
 
+> 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
+
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no version flow, and hard-to-track status changes).
 
 AdrPlus was created to **solve this problem with a practical CLI workflow that keeps ADRs standardized, traceable, and easy to evolve over time**.
@@ -63,6 +65,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
+- 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
@@ -187,6 +190,7 @@ Prefer managing ADRs in plain language instead of typing commands yourself? The 
 - A skill (`manage-adrs`) that teaches Claude the full `adrplus` command surface, so it can create, approve, reject, version, revise, supersede, and configure ADRs without guessing at flags.
 - An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain integrity, status hygiene) and produces a read-only report.
 - An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
+- An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
 
 Requires `adrplus` v1.0.0-beta or later — earlier versions weren't safe to drive non-interactively.
 
