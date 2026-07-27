@@ -1,5 +1,5 @@
 
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # AdrPlus
 

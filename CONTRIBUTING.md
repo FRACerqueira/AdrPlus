@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # Contributing to AdrPlus
 
@@ -143,7 +143,7 @@ feat(new-adr): add --template flag to override default template
 ## Reporting Bugs
 
 Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
-- AdrPlus version (`adrplus version`)
+- AdrPlus version (`adrplus --version`)
 - OS and .NET version
 - Minimal reproduction steps
 

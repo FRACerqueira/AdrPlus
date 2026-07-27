@@ -1,4 +1,4 @@
-[![icon](./icon.png)](./icon.png)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # Frequently Asked Questions
 
@@ -54,7 +54,7 @@ You can change this behavior anytime by running `adrplus config --application`.
 
 ### Can I customize ADR headers?
 
-No. You cannot customize ADR headers directly. You can customize status labels and header names in `adr-config.adrplus` using keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headerstatus`, `headerversion`, and `headerrevision`.
+No. You cannot customize ADR headers directly. You can customize status labels and header names in `adr-config.adrplus` using keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headertitlestatuscreated`, `headertitlestatuschanged`, and `headertitlestatussuperseded`.
 
 ### Can I use custom status labels?
 
@@ -74,10 +74,10 @@ No. The date format is fixed in the tool's metadata handling and cannot be custo
 
 ## Workflow and Commands
 
-### What is the difference between `version`, `review`, and `supersede`?
+### What is the difference between `version`, `revise`, and `supersede`?
 
 - `version`: creates a new major version of the same ADR sequence.
-- `review`: creates a revision of the same ADR version (when revision is enabled).
+- `revise`: creates a revision of the same ADR version (when revision is enabled).
 - `supersede`: creates a successor ADR with a new sequence number.
 
 ### How does the tool determine the next ADR number when creating a new ADR?

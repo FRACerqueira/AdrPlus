@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # AdrPlus
 
@@ -28,6 +28,8 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Quick Start](#quick-start)
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
+- [Advanced Configuration (Optional)](#advanced-configuration-optional)
+- [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
 - [Commands](#commands)
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
@@ -81,9 +83,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ### For building and packaging from source
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (builds all three target frameworks: `net8.0`, `net9.0`, `net10.0`)
 
 ---
 
@@ -110,6 +110,12 @@ dotnet tool uninstall -g adrplus
 ```
 
 After installation, you can use `adrplus` from any terminal in any repository.
+
+Check the installed version anytime with:
+
+```bash
+adrplus --version
+```
 
 ### Build and install from source
 
@@ -163,7 +169,7 @@ After initial setup completes, you can use any command directly:
 adrplus new --wizard
 
 # Or explore and manage your ADRs
-adrplus explorer --path "path/to/repository"
+adrplus explore --path "path/to/repository"
 adrplus approve --file "path/to/adr/ADR0001.md"
 ```
 
@@ -232,7 +238,7 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 # Launch the ADR file viewer explorer
 
-    adrplus explorer --path "path/to/repository"
+    adrplus explore --path "path/to/repository"
 
 # Initialize ADR structure (if the first time you set up the repository)
 
@@ -258,10 +264,10 @@ You can also execute commands directly, one by one, without the wizard and witho
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
     adrplus supersede --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
-# Create review/version flows
+# Create revise/version flows
 
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
-    adrplus review --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
+    adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
     adrplus version --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 ```
@@ -277,12 +283,12 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `help`      | Display help information for all commands or a specific command |
 | `wizard`    | Launch the interactive wizard for guided operations |
 | `config`    | Application configuration editor,migrate repository,repository and default ADR template |
-| `explorer`  | Launch the file viewer explorer and report for the ADR repository |
+| `explore`   | Launch the file viewer explorer and report for the ADR repository |
 | `migrate`   | Migrate existing ADRs to use the tool |
 | `init`      | Initialize or reinitialize the ADR repository folder structure (can be run multiple times) |
 | `new`       | Create a new ADR with an incremental number |
 | `version`   | Create a new version of an  ADR (increment version) |
-| `review`    | Create a new revision of an ADR (increment revision) |
+| `revise`    | Create a new revision of an ADR (increment revision) |
 | `supersede` | Supersede an ADR by creating a successor with a new incremental number |
 | `approve`   | Set an ADR status to *Accepted* |
 | `reject`    | Set an ADR status to *Rejected* |
@@ -294,7 +300,7 @@ Run `adrplus help <command>` for detailed usage of any command.
 
 The rules below describe what must be true for a command to select its target successfully (especially in wizard mode).
 
-> For file-based commands (`approve`, `reject`, `undo`, `version`, `review`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
+> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
 
 | Command | Successful selection rules |
 |---|---|
@@ -303,7 +309,7 @@ The rules below describe what must be true for a command to select its target su
 | `reject` | ADR must be eligible: not already approved/rejected.|
 | `undo` | ADR must be eligible: already approved/rejected and for the same sequence not a superseded and not proposed.|
 | `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded.|
-| `review` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
+| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
 | `supersede` | ADR must be eligible: already approved and not superseded.|
 
 ---

@@ -107,11 +107,11 @@ namespace AdrPlus.Commands.Review
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(
-                        "review",
+                        "revise",
                         ValidCommandArgs,
                         [
-                            "adrplus review --wizard --open",
-                            "adrplus review --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
+                            "adrplus revise --wizard --open",
+                            "adrplus revise --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
                         ]));
                     return;
                 }

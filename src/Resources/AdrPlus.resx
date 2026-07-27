@@ -522,9 +522,6 @@
   <data name="Welcome" xml:space="preserve">
     <value>Welcome to AdrPlus ({0})</value>
   </data>
-  <data name="HelpUsageSequenceAdr" xml:space="preserve">
-    <value>Sequence ID from ADR</value>
-  </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
     <value>Wizard to create new ADR (supress all other arguments)</value>
   </data>
@@ -825,27 +822,6 @@
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Wizard to update the ADR settings of a repository</value>
   </data>
-  <data name="HelpUsageRepoTemplate" xml:space="preserve">
-    <value>Change template of ADR for a repository</value>
-  </data>
-  <data name="HelpUsageRepoVersion" xml:space="preserve">
-    <value>Change the version length setting for a repository</value>
-  </data>
-  <data name="HelpUsageRepoRevision" xml:space="preserve">
-    <value>Change the revision length setting for a repository</value>
-  </data>
-  <data name="HelpUsageRepoScope" xml:space="preserve">
-    <value>Change the scope (length and items) setting for a repository</value>
-  </data>
-  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
-    <value>List of scopes (add a '*' to the end of each scope to ignore the domain definition)</value>
-  </data>
-  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
-    <value>Create folders by scope</value>
-  </data>
-  <data name="HelpUsageFileTemplate" xml:space="preserve">
-    <value>Path to the template file. If omitted, it will be the application template</value>
-  </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrate existing ADRs to use the tool (create header)</value>
   </data>
@@ -1006,7 +982,7 @@
     <value>Files explored</value>
   </data>
   <data name="WizardHelpExplorerTitle" xml:space="preserve">
-    <value>Explorer command help</value>
+    <value>Explore command help</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
     <value>Migration pattern</value>
@@ -1231,7 +1207,7 @@
     <value>Status superseded</value>
   </data>
   <data name="CmdDescReview" xml:space="preserve">
-    <value>Create a new ADR with a new revison (incremental review, same number and version)</value>
+    <value>Create a new ADR with a new revision (incremental revision, same number and version)</value>
   </data>
   <data name="ErrMsgWithoutArgs" xml:space="preserve">
     <value>Invalid behavior value ({0}). Must be 'Help', 'Wizard' or 'None'</value>

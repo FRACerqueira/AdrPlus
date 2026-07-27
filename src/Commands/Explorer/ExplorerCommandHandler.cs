@@ -56,11 +56,11 @@ namespace AdrPlus.Commands.Explorer
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(
-                        "explorer",
+                        "explore",
                         ValidCommandArgs,
                         [
-                            "adrplus explorer --wizard",
-                            "adrplus explorer --path \"path/to/repository/\" --file \"path/to/report.md\" --open",
+                            "adrplus explore --wizard",
+                            "adrplus explore --path \"path/to/repository/\" --file \"path/to/report.md\" --open",
                         ]));
                     return;
                 }

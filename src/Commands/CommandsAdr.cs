@@ -42,7 +42,7 @@ namespace AdrPlus.Commands
         /// <summary>
         /// Launches the file viewer explorer for the ADR repository with option to create Markdown file.
         /// </summary>
-        [Command("explorer", typeof(ExplorerCommandHandler), "CmdDescExplorer")]
+        [Command("explore", typeof(ExplorerCommandHandler), "CmdDescExplorer")]
         Explorer,
         /// <summary>
         /// Migrate repository's settings.
@@ -67,7 +67,7 @@ namespace AdrPlus.Commands
         /// <summary>
         /// Creates a new ADR with a new revision (incremental revision, same number and version).
         /// </summary>
-        [Command("review", typeof(ReviewCommandHandler), "CmdDescReview")]
+        [Command("revise", typeof(ReviewCommandHandler), "CmdDescReview")]
         Review,
         /// <summary>
         /// Supersedes an ADR (incremental number, reset revision and version).

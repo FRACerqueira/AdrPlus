@@ -78,7 +78,7 @@ namespace AdrPlus.Commands.Config
                         ValidCommandArgs,
                         [
                             "adrplus config --application",
-                            "adrplus config --migration",
+                            "adrplus config --migrate",
                             "adrplus config --repository",
                             "adrplus config --template -file \"path/to/file-config\""
                         ]));

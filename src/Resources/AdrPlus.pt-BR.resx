@@ -522,9 +522,6 @@
   <data name="Welcome" xml:space="preserve">
     <value>Bem-vindo ao AdrPlus ({0})</value>
   </data>
-  <data name="HelpUsageSequenceAdr" xml:space="preserve">
-    <value>ID de sequência do ADR</value>
-  </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
     <value>Assistente para criar novo ADR (suprime todos os outros argumentos)</value>
   </data>
@@ -825,27 +822,6 @@
   <data name="HelpUsageWizardRepo" xml:space="preserve">
     <value>Assistente para atualizar as configurações de ADR de um repositório</value>
   </data>
-  <data name="HelpUsageRepoTemplate" xml:space="preserve">
-    <value>Alterar modelo de ADR para este repositório</value>
-  </data>
-  <data name="HelpUsageRepoVersion" xml:space="preserve">
-    <value>Alterar a configuração de comprimento da versão para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoRevision" xml:space="preserve">
-    <value>Alterar a configuração de comprimento da revisão para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoScope" xml:space="preserve">
-    <value>Alterar a configuração de escopo (comprimento e itens) para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
-    <value>Lista de escopos (adicione um '*' ao final de cada escopo para ignorar a definição de domínio)</value>
-  </data>
-  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
-    <value>Criar pastas por escopo</value>
-  </data>
-  <data name="HelpUsageFileTemplate" xml:space="preserve">
-    <value>Caminho para o arquivo de template. Se omitido será o template da aplicação</value>
-  </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrar ADRs existentes para usar a ferramenta (criar cabeçalho)</value>
   </data>
@@ -1006,7 +982,7 @@
     <value>Arquivos explorados</value>
   </data>
   <data name="WizardHelpExplorerTitle" xml:space="preserve">
-    <value>Ajuda do comando explorer</value>
+    <value>Ajuda do comando explore</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
     <value>Padrão migrate</value>

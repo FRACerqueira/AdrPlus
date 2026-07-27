@@ -30,6 +30,13 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
+            if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v"))
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                Console.WriteLine($"AdrPlus {version?.Major}.{version?.Minor}.{version?.Build}");
+                return 0;
+            }
+
             // Hook into Console lifetime events (Ctrl+C / SIGTERM)
             Console.CancelKeyPress += (sender, eventArgs) =>
             {

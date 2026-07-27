@@ -178,7 +178,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create a new ADR with a new revison (incremental review, same number and version).
+        ///   Looks up a localized string similar to Create a new ADR with a new revision (incremental revision, same number and version).
         /// </summary>
         internal static string CmdDescReview {
             get {
@@ -1528,15 +1528,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Path to the template file. If omitted, it will be the application template.
-        /// </summary>
-        internal static string HelpUsageFileTemplate {
-            get {
-                return ResourceManager.GetString("HelpUsageFileTemplate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Display help information (supress all other arguments).
         /// </summary>
         internal static string HelpUsageHelp {
@@ -1573,74 +1564,11 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the revision length setting for a repository.
-        /// </summary>
-        internal static string HelpUsageRepoRevision {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoRevision", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change the scope (length and items) setting for a repository.
-        /// </summary>
-        internal static string HelpUsageRepoScope {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoScope", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to List of scopes (add a &apos;*&apos; to the end of each scope to ignore the domain definition).
-        /// </summary>
-        internal static string HelpUsageRepoScopeItems {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoScopeItems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change template of ADR for a repository.
-        /// </summary>
-        internal static string HelpUsageRepoTemplate {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoTemplate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change the version length setting for a repository.
-        /// </summary>
-        internal static string HelpUsageRepoVersion {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create folders by scope.
-        /// </summary>
-        internal static string HelpUsageRepoWithFolders {
-            get {
-                return ResourceManager.GetString("HelpUsageRepoWithFolders", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Scope of ADR.
         /// </summary>
         internal static string HelpUsageScopeAdr {
             get {
                 return ResourceManager.GetString("HelpUsageScopeAdr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sequence ID from ADR.
-        /// </summary>
-        internal static string HelpUsageSequenceAdr {
-            get {
-                return ResourceManager.GetString("HelpUsageSequenceAdr", resourceCulture);
             }
         }
         
@@ -3391,7 +3319,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Explorer command help.
+        ///   Looks up a localized string similar to Explore command help.
         /// </summary>
         internal static string WizardHelpExplorerTitle {
             get {

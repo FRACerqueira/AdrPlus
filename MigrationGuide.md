@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 # Migration Guide: Converting Existing ADRs to AdrPlus Format
 
 Welcome! This guide will walk you through migrating your existing Architecture Decision Records (ADRs) to use the **AdrPlus** tool format.
@@ -17,6 +17,11 @@ Welcome! This guide will walk you through migrating your existing Architecture D
 6. [Verifying the Migration](#verifying-the-migration)
 7. [Troubleshooting](#troubleshooting)
 8. [Reverting Changes](#reverting-changes)
+9. [Best Practices for Migration](#best-practices-for-migration)
+10. [Next Steps](#next-steps)
+11. [Getting Help](#getting-help)
+12. [Example: Complete Migration Workflow](#example-complete-migration-workflow)
+13. [Summary](#summary)
 
 ---
 
@@ -589,7 +594,7 @@ git commit -m "backup: before ADR migration"
 
 ```bash
 adrplus config --repository
-adrplus config --migration
+adrplus config --migrate
 
 ```
 
