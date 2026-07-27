@@ -109,18 +109,30 @@ namespace AdrPlus
         /// </summary>
         /// <param name="assembly">The assembly to read the version from.</param>
         /// <returns>The full semantic version string, or "0.0.0" if unavailable.</returns>
-        private static string GetAppVersion(Assembly assembly)
+        internal static string GetAppVersion(Assembly assembly)
         {
             var informational = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-            if (!string.IsNullOrWhiteSpace(informational))
+            return ResolveAppVersion(informational, assembly.GetName()?.Version);
+        }
+
+        /// <summary>
+        /// Resolves the app version string from an <see cref="AssemblyInformationalVersionAttribute"/>
+        /// value (preferred, preserves semver pre-release suffixes) or falls back to the numeric
+        /// <see cref="AssemblyName.Version"/>.
+        /// </summary>
+        /// <param name="informationalVersion">The raw <see cref="AssemblyInformationalVersionAttribute.InformationalVersion"/> value, if any.</param>
+        /// <param name="assemblyVersion">The numeric assembly version to fall back to.</param>
+        /// <returns>The resolved version string, or "0.0.0" if neither source is available.</returns>
+        internal static string ResolveAppVersion(string? informationalVersion, Version? assemblyVersion)
+        {
+            if (!string.IsNullOrWhiteSpace(informationalVersion))
             {
                 // Strip a source-control metadata suffix (e.g. "+abc1234"), which
                 // Deterministic/SourceLink builds append but isn't part of the semver.
-                var plusIndex = informational.IndexOf('+', StringComparison.Ordinal);
-                return plusIndex >= 0 ? informational[..plusIndex] : informational;
+                var plusIndex = informationalVersion.IndexOf('+', StringComparison.Ordinal);
+                return plusIndex >= 0 ? informationalVersion[..plusIndex] : informationalVersion;
             }
-            var structver = assembly.GetName()?.Version;
-            return structver != null ? $"{structver.Major}.{structver.Minor}.{structver.Build}" : "0.0.0";
+            return assemblyVersion != null ? $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}" : "0.0.0";
         }
     }
 }

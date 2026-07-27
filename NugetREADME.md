@@ -18,7 +18,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 Using **AdrPlus** in an engineering repository helps you:
 
 - 📚 Keep architectural decisions organized with a predictable structure
-- 🔍 Improve traceability with version, review, and supersede flows
+- 🔍 Improve traceability with version, revise, and supersede flows
 - ⚡ Reduce manual effort when creating and updating ADR files
 - 🛠️ Respect the repository's configuration for naming, structure, and ADR status for each team.
 - 🤝 Improve collaboration by making decision history visible to the whole team
@@ -29,7 +29,7 @@ Using **AdrPlus** in an engineering repository helps you:
 ## Features
 
 - 📝 **Create** new ADRs with auto-incremented sequential numbers
-- 🔢 **Version** and **review** existing ADRs (major version or revision bump)
+- 🔢 **Version** and **revise** existing ADRs (major version or revision bump)
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
