@@ -30,7 +30,7 @@ namespace AdrPlus.Infrastructure.UI
         IConfigPrompts,
         IMigratePrompts,
         INewAdrPrompts,
-        IExplorerPrompts,
+        IExplorePrompts,
         IWizardMenuPrompts
     {
         /// <summary>
@@ -918,7 +918,7 @@ namespace AdrPlus.Infrastructure.UI
            var inputfilename = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileNameReport}: ")
                     .Default("AdrPlusReport")
                     .PredicateValid((value) => string.IsNullOrWhiteSpace(value) ? (false, Resources.AdrPlus.ExceptionFilenameEmpty) : (true, string.Empty))
-                    .EnableHistory("AdrPlusExplorerReportFileName")
+                    .EnableHistory("AdrPlusExploreReportFileName")
                     .Run(cancellationToken);
             return (inputfilename.IsAborted, inputfilename.IsAborted ? string.Empty : inputfilename.Content!);
         }
@@ -926,17 +926,17 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, bool IsCreatingReport) PromptOptionShowOrCreateReport(CancellationToken cancellationToken)
         {
-            var explorerreport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
+            var explorereport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
                 .OffValue($"{Resources.AdrPlus.ShowAdrs}")
                 .OnValue($"{Resources.AdrPlus.CreateReport}")
-                .EnableHistory("AdrPlusExplorerShowOrReport")
+                .EnableHistory("AdrPlusExploreShowOrReport")
                 .Default(false, true)
                 .Run(cancellationToken);
-            return (explorerreport.IsAborted, !explorerreport.IsAborted && (bool)explorerreport.Content!);
+            return (explorereport.IsAborted, !explorereport.IsAborted && (bool)explorereport.Content!);
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string[] FieldsExplorer) PromptFieldsExplorer(CancellationToken cancellationToken)
+        public (bool IsAborted, string[] FieldsExplore) PromptFieldsExplore(CancellationToken cancellationToken)
         {
             string[] fieldsresources = Resources.AdrPlus.ListFieldReport.Split(',');
             var fields = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsReport}: ")
@@ -962,7 +962,7 @@ namespace AdrPlus.Infrastructure.UI
                         ctx.AddItem(item);
                     }
                 })
-                 .EnableHistory("AdrPlusExplorerFields")
+                 .EnableHistory("AdrPlusExploreFields")
                  .UseDefaultHistory()
                  .TextSelector(item => item[2..])
                  .Run(cancellationToken);
@@ -971,7 +971,7 @@ namespace AdrPlus.Infrastructure.UI
 
 
         /// <inheritdoc/>
-        public (bool IsAborted, string FileSelectd) PromptTableExplorer(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
+        public (bool IsAborted, string FileSelectd) PromptTableExplore(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
             var onstart = true;
             var table = PromptPlus.Controls.Table<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}: ")

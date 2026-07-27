@@ -4,7 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Commands;
-using AdrPlus.Commands.Review;
+using AdrPlus.Commands.Revise;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
@@ -14,21 +14,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute.ExceptionExtensions;
 
-namespace AdrPlus.Tests.Commands.Review;
+namespace AdrPlus.Tests.Commands.Revise;
 
 /// <summary>
-/// Unit tests for ReviewCommandHandler class.
+/// Unit tests for ReviseCommandHandler class.
 /// Tests cover command execution, wizard flows, validation, and error handling using NSubstitute.
 /// </summary>
-public class ReviewCommandHandlerTests
+public class ReviseCommandHandlerTests
 {
-    private readonly ILogger<ReviewCommandHandler> _mockLogger;
+    private readonly ILogger<ReviseCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
     private readonly IConsoleWriter _mockConsole;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
-    private readonly ReviewCommandHandler _handler;
+    private readonly ReviseCommandHandler _handler;
 
     private const string ConfigFileName = ".adrplus";
     private const string RepoPath = "/repo";
@@ -38,9 +38,9 @@ public class ReviewCommandHandlerTests
     private static readonly string BasicJsonConfig =
         """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "LenRevision": 1, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusRej": "Rejected", "StatusSup": "Superseded", "template":"# ADR"}""";
 
-    public ReviewCommandHandlerTests()
+    public ReviseCommandHandlerTests()
     {
-        _mockLogger = Substitute.For<ILogger<ReviewCommandHandler>>();
+        _mockLogger = Substitute.For<ILogger<ReviseCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
@@ -53,7 +53,7 @@ public class ReviewCommandHandlerTests
 
         _mockValidateConfig.GetFileNameRepoConfig().Returns(ConfigFileName);
 
-        _handler = new ReviewCommandHandler(
+        _handler = new ReviseCommandHandler(
             _mockLogger,
             Options.Create(_config),
             _mockFileSystem,
@@ -68,7 +68,7 @@ public class ReviewCommandHandlerTests
     public void Constructor_WithValidParameters_CreatesInstance()
     {
         // Arrange & Act
-        var handler = new ReviewCommandHandler(
+        var handler = new ReviseCommandHandler(
             _mockLogger,
             Options.Create(_config),
             _mockFileSystem,
@@ -467,7 +467,7 @@ public class ReviewCommandHandlerTests
 
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -495,7 +495,7 @@ public class ReviewCommandHandlerTests
 
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -525,7 +525,7 @@ public class ReviewCommandHandlerTests
 
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -555,7 +555,7 @@ public class ReviewCommandHandlerTests
 
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -586,7 +586,7 @@ public class ReviewCommandHandlerTests
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
         // Create ADR with revision 9, so revision+1 = 10 (2 chars) exceeds LenRevision of 1
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 9);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 9);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -625,7 +625,7 @@ public class ReviewCommandHandlerTests
         SetupMinimalMocksWithPathNormalization(parsedArgs, BasicJsonConfig, configPath);
 
         // Create ADR with revision 999, so revision+1 = 1000 (4 chars) far exceeds LenRevision of 1
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 999);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 999);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -1001,7 +1001,7 @@ public class ReviewCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
 
         _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(Task.FromResult(infoadr));
@@ -1067,7 +1067,7 @@ public class ReviewCommandHandlerTests
             { Arguments.FileAdr, AdrFilePath }
         };
 
-        var infoadr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+        var infoadr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
         infoadr.ContentAdr = "Test content from file";
 
         // Setup mocks directly to avoid conflicts with SetupBasicMocks
@@ -1122,7 +1122,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = TestPathData.TestDrives;
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1141,7 +1141,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1160,7 +1160,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1189,7 +1189,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1224,7 +1224,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1241,7 +1241,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1264,7 +1264,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1299,7 +1299,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
 
         SetupWizardMocksUpToConfirmation(BasicJsonConfig);
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1319,7 +1319,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1340,7 +1340,7 @@ public class ReviewCommandHandlerTests
     {
         // Arrange
         var args = new[] { "--wizard" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardReview, string.Empty } };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardRevise, string.Empty } };
         var drives = new[] { TestPathData.SingleTestDrive };
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
@@ -1606,9 +1606,9 @@ public class ReviewCommandHandlerTests
         _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
     }
 
-    private ReviewCommandHandler CreateHandlerWith(AdrPlusConfig config)
+    private ReviseCommandHandler CreateHandlerWith(AdrPlusConfig config)
     {
-        return new ReviewCommandHandler(
+        return new ReviseCommandHandler(
             _mockLogger,
             Options.Create(config),
             _mockFileSystem,
@@ -1667,7 +1667,7 @@ public class ReviewCommandHandlerTests
             return Path.GetFullPath(string.IsNullOrEmpty(path) ? configPath : path);
         });
 
-        var repoConfig = ReviewCommandHandlerTests.CreateMockAdrPlusRepoConfig();
+        var repoConfig = ReviseCommandHandlerTests.CreateMockAdrPlusRepoConfig();
         _mockAdrServices.FromJson(Arg.Any<string>(), Arg.Any<string>()).Returns(repoConfig);
 
         // Mock ALL console methods to prevent null ref errors (void methods don't use .Returns)
@@ -1681,7 +1681,7 @@ public class ReviewCommandHandlerTests
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
 
         // Provide a default ParseFileName that tests should override - ensures it doesn't return null (async method must return Task)
-        var defaultAdr = ReviewCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
+        var defaultAdr = ReviseCommandHandlerTests.CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1);
         _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<IFileSystemService>())
             .Returns(Task.FromResult(defaultAdr));
 

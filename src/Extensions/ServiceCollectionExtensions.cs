@@ -6,13 +6,13 @@
 using AdrPlus.Commands;
 using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
-using AdrPlus.Commands.Explorer;
+using AdrPlus.Commands.Explore;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
-using AdrPlus.Commands.Review;
+using AdrPlus.Commands.Revise;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
 using AdrPlus.Commands.Version;
@@ -46,11 +46,11 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IConfigPrompts>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IMigratePrompts>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<INewAdrPrompts>(sp => sp.GetRequiredService<PromptConsole>());
-            services.AddSingleton<IExplorerPrompts>(sp => sp.GetRequiredService<PromptConsole>());
+            services.AddSingleton<IExplorePrompts>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IWizardMenuPrompts>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IAdrServices, AdrService>();
             services.AddSingleton<CommandRouter>();
-            services.AddSingleton<ExplorerCommandHandler>();
+            services.AddSingleton<ExploreCommandHandler>();
             services.AddSingleton<HelpCommandHandler>();
             services.AddSingleton<InitCommandHandler>();
             services.AddSingleton<MigrateCommandHandler>();
@@ -58,7 +58,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<ConfigCommandHandler>();
             services.AddSingleton<NewAdrCommandHandler>();
             services.AddSingleton<VersionCommandHandler>();
-            services.AddSingleton<ReviewCommandHandler>();
+            services.AddSingleton<ReviseCommandHandler>();
             services.AddSingleton<RejectCommandHandler>();
             services.AddSingleton<ApproveCommandHandler>();
             services.AddSingleton<UndoStatusCommandHandler>();

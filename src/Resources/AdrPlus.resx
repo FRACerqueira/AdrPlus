@@ -900,16 +900,16 @@
   <data name="WizardHelpMigrateTitle" xml:space="preserve">
     <value>Migrate command help</value>
   </data>
-  <data name="CmdDescExplorer" xml:space="preserve">
+  <data name="CmdDescExplore" xml:space="preserve">
     <value>ADR file explorer ,viewer and report</value>
   </data>
   <data name="HelpUsageFileReport" xml:space="preserve">
     <value>File path name (md file) for the explorer report</value>
   </data>
-  <data name="HelpUsageWizardExplorer" xml:space="preserve">
+  <data name="HelpUsageWizardExplore" xml:space="preserve">
     <value>Wizard to explorer ADR files (supress all other arguments)</value>
   </data>
-  <data name="PromptConfirmExplorer" xml:space="preserve">
+  <data name="PromptConfirmExplore" xml:space="preserve">
     <value>Confirm the explorer with this parameters?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
@@ -966,16 +966,16 @@
   <data name="OpenFile" xml:space="preserve">
     <value>Open file</value>
   </data>
-  <data name="WizardGroupExplorerReportTitle" xml:space="preserve">
+  <data name="WizardGroupExploreReportTitle" xml:space="preserve">
     <value>Report and explorer</value>
   </data>
-  <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
+  <data name="WizardGroupExploreReportDescription" xml:space="preserve">
     <value>Creates reports and displays ARDs metadata</value>
   </data>
   <data name="FilesExplored" xml:space="preserve">
     <value>Files explored</value>
   </data>
-  <data name="WizardHelpExplorerTitle" xml:space="preserve">
+  <data name="WizardHelpExploreTitle" xml:space="preserve">
     <value>Explore command help</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
@@ -1200,7 +1200,7 @@
   <data name="StatusSuperseded" xml:space="preserve">
     <value>Status superseded</value>
   </data>
-  <data name="CmdDescReview" xml:space="preserve">
+  <data name="CmdDescRevise" xml:space="preserve">
     <value>Create a new ADR with a new revision (incremental revision, same number and version)</value>
   </data>
   <data name="ErrMsgWithoutArgs" xml:space="preserve">

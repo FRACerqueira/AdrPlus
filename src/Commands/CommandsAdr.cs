@@ -5,13 +5,13 @@
 
 using AdrPlus.Commands.Approve;
 using AdrPlus.Commands.Config;
-using AdrPlus.Commands.Explorer;
+using AdrPlus.Commands.Explore;
 using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
-using AdrPlus.Commands.Review;
+using AdrPlus.Commands.Revise;
 using AdrPlus.Commands.Supersede;
 using AdrPlus.Commands.UndoStatus;
 using AdrPlus.Commands.Version;
@@ -42,8 +42,8 @@ namespace AdrPlus.Commands
         /// <summary>
         /// Launches the file viewer explorer for the ADR repository with option to create Markdown file.
         /// </summary>
-        [Command("explore", typeof(ExplorerCommandHandler), "CmdDescExplorer")]
-        Explorer,
+        [Command("explore", typeof(ExploreCommandHandler), "CmdDescExplore")]
+        Explore,
         /// <summary>
         /// Migrate repository's settings.
         /// </summary>
@@ -67,8 +67,8 @@ namespace AdrPlus.Commands
         /// <summary>
         /// Creates a new ADR with a new revision (incremental revision, same number and version).
         /// </summary>
-        [Command("revise", typeof(ReviewCommandHandler), "CmdDescReview")]
-        Review,
+        [Command("revise", typeof(ReviseCommandHandler), "CmdDescRevise")]
+        Revise,
         /// <summary>
         /// Supersedes an ADR (incremental number, reset revision and version).
         /// </summary>

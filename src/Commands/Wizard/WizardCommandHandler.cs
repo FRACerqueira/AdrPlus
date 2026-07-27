@@ -161,7 +161,7 @@ namespace AdrPlus.Commands.Wizard
                             {
                                 currentMenu = new ItemMenuWizard();
                                 _prompt.PromptEnabledEscToAbort(true);
-                                await _commandRouter.RouteAsync(GetCommandAlias(CommandsAdr.Explorer), ["-w"], cancellationToken);
+                                await _commandRouter.RouteAsync(GetCommandAlias(CommandsAdr.Explore), ["-w"], cancellationToken);
                                 _prompt.PromptEnabledEscToAbort(false);
                             }
                             catch (OperationCanceledException)
@@ -358,7 +358,7 @@ namespace AdrPlus.Commands.Wizard
 
         /// <summary>
         /// Presents the ADR operations sub-menu, routes to the appropriate ADR command
-        /// (init, new, approve, reject, version, review, supersede, undo) with <c>--wizard</c> mode,
+        /// (init, new, approve, reject, version, revise, supersede, undo) with <c>--wizard</c> mode,
         /// and returns the selected item.
         /// Selecting "Back" returns an empty <see cref="ItemMenuWizard"/> to return to the main menu.
         /// </summary>
@@ -392,7 +392,7 @@ namespace AdrPlus.Commands.Wizard
                 "2.02" => (CommandsAdr.Approve, new[] { "-w" }),
                 "2.03" => (CommandsAdr.Reject, new[] { "-w" }),
                 "2.04" => (CommandsAdr.Version, new[] { "-w" }),
-                "2.05" => (CommandsAdr.Review, new[] { "-w" }),
+                "2.05" => (CommandsAdr.Revise, new[] { "-w" }),
                 "2.06" => (CommandsAdr.Supersede, new[] { "-w" }),
                 "2.07" => (CommandsAdr.UndoStatus, new[] { "-w" }),
                 _ => throw await CreateInvalidMenuExceptionAsync(AdrMenuHistoryKey, itemSelected, cancellationToken),
@@ -438,13 +438,13 @@ namespace AdrPlus.Commands.Wizard
             {
                 "3.01" => CommandsAdr.Config,
                 "3.02" => CommandsAdr.Init,
-                "3.03" => CommandsAdr.Explorer,
+                "3.03" => CommandsAdr.Explore,
                 "3.04" => CommandsAdr.Migrate,
                 "3.05" => CommandsAdr.New,
                 "3.06" => CommandsAdr.Approve,
                 "3.07" => CommandsAdr.Reject,
                 "3.08" => CommandsAdr.Version,
-                "3.09" => CommandsAdr.Review,
+                "3.09" => CommandsAdr.Revise,
                 "3.10" => CommandsAdr.Supersede,
                 "3.11" => CommandsAdr.UndoStatus,
                 _ => throw await CreateInvalidMenuExceptionAsync(HelpMenuHistoryKey, itemSelected, cancellationToken),
@@ -515,8 +515,8 @@ namespace AdrPlus.Commands.Wizard
                 new ItemMenuWizard
                 {
                     Id = "4",
-                    Title = Resources.AdrPlus.WizardGroupExplorerReportTitle,
-                    Description = Resources.AdrPlus.WizardGroupExplorerReportDescription,
+                    Title = Resources.AdrPlus.WizardGroupExploreReportTitle,
+                    Description = Resources.AdrPlus.WizardGroupExploreReportDescription,
                     EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard
@@ -561,7 +561,7 @@ namespace AdrPlus.Commands.Wizard
         }
 
         /// <summary>
-        /// Returns the ADR operations sub-menu items (init, new, approve, reject, version, review, supersede, undo, back).
+        /// Returns the ADR operations sub-menu items (init, new, approve, reject, version, revise, supersede, undo, back).
         /// </summary>
         /// <returns>An array of <see cref="ItemMenuWizard"/> representing the ADR operations menu.</returns>
         private static ItemMenuWizard[] GetMenuAdr()
@@ -705,7 +705,7 @@ namespace AdrPlus.Commands.Wizard
                 new ItemMenuWizard
                 {
                     Id = "3.03",
-                    Title = Resources.AdrPlus.WizardHelpExplorerTitle,
+                    Title = Resources.AdrPlus.WizardHelpExploreTitle,
                     Description = Resources.AdrPlus.ShowHelpInfo,
                     EnabledWhenNotConfigured = true
                 },

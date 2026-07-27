@@ -18,7 +18,7 @@ namespace AdrPlus.Commands
         WizardVersion,
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardNewRev")]
-        WizardReview,
+        WizardRevise,
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardSupersede")]
         WizardSupersede,
@@ -38,8 +38,8 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardMigrate")]
         WizardMigrate,
         [CommandArgument("-w", "--wizard")]
-        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardExplorer")]
-        WizardExplorer,
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardExplore")]
+        WizardExplore,
         [CommandArgument("-a", "--application")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigApp")]
         WizardConfigApplication,

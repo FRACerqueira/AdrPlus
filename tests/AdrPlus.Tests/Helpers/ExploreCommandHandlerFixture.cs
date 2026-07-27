@@ -3,7 +3,7 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
-using AdrPlus.Commands.Explorer;
+using AdrPlus.Commands.Explore;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
@@ -14,28 +14,28 @@ using Microsoft.Extensions.Options;
 namespace AdrPlus.Tests.Helpers;
 
 /// <summary>
-/// Test fixture that provides reusable mocks and handler instances for ExplorerCommandHandler tests.
+/// Test fixture that provides reusable mocks and handler instances for ExploreCommandHandler tests.
 /// Centralizes mock creation and handler initialization to reduce test boilerplate.
 /// </summary>
-internal class ExplorerCommandHandlerFixture
+internal class ExploreCommandHandlerFixture
 {
-    private ILogger<ExplorerCommandHandler>? _mockLogger;
+    private ILogger<ExploreCommandHandler>? _mockLogger;
     private IFileSystemService? _mockFileSystem;
     private IConsoleWriter? _mockConsole;
-    private IExplorerPrompts? _mockExplorerPrompts;
+    private IExplorePrompts? _mockExplorePrompts;
     private IValidateConfig? _mockValidateConfig;
     private IAdrServices? _mockAdrServices;
     private AdrPlusConfig? _config;
-    private ExplorerCommandHandler? _handler;
+    private ExploreCommandHandler? _handler;
 
     /// <summary>
     /// Gets the mock logger, creating it if necessary.
     /// </summary>
-    public ILogger<ExplorerCommandHandler> MockLogger
+    public ILogger<ExploreCommandHandler> MockLogger
     {
         get
         {
-            _mockLogger ??= Substitute.For<ILogger<ExplorerCommandHandler>>();
+            _mockLogger ??= Substitute.For<ILogger<ExploreCommandHandler>>();
             return _mockLogger;
         }
     }
@@ -65,14 +65,14 @@ internal class ExplorerCommandHandlerFixture
     }
 
     /// <summary>
-    /// Gets the mock explorer-specific prompts, creating it if necessary.
+    /// Gets the mock explore-specific prompts, creating it if necessary.
     /// </summary>
-    public IExplorerPrompts MockExplorerPrompts
+    public IExplorePrompts MockExplorePrompts
     {
         get
         {
-            _mockExplorerPrompts ??= Substitute.For<IExplorerPrompts>();
-            return _mockExplorerPrompts;
+            _mockExplorePrompts ??= Substitute.For<IExplorePrompts>();
+            return _mockExplorePrompts;
         }
     }
 
@@ -118,19 +118,19 @@ internal class ExplorerCommandHandlerFixture
     }
 
     /// <summary>
-    /// Gets the ExplorerCommandHandler instance, creating it if necessary.
+    /// Gets the ExploreCommandHandler instance, creating it if necessary.
     /// </summary>
-    public ExplorerCommandHandler Handler
+    public ExploreCommandHandler Handler
     {
         get
         {
-            _handler ??= new ExplorerCommandHandler(
+            _handler ??= new ExploreCommandHandler(
                 MockLogger,
                 Options.Create(Config),
                 MockFileSystem,
                 MockValidateConfig,
                 MockConsole,
-                MockExplorerPrompts,
+                MockExplorePrompts,
                 MockAdrServices);
             return _handler;
         }
@@ -140,7 +140,7 @@ internal class ExplorerCommandHandlerFixture
     /// Reconfigures the handler with a new AdrPlusConfig.
     /// Clears the cached handler so a new one is created with the updated config.
     /// </summary>
-    public ExplorerCommandHandler CreateHandlerWithConfig(AdrPlusConfig customConfig)
+    public ExploreCommandHandler CreateHandlerWithConfig(AdrPlusConfig customConfig)
     {
         Config = customConfig;
         _handler = null;
@@ -156,7 +156,7 @@ internal class ExplorerCommandHandlerFixture
         _mockLogger = null;
         _mockFileSystem = null;
         _mockConsole = null;
-        _mockExplorerPrompts = null;
+        _mockExplorePrompts = null;
         _mockValidateConfig = null;
         _mockAdrServices = null;
         _config = null;

@@ -10,7 +10,7 @@ namespace AdrPlus.Infrastructure.UI
     /// <summary>
     /// Prompts used exclusively by the <c>explore</c> command's wizard flow.
     /// </summary>
-    internal interface IExplorerPrompts
+    internal interface IExplorePrompts
     {
         /// <summary>
         /// Prompts the user to select fields using an interactive explorer and returns the result along with an
@@ -19,7 +19,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation before completion.</param>
         /// <returns>A tuple containing a boolean value that indicates whether the operation was aborted, and an array of strings
         /// representing the selected fields. If the operation is aborted, the array may be empty.</returns>
-        (bool IsAborted, string[] FieldsExplorer) PromptFieldsExplorer(CancellationToken cancellationToken);
+        (bool IsAborted, string[] FieldsExplore) PromptFieldsExplore(CancellationToken cancellationToken);
 
         /// <summary>
         /// Prompts the user to choose whether to display an existing report or create a new one.
@@ -46,6 +46,6 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="folderrepoadr">The folder path of the ADR repository.</param>
         /// <param name="adrPlusRepoConfig">The repository configuration used to resolve ADR file details.</param>
         /// <returns>A tuple containing a boolean indicating whether the operation was aborted and a string representing the selected file name.</returns>
-        (bool IsAborted, string FileSelectd) PromptTableExplorer(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig);
+        (bool IsAborted, string FileSelectd) PromptTableExplore(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig);
     }
 }

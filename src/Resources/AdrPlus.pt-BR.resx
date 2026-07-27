@@ -900,16 +900,16 @@
   <data name="WizardHelpMigrateTitle" xml:space="preserve">
     <value>Ajuda do comando migrate</value>
   </data>
-  <data name="CmdDescExplorer" xml:space="preserve">
+  <data name="CmdDescExplore" xml:space="preserve">
     <value>Explorador, visualizador e relatório de arquivos ADR</value>
   </data>
   <data name="HelpUsageFileReport" xml:space="preserve">
     <value>Nome do caminho do arquivo (md file) para o relatório do explorador</value>
   </data>
-  <data name="HelpUsageWizardExplorer" xml:space="preserve">
+  <data name="HelpUsageWizardExplore" xml:space="preserve">
     <value>Assistente para explorar arquivos ADR (suprime todos os outros argumentos)</value>
   </data>
-  <data name="PromptConfirmExplorer" xml:space="preserve">
+  <data name="PromptConfirmExplore" xml:space="preserve">
     <value>Confirmar o explorador com estes parâmetros?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
@@ -966,16 +966,16 @@
   <data name="OpenFile" xml:space="preserve">
     <value>Abrir arquivo</value>
   </data>
-  <data name="WizardGroupExplorerReportTitle" xml:space="preserve">
+  <data name="WizardGroupExploreReportTitle" xml:space="preserve">
     <value>Relatório e explorador</value>
   </data>
-  <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
+  <data name="WizardGroupExploreReportDescription" xml:space="preserve">
     <value>Cria relatório e exibe metadados dos ADRs</value>
   </data>
   <data name="FilesExplored" xml:space="preserve">
     <value>Arquivos explorados</value>
   </data>
-  <data name="WizardHelpExplorerTitle" xml:space="preserve">
+  <data name="WizardHelpExploreTitle" xml:space="preserve">
     <value>Ajuda do comando explore</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
@@ -1200,7 +1200,7 @@
   <data name="StatusSuperseded" xml:space="preserve">
     <value>Status substituído</value>
   </data>
-  <data name="CmdDescReview" xml:space="preserve">
+  <data name="CmdDescRevise" xml:space="preserve">
     <value>Criar um novo ADR com uma nova revisão (revisão incremental, mesmo número e versão)</value>
   </data>
   <data name="ErrMsgWithoutArgs" xml:space="preserve">

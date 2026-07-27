@@ -126,9 +126,9 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to ADR file explorer ,viewer and report.
         /// </summary>
-        internal static string CmdDescExplorer {
+        internal static string CmdDescExplore {
             get {
-                return ResourceManager.GetString("CmdDescExplorer", resourceCulture);
+                return ResourceManager.GetString("CmdDescExplore", resourceCulture);
             }
         }
         
@@ -180,9 +180,9 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Create a new ADR with a new revision (incremental revision, same number and version).
         /// </summary>
-        internal static string CmdDescReview {
+        internal static string CmdDescRevise {
             get {
-                return ResourceManager.GetString("CmdDescReview", resourceCulture);
+                return ResourceManager.GetString("CmdDescRevise", resourceCulture);
             }
         }
         
@@ -1638,9 +1638,9 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Wizard to explorer ADR files (supress all other arguments).
         /// </summary>
-        internal static string HelpUsageWizardExplorer {
+        internal static string HelpUsageWizardExplore {
             get {
-                return ResourceManager.GetString("HelpUsageWizardExplorer", resourceCulture);
+                return ResourceManager.GetString("HelpUsageWizardExplore", resourceCulture);
             }
         }
         
@@ -2304,9 +2304,9 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Confirm the explorer with this parameters?.
         /// </summary>
-        internal static string PromptConfirmExplorer {
+        internal static string PromptConfirmExplore {
             get {
-                return ResourceManager.GetString("PromptConfirmExplorer", resourceCulture);
+                return ResourceManager.GetString("PromptConfirmExplore", resourceCulture);
             }
         }
         
@@ -3249,18 +3249,18 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Creates reports and displays ARDs metadata.
         /// </summary>
-        internal static string WizardGroupExplorerReportDescription {
+        internal static string WizardGroupExploreReportDescription {
             get {
-                return ResourceManager.GetString("WizardGroupExplorerReportDescription", resourceCulture);
+                return ResourceManager.GetString("WizardGroupExploreReportDescription", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Report and explorer.
         /// </summary>
-        internal static string WizardGroupExplorerReportTitle {
+        internal static string WizardGroupExploreReportTitle {
             get {
-                return ResourceManager.GetString("WizardGroupExplorerReportTitle", resourceCulture);
+                return ResourceManager.GetString("WizardGroupExploreReportTitle", resourceCulture);
             }
         }
         
@@ -3303,9 +3303,9 @@ namespace AdrPlus.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Explore command help.
         /// </summary>
-        internal static string WizardHelpExplorerTitle {
+        internal static string WizardHelpExploreTitle {
             get {
-                return ResourceManager.GetString("WizardHelpExplorerTitle", resourceCulture);
+                return ResourceManager.GetString("WizardHelpExploreTitle", resourceCulture);
             }
         }
         

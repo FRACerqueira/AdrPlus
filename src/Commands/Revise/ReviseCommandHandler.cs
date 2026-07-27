@@ -15,17 +15,17 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
-namespace AdrPlus.Commands.Review
+namespace AdrPlus.Commands.Revise
 {
     /// <summary>
-    /// Handles the <c>review</c> command to create a new revision of an accepted or rejected ADR.
+    /// Handles the <c>revise</c> command to create a new revision of an accepted or rejected ADR.
     /// The target ADR must have been accepted or rejected, must not have undergone a change status,
     /// and must be the latest version/revision for its sequence number.
     /// Versioning (<see cref="AdrPlusRepoConfig.LenVersion"/>) and revision tracking
     /// (<see cref="AdrPlusRepoConfig.LenRevision"/>) must both be enabled in the repository configuration.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="ReviewCommandHandler"/> class.
+    /// Initializes a new instance of the <see cref="ReviseCommandHandler"/> class.
     /// </remarks>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
@@ -33,22 +33,22 @@ namespace AdrPlus.Commands.Review
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    internal sealed class ReviewCommandHandler(
-        ILogger<ReviewCommandHandler> logger,
+    internal sealed class ReviseCommandHandler(
+        ILogger<ReviseCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt   ,
         IAdrServices adrServices) : ICommandHandler
     {
-        private readonly ILogger<ReviewCommandHandler> _logger = logger;
+        private readonly ILogger<ReviseCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
-            [Arguments.WizardReview,
+            [Arguments.WizardRevise,
              Arguments.FileAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
@@ -56,12 +56,12 @@ namespace AdrPlus.Commands.Review
              Arguments.Help];
 
         /// <summary>
-        /// Determines whether an ADR is eligible for review (new revision).
+        /// Determines whether an ADR is eligible for a new revision.
         /// An ADR is eligible when its update status is <see cref="AdrStatus.Accepted"/> or <see cref="AdrStatus.Rejected"/>
         /// and its change status is <see cref="AdrStatus.Unknown"/>.
         /// </summary>
         /// <param name="info">The parsed ADR filename components containing header and status information.</param>
-        /// <returns><see langword="true"/> when the ADR is eligible for review; otherwise <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> when the ADR is eligible for revision; otherwise <see langword="false"/>.</returns>
         private static bool SelectionCondition(AdrFileNameComponents info)
         {
             return (info.Header.IsValid &&
@@ -71,7 +71,7 @@ namespace AdrPlus.Commands.Review
         }
 
         /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow review.
+        /// Builds a localized error message indicating that the ADR's current status does not allow revision.
         /// </summary>
         /// <param name="repoconfig">The repository configuration providing the status-to-string mapping.</param>
         /// <returns>A formatted error string listing the required statuses (Accepted/Rejected).</returns>
@@ -81,7 +81,7 @@ namespace AdrPlus.Commands.Review
         }
 
         /// <summary>
-        /// Executes the <c>review</c> command asynchronously to create a new revision of an ADR.
+        /// Executes the <c>revise</c> command asynchronously to create a new revision of an ADR.
         /// When <c>--wizard</c> is specified the user is guided interactively;
         /// otherwise the file is taken from the <c>--file</c> argument.
         /// </summary>
@@ -92,7 +92,7 @@ namespace AdrPlus.Commands.Review
         /// <exception cref="ArgumentException">Thrown when required arguments are missing or invalid.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the ADR or configuration file is not found.</exception>
         /// <exception cref="InvalidDataException">
-        /// Thrown when the ADR is not the latest version, its status is not eligible for review,
+        /// Thrown when the ADR is not the latest version, its status is not eligible for revision,
         /// versioning/revision is not configured, or the repository configuration is invalid.
         /// </exception>
         /// <exception cref="InvalidOperationException">Thrown when the selected ADR is not the latest version for its sequence number.</exception>
@@ -121,7 +121,7 @@ namespace AdrPlus.Commands.Review
                     throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
                 }
 
-                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardReview);
+                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardRevise);
                 if (hasWizard)
                 {
                     var openafter = parsedArgs.ContainsKey(Arguments.OpenFile);
@@ -129,7 +129,7 @@ namespace AdrPlus.Commands.Review
                     {
                         openafter = true;
                     }
-                    parsedArgs = await ReviewAdrWizard(openafter, cancellationToken);
+                    parsedArgs = await ReviseAdrWizard(openafter, cancellationToken);
                 }
 
                 var fileadr = Path.GetFullPath(parsedArgs[Arguments.FileAdr]);
@@ -361,7 +361,7 @@ namespace AdrPlus.Commands.Review
         }
 
         /// <summary>
-        /// Runs the interactive wizard for the <c>review</c> command, guiding the user through selecting
+        /// Runs the interactive wizard for the <c>revise</c> command, guiding the user through selecting
         /// a drive, repository folder, eligible ADR, and reference date.
         /// The wizard loops until the user confirms the selection.
         /// </summary>
@@ -371,7 +371,7 @@ namespace AdrPlus.Commands.Review
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
         /// <exception cref="FileNotFoundException">Thrown when no eligible ADR files are found in the repository.</exception>
         /// <exception cref="InvalidDataException">Thrown when the repository configuration is structurally invalid.</exception>
-        private async Task<Dictionary<Arguments, string>> ReviewAdrWizard(bool isOpenAdr, CancellationToken cancellationToken)
+        private async Task<Dictionary<Arguments, string>> ReviseAdrWizard(bool isOpenAdr, CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
             while (true)
@@ -507,11 +507,11 @@ namespace AdrPlus.Commands.Review
         }
 
         /// <summary>
-        /// Displays a formatted summary of the wizard selections before confirming the review operation.
+        /// Displays a formatted summary of the wizard selections before confirming the revision operation.
         /// Shows the selected repository, file, and reference date in a localized format.
         /// </summary>
         /// <param name="rootpath">The root repository path selected by the user.</param>
-        /// <param name="fileref">The name of the ADR file to be reviewed.</param>
+        /// <param name="fileref">The name of the ADR file to be revised.</param>
         /// <param name="defDateRef">The reference date for the new revision.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {

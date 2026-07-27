@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Renamed the `review` command to `revise` (matches the "revision" terminology used elsewhere).
 - Renamed the `explorer` command to `explore` (consistent with the verb-based naming of every other command).
+- Renamed the internal `Review`/`Explorer` identifiers (classes, namespaces, resource keys, and the `explore` wizard's saved history keys) to `Revise`/`Explore`, matching the command names above. The saved wizard history for the `explore` command's report filename, show-or-create choice, and field selection resets once on first use after upgrading — everything else is unaffected.
 - Fixed the `config --help` usage example, which showed the nonexistent `--migration` flag instead of `--migrate`.
 
 ### Fixed

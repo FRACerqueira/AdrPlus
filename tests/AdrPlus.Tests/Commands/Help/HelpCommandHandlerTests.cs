@@ -75,7 +75,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review")
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -94,7 +94,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review"),
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision"),
             (CommandsAdr.Init, "init", typeof(object), "Initialize repository")
         };
         _mockAdrServices.GetCommands().Returns(commands);
@@ -115,7 +115,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review"),
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision"),
             (CommandsAdr.Approve, "approve", typeof(object), "Approve an ADR")
         };
         _mockAdrServices.GetCommands().Returns(commands);
@@ -173,7 +173,7 @@ public class HelpCommandHandlerTests
         var commands = new[] 
         { 
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"), 
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review") 
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision") 
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -263,7 +263,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review")
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -298,7 +298,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review"),
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision"),
             (CommandsAdr.Init, "init", typeof(object), "Initialize repository"),
             (CommandsAdr.Approve, "approve", typeof(object), "Approve an ADR")
         };
@@ -337,11 +337,11 @@ public class HelpCommandHandlerTests
     {
         // Arrange
         const string descriptionNewAdr = "Create a new ADR";
-        const string descriptionReview = "Create a new review";
+        const string descriptionRevise = "Create a new revision";
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), descriptionNewAdr),
-            (CommandsAdr.Review, "review", typeof(object), descriptionReview)
+            (CommandsAdr.Revise, "revise", typeof(object), descriptionRevise)
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -350,7 +350,7 @@ public class HelpCommandHandlerTests
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains(descriptionNewAdr)));
-        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains(descriptionReview)));
+        _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.Contains(descriptionRevise)));
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "n", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "reviewcmd", typeof(object), "Create a new review")
+            (CommandsAdr.Revise, "revisecmd", typeof(object), "Create a new revision")
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -419,7 +419,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review")
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
@@ -452,7 +452,7 @@ public class HelpCommandHandlerTests
         var commands = new[]
         {
             (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Review, "review", typeof(object), "Create a new review")
+            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
         };
         _mockAdrServices.GetCommands().Returns(commands);
 
