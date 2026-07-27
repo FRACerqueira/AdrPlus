@@ -25,6 +25,15 @@ namespace AdrPlus.Infrastructure.UI
             {
                 return false;
             }
+            if (Console.IsInputRedirected || Console.IsOutputRedirected)
+            {
+                // No interactive console available - CI, scripts, or an automation
+                // agent driving this CLI non-interactively. Skip the first-install
+                // wizard instead of hanging/crashing on prompt controls that need
+                // real console input; commands like `init --path` create the config
+                // themselves without going through this wizard.
+                return false;
+            }
             PromptEnabledEscToAbort(true);
             var result = await WizardFirstInstall(cancellationToken);
             PromptEnabledEscToAbort(false);

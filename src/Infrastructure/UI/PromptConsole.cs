@@ -419,7 +419,18 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptWriteStartCommand(string text)
         {
-            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            // Color.Darkorange has no equivalent System.ConsoleColor member, so the
+            // WriteLine(text, Color) overload throws under redirected/piped output
+            // (no ANSI, falls back to legacy console colors). Only drop the color
+            // when there's no real console; keep the original styling otherwise.
+            if (Console.IsOutputRedirected)
+            {
+                PromptPlus.Console.WriteLine(text);
+            }
+            else
+            {
+                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            }
             PromptPlus.Console.WriteLine("");
         }
 
@@ -427,7 +438,14 @@ namespace AdrPlus.Infrastructure.UI
         public void PromptWriteFinishedCommand(string text)
         {
             PromptPlus.Console.WriteLine("");
-            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            if (Console.IsOutputRedirected)
+            {
+                PromptPlus.Console.WriteLine(text);
+            }
+            else
+            {
+                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            }
         }
 
         /// <summary>
@@ -470,6 +488,14 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptShowBanner(string bannerText)
         {
+           if (Console.IsOutputRedirected)
+           {
+               // Console.Clear() and the banner widget require a real console buffer
+               // (window size, cursor control). Under redirected/piped output - CI,
+               // scripts, or an automation agent driving this CLI non-interactively -
+               // there is no such buffer, and both throw "The handle is invalid".
+               return;
+           }
            PromptPlus.Console.Clear();
            PromptPlus.Widgets.Banner(bannerText, ColorWelcomeBanner, DashOptions.DoubleBorderUpDown);
         }

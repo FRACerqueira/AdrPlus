@@ -32,8 +32,7 @@ namespace AdrPlus
         {
             if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v"))
             {
-                var version = Assembly.GetExecutingAssembly().GetName().Version;
-                Console.WriteLine($"AdrPlus {version?.Major}.{version?.Minor}.{version?.Build}");
+                Console.WriteLine($"AdrPlus {GetAppVersion(Assembly.GetExecutingAssembly())}");
                 return 0;
             }
 
@@ -54,12 +53,7 @@ namespace AdrPlus
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
 
             var assembly = Assembly.GetExecutingAssembly()!;
-            var assemblyver = "0.0.0";
-            var structver = assembly.GetName()?.Version;
-            if (structver != null)
-            {
-                assemblyver = $"{structver.Major}.{structver.Minor}.{structver.Build}";
-            }
+            var assemblyver = GetAppVersion(assembly);
 
             try
             {
@@ -104,6 +98,29 @@ namespace AdrPlus
             }
             // Flushes any buffered output directly to the console window
             return Helper.ExitCode;
+        }
+
+        /// <summary>
+        /// Gets the application's full semantic version, including any pre-release suffix
+        /// (e.g. "1.0.0-beta"). <see cref="AssemblyName.Version"/> is a numeric-only
+        /// <see cref="Version"/> that MSBuild truncates from the csproj's semver
+        /// <c>&lt;Version&gt;</c> (dropping "-beta"), so this reads
+        /// <see cref="AssemblyInformationalVersionAttribute"/> instead, which preserves it.
+        /// </summary>
+        /// <param name="assembly">The assembly to read the version from.</param>
+        /// <returns>The full semantic version string, or "0.0.0" if unavailable.</returns>
+        private static string GetAppVersion(Assembly assembly)
+        {
+            var informational = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            if (!string.IsNullOrWhiteSpace(informational))
+            {
+                // Strip a source-control metadata suffix (e.g. "+abc1234"), which
+                // Deterministic/SourceLink builds append but isn't part of the semver.
+                var plusIndex = informational.IndexOf('+', StringComparison.Ordinal);
+                return plusIndex >= 0 ? informational[..plusIndex] : informational;
+            }
+            var structver = assembly.GetName()?.Version;
+            return structver != null ? $"{structver.Major}.{structver.Minor}.{structver.Build}" : "0.0.0";
         }
     }
 }
