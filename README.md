@@ -28,6 +28,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Quick Start](#quick-start)
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
+- [Using AdrPlus with Claude Code](#using-adrplus-with-claude-code)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
 - [Commands](#commands)
@@ -176,6 +177,18 @@ adrplus approve --file "path/to/adr/ADR0001.md"
 > **Note**: If you have existing ADR files in a different format, see [Migration Guide](MigrationGuide.md) for detailed prerequisites and migration instructions before creating new ADRs with the tool.
 
 For a detailed walkthrough, see the [Step-by-Step Guide](StepByStepGuide.md).
+
+---
+
+## Using AdrPlus with Claude Code
+
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly:
+
+- A skill (`manage-adrs`) that teaches Claude the full `adrplus` command surface, so it can create, approve, reject, version, revise, supersede, and configure ADRs without guessing at flags.
+- An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain integrity, status hygiene) and produces a read-only report.
+- An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
+
+Requires `adrplus` v1.0.0-beta or later — earlier versions weren't safe to drive non-interactively.
 
 ---
 

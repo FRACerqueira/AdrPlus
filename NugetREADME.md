@@ -45,6 +45,12 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ---
 
+## Using AdrPlus with Claude Code
+
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly - a skill that teaches Claude the full command surface, plus an audit agent and an index-generator agent. Requires `adrplus` v1.0.0-beta or later.
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
