@@ -1,0 +1,40 @@
+# Guardrail: keep likely-secret files out of Graphify's corpus entirely.
+# Code files are parsed locally (tree-sitter, no LLM), but docs/papers/images
+# go through semantic extraction (Gemini API if configured, otherwise the
+# host AI assistant reads them directly) — so anything matched here never
+# reaches that pass. Listed explicitly (not just relying on .gitignore)
+# since .graphifyignore/.gitignore merge behavior has changed across
+# graphify versions (see Graphify-Labs/graphify#1363).
+
+# .NET environment/secret-bearing config
+appsettings.*.json
+launchSettings.json
+*.pubxml
+*.pubxml.user
+*.publishsettings
+*.snk
+*.user
+
+# Generic credential/key material
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+.npmrc
+.pypirc
+.netrc
+.pgpass
+.htpasswd
+.git-credentials
+
+# Dedicated secret stores anywhere in the tree
+**/secrets/**
+**/.secrets/**
+**/credentials/**
