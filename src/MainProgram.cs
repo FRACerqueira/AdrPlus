@@ -87,7 +87,7 @@ namespace AdrPlus
             {
                 if (!await _prompt.TryExecuteFistInstall(stoppingToken))
                 {
-                    if (_prompt.PromptIsAbortedByCtrlC())
+                    if (stoppingToken.IsCancellationRequested)
                     {
                         LogMessages.LogStoppedAdrPlus(_logger);
                         throw new InvalidOperationException(Resources.AdrPlus.CancelledByUser);
@@ -109,7 +109,7 @@ namespace AdrPlus
                 catch
                 {
                     Helper.ExitCode = 1;
-                    if (!_prompt.PromptIsAbortedByCtrlC())
+                    if (!stoppingToken.IsCancellationRequested)
                     {
                         LogMessages.LogStoppedAdrPlus(_logger);
                         throw;

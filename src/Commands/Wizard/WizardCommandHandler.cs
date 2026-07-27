@@ -110,7 +110,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_prompt.PromptIsAbortedByCtrlC())
+                                if (cancellationToken.IsCancellationRequested)
                                 {
                                     throw;
                                 }
@@ -127,7 +127,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_prompt.PromptIsAbortedByCtrlC())
+                                if (cancellationToken.IsCancellationRequested)
                                 {
                                     throw;
                                 }
@@ -144,7 +144,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_prompt.PromptIsAbortedByCtrlC())
+                                if (cancellationToken.IsCancellationRequested)
                                 {
                                     throw;
                                 }
@@ -164,7 +164,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch (OperationCanceledException)
                             {
-                                if (_prompt.PromptIsAbortedByCtrlC())
+                                if (cancellationToken.IsCancellationRequested)
                                 {
                                     throw;
                                 }
@@ -182,7 +182,7 @@ namespace AdrPlus.Commands.Wizard
                                 }
                                 catch (OperationCanceledException)
                                 {
-                                    if (_prompt.PromptIsAbortedByCtrlC())
+                                    if (cancellationToken.IsCancellationRequested)
                                     {
                                         throw;
                                     }

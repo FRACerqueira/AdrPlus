@@ -7,6 +7,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.Formatting;
+using ConsolePlusLibrary;
 using PromptPlusLibrary;
 using System.Text.Json;
 
@@ -33,7 +34,7 @@ namespace AdrPlus.Infrastructure.UI
         private async Task<bool> WizardFirstInstall(CancellationToken cancellationToken)
         {
             var tryabort = false;
-            PromptPlus.Widgets.DoubleDash(Resources.AdrPlus.InitConfigBannerMessage, DashOptions.DoubleBorder, 1, Color.Yellow);
+            PromptPlus.Widgets.Dash(Resources.AdrPlus.InitConfigBannerMessage, style: Color.Yellow, dashOptions: DashOptions.DoubleBorder, extralines: 1);
             var languagesetting = "en-us";
             var openadrsetting = string.Empty;
             var folderadrsetting = string.Empty;
@@ -57,7 +58,7 @@ namespace AdrPlus.Infrastructure.UI
                     var resultabort = PromptPlus.Controls.Confirm($"{Resources.AdrPlus.InitConfigSkipConfirmation} ")
                         .Run(cancellationToken);
                     PromptEnabledEscToAbort(true);
-                    if (resultabort.IsAborted || resultabort.Content!.Value.IsYesResponseKey())
+                    if (resultabort.IsAborted || char.ToUpperInvariant(resultabort.Content!.Value.KeyChar) == char.ToUpperInvariant(PromptPlus.Config.YesChar))
                     {
                         return false;
                     }
@@ -157,7 +158,7 @@ namespace AdrPlus.Infrastructure.UI
                     .Default(AppConstants.DefaultFolderAdr)
                     .MaxLength(50)
                     .SuggestionHandler(input => [AppConstants.DefaultFolderAdr])
-                    .PredicateSelected(input =>
+                    .PredicateValid(input =>
                     {
                         if (input.Trim().Length == 0)
                         {
@@ -208,7 +209,7 @@ namespace AdrPlus.Infrastructure.UI
                         .MaxLength(5)
                         .Default("ADR")
                         .AcceptInput(c => char.IsLetter(c))
-                        .PredicateSelected(input => !string.IsNullOrWhiteSpace(input))
+                        .PredicateValid(input => !string.IsNullOrWhiteSpace(input))
                         .Run(cancellationToken);
                     if (resultoption.IsAborted)
                     {
@@ -272,7 +273,6 @@ namespace AdrPlus.Infrastructure.UI
                     var resultcase = PromptPlus.Controls
                         .Select<string>($"{Resources.AdrPlus.InitConfigEnterCaseTransform}: ", Resources.AdrPlus.ConfigFieldDescCaseTransform)
                         .Default(CaseFormat.KebabCase.ToString())
-                        .MaxWidth(10)
                         .AddItems(enumlist)
                         .Run(cancellationToken);
                     if (resultcase.IsAborted)
@@ -304,7 +304,7 @@ namespace AdrPlus.Infrastructure.UI
                             .Default(Resources.AdrPlus.DefaultScope)
                             .AcceptInput(input => char.IsAsciiLetter(input) || input == ';' || input == '*')
                             .SuggestionHandler(input => [Resources.AdrPlus.DefaultScope])
-                            .PredicateSelected(input =>
+                            .PredicateValid(input =>
                             {
                                 if (input.Length == 0)
                                 {
@@ -403,12 +403,9 @@ namespace AdrPlus.Infrastructure.UI
                         }
                         rootPath = Content;
                     }
-                    var Filetemplate = PromptPlus.Controls.FileSelect($"{Resources.AdrPlus.InitConfigSelectCustomTemplate}: ")
+                    var Filetemplate = PromptPlus.Controls.File($"{Resources.AdrPlus.InitConfigSelectCustomTemplate}: ")
                         .SearchPattern("*.md")
-                        .PredicateSelected(item =>
-                        {
-                            return (!item.IsFolder) && item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase);
-                        })
+                        .SelectFilesOnly(true)
                         .Root(rootPath)
                         .Run(cancellationToken);
                     if (Filetemplate.IsAborted)
@@ -416,7 +413,7 @@ namespace AdrPlus.Infrastructure.UI
                         tryabort = true;
                         continue;
                     }
-                    FilePathAdrTemplate = Filetemplate.Content.FullPath;
+                    FilePathAdrTemplate = Filetemplate.Content!.FullPath;
                 }
                 if (templatecontentsetting.Length == 0)
                 {

@@ -82,7 +82,7 @@ namespace AdrPlus.Commands
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex );
-                if (Helper.CountError == 0 || !_prompt.PromptIsAbortedByCtrlC())
+                if (Helper.CountError == 0 || !cancellationToken.IsCancellationRequested)
                 {
                     _prompt.PromptWriteError(ex.Message);
                 }

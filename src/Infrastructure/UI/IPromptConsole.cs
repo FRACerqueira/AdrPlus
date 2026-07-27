@@ -209,13 +209,7 @@ namespace AdrPlus.Infrastructure.UI
         void PromptMovePosition(int left,int top);
 
         /// <summary>
-        /// Checks if the current operation was aborted by the user pressing Ctrl+C.
-        /// </summary>
-        /// <returns> <c>true</c> if the operation was aborted by Ctrl+C; otherwise, <c>false</c>.</returns>
-        bool PromptIsAbortedByCtrlC();
-
-        /// <summary>
-        /// Ensures that the console culture settings are properly configured based on the provided application configuration. 
+        /// Ensures that the console culture settings are properly configured based on the provided application configuration.
         /// </summary>
         /// <param name="config">
         /// The application configuration containing culture settings to apply to the console. This may include settings such as language, date formats, and other culture-specific configurations that affect how information is displayed in the console.
