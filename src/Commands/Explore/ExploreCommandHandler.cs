@@ -15,10 +15,10 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
-namespace AdrPlus.Commands.Explorer
+namespace AdrPlus.Commands.Explore
 {
     /// <summary>
-    /// Handles the <c>explorer</c> command, which allows users to interactively explore their ADR repository, 
+    /// Handles the <c>explore</c> command, which allows users to interactively explore their ADR repository, 
     /// </summary>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="config">The application configuration settings (folder, language, etc.).</param>
@@ -26,22 +26,24 @@ namespace AdrPlus.Commands.Explorer
     /// <param name="validateConfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
-    internal sealed class ExplorerCommandHandler(
-        ILogger<ExplorerCommandHandler> logger,
+    internal sealed class ExploreCommandHandler(
+        ILogger<ExploreCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateConfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
+        IExplorePrompts explorePrompts,
         IAdrServices adrServices) : ICommandHandler
     {
-        private readonly ILogger<ExplorerCommandHandler> _logger = logger;
+        private readonly ILogger<ExploreCommandHandler> _logger = logger;
         private readonly IOptions<AdrPlusConfig> _config = config;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IValidateConfig _validateConfig = validateConfig;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
+        private readonly IExplorePrompts _explorePrompts = explorePrompts;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =
-            [Arguments.WizardExplorer,
+            [Arguments.WizardExplore,
              Arguments.TargetRepo,
              Arguments.FileReport,
              Arguments.OpenFile,
@@ -56,11 +58,11 @@ namespace AdrPlus.Commands.Explorer
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(
-                        "explorer",
+                        "explore",
                         ValidCommandArgs,
                         [
-                            "adrplus explorer --wizard",
-                            "adrplus explorer --path \"path/to/repository/\" --file \"path/to/report.md\" --open",
+                            "adrplus explore --wizard",
+                            "adrplus explore --path \"path/to/repository/\" --file \"path/to/report.md\" --open",
                         ]));
                     return;
                 }
@@ -71,10 +73,10 @@ namespace AdrPlus.Commands.Explorer
                 }
                 string[] fields = Resources.AdrPlus.ListFieldReport.Split(',');
 
-                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardExplorer);
+                var hasWizard = parsedArgs.ContainsKey(Arguments.WizardExplore);
                 if (hasWizard)
                 {
-                    var (wizardArgs, wizardFields) = await ExplorerWizardAsync(cancellationToken);
+                    var (wizardArgs, wizardFields) = await ExploreWizardAsync(cancellationToken);
                     parsedArgs = wizardArgs;
                     fields = wizardFields;
                 }
@@ -121,7 +123,7 @@ namespace AdrPlus.Commands.Explorer
                 if (hasWizard && targetreport.Length == 0)
                 {   
                     var folderadr = Path.GetFullPath(Path.Combine(targetPath, repoconfig.FolderAdr));
-                    file = ShowSelectExplorerAdr(foundfiles, fields, folderadr, repoconfig);
+                    file = ShowSelectExploreAdr(foundfiles, fields, folderadr, repoconfig);
                 }
                 else
                 {
@@ -360,9 +362,9 @@ namespace AdrPlus.Commands.Explorer
             return targetreport;
         }
 
-        private string ShowSelectExplorerAdr(AdrFileNameComponents[] foundfiles,string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
+        private string ShowSelectExploreAdr(AdrFileNameComponents[] foundfiles,string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
-            (bool IsAborted, string FileSelectd) = _prompt.PromptTableExplorer(foundfiles,fields,folderrepoadr,adrPlusRepoConfig);
+            (bool IsAborted, string FileSelectd) = _explorePrompts.PromptTableExplore(foundfiles,fields,folderrepoadr,adrPlusRepoConfig);
             if (IsAborted)
             {
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -370,7 +372,7 @@ namespace AdrPlus.Commands.Explorer
             return FileSelectd;
         }
 
-        private async Task<(Dictionary<Arguments, string> WizardArgs, string[] Fields)> ExplorerWizardAsync(CancellationToken cancellationToken)
+        private async Task<(Dictionary<Arguments, string> WizardArgs, string[] Fields)> ExploreWizardAsync(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
 
@@ -410,20 +412,20 @@ namespace AdrPlus.Commands.Explorer
                     LogAndWriteErrors(ErrorReport);
                     throw new InvalidDataException(Resources.AdrPlus.ErrorInConfigFile);
                 }
-                var fieldsseleted = _prompt.PromptFieldsExplorer(cancellationToken);
+                var fieldsseleted = _explorePrompts.PromptFieldsExplore(cancellationToken);
                 if (fieldsseleted.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                var explorerreport = _prompt.PromptOptionShowOrCreateReport(cancellationToken);
-                if (explorerreport.IsAborted)
+                var explorereport = _explorePrompts.PromptOptionShowOrCreateReport(cancellationToken);
+                if (explorereport.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
-                if (explorerreport.IsCreatingReport)
+                if (explorereport.IsCreatingReport)
                 {
-                    var (IsAborted, Filename) = _prompt.PromptInputFileReport(cancellationToken);
+                    var (IsAborted, Filename) = _explorePrompts.PromptInputFileReport(cancellationToken);
                     if (IsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -467,8 +469,8 @@ namespace AdrPlus.Commands.Explorer
 
                 // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
-                DisplayWizardSummary(parsedArgs, fieldsseleted.FieldsExplorer);
-                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmExplorer, cancellationToken);
+                DisplayWizardSummary(parsedArgs, fieldsseleted.FieldsExplore);
+                var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmExplore, cancellationToken);
                 _prompt.PromptMovePosition(0, Top);
                 if (resultCnf.IsAborted)
                 {
@@ -477,7 +479,7 @@ namespace AdrPlus.Commands.Explorer
 
                 if (resultCnf.ConfirmYes)
                 {
-                    return (parsedArgs, fieldsseleted.FieldsExplorer);
+                    return (parsedArgs, fieldsseleted.FieldsExplore);
                 }
             }
         }

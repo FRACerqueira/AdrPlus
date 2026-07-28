@@ -30,6 +30,12 @@ namespace AdrPlus
         /// <returns>A task representing the asynchronous operation with process exit code.</returns>
         static async Task<int> Main(string[] args)
         {
+            if (args.Length > 0 && (args[0] == "--version" || args[0] == "-v"))
+            {
+                Console.WriteLine($"AdrPlus {GetAppVersion(Assembly.GetExecutingAssembly())}");
+                return 0;
+            }
+
             // Hook into Console lifetime events (Ctrl+C / SIGTERM)
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
@@ -47,12 +53,7 @@ namespace AdrPlus
             string commandArgsString = string.Join(AppConstants.CommandArgsSeparator, args.Length > 1 ? [.. args.Skip(1)] : []);
 
             var assembly = Assembly.GetExecutingAssembly()!;
-            var assemblyver = "0.0.0";
-            var structver = assembly.GetName()?.Version;
-            if (structver != null)
-            {
-                assemblyver = $"{structver.Major}.{structver.Minor}.{structver.Build}";
-            }
+            var assemblyver = GetAppVersion(assembly);
 
             try
             {
@@ -97,6 +98,41 @@ namespace AdrPlus
             }
             // Flushes any buffered output directly to the console window
             return Helper.ExitCode;
+        }
+
+        /// <summary>
+        /// Gets the application's full semantic version, including any pre-release suffix
+        /// (e.g. "1.0.0-beta"). <see cref="AssemblyName.Version"/> is a numeric-only
+        /// <see cref="Version"/> that MSBuild truncates from the csproj's semver
+        /// <c>&lt;Version&gt;</c> (dropping "-beta"), so this reads
+        /// <see cref="AssemblyInformationalVersionAttribute"/> instead, which preserves it.
+        /// </summary>
+        /// <param name="assembly">The assembly to read the version from.</param>
+        /// <returns>The full semantic version string, or "0.0.0" if unavailable.</returns>
+        internal static string GetAppVersion(Assembly assembly)
+        {
+            var informational = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            return ResolveAppVersion(informational, assembly.GetName()?.Version);
+        }
+
+        /// <summary>
+        /// Resolves the app version string from an <see cref="AssemblyInformationalVersionAttribute"/>
+        /// value (preferred, preserves semver pre-release suffixes) or falls back to the numeric
+        /// <see cref="AssemblyName.Version"/>.
+        /// </summary>
+        /// <param name="informationalVersion">The raw <see cref="AssemblyInformationalVersionAttribute.InformationalVersion"/> value, if any.</param>
+        /// <param name="assemblyVersion">The numeric assembly version to fall back to.</param>
+        /// <returns>The resolved version string, or "0.0.0" if neither source is available.</returns>
+        internal static string ResolveAppVersion(string? informationalVersion, Version? assemblyVersion)
+        {
+            if (!string.IsNullOrWhiteSpace(informationalVersion))
+            {
+                // Strip a source-control metadata suffix (e.g. "+abc1234"), which
+                // Deterministic/SourceLink builds append but isn't part of the semver.
+                var plusIndex = informationalVersion.IndexOf('+', StringComparison.Ordinal);
+                return plusIndex >= 0 ? informationalVersion[..plusIndex] : informationalVersion;
+            }
+            return assemblyVersion != null ? $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}" : "0.0.0";
         }
     }
 }

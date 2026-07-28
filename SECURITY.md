@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # Security Policy
 
@@ -41,7 +41,7 @@ It does not expose network services, handle credentials, or process untrusted re
 Typical in-scope concerns include:
 
 - Path traversal or arbitrary file writes via command arguments.
-- Malicious configuration file (`AdrPlus.json`) that causes unintended file-system operations.
+- Malicious configuration file (`adrplus.json`) that causes unintended file-system operations.
 - Supply-chain issues in dependencies.
 
 ---
@@ -50,4 +50,4 @@ Typical in-scope concerns include:
 
 - Keep your .NET SDK and AdrPlus tool updated to the latest version.
 - Do not run AdrPlus with elevated (`sudo` / administrator) privileges unless strictly necessary.
-- Treat `AdrPlus.json` as a trusted configuration file — do not copy it from untrusted sources.
+- Treat `adrplus.json` as a trusted configuration file — do not copy it from untrusted sources.

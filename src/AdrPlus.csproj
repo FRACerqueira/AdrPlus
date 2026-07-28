@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<Version>0.6.3</Version>
+		<Version>1.0.0-beta1</Version>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<AssemblyName>adrplus</AssemblyName>
 		<Authors>Fernando Cerqueira</Authors>
@@ -57,7 +57,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
-		<PackageReference Include="PromptPlus" Version="5.0.8" />
+		<PackageReference Include="PromptPlus" Version="6.0.0-Beta4" />
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
 	</ItemGroup>
 

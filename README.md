@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 
 # AdrPlus
 
@@ -7,6 +7,8 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
+
+> 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
 
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no version flow, and hard-to-track status changes).
 
@@ -28,6 +30,9 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Quick Start](#quick-start)
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
+- [Using AdrPlus with Claude Code](#using-adrplus-with-claude-code)
+- [Advanced Configuration (Optional)](#advanced-configuration-optional)
+- [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
 - [Commands](#commands)
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
@@ -45,7 +50,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 Using **AdrPlus** in an engineering repository helps you:
 
 - 📚 Keep architectural decisions organized with a predictable structure
-- 🔍 Improve traceability with version, review, and supersede flows
+- 🔍 Improve traceability with version, revise, and supersede flows
 - ⚡ Reduce manual effort when creating and updating ADR files
 - 🛠️ Respect the repository's configuration for naming, structure, and ADR status for each team
 - 🤝 Improve collaboration by making decision history visible to the whole team
@@ -56,10 +61,11 @@ Using **AdrPlus** in an engineering repository helps you:
 ## Features
 
 - 📝 **Create** new ADRs with auto-incremented sequential numbers
-- 🔢 **Version** and **review** existing ADRs (major version or revision bump)
+- 🔢 **Version** and **revise** existing ADRs (major version or revision bump)
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
+- 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
@@ -81,9 +87,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ### For building and packaging from source
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (builds all three target frameworks: `net8.0`, `net9.0`, `net10.0`)
 
 ---
 
@@ -110,6 +114,12 @@ dotnet tool uninstall -g adrplus
 ```
 
 After installation, you can use `adrplus` from any terminal in any repository.
+
+Check the installed version anytime with:
+
+```bash
+adrplus --version
+```
 
 ### Build and install from source
 
@@ -163,13 +173,26 @@ After initial setup completes, you can use any command directly:
 adrplus new --wizard
 
 # Or explore and manage your ADRs
-adrplus explorer --path "path/to/repository"
+adrplus explore --path "path/to/repository"
 adrplus approve --file "path/to/adr/ADR0001.md"
 ```
 
 > **Note**: If you have existing ADR files in a different format, see [Migration Guide](MigrationGuide.md) for detailed prerequisites and migration instructions before creating new ADRs with the tool.
 
 For a detailed walkthrough, see the [Step-by-Step Guide](StepByStepGuide.md).
+
+---
+
+## Using AdrPlus with Claude Code
+
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly:
+
+- A skill (`manage-adrs`) that teaches Claude the full `adrplus` command surface, so it can create, approve, reject, version, revise, supersede, and configure ADRs without guessing at flags.
+- An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain integrity, status hygiene) and produces a read-only report.
+- An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
+- An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
+
+Requires `adrplus` v1.0.0-beta1 or later (any 1.x release, including pre-releases) — earlier versions weren't safe to drive non-interactively.
 
 ---
 
@@ -232,7 +255,7 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 # Launch the ADR file viewer explorer
 
-    adrplus explorer --path "path/to/repository"
+    adrplus explore --path "path/to/repository"
 
 # Initialize ADR structure (if the first time you set up the repository)
 
@@ -258,10 +281,10 @@ You can also execute commands directly, one by one, without the wizard and witho
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
     adrplus supersede --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
-# Create review/version flows
+# Create revise/version flows
 
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
-    adrplus review --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
+    adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
     adrplus version --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 ```
@@ -277,12 +300,12 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `help`      | Display help information for all commands or a specific command |
 | `wizard`    | Launch the interactive wizard for guided operations |
 | `config`    | Application configuration editor,migrate repository,repository and default ADR template |
-| `explorer`  | Launch the file viewer explorer and report for the ADR repository |
+| `explore`   | Launch the file viewer explorer and report for the ADR repository |
 | `migrate`   | Migrate existing ADRs to use the tool |
 | `init`      | Initialize or reinitialize the ADR repository folder structure (can be run multiple times) |
 | `new`       | Create a new ADR with an incremental number |
 | `version`   | Create a new version of an  ADR (increment version) |
-| `review`    | Create a new revision of an ADR (increment revision) |
+| `revise`    | Create a new revision of an ADR (increment revision) |
 | `supersede` | Supersede an ADR by creating a successor with a new incremental number |
 | `approve`   | Set an ADR status to *Accepted* |
 | `reject`    | Set an ADR status to *Rejected* |
@@ -294,7 +317,7 @@ Run `adrplus help <command>` for detailed usage of any command.
 
 The rules below describe what must be true for a command to select its target successfully (especially in wizard mode).
 
-> For file-based commands (`approve`, `reject`, `undo`, `version`, `review`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
+> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
 
 | Command | Successful selection rules |
 |---|---|
@@ -303,7 +326,7 @@ The rules below describe what must be true for a command to select its target su
 | `reject` | ADR must be eligible: not already approved/rejected.|
 | `undo` | ADR must be eligible: already approved/rejected and for the same sequence not a superseded and not proposed.|
 | `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded.|
-| `review` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
+| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
 | `supersede` | ADR must be eligible: already approved and not superseded.|
 
 ---

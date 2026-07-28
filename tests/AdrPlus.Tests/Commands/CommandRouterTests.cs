@@ -27,7 +27,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
@@ -50,7 +50,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type>();
         var configuration = Substitute.For<IConfiguration>();
@@ -71,7 +71,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
@@ -93,7 +93,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
@@ -119,7 +119,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(object) } };
         var configuration = Substitute.For<IConfiguration>();
@@ -144,7 +144,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };  // Use ICommandHandler type instead
         var configuration = Substitute.For<IConfiguration>();
@@ -169,7 +169,7 @@ public class CommandRouterTests
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type>();
@@ -195,7 +195,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
@@ -219,7 +219,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
@@ -247,7 +247,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
@@ -271,7 +271,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
@@ -297,7 +297,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
@@ -327,7 +327,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "new", typeof(ICommandHandler) } };
@@ -355,7 +355,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
@@ -380,7 +380,7 @@ public class CommandRouterTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IPromptConsole>();
+        var console = Substitute.For<IConsoleWriter>();
         var adrServices = Substitute.For<IAdrServices>();
         var configuration = Substitute.For<IConfiguration>();
         var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };

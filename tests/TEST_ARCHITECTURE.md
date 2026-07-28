@@ -308,8 +308,8 @@ Use this decision flowchart to determine which mock helper pattern to use for yo
 | Scenario | Solution | Example |
 |----------|----------|---------|
 | **CommandHandler with standard file ops** | Use `CommandHandlerMockHelper` | NewAdrCommandHandler, ApproveCommandHandler |
-| **CommandHandler with domain-specific logic** | Create domain-specific helper | SupersedeCommandHandler (file existence), ExplorerCommandHandler (reports) |
-| **Complex test data/scenarios** | Create Fixture class | `ExplorerCommandHandlerFixture` |
+| **CommandHandler with domain-specific logic** | Create domain-specific helper | SupersedeCommandHandler (file existence), ExploreCommandHandler (reports) |
+| **Complex test data/scenarios** | Create Fixture class | `ExploreCommandHandlerFixture` |
 | **Service/Infrastructure tests** | Direct NSubstitute setup | AdrServiceTests |
 | **Path operations** | Use `PathHelper` | Cross-platform path normalization |
 
@@ -338,7 +338,7 @@ Use this decision flowchart to determine which mock helper pattern to use for yo
 
     Examples:         Examples:
     - NewAdrCommand   - SupersedeCommand
-    - ApproveCommand  - ExplorerCommand
+    - ApproveCommand  - ExploreCommand
     - VersionCommand
            |                 |
            |_________v_________|
@@ -352,7 +352,7 @@ Use this decision flowchart to determine which mock helper pattern to use for yo
         |
         v
     Create Fixture class
-    Example: ExplorerCommandHandlerFixture
+    Example: ExploreCommandHandlerFixture
 ```
 
 ### Step-by-Step Guide
@@ -440,8 +440,8 @@ private void SetupBasicMocks(Dictionary<Arguments, string> parsedArgs, string js
 **Use when**: Multiple related test scenarios need shared complex setup or test data.
 
 ```csharp
-// Create: ExplorerCommandHandlerFixture.cs
-internal class ExplorerCommandHandlerFixture
+// Create: ExploreCommandHandlerFixture.cs
+internal class ExploreCommandHandlerFixture
 {
     private readonly Dictionary<string, object> _scenarios;
 
@@ -450,13 +450,13 @@ internal class ExplorerCommandHandlerFixture
 }
 
 // Use in tests
-public class ExplorerCommandHandlerTests
+public class ExploreCommandHandlerTests
 {
-    private readonly ExplorerCommandHandlerFixture _fixture;
+    private readonly ExploreCommandHandlerFixture _fixture;
 
-    public ExplorerCommandHandlerTests()
+    public ExploreCommandHandlerTests()
     {
-        _fixture = new ExplorerCommandHandlerFixture();
+        _fixture = new ExploreCommandHandlerFixture();
     }
 
     [Fact]
@@ -476,7 +476,7 @@ public class ExplorerCommandHandlerTests
 | **Reusability** | Across commands | Single command | Single test class |
 | **Complexity** | Simple | Medium | High |
 | **When to Create** | Already exists | New domain logic | Complex scenarios |
-| **Example** | CommandHandlerMockHelper | SupersedeCommandHandlerMockHelper | ExplorerCommandHandlerFixture |
+| **Example** | CommandHandlerMockHelper | SupersedeCommandHandlerMockHelper | ExploreCommandHandlerFixture |
 | **Lines of Code** | 100+ | 50-100 | 50-150 |
 
 ---
@@ -629,7 +629,7 @@ tests/
   - Example: `ExecuteAsync_WithValidFile_SupersedesAdr`
   - Example: `ExecuteAsync_WhenFileNotFound_ThrowsFileNotFoundException`
 - **Mock Helpers**: `[Context]MockHelper` (e.g., `SupersedeCommandHandlerMockHelper`)
-- **Fixture Classes**: `[Context]Fixture` (e.g., `ExplorerCommandHandlerFixture`)
+- **Fixture Classes**: `[Context]Fixture` (e.g., `ExploreCommandHandlerFixture`)
 
 ---
 

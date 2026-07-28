@@ -11,10 +11,10 @@ using AdrPlus.Infrastructure.FileSystem;
 namespace AdrPlus.Tests.Helpers;
 
 /// <summary>
-/// Provides helper methods for setting up mocks and test fixtures specific to ExplorerCommandHandler tests.
+/// Provides helper methods for setting up mocks and test fixtures specific to ExploreCommandHandler tests.
 /// Ensures consistent, cross-platform mock behavior and reduces test boilerplate.
 /// </summary>
-internal static class ExplorerCommandHandlerMockHelper
+internal static class ExploreCommandHandlerMockHelper
 {
     /// <summary>
     /// Creates a minimal valid ADR repository configuration JSON string that includes FolderAdr.
@@ -22,15 +22,15 @@ internal static class ExplorerCommandHandlerMockHelper
     /// <remarks>
     /// This is used for report generation tests that require the FolderAdr field.
     /// </remarks>
-    public static string BuildValidJsonConfigForExplorer()
+    public static string BuildValidJsonConfigForExplore()
     {
         return """{"Prefix":"ADR","LenSeq":4,"FolderAdr":"adr"}""";
     }
 
     /// <summary>
-    /// Sets up basic explorer command mocks for a standard test scenario.
+    /// Sets up basic explore command mocks for a standard test scenario.
     /// </summary>
-    public static void SetupBasicExplorerMocks(
+    public static void SetupBasicExploreMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
         IValidateConfig mockValidateConfig,
@@ -38,7 +38,7 @@ internal static class ExplorerCommandHandlerMockHelper
         string targetPath)
     {
         var configPath = Path.Combine(targetPath, "adr-config.adrplus");
-        var jsonConfig = BuildValidJsonConfigForExplorer();
+        var jsonConfig = BuildValidJsonConfigForExplore();
 
         mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>()).Returns(parsedArgs);
         mockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -53,9 +53,9 @@ internal static class ExplorerCommandHandlerMockHelper
     }
 
     /// <summary>
-    /// Sets up explorer mocks for report generation test scenario.
+    /// Sets up explore mocks for report generation test scenario.
     /// </summary>
-    public static void SetupExplorerReportMocks(
+    public static void SetupExploreReportMocks(
         IAdrServices mockAdrServices,
         IFileSystemService mockFileSystem,
         IValidateConfig mockValidateConfig,
@@ -64,12 +64,12 @@ internal static class ExplorerCommandHandlerMockHelper
         string reportPath,
         AdrFileNameComponents[] adrFiles)
     {
-        SetupBasicExplorerMocks(mockAdrServices, mockFileSystem, mockValidateConfig,  parsedArgs, targetPath);
+        SetupBasicExploreMocks(mockAdrServices, mockFileSystem, mockValidateConfig,  parsedArgs, targetPath);
 
         var reportDir = Path.GetDirectoryName(reportPath) ?? string.Empty;
         mockFileSystem.DirectoryExists(reportDir).Returns(true);
         mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(BuildValidJsonConfigForExplorer());
+            .Returns(BuildValidJsonConfigForExplore());
 
         mockAdrServices.ReadAllAdr(mockFileSystem, targetPath, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>())
             .Returns(adrFiles);
@@ -112,22 +112,22 @@ internal static class ExplorerCommandHandlerMockHelper
     }
 
     /// <summary>
-    /// Gets cross-platform explorer field strings for report generation testing.
+    /// Gets cross-platform explore field strings for report generation testing.
     /// Field format: "1-File", "2-Folder", "3-Format", "4-Status", etc.
     /// </summary>
-    public static string[] GetExplorerFields(params int[] fieldNumbers)
+    public static string[] GetExploreFields(params int[] fieldNumbers)
     {
         var fieldNames = new[] { "File", "Folder", "Format", "Status", "Created", "Updated", "Scope", "Domain" };
         return [.. fieldNumbers.Select(n => $"{n}-{fieldNames[n - 1]}")];
     }
 
     /// <summary>
-    /// Gets all default explorer fields.
+    /// Gets all default explore fields.
     /// </summary>
-    public static string[] GetAllExplorerFields() => GetExplorerFields(1, 2, 3, 4, 5, 6, 7, 8);
+    public static string[] GetAllExploreFields() => GetExploreFields(1, 2, 3, 4, 5, 6, 7, 8);
 
     /// <summary>
-    /// Gets a minimal set of explorer fields (File and Status only).
+    /// Gets a minimal set of explore fields (File and Status only).
     /// </summary>
-    public static string[] GetMinimalExplorerFields() => GetExplorerFields(1, 4);
+    public static string[] GetMinimalExploreFields() => GetExploreFields(1, 4);
 }

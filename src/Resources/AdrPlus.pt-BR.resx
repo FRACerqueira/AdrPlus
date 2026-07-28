@@ -522,9 +522,6 @@
   <data name="Welcome" xml:space="preserve">
     <value>Bem-vindo ao AdrPlus ({0})</value>
   </data>
-  <data name="HelpUsageSequenceAdr" xml:space="preserve">
-    <value>ID de sequência do ADR</value>
-  </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
     <value>Assistente para criar novo ADR (suprime todos os outros argumentos)</value>
   </data>
@@ -816,35 +813,8 @@
   <data name="PromptEmptyTemplate" xml:space="preserve">
     <value>Usar modelo sem dados</value>
   </data>
-  <data name="PromptSelectAdrRepositoryAdr" xml:space="preserve">
-    <value>Selecione o caminho do repositório ADR</value>
-  </data>
   <data name="Template" xml:space="preserve">
     <value>Modelo</value>
-  </data>
-  <data name="HelpUsageWizardRepo" xml:space="preserve">
-    <value>Assistente para atualizar as configurações de ADR de um repositório</value>
-  </data>
-  <data name="HelpUsageRepoTemplate" xml:space="preserve">
-    <value>Alterar modelo de ADR para este repositório</value>
-  </data>
-  <data name="HelpUsageRepoVersion" xml:space="preserve">
-    <value>Alterar a configuração de comprimento da versão para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoRevision" xml:space="preserve">
-    <value>Alterar a configuração de comprimento da revisão para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoScope" xml:space="preserve">
-    <value>Alterar a configuração de escopo (comprimento e itens) para um repositório</value>
-  </data>
-  <data name="HelpUsageRepoScopeItems" xml:space="preserve">
-    <value>Lista de escopos (adicione um '*' ao final de cada escopo para ignorar a definição de domínio)</value>
-  </data>
-  <data name="HelpUsageRepoWithFolders" xml:space="preserve">
-    <value>Criar pastas por escopo</value>
-  </data>
-  <data name="HelpUsageFileTemplate" xml:space="preserve">
-    <value>Caminho para o arquivo de template. Se omitido será o template da aplicação</value>
   </data>
   <data name="CmdDescMigrate" xml:space="preserve">
     <value>Migrar ADRs existentes para usar a ferramenta (criar cabeçalho)</value>
@@ -930,16 +900,16 @@
   <data name="WizardHelpMigrateTitle" xml:space="preserve">
     <value>Ajuda do comando migrate</value>
   </data>
-  <data name="CmdDescExplorer" xml:space="preserve">
+  <data name="CmdDescExplore" xml:space="preserve">
     <value>Explorador, visualizador e relatório de arquivos ADR</value>
   </data>
   <data name="HelpUsageFileReport" xml:space="preserve">
     <value>Nome do caminho do arquivo (md file) para o relatório do explorador</value>
   </data>
-  <data name="HelpUsageWizardExplorer" xml:space="preserve">
+  <data name="HelpUsageWizardExplore" xml:space="preserve">
     <value>Assistente para explorar arquivos ADR (suprime todos os outros argumentos)</value>
   </data>
-  <data name="PromptConfirmExplorer" xml:space="preserve">
+  <data name="PromptConfirmExplore" xml:space="preserve">
     <value>Confirmar o explorador com estes parâmetros?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
@@ -996,17 +966,17 @@
   <data name="OpenFile" xml:space="preserve">
     <value>Abrir arquivo</value>
   </data>
-  <data name="WizardGroupExplorerReportTitle" xml:space="preserve">
+  <data name="WizardGroupExploreReportTitle" xml:space="preserve">
     <value>Relatório e explorador</value>
   </data>
-  <data name="WizardGroupExplorerReportDescription" xml:space="preserve">
+  <data name="WizardGroupExploreReportDescription" xml:space="preserve">
     <value>Cria relatório e exibe metadados dos ADRs</value>
   </data>
   <data name="FilesExplored" xml:space="preserve">
     <value>Arquivos explorados</value>
   </data>
-  <data name="WizardHelpExplorerTitle" xml:space="preserve">
-    <value>Ajuda do comando explorer</value>
+  <data name="WizardHelpExploreTitle" xml:space="preserve">
+    <value>Ajuda do comando explore</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
     <value>Padrão migrate</value>
@@ -1230,7 +1200,7 @@
   <data name="StatusSuperseded" xml:space="preserve">
     <value>Status substituído</value>
   </data>
-  <data name="CmdDescReview" xml:space="preserve">
+  <data name="CmdDescRevise" xml:space="preserve">
     <value>Criar um novo ADR com uma nova revisão (revisão incremental, mesmo número e versão)</value>
   </data>
   <data name="ErrMsgWithoutArgs" xml:space="preserve">

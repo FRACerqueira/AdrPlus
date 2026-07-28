@@ -20,10 +20,10 @@ namespace AdrPlus.Commands.Help
     /// <param name="prompt">The console writer for displaying help information.</param>
     /// <param name="commandRouter">The command router used to delegate to a specific command's help output.</param>
     /// <param name="adrServices">The ADR services for accessing command metadata and argument parsing.</param>
-    internal sealed class HelpCommandHandler(ILogger<HelpCommandHandler> logger,IPromptConsole prompt, CommandRouter commandRouter, IAdrServices adrServices) : ICommandHandler
+    internal sealed class HelpCommandHandler(ILogger<HelpCommandHandler> logger,IConsoleWriter prompt, CommandRouter commandRouter, IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<HelpCommandHandler> _logger = logger;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IAdrServices _adrServices = adrServices;
 

@@ -23,7 +23,7 @@ public class RejectCommandHandlerTests
 {
     private readonly ILogger<RejectCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IPromptConsole _mockConsole;
+    private readonly IConsoleWriter _mockConsole;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -33,7 +33,7 @@ public class RejectCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<RejectCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 

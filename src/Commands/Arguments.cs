@@ -18,7 +18,7 @@ namespace AdrPlus.Commands
         WizardVersion,
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardNewRev")]
-        WizardReview,
+        WizardRevise,
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardSupersede")]
         WizardSupersede,
@@ -35,14 +35,11 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardInit")]
         WizardInit,
         [CommandArgument("-w", "--wizard")]
-        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardRepo")]
-        WizardRepo,
-        [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardMigrate")]
         WizardMigrate,
         [CommandArgument("-w", "--wizard")]
-        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardExplorer")]
-        WizardExplorer,
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardExplore")]
+        WizardExplore,
         [CommandArgument("-a", "--application")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigApp")]
         WizardConfigApplication,
@@ -64,9 +61,6 @@ namespace AdrPlus.Commands
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageFileAdr")]
         FileAdr,
-        [CommandArgument("-s", "--sequence")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageSequenceAdr")]
-        SequenceAdr,
         [CommandArgument("-t", "--title")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]
         TitleAdr,
@@ -85,27 +79,6 @@ namespace AdrPlus.Commands
         [CommandArgument("-r", "--refdate")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageDateRefAdr")]
         DateRefAdr,
-        [CommandArgument("-t", "--template")]
-        [HelpUsage(UsageArgumments.Optional, "HelpUsageRepoTemplate")]
-        RepoTemplate,
-        [CommandArgument("-v", "--version")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoVersion")]
-        RepoVersion,
-        [CommandArgument("-r", "--revision")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoRevision")]
-        RepoRevision,
-        [CommandArgument("-s", "--scope")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoScope")]
-        RepoScope,
-        [CommandArgument("-i", "--items")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageRepoScopeItems")]
-        RepoScopeItems,
-        [CommandArgument("-c", "--createfolders")]
-        [HelpUsage(UsageArgumments.Optional, "HelpUsageRepoWithFolders")]
-        RepoWithFolders,
-        [CommandArgument("-f", "--file")]
-        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileTemplate")]
-        FileTemplate,
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageFileReport")]
         FileReport,

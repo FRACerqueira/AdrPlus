@@ -327,7 +327,7 @@ public class HelpUsageAttributeTests
     {
         // Arrange
         var enumType = typeof(Arguments);
-        var wizardFields = new[] { "WizardNew", "WizardVersion", "WizardReview", "WizardSupersede", "WizardApprove", "WizardReject", "WizardUndoStatus", "WizardInit" };
+        var wizardFields = new[] { "WizardNew", "WizardVersion", "WizardRevise", "WizardSupersede", "WizardApprove", "WizardReject", "WizardUndoStatus", "WizardInit" };
 
         // Act & Assert
         foreach (var fieldName in wizardFields)

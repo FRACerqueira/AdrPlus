@@ -7,20 +7,20 @@ using AdrPlus.Commands;
 using AdrPlus.Domain;
 using AdrPlus.Tests.Helpers;
 
-namespace AdrPlus.Tests.Commands.Explorer;
+namespace AdrPlus.Tests.Commands.Explore;
 
 /// <summary>
-/// Unit tests for ExplorerCommandHandler class.
-/// Tests demonstrate explorer command execution, wizard flows, report generation, and file operations.
+/// Unit tests for ExploreCommandHandler class.
+/// Tests demonstrate explore command execution, wizard flows, report generation, and file operations.
 /// Tests are cross-platform compatible and use helper methods to reduce boilerplate.
 /// </summary>
-public class ExplorerCommandHandlerTests
+public class ExploreCommandHandlerTests
 {
-    private readonly ExplorerCommandHandlerFixture _fixture;
+    private readonly ExploreCommandHandlerFixture _fixture;
 
-    public ExplorerCommandHandlerTests()
+    public ExploreCommandHandlerTests()
     {
-        _fixture = new ExplorerCommandHandlerFixture();
+        _fixture = new ExploreCommandHandlerFixture();
     }
 
     #region Constructor Tests
@@ -167,7 +167,7 @@ public class ExplorerCommandHandlerTests
         var targetPath = PathHelper.GetRepositoryAdrPath();
         var args = new[] { "--path", targetPath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, targetPath } };
-        var validJson = ExplorerCommandHandlerMockHelper.BuildValidJsonConfigForExplorer();
+        var validJson = ExploreCommandHandlerMockHelper.BuildValidJsonConfigForExplore();
 
         _fixture.MockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _fixture.MockValidateConfig.HasTemplateRepoFile().Returns(true);
@@ -218,8 +218,8 @@ public class ExplorerCommandHandlerTests
             { Arguments.FileReport, reportPath }
         };
 
-        var adrFiles = ExplorerCommandHandlerMockHelper.CreateTestAdrFiles(2);
-        ExplorerCommandHandlerMockHelper.SetupExplorerReportMocks(
+        var adrFiles = ExploreCommandHandlerMockHelper.CreateTestAdrFiles(2);
+        ExploreCommandHandlerMockHelper.SetupExploreReportMocks(
             _fixture.MockAdrServices,
             _fixture.MockFileSystem,
             _fixture.MockValidateConfig,
@@ -248,8 +248,8 @@ public class ExplorerCommandHandlerTests
             { Arguments.FileReport, "" }
         };
 
-        var adrFile = ExplorerCommandHandlerMockHelper.CreateTestAdrFile();
-        ExplorerCommandHandlerMockHelper.SetupExplorerReportMocks(
+        var adrFile = ExploreCommandHandlerMockHelper.CreateTestAdrFile();
+        ExploreCommandHandlerMockHelper.SetupExploreReportMocks(
             _fixture.MockAdrServices,
             _fixture.MockFileSystem,
             _fixture.MockValidateConfig,
@@ -277,7 +277,7 @@ public class ExplorerCommandHandlerTests
             { Arguments.FileReport, reportPath }
         };
 
-        var adrFile = ExplorerCommandHandlerMockHelper.CreateTestAdrFile();
+        var adrFile = ExploreCommandHandlerMockHelper.CreateTestAdrFile();
         _fixture.MockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
         _fixture.MockValidateConfig.HasTemplateRepoFile().Returns(true);
         _fixture.MockValidateConfig.GetFileNameRepoConfig().Returns("adr-config.adrplus");
@@ -285,7 +285,7 @@ public class ExplorerCommandHandlerTests
         _fixture.MockFileSystem.DirectoryExists(Path.GetDirectoryName(reportPath)!).Returns(false);
         _fixture.MockFileSystem.FileExists(Arg.Any<string>()).Returns(true);
         _fixture.MockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(ExplorerCommandHandlerMockHelper.BuildValidJsonConfigForExplorer());
+            .Returns(ExploreCommandHandlerMockHelper.BuildValidJsonConfigForExplore());
         _fixture.MockValidateConfig.ValidateRepoStructure(Arg.Any<string>())
             .Returns((true, []));
         _fixture.MockAdrServices.ReadAllAdr(_fixture.MockFileSystem, targetPath, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>())
@@ -314,8 +314,8 @@ public class ExplorerCommandHandlerTests
             { Arguments.OpenFile, string.Empty }
         };
 
-        var adrFiles = ExplorerCommandHandlerMockHelper.CreateTestAdrFiles(1);
-        ExplorerCommandHandlerMockHelper.SetupExplorerReportMocks(
+        var adrFiles = ExploreCommandHandlerMockHelper.CreateTestAdrFiles(1);
+        ExploreCommandHandlerMockHelper.SetupExploreReportMocks(
             _fixture.MockAdrServices,
             _fixture.MockFileSystem,
             _fixture.MockValidateConfig,

@@ -8,6 +8,7 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
+using ConsolePlusLibrary;
 using Microsoft.Extensions.Configuration;
 using PromptPlusLibrary;
 using System.Collections.Frozen;
@@ -24,7 +25,13 @@ namespace AdrPlus.Infrastructure.UI
         IConfiguration configuration, 
         IFileSystemService fileSystemService, 
         IValidateConfig validate, 
-        IAdrServices adrServices) : IPromptConsole
+        IAdrServices adrServices) :
+        IConsoleWriter,
+        IConfigPrompts,
+        IMigratePrompts,
+        INewAdrPrompts,
+        IExplorePrompts,
+        IWizardMenuPrompts
     {
         /// <summary>
         /// Console color for help messages.
@@ -34,7 +41,7 @@ namespace AdrPlus.Infrastructure.UI
             /// <summary>
         /// Console color for the welcome banner.
         /// </summary>
-        private static Color ColorWelcomeBanner => Color.DarkOrange;
+        private static Color ColorWelcomeBanner => Color.Darkorange;
 
         /// <summary>
         /// Console color for error messages.
@@ -95,7 +102,6 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
-                .MaxWidth(10)
                 .AddItems(enumlist)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
@@ -119,7 +125,7 @@ namespace AdrPlus.Infrastructure.UI
                  .Step(1)
                  .LargeStep(5)
                  .Layout(SliderLayout.UpDown)
-                 .EnabledHistory("AdrPlusMigrationTitlePosition")
+                 .EnableHistory("AdrPlusMigrationTitlePosition")
                  .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
         }
@@ -141,7 +147,7 @@ namespace AdrPlus.Infrastructure.UI
                  .Step(1)
                  .LargeStep(5)
                  .Layout(SliderLayout.UpDown)
-                 .EnabledHistory("AdrPlusMigrationRevisionPosition")
+                 .EnableHistory("AdrPlusMigrationRevisionPosition")
                  .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
         }
@@ -155,7 +161,7 @@ namespace AdrPlus.Infrastructure.UI
                    return $"{Resources.AdrPlus.SampleResult}: {result}";
                })
                .Default(defaultValue, true)
-               .EnabledHistory("AdrPlusMigrationRevisionLength")
+               .EnableHistory("AdrPlusMigrationRevisionLength")
                .Range(2, maxValue)
                .Step(1)
                .LargeStep(1)
@@ -181,7 +187,7 @@ namespace AdrPlus.Infrastructure.UI
                  .Step(1)
                  .LargeStep(5)
                  .Layout(SliderLayout.UpDown)
-                 .EnabledHistory("AdrPlusMigrationVersionPosition")
+                 .EnableHistory("AdrPlusMigrationVersionPosition")
                  .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
         }
@@ -195,7 +201,7 @@ namespace AdrPlus.Infrastructure.UI
                    return $"{Resources.AdrPlus.SampleResult}: {result}";
                })
                .Default(defaultValue, true)
-               .EnabledHistory("AdrPlusMigrationVersionLength")
+               .EnableHistory("AdrPlusMigrationVersionLength")
                .Range(2, maxValue)
                .Step(1)
                .LargeStep(1)
@@ -223,7 +229,7 @@ namespace AdrPlus.Infrastructure.UI
                  .Step(1)
                  .LargeStep(5)
                  .Layout(SliderLayout.UpDown)
-                 .EnabledHistory("AdrPlusMigrationNumberPosition")
+                 .EnableHistory("AdrPlusMigrationNumberPosition")
                  .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
         }
@@ -239,7 +245,7 @@ namespace AdrPlus.Infrastructure.UI
                     return $"{Resources.AdrPlus.SampleResult}: {result}";
                 })
                 .Default(defaultValue, true)
-                .EnabledHistory("AdrPlusMigrationNumberLength")
+                .EnableHistory("AdrPlusMigrationNumberLength")
                 .Range(3, maxValue)
                 .Step(1)
                 .LargeStep(1)
@@ -258,8 +264,8 @@ namespace AdrPlus.Infrastructure.UI
                 .AddItem(Resources.AdrPlus.Version)
                 .AddItem(Resources.AdrPlus.Revision)
                 .AddItem(Resources.AdrPlus.Title, true, true)
-                .EnabledHistory("AdrPlusMigrationFields")
-                .DefaultHistory()
+                .EnableHistory("AdrPlusMigrationFields")
+                .UseDefaultHistory()
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? [] : result.Content!);
         }
@@ -276,7 +282,7 @@ namespace AdrPlus.Infrastructure.UI
                     return $"{Resources.AdrPlus.SampleResult}: {result}";
                 })
                 .Default(3, true)
-                .EnabledHistory("AdrPlusMigrationPrefixLength")
+                .EnableHistory("AdrPlusMigrationPrefixLength")
                 .Range(1, maxValue)
                 .Step(1)
                 .LargeStep(1)
@@ -303,7 +309,7 @@ namespace AdrPlus.Infrastructure.UI
                  .Step(1)
                  .LargeStep(5)
                  .Layout(SliderLayout.UpDown)
-                 .EnabledHistory("AdrPlusMigrationPrefixPosition")
+                 .EnableHistory("AdrPlusMigrationPrefixPosition")
                  .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!.Value);
         }
@@ -314,9 +320,9 @@ namespace AdrPlus.Infrastructure.UI
         {
             var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileSampleMigration}: ")
                 .MaxLength(100)
-                .EnabledHistory("AdrPlusMigrationSampleFile")
+                .EnableHistory("AdrPlusMigrationSampleFile")
                 .Default("", true)
-                .PredicateSelected((input) =>
+                .PredicateValid((input) =>
                 {
                     if (input.Length < 10)
                     {
@@ -346,12 +352,6 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public bool PromptIsAbortedByCtrlC()
-        { 
-            return PromptPlus.AbortedByCtrlC;
-        }
-
-        /// <inheritdoc/>
         public void PromptEnabledEscToAbort(bool enabled)
         { 
             PromptPlus.Config.EnabledAbortKey = enabled;
@@ -364,7 +364,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Controls.KeyPress(message)
                 .Options(opt => opt.ShowTooltip(false))
                 .Run(cancellationToken);
-            return PromptPlus.AbortedByCtrlC;
+            return cancellationToken.IsCancellationRequested;
         }
 
         /// <inheritdoc/>
@@ -419,7 +419,18 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptWriteStartCommand(string text)
         {
-            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            // Color.Darkorange has no equivalent System.ConsoleColor member, so the
+            // WriteLine(text, Color) overload throws under redirected/piped output
+            // (no ANSI, falls back to legacy console colors). Only drop the color
+            // when there's no real console; keep the original styling otherwise.
+            if (Console.IsOutputRedirected)
+            {
+                PromptPlus.Console.WriteLine(text);
+            }
+            else
+            {
+                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            }
             PromptPlus.Console.WriteLine("");
         }
 
@@ -427,7 +438,14 @@ namespace AdrPlus.Infrastructure.UI
         public void PromptWriteFinishedCommand(string text)
         {
             PromptPlus.Console.WriteLine("");
-            PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            if (Console.IsOutputRedirected)
+            {
+                PromptPlus.Console.WriteLine(text);
+            }
+            else
+            {
+                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+            }
         }
 
         /// <summary>
@@ -451,7 +469,7 @@ namespace AdrPlus.Infrastructure.UI
         {
             PromptPlus.Config.DefaultCulture = new CultureInfo(config.Language);
             PromptPlus.Config.EnabledAbortKey = false;
-            PromptPlus.Config.EnableMessageAbortCtrlC = false;
+            PromptPlus.Config.ShowMessageAbortKey = false;
             PromptPlus.Config.HideAfterFinish = true;
             PromptPlus.Config.PageSize = 8;
         }
@@ -470,11 +488,16 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptShowBanner(string bannerText)
         {
+           if (Console.IsOutputRedirected)
+           {
+               // Console.Clear() and the banner widget require a real console buffer
+               // (window size, cursor control). Under redirected/piped output - CI,
+               // scripts, or an automation agent driving this CLI non-interactively -
+               // there is no such buffer, and both throw "The handle is invalid".
+               return;
+           }
            PromptPlus.Console.Clear();
-           PromptPlus.Widgets
-                .Banner(bannerText, ColorWelcomeBanner)
-                .Border(BannerDashOptions.DoubleBorderDown)
-                .Show();
+           PromptPlus.Widgets.Banner(bannerText, ColorWelcomeBanner, DashOptions.DoubleBorderUpDown);
         }
 
         /// <inheritdoc/>
@@ -495,7 +518,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Confirm(message)
                 .Run(cancellationToken);
-            return (result.IsAborted, (result.IsAborted ? default : result.Content!.Value).IsYesResponseKey());
+            return (result.IsAborted, !result.IsAborted && char.ToUpperInvariant(result.Content!.Value.KeyChar) == char.ToUpperInvariant(PromptPlus.Config.YesChar));
         }
 
         /// <inheritdoc/>
@@ -510,8 +533,7 @@ namespace AdrPlus.Infrastructure.UI
                 .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
-                .EqualItems((a, b) => a.Name == b.Name)
-                .MaxWidth(25)
+                .DefaultMatchBy((a, b) => a.Name == b.Name)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? null : result.Content);
         }
@@ -582,8 +604,7 @@ namespace AdrPlus.Infrastructure.UI
                 .TextSelector(field => $"{GetTitleField(field.Name)} ")
                 .ExtraInfo(field => field.IsEndEdit ? "" : field.Value)
                 .ChangeDescription(field => ShowDescField(field))
-                .EqualItems((a, b) => a.Name == b.Name)
-                .MaxWidth(25)
+                .DefaultMatchBy((a, b) => a.Name == b.Name)
                 .HideTipGroup()
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? null : result.Content);
@@ -599,7 +620,7 @@ namespace AdrPlus.Infrastructure.UI
                 .MaxLength(5)
                 .AcceptInput(input => char.IsAsciiLetter(input) || input == '-')
                 .SuggestionHandler(input => ["en-us","pt-br"])
-                .PredicateSelected(input =>
+                .PredicateValid(input =>
                 {
                     if (input.Trim().Length == 0)
                     {
@@ -633,7 +654,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(fieldsJson.Value)
                 .MaxLength(50)
                 .SuggestionHandler(input => [AppConstants.DefaultFolderAdr])
-                .PredicateSelected(input =>
+                .PredicateValid(input =>
                 {
                     if (input.Trim().Length == 0)
                     {
@@ -667,7 +688,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(fieldsJson.Value)
                 .MaxLength(100)
                 .SuggestionHandler(input => ["code \"{0}\"", "devenv /edit \"{0}\"", "rider \"{0}\""])
-                .PredicateSelected(input =>
+                .PredicateValid(input =>
                 {
                     if (input.Trim().Length == 0)
                     {
@@ -752,7 +773,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(fieldsJson.Value)
                 .AcceptInput(input => char.IsAsciiLetter(input) || input == ';' || input == '*')
                 .SuggestionHandler(input => [Resources.AdrPlus.DefaultScope])
-                .PredicateSelected(input =>
+                .PredicateValid(input =>
                 {
                     var scopes = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
                     var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -777,7 +798,7 @@ namespace AdrPlus.Infrastructure.UI
                 .MultiSelect<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
                 .AddItems(fields.First(f => f.Name == AppConstants.FieldScopes).Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
-                .PredicateSelected(input =>
+                .PredicateChecked(input =>
                 {
                     var scopes = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
                     var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -839,7 +860,6 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
-                .MaxWidth(10)
                 .AddItems(enumlist)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
@@ -849,17 +869,13 @@ namespace AdrPlus.Infrastructure.UI
         {
             var message = $"{Resources.AdrPlus.PromptSelectAdrTemplatePath}: ";
             var result = PromptPlus.Controls
-                .FileSelect(message)
-                .DefaultHistory()
+                .File(message)
                 .SearchPattern("*.md")
-                .PredicateSelected(item =>
-                    {
-                        return (!item.IsFolder) && item.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase);
-                    })
-                .EnabledHistory("AdrPlusAdrTemplatePathHistory")
+                .SelectFilesOnly(true)
+                .EnableHistory("AdrPlusAdrTemplatePathHistory")
                 .Root(root)
                 .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content.FullPath);
+            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!.FullPath);
         }
 
         /// <inheritdoc/>
@@ -901,8 +917,8 @@ namespace AdrPlus.Infrastructure.UI
         {
            var inputfilename = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileNameReport}: ")
                     .Default("AdrPlusReport")
-                    .PredicateSelected((value) => string.IsNullOrWhiteSpace(value) ? (false, Resources.AdrPlus.ExceptionFilenameEmpty) : (true, string.Empty))
-                    .EnabledHistory("AdrPlusExplorerReportFileName")
+                    .PredicateValid((value) => string.IsNullOrWhiteSpace(value) ? (false, Resources.AdrPlus.ExceptionFilenameEmpty) : (true, string.Empty))
+                    .EnableHistory("AdrPlusExploreReportFileName")
                     .Run(cancellationToken);
             return (inputfilename.IsAborted, inputfilename.IsAborted ? string.Empty : inputfilename.Content!);
         }
@@ -910,17 +926,17 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, bool IsCreatingReport) PromptOptionShowOrCreateReport(CancellationToken cancellationToken)
         {
-            var explorerreport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
+            var explorereport = PromptPlus.Controls.Switch($"{Resources.AdrPlus.PromptShowOrCreateReport}: ")
                 .OffValue($"{Resources.AdrPlus.ShowAdrs}")
                 .OnValue($"{Resources.AdrPlus.CreateReport}")
-                .EnabledHistory("AdrPlusExplorerShowOrReport")
+                .EnableHistory("AdrPlusExploreShowOrReport")
                 .Default(false, true)
                 .Run(cancellationToken);
-            return (explorerreport.IsAborted, !explorerreport.IsAborted && (bool)explorerreport.Content!);
+            return (explorereport.IsAborted, !explorereport.IsAborted && (bool)explorereport.Content!);
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string[] FieldsExplorer) PromptFieldsExplorer(CancellationToken cancellationToken)
+        public (bool IsAborted, string[] FieldsExplore) PromptFieldsExplore(CancellationToken cancellationToken)
         {
             string[] fieldsresources = Resources.AdrPlus.ListFieldReport.Split(',');
             var fields = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsReport}: ")
@@ -946,8 +962,8 @@ namespace AdrPlus.Infrastructure.UI
                         ctx.AddItem(item);
                     }
                 })
-                 .EnabledHistory("AdrPlusExplorerFields")
-                 .DefaultHistory()
+                 .EnableHistory("AdrPlusExploreFields")
+                 .UseDefaultHistory()
                  .TextSelector(item => item[2..])
                  .Run(cancellationToken);
             return (fields.IsAborted, fields.IsAborted ? [] : fields.Content!);
@@ -955,10 +971,10 @@ namespace AdrPlus.Infrastructure.UI
 
 
         /// <inheritdoc/>
-        public (bool IsAborted, string FileSelectd) PromptTableExplorer(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
+        public (bool IsAborted, string FileSelectd) PromptTableExplore(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
             var onstart = true;
-            var table = PromptPlus.Controls.TableSelect<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}: ")
+            var table = PromptPlus.Controls.Table<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}: ")
                 .Interaction(foundfiles, (item, ctx) =>
                 {
                     ctx.AddItem(item);
@@ -977,56 +993,53 @@ namespace AdrPlus.Infrastructure.UI
                         //10)Scope,
                         //11)Domain
                         ctx.TextSelector((item) => Path.GetFileName(item.FileName));
-                        ctx.AddColumn(Resources.AdrPlus.File, 40, (item) => 
-                        {
-                            return $"{Path.GetFileName(item.FileName)} ({item.Number})";
-                        }, maxslidinglines: 3);
-                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, 29, (item) => Helper.FmtStatus(item, adrPlusRepoConfig), maxslidinglines: 2);
+                        ctx.AddColumn(Resources.AdrPlus.File, (item) => (object)$"{Path.GetFileName(item.FileName)} ({item.Number})", width: 40);
+                        ctx.AddColumn(Resources.AdrPlus.CurrentStatus, (item) => (object)Helper.FmtStatus(item, adrPlusRepoConfig), width: 29);
                         if (fields.Any(x => x.StartsWith("3)",false,CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Folder, 20, (item) => Helper.FmtFolder(item, folderrepoadr), maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Folder, (item) => (object)Helper.FmtFolder(item, folderrepoadr), width: 20);
                         }
                         if (fields.Any(x => x.StartsWith("4)",false,CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Format, 20, (item) => Helper.FmtFormat(item), maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Format, (item) => (object)Helper.FmtFormat(item), width: 20);
                         }
                         if (fields.Any(x => x.StartsWith("5)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Prefix, 5, (item) => item.Prefix, maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Prefix, (item) => (object)item.Prefix, width: 5);
                         }
                         if (fields.Any(x => x.StartsWith("6)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Version, 5, (item) => item.Version.ToString(CultureInfo.InvariantCulture));
+                            ctx.AddColumn(Resources.AdrPlus.Version, (item) => (object)item.Version.ToString(CultureInfo.InvariantCulture), width: 5);
                         }
                         if (fields.Any(x => x.StartsWith("7)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Revision, 5, (item) => (item.Revision??0).ToString(CultureInfo.InvariantCulture));
+                            ctx.AddColumn(Resources.AdrPlus.Revision, (item) => (object)(item.Revision??0).ToString(CultureInfo.InvariantCulture), width: 5);
                         }
                         if (fields.Any(x => x.StartsWith("8)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.StatusCreated, 25, (item) => item.Header.DateCreate == null ? string.Empty : $"{item.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusCreate}");
+                            ctx.AddColumn(Resources.AdrPlus.StatusCreated, (item) => (object)(item.Header.DateCreate == null ? string.Empty : $"{item.Header.DateCreate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusCreate}"), width: 25);
                         }
                         if (fields.Any(x => x.StartsWith("9)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.StatusUpdated, 25, (item) => item.Header.DateUpdate == null ? string.Empty : $"{item.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusUpdate}");
+                            ctx.AddColumn(Resources.AdrPlus.StatusUpdated, (item) => (object)(item.Header.DateUpdate == null ? string.Empty : $"{item.Header.DateUpdate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}:{item.Header.StatusUpdate}"), width: 25);
                         }
                         if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Scope, 20, (item) => item.Scope ?? string.Empty, maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Scope, (item) => (object)(item.Scope ?? string.Empty), width: 20);
                         }
                         if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Domain, 20, (item) => item.Domain ?? string.Empty, maxslidinglines: 2);
+                            ctx.AddColumn(Resources.AdrPlus.Domain, (item) => (object)(item.Domain ?? string.Empty), width: 20);
                         }
-                        ctx.Filter(FilterMode.Contains, true);
-                        ctx.ChangeDescription((item, _, _) =>
+                        ctx.Filter(FilterMode.Contains, FilterTableMode.ColumnFilters);
+                        ctx.ChangeDescription((item) =>
                         {
                             return Path.GetDirectoryName(item.FileName) ?? string.Empty;
                         });
                     }
                 })
                 .Run();
-                return (table.IsAborted, table.IsAborted ? string.Empty : table.Content.FileName);
+                return (table.IsAborted, table.IsAborted ? string.Empty : table.Content.Value.FileName);
         }
 
         /// <inheritdoc/>
@@ -1036,7 +1049,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Select<ItemMenuWizard>(message,"")
                 .Default(defaultvalue)
-                .EnabledHistory("AdrPlusMainMenuWizardSelection")
+                .EnableHistory("AdrPlusMainMenuWizardSelection")
                 .Interaction(itemMenus, (item,opc) => 
                 {
                     if (item.EnabledWhenNotConfigured || IsHasconfig)
@@ -1050,7 +1063,7 @@ namespace AdrPlus.Infrastructure.UI
                 })
                 .TextSelector(item => item.Title)
                 .ChangeDescription(field => field.Description)
-                .EqualItems((a, b) => a.Id == b.Id)
+                .DefaultMatchBy((a, b) => a.Id == b.Id)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? null : result.Content!);
         }
@@ -1065,7 +1078,6 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
-                .MaxWidth(1)
                 .AddItems(opcsep)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
@@ -1079,7 +1091,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
                 .MaxLength(maxlength)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
+                .PredicateValid(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
                 .SuggestionHandler(input => [sugestion])
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
@@ -1090,7 +1102,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
             var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
-                .OnlyView()
+                .ViewOnly()
                 .Filter(FilterMode.Contains)
                 .AddItems(adrs)
                 .ExtraInfo(x => 
@@ -1130,7 +1142,7 @@ namespace AdrPlus.Infrastructure.UI
                          return Resources.AdrPlus.MsgUnknownStructure;
                      }
                  })
-                .PredicateSelected(x => false)
+                .PredicateChecked(x => false)
                 .Default(adrs.Where(x => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated), false)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : result.Content!.Length);
@@ -1143,8 +1155,8 @@ namespace AdrPlus.Infrastructure.UI
             string[] drives = fileSystemService.GetDrives();
             var result = PromptPlus.Controls
                 .Select<string>(message)
-                .DefaultHistory()
-                .EnabledHistory("AdrPlusRepoDriveSelection")
+                .UseDefaultHistory()
+                .EnableHistory("AdrPlusRepoDriveSelection")
                 .AddItems(drives)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!);
@@ -1157,7 +1169,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultTitle)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
+                .PredicateValid(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? defaultTitle : result.Content!);
         }
@@ -1181,7 +1193,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultdomain)
-                .PredicateSelected(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
+                .PredicateValid(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
                 .SuggestionHandler((input) =>
                 {
                     return string.IsNullOrWhiteSpace(input) ? sugestdomains : [.. sugestdomains.Where(x => x.Contains(input, StringComparison.OrdinalIgnoreCase)) ?? []];
@@ -1196,62 +1208,40 @@ namespace AdrPlus.Infrastructure.UI
             var defarrdomain = Array.Empty<string>();
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}: ";
             var resuldefarrdomain = PromptPlus.Controls
-                .WaitCommand(message)
-                .CommandHandler(() => defarrdomain = _adrServices.GetDomains(fileSystemService, path, adrPlusRepo).Result)
+                .Task(message)
+                .Action(_ => defarrdomain = _adrServices.GetDomains(fileSystemService, path, adrPlusRepo).Result)
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
-            return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!);
+            return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!.Exception);
         }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptSelectFolderRepositoryAdr(string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.PromptSelectAdrRepositoryAdr}: ";
-            var result = PromptPlus.Controls
-                .FileSelect(message)
-                .OnlyFolders()
-                .DefaultHistory()
-                .EnabledHistory("AdrPlusRepoPathHistory")
-                .PredicateSelected(input =>
-                {
-                    var targetconfigPath = Path.Combine(input.FullPath,validateJsonConfig.GetFileNameRepoConfig());
-                    if (!fileSystemService.FileExists(targetconfigPath))
-                    {
-                        return (false, string.Format(null, FormatMessages.ErrFileNotFound, targetconfigPath));
-                    }
-                    return (true, "");
-                })
-                .Root(root)
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content.FullPath);
-        }
-
 
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
             var pronptmessage = $"{message}: ";
-            var result = PromptPlus.Controls
-                .FileSelect(pronptmessage)
-                .OnlyFolders()
-                .DefaultHistory()
-                .EnabledHistory($"AdrPlusSelectFolderPath_{BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(message)))}")
-                .PredicateSelected(input =>
+            while (true)
+            {
+                var result = PromptPlus.Controls
+                    .File(pronptmessage)
+                    .OnlyFolders()
+                    .EnableHistory($"AdrPlusSelectFolderPath_{BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(message)))}")
+                    .Root(root)
+                    .Run(cancellationToken);
+                if (result.IsAborted)
                 {
-                    if (!checknitCmd)
-                    {
-                        return (true, "");
-                    }
-                    var targetPath = Path.Combine(input.FullPath, validateJsonConfig.GetFileNameRepoConfig());
+                    return (true, string.Empty);
+                }
+                if (checknitCmd)
+                {
+                    var targetPath = Path.Combine(result.Content!.FullPath, validateJsonConfig.GetFileNameRepoConfig());
                     if (!fileSystemService.FileExists(targetPath))
                     {
-                        return (false, Resources.AdrPlus.ErrorInitCommandNotExecuted);
+                        PromptWriteError(Resources.AdrPlus.ErrorInitCommandNotExecuted);
+                        continue;
                     }
-                    return (true, "");
-                })
-                .Root(root)
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content.FullPath);
+                }
+                return (false, result.Content!.FullPath);
+            }
         }
 
         /// <inheritdoc/>
@@ -1285,7 +1275,7 @@ namespace AdrPlus.Infrastructure.UI
                     return [.. suggestions];
                 })
                 .AcceptInput(input => char.IsAsciiLetter(input))
-                .PredicateSelected(input =>
+                .PredicateValid(input =>
                 {
                     if (fieldName != AppConstants.FieldStatusRejected)
                     {

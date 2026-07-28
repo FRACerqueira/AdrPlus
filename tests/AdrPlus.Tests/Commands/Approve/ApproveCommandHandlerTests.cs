@@ -24,7 +24,7 @@ public class ApproveCommandHandlerTests
 {
     private readonly ILogger<ApproveCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
-    private readonly IPromptConsole _mockConsole;
+    private readonly IConsoleWriter _mockConsole;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly AdrPlusConfig _config;
@@ -34,7 +34,7 @@ public class ApproveCommandHandlerTests
     {
         _mockLogger = Substitute.For<ILogger<ApproveCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
-        _mockConsole = Substitute.For<IPromptConsole>();
+        _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
 

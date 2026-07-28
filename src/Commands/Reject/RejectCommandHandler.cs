@@ -35,13 +35,13 @@ namespace AdrPlus.Commands.Reject
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
-        IPromptConsole prompt,
+        IConsoleWriter prompt,
         IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<RejectCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
-        private readonly IPromptConsole _prompt = prompt;
+        private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private static readonly Arguments[] ValidCommandArgs =

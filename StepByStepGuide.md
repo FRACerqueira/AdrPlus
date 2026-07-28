@@ -1,4 +1,4 @@
-[![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)](logo)
+![icon](https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png)
 # Step-by-Step Guide to Set Up and Create Your First ADR
 
 Welcome! This guide will walk you through installing **AdrPlus** and creating your first **Architecture Decision Record (ADR)**.
@@ -14,7 +14,10 @@ Welcome! This guide will walk you through installing **AdrPlus** and creating yo
 5. [Create Your First ADR](#create-your-first-adr)
 6. [Approve Your ADR](#approve-your-adr)
 7. [Explore Additional Commands](#explore-additional-commands)
-8. [Troubleshooting](#troubleshooting)
+8. [Troubleshooting Upgrade](#troubleshooting-upgrade)
+9. [Troubleshooting](#troubleshooting)
+10. [Next Steps](#next-steps)
+11. [Support](#support)
 
 ---
 
@@ -538,7 +541,7 @@ Now that you've created your first ADR, you can explore other features:
 Browse and explore all ADR files in your repository with an interactive file viewer:
 
 ```bash
-adrplus explorer --wizard
+adrplus explore --wizard
 ```
 
 #### What the Explorer Does
@@ -584,13 +587,13 @@ adrplus version --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
 
 Creates: `ADR0001V02-UsePostgresqlAsPrimaryDatabase.md`
 
-### Review an ADR (Minor Change)
+### Revise an ADR (Minor Change)
 
 Create a revision for minor updates:
 
 ```bash
-adrplus review --wizard
-adrplus review --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus revise --wizard
+adrplus revise --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
 ```
 
 Creates: `ADR0001V01R01-UsePostgresqlAsPrimaryDatabase.md`
@@ -716,7 +719,7 @@ Congratulations! You've successfully:
 
 1. **Create more ADRs** for other important architectural decisions
 2. **Commit to version control**: `git add doc/adr && git commit -m "docs: Add initial ADRs"`
-3. **Plan for growth**: Review the [Upgrade Settings](#upgrade-settings) section to see if scopes would help organize your ADRs
+3. **Plan for growth**: Review the [Troubleshooting Upgrade](#troubleshooting-upgrade) section to see if scopes would help organize your ADRs
 4. **Share with your team**: Make ADRs part of your project documentation
 5. **Review regularly**: Keep ADRs updated as your architecture evolves
 6. **Check the FAQ**: See [FAQ.md](FAQ.md) for common questions
