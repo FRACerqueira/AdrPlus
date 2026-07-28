@@ -72,29 +72,6 @@ public class ExploreCommandHandlerTests
 
     #endregion
 
-    #region ExecuteAsync - Template Repo File Not Found Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenTemplateRepoFileNotFound_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var targetPath = PathHelper.GetRepositoryAdrPath();
-        var args = new[] { "--path", targetPath, "--file", "report.md" };
-        var parsedArgs = new Dictionary<Arguments, string>
-        {
-            { Arguments.TargetRepo, targetPath },
-            { Arguments.FileReport, "report.md" }
-        };
-        _fixture.MockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _fixture.MockValidateConfig.HasTemplateRepoFile().Returns(false);
-
-        // Act & Assert
-        await _fixture.Handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
-            .Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
     #region ExecuteAsync - Directory and File Validation Tests
 
     [Fact]

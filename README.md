@@ -3,7 +3,7 @@
 # AdrPlus
 
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
+[![NuGet](https://img.shields.io/nuget/v/AdrPlus.svg?include_prereleases)](https://www.nuget.org/packages/AdrPlus)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)

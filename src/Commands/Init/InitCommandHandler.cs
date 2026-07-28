@@ -78,11 +78,6 @@ namespace AdrPlus.Commands.Init
                     return;
                 }
 
-                if (!_validateconfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-                }
-
                 if (parsedArgs.ContainsKey(Arguments.WizardInit))
                 {
                     parsedArgs =  InitWizard(cancellationToken);
@@ -205,7 +200,7 @@ namespace AdrPlus.Commands.Init
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrConfigFileAlreadyExists, configPath));
                 }
                 filecfg = _validateconfig.GetDefaultConfigRepoFilePath();
-                jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                jsonrepoconfig = await _validateconfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
             }
             else
             {

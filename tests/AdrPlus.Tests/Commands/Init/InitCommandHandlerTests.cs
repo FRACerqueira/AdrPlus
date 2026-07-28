@@ -89,25 +89,6 @@ public class InitCommandHandlerTests
 
     #endregion
 
-    #region ExecuteAsync - Template File Not Found Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenTemplateRepoFileNotFound_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var args = new[] { "--path", "C:\\repo" };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, "C:\\repo" } };
-
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
-            .Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
     #region ExecuteAsync - Direct Path Tests
 
     [Fact]
@@ -593,7 +574,7 @@ public class InitCommandHandlerTests
         var exception = new InvalidOperationException("Test exception");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(x => throw exception);
+        _mockFileSystem.When(x => x.DirectoryExists(Arg.Any<string>())).Do(x => throw exception);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))

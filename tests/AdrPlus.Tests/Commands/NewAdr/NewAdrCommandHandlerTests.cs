@@ -131,28 +131,6 @@ public class NewAdrCommandHandlerTests
 
     #endregion
 
-    #region ExecuteAsync - Template File Not Found Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenTemplateRepoFileNotFound_ThrowsFileNotFoundException()
-    {
-        // Arrange
-        var args = new[] { "--path", RepoPath, "--title", "My ADR" };
-        var parsedArgs = new Dictionary<Arguments, string>
-        {
-            { Arguments.TargetRepo, RepoPath },
-            { Arguments.TitleAdr, "My ADR" }
-        };
-        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.HasTemplateRepoFile().Returns(false);
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
-            .Should().ThrowAsync<FileNotFoundException>();
-    }
-
-    #endregion
-
     #region ExecuteAsync - Directory Validation Tests
 
     [Fact]

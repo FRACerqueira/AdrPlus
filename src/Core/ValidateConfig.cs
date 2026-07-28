@@ -879,6 +879,10 @@ namespace AdrPlus.Core
 
         public async Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken)
         {
+            if (!_fileSystem.FileExists(GetDefaultConfigRepoFilePath()))
+            {
+                return string.Empty;
+            }
             var defaultjsonrepoconfig = await _fileSystem.ReadAllTextAsync(GetDefaultConfigRepoFilePath(), cancellationToken);
             var (isValid, _) = ValidateRepoStructure(defaultjsonrepoconfig);
             if (!isValid)

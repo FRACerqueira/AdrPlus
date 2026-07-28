@@ -898,7 +898,7 @@ public class RejectCommandHandlerTests
         var exception = new InvalidOperationException("Test exception");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(x => throw exception);
+        _mockFileSystem.When(x => x.FileExists(Arg.Any<string>())).Do(x => throw exception);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))

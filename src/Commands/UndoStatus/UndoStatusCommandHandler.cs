@@ -102,10 +102,6 @@ namespace AdrPlus.Commands.UndoStatus
                     return;
                 }
 
-                if (!_validateconfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-                }
 
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardUndoStatus);
                 if (hasWizard)

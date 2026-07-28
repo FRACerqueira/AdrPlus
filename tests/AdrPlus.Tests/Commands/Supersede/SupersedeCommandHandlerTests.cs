@@ -413,7 +413,7 @@ public class SupersedeCommandHandlerTests
 
         SetupBasicMocks(parsedArgs, jsonConfig);
 
-        // ADR is Proposed, not Accepted — not eligible for superseding
+        // ADR is Proposed, not Accepted ï¿½ not eligible for superseding
         var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Proposed, AdrStatus.Unknown);
         _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);
@@ -825,7 +825,7 @@ public class SupersedeCommandHandlerTests
         cts.Cancel();
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(_ => throw new OperationCanceledException());
+        _mockFileSystem.When(x => x.FileExists(Arg.Any<string>())).Do(_ => throw new OperationCanceledException());
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, cts.Token))
@@ -961,7 +961,7 @@ public class SupersedeCommandHandlerTests
         var exception = new InvalidOperationException("Test exception");
 
         _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
-        _mockValidateConfig.When(x => x.HasTemplateRepoFile()).Do(_ => throw exception);
+        _mockFileSystem.When(x => x.FileExists(Arg.Any<string>())).Do(_ => throw exception);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
