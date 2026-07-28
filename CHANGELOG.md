@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.0.0-beta4] - 2026-07-28
+
 ### Added
 
 - 9 new UI languages (`de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`), matching the set already shipped by the `PromptPlus` dependency. The first-run wizard's language picker now lists all 11 languages explicitly (plus "Other" for any other valid culture code).
