@@ -1,5 +1,10 @@
-## Graphify generated output (may contain extracted/summarized doc content - do not commit)
-graphify-out/
+## Graphify generated output - only the shareable report/graph artifacts are versioned;
+## cache/, dated backup snapshots, and internal state files are regenerated locally and stay ignored.
+graphify-out/*
+!graphify-out/graph.json
+!graphify-out/graph.html
+!graphify-out/GRAPH_REPORT.md
+!graphify-out/manifest.json
 
 ## Claude Code personal/local settings (machine-specific permissions, not shared)
 .claude/settings.local.json
