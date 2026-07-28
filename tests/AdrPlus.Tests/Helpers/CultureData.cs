@@ -9,7 +9,8 @@ namespace AdrPlus.Tests.Helpers;
 
 /// <summary>
 /// Provides culture theory data for parameterized tests that involve date parsing or formatting.
-/// Supplies both "en-US" and "pt-BR" cultures so tests exercise culture-sensitive behavior.
+/// Supplies a representative set of cultures (including distinct date/number formatting conventions)
+/// so tests exercise culture-sensitive behavior.
 /// </summary>
 internal static class CultureData
 {
@@ -19,7 +20,10 @@ internal static class CultureData
     public static readonly TheoryData<string> Cultures = new()
     {
         "en-US",
-        "pt-BR"
+        "pt-BR",
+        "de-DE",
+        "ja-JP",
+        "ru-RU"
     };
 
     /// <summary>

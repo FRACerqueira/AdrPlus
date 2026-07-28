@@ -11,6 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- 9 new UI languages (`de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`), matching the set already shipped by the `PromptPlus` dependency. The first-run wizard's language picker now lists all 11 languages explicitly (plus "Other" for any other valid culture code).
+- ADR templates (all 7 methodology templates, in all 11 languages) are now selected based on the configured UI language, instead of only offering English/Portuguese variants.
+- See [TRANSLATIONS.md](TRANSLATIONS.md) for per-language review status — the 9 new languages are machine-translated, pending native-speaker review.
+
+---
+
+## [1.0.0-beta3] - 2026-07-28
+
+### Fixed
+
+- Every repo-touching command (`approve`, `explore`, `init`, `migrate`, `new`, `reject`, `revise`, `supersede`, `undo-status`, `version`) crashed with `FileNotFoundException` on a fresh install/upgrade — they gated on a machine-global template file that only the interactive first-run wizard ever writes, even though each command already validates its own local `adr-config.adrplus`. The redundant guard was dropped; `init` now falls back to the in-memory default config when the global template is missing, and `migrate`'s pattern lookup tolerates its absence too.
+- `init` always crashed on a genuinely fresh repository — the ADR folder was scanned for existing files before it was created. A missing ADR folder is now treated as zero files instead of throwing.
+- `explore --file` crashed on a bare filename with no directory component — `Path.GetDirectoryName` returning empty was treated as a nonexistent directory instead of the current one.
+- The NuGet badge in the README didn't show pre-release versions.
+
+---
+
+## [1.0.0-beta2] - 2026-07-28
+
+### Changed
+
+- Standardized color constant names in `PromptConsole.cs` for naming consistency.
+- Removed the `wizard` argument from the AdrPlus launch profile (`launchSettings.json`) so it's no longer passed automatically on launch.
+
 ---
 
 ## [1.0.0-beta1] - 2026-07-27

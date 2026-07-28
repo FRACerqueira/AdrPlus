@@ -1,0 +1,1291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrMsgDefaultSettingsMissing" xml:space="preserve">
+    <value>配置中缺少 DefaultSettings 部分</value>
+  </data>
+  <data name="ErrMsgContentInvalidPath" xml:space="preserve">
+    <value>'content' 包含无效的文件路径：{0}</value>
+  </data>
+  <data name="ErrMsgContentPathTooLong" xml:space="preserve">
+    <value>'content' 文件路径过长：'{0}'</value>
+  </data>
+  <data name="ErrMsgContentPathNotSupported" xml:space="preserve">
+    <value>'content' 文件路径格式不受支持：'{0}'</value>
+  </data>
+  <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
+    <value>'folderRepo' 必须是相对路径，不允许使用绝对路径：'{0}'</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>用法</value>
+  </data>
+  <data name="ErrMsgInvalidLanguageCode" xml:space="preserve">
+    <value>'language' 包含无效的语言代码：'{0}'。 </value>
+  </data>
+  <data name="ExceptionDirectoryNotFound" xml:space="preserve">
+    <value>目录未找到：{0}</value>
+  </data>
+  <data name="ExceptionUnknownCommand" xml:space="preserve">
+    <value>未知命令：{0}</value>
+  </data>
+  <data name="ExceptionMissingArgumentValue" xml:space="preserve">
+    <value>参数 '{0}' 缺少值（{1}）</value>
+  </data>
+  <data name="ExceptionMissingRequiredArgument" xml:space="preserve">
+    <value>缺少必需参数 '{0}'（{1}）</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="ErrMsgTemplateRepoFileNotFound" xml:space="preserve">
+    <value>未找到 ADR 配置文件（template/adr-config.adrplus）。 </value>
+  </data>
+  <data name="ExceptionInvalidArgumentToken" xml:space="preserve">
+    <value>无效参数：{0}</value>
+  </data>
+  <data name="MsgCommandStarted" xml:space="preserve">
+    <value>命令 '{0}' 已开始</value>
+  </data>
+  <data name="MsgCommandFinished" xml:space="preserve">
+    <value>命令 '{0}' 已完成</value>
+  </data>
+  <data name="StatusNew" xml:space="preserve">
+    <value>已提议</value>
+  </data>
+  <data name="StatusAcc" xml:space="preserve">
+    <value>已接受</value>
+  </data>
+  <data name="StatusRej" xml:space="preserve">
+    <value>已拒绝</value>
+  </data>
+  <data name="StatusSup" xml:space="preserve">
+    <value>已替代</value>
+  </data>
+  <data name="DefaultScope" xml:space="preserve">
+    <value>Enterprise*;CrossDomain;Project</value>
+  </data>
+  <data name="DefaultHeaderDisclaimer" xml:space="preserve">
+    <value>请勿删除此注释、行和表格</value>
+  </data>
+  <data name="DefaultPrefix" xml:space="preserve">
+    <value>ADR</value>
+  </data>
+  <data name="Examples" xml:space="preserve">
+    <value>示例</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>必填</value>
+  </data>
+  <data name="FieldTitleFolderRepo" xml:space="preserve">
+    <value>ADR 仓库文件夹</value>
+  </data>
+  <data name="FieldTitlePrefix" xml:space="preserve">
+    <value>文件前缀</value>
+  </data>
+  <data name="FieldTitleLenSeq" xml:space="preserve">
+    <value>序号长度</value>
+  </data>
+  <data name="FieldTitleLenVersion" xml:space="preserve">
+    <value>版本长度</value>
+  </data>
+  <data name="FieldTitleLenRevision" xml:space="preserve">
+    <value>修订号长度</value>
+  </data>
+  <data name="FieldTitleLenScope" xml:space="preserve">
+    <value>范围长度</value>
+  </data>
+  <data name="FieldTitleScopes" xml:space="preserve">
+    <value>范围</value>
+  </data>
+  <data name="FieldTitleFolderByScope" xml:space="preserve">
+    <value>按范围分文件夹</value>
+  </data>
+  <data name="FieldTitleSkipDomain" xml:space="preserve">
+    <value>跳过域的条件</value>
+  </data>
+  <data name="FieldTitleSeparator" xml:space="preserve">
+    <value>分隔符</value>
+  </data>
+  <data name="FieldTitleCaseTransform" xml:space="preserve">
+    <value>大小写转换</value>
+  </data>
+  <data name="FieldTitleStatusNew" xml:space="preserve">
+    <value>“已提议”状态文本</value>
+  </data>
+  <data name="FieldTitleStatusAccepted" xml:space="preserve">
+    <value>“已接受”状态文本</value>
+  </data>
+  <data name="FieldTitleStatusRejected" xml:space="preserve">
+    <value>“已拒绝”状态文本</value>
+  </data>
+  <data name="FieldTitleStatusSuperseded" xml:space="preserve">
+    <value>“已替代”状态文本</value>
+  </data>
+  <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
+    <value>免责声明标题</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="Revision" xml:space="preserve">
+    <value>修订号</value>
+  </data>
+  <data name="FieldTitleHeaderVersion" xml:space="preserve">
+    <value>标题中的版本文本</value>
+  </data>
+  <data name="FieldTitleHeaderRevision" xml:space="preserve">
+    <value>标题中的修订号文本</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>可选</value>
+  </data>
+  <data name="ExceptionDirectoryPathEmpty" xml:space="preserve">
+    <value>目录路径不能为空</value>
+  </data>
+  <data name="ExceptionInvalidCaseFormat" xml:space="preserve">
+    <value>无效的大小写模型格式：{0}</value>
+  </data>
+  <data name="ExceptionJsonStringNull" xml:space="preserve">
+    <value>JSON 字符串不能为空</value>
+  </data>
+  <data name="ExceptionFilenameEmpty" xml:space="preserve">
+    <value>文件名不能为空</value>
+  </data>
+  <data name="ExceptionFilenameMustHaveMdExtension" xml:space="preserve">
+    <value>文件名必须具有 .md 扩展名</value>
+  </data>
+  <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
+    <value>文件名格式无效，至少需要包含编号和标题</value>
+  </data>
+  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
+    <value>无效的范围格式：{0}</value>
+  </data>
+  <data name="ValidationMissingRequiredField" xml:space="preserve">
+    <value>缺少必需字段：'{0}'</value>
+  </data>
+  <data name="ValidationFieldWrongType" xml:space="preserve">
+    <value>字段 '{0}' 必须为 {1} 类型，但发现：{2}</value>
+  </data>
+  <data name="ValidationUnexpectedFields" xml:space="preserve">
+    <value>发现意外字段：{0}</value>
+  </data>
+  <data name="ValidationInvalidJsonFormat" xml:space="preserve">
+    <value>无效的 JSON 格式：{0}</value>
+  </data>
+  <data name="ValidationFieldMustBeNonNegative" xml:space="preserve">
+    <value>字段 '{0}' 必须为非负数</value>
+  </data>
+  <data name="ValidationFieldMinimumValue" xml:space="preserve">
+    <value>字段 '{0}' 必须至少为 {1}</value>
+  </data>
+  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
+    <value>当 '{1}' 为 0 时，字段 '{0}' 必须为空</value>
+  </data>
+  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
+    <value>当 '{1}' 大于 0 时，字段 '{0}' 不能为空</value>
+  </data>
+  <data name="ValidationScopeMinLength" xml:space="preserve">
+    <value>'{0}' 中的每个范围长度必须至少达到 '{1}' 的值（{2}）</value>
+  </data>
+  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
+    <value>以下范围未定义：{0}</value>
+  </data>
+  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
+    <value>当 '{1}' 为空时，字段 '{0}' 不能为 true</value>
+  </data>
+  <data name="ValidationMustbeFollowing" xml:space="preserve">
+    <value>字段 '{0}' 必须是以下之一：{1}</value>
+  </data>
+  <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
+    <value>字段 '{0}' 不能为空</value>
+  </data>
+  <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
+    <value>启动进程失败</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
+    <value>无效的区域性：{0}</value>
+  </data>
+  <data name="FieldTitleLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="FieldTitleOpenAdr" xml:space="preserve">
+    <value>打开 ADR 的命令</value>
+  </data>
+  <data name="CancelledByUser" xml:space="preserve">
+    <value>用户已取消</value>
+  </data>
+  <data name="ConfigActionSaveAndFinish" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="ConfigActionSaveAndFinishDesc" xml:space="preserve">
+    <value>保存配置并退出</value>
+  </data>
+  <data name="ConfigErrorInvalidBoolean" xml:space="preserve">
+    <value>布尔值无效。请输入 'true' 或 'false'（{0}）</value>
+  </data>
+  <data name="ConfigErrorInvalidNumber" xml:space="preserve">
+    <value>数字格式无效。请输入有效的数字</value>
+  </data>
+  <data name="ConfigErrorMinThreeChars" xml:space="preserve">
+    <value>至少需要 3 个字符</value>
+  </data>
+  <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
+    <value>应用于文件名的文本转换</value>
+  </data>
+  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
+    <value>按范围将 ADR 组织到不同的文件夹中</value>
+  </data>
+  <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
+    <value>ADR 仓库文件夹的相对路径</value>
+  </data>
+  <data name="ConfigFieldDescHeaderDisclaimer" xml:space="preserve">
+    <value>ADR 标题中显示的警告文本</value>
+  </data>
+  <data name="ConfigFieldDescLanguage" xml:space="preserve">
+    <value>工具界面和 ADR 模板使用的语言代码（例如 en-US、pt-BR、de-DE）。</value>
+  </data>
+  <data name="ConfigFieldDescLenRevision" xml:space="preserve">
+    <value>文件名中修订号的长度</value>
+  </data>
+  <data name="ConfigFieldDescLenScope" xml:space="preserve">
+    <value>文件名中范围缩写的长度</value>
+  </data>
+  <data name="ConfigFieldDescLenSeq" xml:space="preserve">
+    <value>文件名中序号的长度</value>
+  </data>
+  <data name="ConfigFieldDescLenVersion" xml:space="preserve">
+    <value>文件名中版本号的长度</value>
+  </data>
+  <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
+    <value>打开 ADR 文件的命令（必须包含文本 '{0}'）</value>
+  </data>
+  <data name="ConfigFieldDescPrefix" xml:space="preserve">
+    <value>ADR 文件名的前缀</value>
+  </data>
+  <data name="ConfigFieldDescScopes" xml:space="preserve">
+    <value>ADR 的有效范围列表（以分号分隔。在每个范围末尾加 '*' 可避免使用域）</value>
+  </data>
+  <data name="ConfigFieldDescSeparator" xml:space="preserve">
+    <value>用于分隔文件名各部分的字符</value>
+  </data>
+  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
+    <value>省略域信息的范围</value>
+  </data>
+  <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
+    <value>“已接受”状态的文本标签</value>
+  </data>
+  <data name="ConfigFieldDescStatusNew" xml:space="preserve">
+    <value>“已提议”状态的文本标签</value>
+  </data>
+  <data name="ConfigFieldDescStatusRejected" xml:space="preserve">
+    <value>“已拒绝”状态的文本标签</value>
+  </data>
+  <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
+    <value>“已替代”状态的文本标签</value>
+  </data>
+  <data name="ConfigInfoFileNameSample" xml:space="preserve">
+    <value>文件名示例：</value>
+  </data>
+  <data name="ConfigPromptChooseNewValue" xml:space="preserve">
+    <value>选择一个新值</value>
+  </data>
+  <data name="ConfigPromptEnterNewValue" xml:space="preserve">
+    <value>输入一个新值</value>
+  </data>
+  <data name="ConfigPromptOverwriteConfig" xml:space="preserve">
+    <value>配置文件已存在。是否要覆盖它？</value>
+  </data>
+  <data name="ConfigPromptSelectField" xml:space="preserve">
+    <value>选择要编辑的字段</value>
+  </data>
+  <data name="ConfigPromptSelectNewValues" xml:space="preserve">
+    <value>选择新值</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日期</value>
+  </data>
+  <data name="Domain" xml:space="preserve">
+    <value>域</value>
+  </data>
+  <data name="DomainSample" xml:space="preserve">
+    <value>示例域</value>
+  </data>
+  <data name="ErrMsgConfigValidationFailed" xml:space="preserve">
+    <value>配置验证失败</value>
+  </data>
+  <data name="ErrMsgCritical" xml:space="preserve">
+    <value>发生严重错误</value>
+  </data>
+  <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
+    <value>为 help 命令提供的参数过多</value>
+  </data>
+  <data name="ErrMsgInvalidRepoConfig" xml:space="preserve">
+    <value>无效的仓库配置：{0}</value>
+  </data>
+  <data name="ErrMsgNotEmpty" xml:space="preserve">
+    <value>此字段不能为空</value>
+  </data>
+  <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
+    <value>打开 ADR 的命令必须包含文本 '{0}'</value>
+  </data>
+  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
+    <value>发现重复的范围条目</value>
+  </data>
+  <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
+    <value>仓库尚未初始化</value>
+  </data>
+  <data name="ExceptionConfigFileNotFound" xml:space="preserve">
+    <value>配置文件未找到：{0}</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>字段</value>
+  </data>
+  <data name="HelpHeaderAvailableCommands" xml:space="preserve">
+    <value>可用命令</value>
+  </data>
+  <data name="InitCmdConfigFileAlreadyExists" xml:space="preserve">
+    <value>配置文件已存在于：{0}</value>
+  </data>
+  <data name="ErrorDateFormat" xml:space="preserve">
+    <value>日期格式无效。预期格式：{0}</value>
+  </data>
+  <data name="ErrorExternalCommand" xml:space="preserve">
+    <value>外部命令执行失败：{0}</value>
+  </data>
+  <data name="ErrorInConfigFile" xml:space="preserve">
+    <value>配置文件中存在错误：{0}</value>
+  </data>
+  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
+    <value>无效的范围 '{0}'。有效范围为：{1}</value>
+  </data>
+  <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
+    <value>已存在具有此标题的 ADR：{0}</value>
+  </data>
+  <data name="NewAdrPromptConfirmCreation" xml:space="preserve">
+    <value>确认使用这些信息创建 ADR？</value>
+  </data>
+  <data name="NewAdrPromptSelectDate" xml:space="preserve">
+    <value>选择参考日期</value>
+  </data>
+  <data name="NewAdrPromptSelectDrive" xml:space="preserve">
+    <value>选择驱动器</value>
+  </data>
+  <data name="SuccessExternalCommand" xml:space="preserve">
+    <value>外部命令执行成功：{0}</value>
+  </data>
+  <data name="SelectRepo" xml:space="preserve">
+    <value>已选择的仓库</value>
+  </data>
+  <data name="PromptEnterAdrDomain" xml:space="preserve">
+    <value>输入 ADR 域</value>
+  </data>
+  <data name="PromptEnterAdrTitle" xml:space="preserve">
+    <value>输入 ADR 标题</value>
+  </data>
+  <data name="PromptReadingRegisteredDomains" xml:space="preserve">
+    <value>正在读取已注册的域...</value>
+  </data>
+  <data name="PromptSelectRepositoryPath" xml:space="preserve">
+    <value>选择仓库路径</value>
+  </data>
+  <data name="PromptSelectAdrScope" xml:space="preserve">
+    <value>选择 ADR 范围</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>范围</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="TitleSample" xml:space="preserve">
+    <value>示例标题</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>欢迎使用 AdrPlus（{0}）</value>
+  </data>
+  <data name="HelpUsageWizardNew" xml:space="preserve">
+    <value>创建新 ADR 的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardInit" xml:space="preserve">
+    <value>配置文件仓库的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageTargetRepoPath" xml:space="preserve">
+    <value>仓库根文件夹的路径</value>
+  </data>
+  <data name="HelpUsageJsonFile" xml:space="preserve">
+    <value>仓库（repo）配置 json 文件的路径</value>
+  </data>
+  <data name="HelpUsageTitleAdr" xml:space="preserve">
+    <value>ADR 的标题</value>
+  </data>
+  <data name="HelpUsageDomainAdr" xml:space="preserve">
+    <value>ADR 的域</value>
+  </data>
+  <data name="HelpUsageScopeAdr" xml:space="preserve">
+    <value>ADR 的范围</value>
+  </data>
+  <data name="HelpUsageOpenFile" xml:space="preserve">
+    <value>执行命令后打开文件</value>
+  </data>
+  <data name="HelpUsageDateRefAdr" xml:space="preserve">
+    <value>ADR 的参考日期</value>
+  </data>
+  <data name="HelpUsageOverwriteInit" xml:space="preserve">
+    <value>覆盖仓库配置文件</value>
+  </data>
+  <data name="HelpUsageHelp" xml:space="preserve">
+    <value>显示帮助信息（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardNewVer" xml:space="preserve">
+    <value>创建 ADR 新版本的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
+    <value>在 {1} 中未找到 ADR 序号 {0}</value>
+  </data>
+  <data name="ErrMsgAdrTooShort" xml:space="preserve">
+    <value>ADR 文件过短</value>
+  </data>
+  <data name="ErrMsgAdrFileEmpty" xml:space="preserve">
+    <value>ADR 文件为空</value>
+  </data>
+  <data name="ErrMsgAdrFieldHeaderNotFound" xml:space="preserve">
+    <value>ADR 文件缺少预期的 {0} 标题</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
+    <value>状态行格式不符合预期</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineParenthesesInvalid" xml:space="preserve">
+    <value>状态行的括号顺序无效</value>
+  </data>
+  <data name="ErrMsgAdrStatusUnknown" xml:space="preserve">
+    <value>未知状态：{0}</value>
+  </data>
+  <data name="ErrMsgAdrStatusDateFormatInvalid" xml:space="preserve">
+    <value>无效的日期格式：{0}</value>
+  </data>
+  <data name="ErrMsgAdrHeaderParsingError" xml:space="preserve">
+    <value>解析 ADR 标题时出错：{0}</value>
+  </data>
+  <data name="NewVerChooseAdr" xml:space="preserve">
+    <value>选择一个 ADR</value>
+  </data>
+  <data name="NotFoundADR" xml:space="preserve">
+    <value>未找到 ADR</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="ErrorRevisionNotconfig" xml:space="preserve">
+    <value>仓库 {0} 未配置修订号</value>
+  </data>
+  <data name="CmdDescHelp" xml:space="preserve">
+    <value>显示可用命令的帮助信息</value>
+  </data>
+  <data name="CmdDescWizard" xml:space="preserve">
+    <value>引导操作向导</value>
+  </data>
+  <data name="CmdDescConfig" xml:space="preserve">
+    <value>应用程序配置、仓库和默认 ADR 模板的编辑器</value>
+  </data>
+  <data name="CmdDescInit" xml:space="preserve">
+    <value>初始化或更新仓库的 ADR 设置</value>
+  </data>
+  <data name="CmdDescNew" xml:space="preserve">
+    <value>创建具有新编号的 ADR（递增编号）</value>
+  </data>
+  <data name="CmdDescVersion" xml:space="preserve">
+    <value>创建具有新版本的 ADR（递增版本，编号相同）</value>
+  </data>
+  <data name="CmdDescAccepted" xml:space="preserve">
+    <value>将 ADR 的状态更新为“已接受”</value>
+  </data>
+  <data name="CmdDescRejected" xml:space="preserve">
+    <value>将 ADR 的状态更新为“已拒绝”</value>
+  </data>
+  <data name="CmdDescSupersede" xml:space="preserve">
+    <value>替代一个 ADR（递增编号）</value>
+  </data>
+  <data name="CmdDescUndoStatus" xml:space="preserve">
+    <value>撤销 ADR 的状态（已接受/已拒绝）</value>
+  </data>
+  <data name="HelpUsageWizardNewRev" xml:space="preserve">
+    <value>创建 ADR 新修订版的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardSupersede" xml:space="preserve">
+    <value>替代 ADR 的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardApprove" xml:space="preserve">
+    <value>批准 ADR 的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardReject" xml:space="preserve">
+    <value>拒绝 ADR 的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
+    <value>撤销 ADR 状态（已接受/已拒绝）的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="WaitReadFiles" xml:space="preserve">
+    <value>请稍候，正在读取 ADR...</value>
+  </data>
+  <data name="InvalidAppStructure" xml:space="preserve">
+    <value>应用程序 JSON 文件结构无效</value>
+  </data>
+  <data name="InvalidRepoStructure" xml:space="preserve">
+    <value>仓库 JSON 文件结构无效</value>
+  </data>
+  <data name="WhenNotWizard" xml:space="preserve">
+    <value>非向导模式下</value>
+  </data>
+  <data name="HelpUsageWizardConfigApp" xml:space="preserve">
+    <value>应用程序设置向导（未提供文件参数时使用）</value>
+  </data>
+  <data name="HelpUsageWizardConfigRepo" xml:space="preserve">
+    <value>仓库设置向导（未提供文件参数时使用）</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineSupersedeFormatInvalid" xml:space="preserve">
+    <value>状态缺少文件名格式：{0}</value>
+  </data>
+  <data name="HelpUsageFileAdr" xml:space="preserve">
+    <value>ADR 的文件路径名</value>
+  </data>
+  <data name="ExceptionFileNotFound" xml:space="preserve">
+    <value>文件未找到：{0}</value>
+  </data>
+  <data name="NotLatestVersion" xml:space="preserve">
+    <value>指定的 ADR 文件不是最新版本。请选择最新版本</value>
+  </data>
+  <data name="NotValidStatusForUpdate" xml:space="preserve">
+    <value>指定的 ADR 文件没有可用于更新或替代的有效状态（{0}）</value>
+  </data>
+  <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
+    <value>指定的 ADR 文件没有可用于更新的有效状态（{0}）</value>
+  </data>
+  <data name="NotValidStatusForUndo" xml:space="preserve">
+    <value>指定的 ADR 文件没有可用于撤销的有效状态（{0}）</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="NotValidStatusForSupersede" xml:space="preserve">
+    <value>指定的 ADR 文件没有有效状态（{0}），或已被替代</value>
+  </data>
+  <data name="Undone" xml:space="preserve">
+    <value>已撤销</value>
+  </data>
+  <data name="SelectAnOption" xml:space="preserve">
+    <value>选择一个选项</value>
+  </data>
+  <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
+    <value>ADR 模板设置向导（未提供文件参数时使用）</value>
+  </data>
+  <data name="InvalidMenuOption" xml:space="preserve">
+    <value>菜单选项未实现：{0}</value>
+  </data>
+  <data name="HelpUsageFileConfig" xml:space="preserve">
+    <value>配置文件的路径</value>
+  </data>
+  <data name="FileTemplateMusbeMd" xml:space="preserve">
+    <value>模板文件必须是“.md”扩展名的文件</value>
+  </data>
+  <data name="PromptSelectAdrTemplatePath" xml:space="preserve">
+    <value>选择 ADR 模板路径</value>
+  </data>
+  <data name="WizardGroupConfigurationsTitle" xml:space="preserve">
+    <value>配置</value>
+  </data>
+  <data name="WizardGroupConfigurationsDescription" xml:space="preserve">
+    <value>配置应用程序、仓库模板和 ADR 内容模板设置</value>
+  </data>
+  <data name="WizardGroupAdrsTitle" xml:space="preserve">
+    <value>ADR</value>
+  </data>
+  <data name="WizardGroupAdrsDescription" xml:space="preserve">
+    <value>创建和管理您的 ADR</value>
+  </data>
+  <data name="WizardGroupCommandHelpTitle" xml:space="preserve">
+    <value>命令帮助</value>
+  </data>
+  <data name="WizardGroupExitTitle" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="WizardGroupExitDescription" xml:space="preserve">
+    <value>退出向导</value>
+  </data>
+  <data name="WizardMainMenu" xml:space="preserve">
+    <value>主菜单</value>
+  </data>
+  <data name="WizardAdrInitTitle" xml:space="preserve">
+    <value>初始化或更新仓库的 ADR 设置</value>
+  </data>
+  <data name="WizardAdrNewTitle" xml:space="preserve">
+    <value>创建新 ADR</value>
+  </data>
+  <data name="WizardAdrApproveTitle" xml:space="preserve">
+    <value>批准现有 ADR</value>
+  </data>
+  <data name="EscForReturnWizard" xml:space="preserve">
+    <value>确认选择后，如果想返回向导，请按“ESC”</value>
+  </data>
+  <data name="WizardAdrRejectTitle" xml:space="preserve">
+    <value>拒绝现有 ADR</value>
+  </data>
+  <data name="WizardAdrVersionTitle" xml:space="preserve">
+    <value>为现有 ADR 创建新版本</value>
+  </data>
+  <data name="WizardAdrRevisionTitle" xml:space="preserve">
+    <value>为现有 ADR 创建新修订版</value>
+  </data>
+  <data name="WizardAdrSupersedeTitle" xml:space="preserve">
+    <value>替代现有 ADR</value>
+  </data>
+  <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
+    <value>撤销现有 ADR 的接受/拒绝状态</value>
+  </data>
+  <data name="WizardConfigApplicationTitle" xml:space="preserve">
+    <value>配置此应用程序</value>
+  </data>
+  <data name="WizardConfigTemplateTitle" xml:space="preserve">
+    <value>配置默认内容模板</value>
+  </data>
+  <data name="WizardConfigRepositoryTitle" xml:space="preserve">
+    <value>配置默认 ADR 仓库</value>
+  </data>
+  <data name="WizardHelpMainMenuDescription" xml:space="preserve">
+    <value>返回主菜单</value>
+  </data>
+  <data name="WizardHelpConfigTitle" xml:space="preserve">
+    <value>config 命令帮助</value>
+  </data>
+  <data name="WizardHelpInitTitle" xml:space="preserve">
+    <value>init 命令帮助</value>
+  </data>
+  <data name="WizardHelpNewTitle" xml:space="preserve">
+    <value>new 命令帮助</value>
+  </data>
+  <data name="WizardHelpApproveTitle" xml:space="preserve">
+    <value>approve 命令帮助</value>
+  </data>
+  <data name="ShowHelpInfo" xml:space="preserve">
+    <value>显示帮助信息</value>
+  </data>
+  <data name="WizardHelpRejectTitle" xml:space="preserve">
+    <value>reject 命令帮助</value>
+  </data>
+  <data name="WizardHelpVersionTitle" xml:space="preserve">
+    <value>version 命令帮助</value>
+  </data>
+  <data name="WizardHelpRevisionTitle" xml:space="preserve">
+    <value>revision 命令帮助</value>
+  </data>
+  <data name="WizardHelpSupersedeTitle" xml:space="preserve">
+    <value>supersede 命令帮助</value>
+  </data>
+  <data name="WizardHelpUndoTitle" xml:space="preserve">
+    <value>undo 命令帮助</value>
+  </data>
+  <data name="PressAnyKey" xml:space="preserve">
+    <value>按任意键继续</value>
+  </data>
+  <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
+    <value>该 ADR 已被拒绝。是否要继续？</value>
+  </data>
+  <data name="HelpUsageEmptyAdr" xml:space="preserve">
+    <value>创建时仅使用模板（不复制内容）</value>
+  </data>
+  <data name="PromptEmptyTemplate" xml:space="preserve">
+    <value>使用无数据的模板</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>模板</value>
+  </data>
+  <data name="CmdDescMigrate" xml:space="preserve">
+    <value>迁移现有 ADR 以使用该工具（创建标题）</value>
+  </data>
+  <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
+    <value>无法根据 ADR 配置确定根路径：{0}</value>
+  </data>
+  <data name="HelpUsageWizardMigrate" xml:space="preserve">
+    <value>将 ADR 迁移为使用 AdrPlus 工具的向导（创建标题）</value>
+  </data>
+  <data name="DefaultHeaderTitleFile" xml:space="preserve">
+    <value>文件标题 md</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>已创建</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>已修改</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="Migrated" xml:space="preserve">
+    <value>已迁移</value>
+  </data>
+  <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
+    <value>标题中的文件标题文本</value>
+  </data>
+  <data name="FieldTitleHeaderScope" xml:space="preserve">
+    <value>标题中的范围文本</value>
+  </data>
+  <data name="FieldTitleHeaderDomain" xml:space="preserve">
+    <value>标题中的域文本</value>
+  </data>
+  <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
+    <value>标题中的“已创建”状态文本</value>
+  </data>
+  <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
+    <value>标题中的“已修改”状态文本</value>
+  </data>
+  <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
+    <value>标题中的“已替代”状态文本</value>
+  </data>
+  <data name="FieldTitleHeaderTableFields" xml:space="preserve">
+    <value>字段文本标题</value>
+  </data>
+  <data name="FieldTitleHeaderTableValues" xml:space="preserve">
+    <value>值文本标题</value>
+  </data>
+  <data name="FieldTitleHeaderMigrated" xml:space="preserve">
+    <value>迁移注释</value>
+  </data>
+  <data name="Superseded" xml:space="preserve">
+    <value>已替代</value>
+  </data>
+  <data name="PromptConfirmMigration" xml:space="preserve">
+    <value>确认将 ADR 迁移到这些文件？</value>
+  </data>
+  <data name="NotFoundValidMigrateADR" xml:space="preserve">
+    <value>未找到符合迁移条件的 ADR</value>
+  </data>
+  <data name="PromptAdrToMigrate" xml:space="preserve">
+    <value>要迁移的 ADR</value>
+  </data>
+  <data name="MsgUnknownStructure" xml:space="preserve">
+    <value>未知结构</value>
+  </data>
+  <data name="AdrPlusFormat" xml:space="preserve">
+    <value>AdrPlus 格式</value>
+  </data>
+  <data name="InvalidFormatHeader" xml:space="preserve">
+    <value>无效的标题</value>
+  </data>
+  <data name="ReadyToMigrate" xml:space="preserve">
+    <value>已准备好迁移</value>
+  </data>
+  <data name="ViewOnlyPrompt" xml:space="preserve">
+    <value>仅查看。按 &lt;enter&gt; 继续</value>
+  </data>
+  <data name="WizardConfigMigratedTitle" xml:space="preserve">
+    <value>将现有 ADR 迁移为与 AdrPlus 兼容</value>
+  </data>
+  <data name="WizardHelpMigrateTitle" xml:space="preserve">
+    <value>migrate 命令帮助</value>
+  </data>
+  <data name="CmdDescExplore" xml:space="preserve">
+    <value>ADR 文件浏览器、查看器和报告</value>
+  </data>
+  <data name="HelpUsageFileReport" xml:space="preserve">
+    <value>浏览器报告的文件路径名（md 文件）</value>
+  </data>
+  <data name="HelpUsageWizardExplore" xml:space="preserve">
+    <value>浏览 ADR 文件的向导（将忽略所有其他参数）</value>
+  </data>
+  <data name="PromptConfirmExplore" xml:space="preserve">
+    <value>确认使用这些参数进行浏览？</value>
+  </data>
+  <data name="ListFieldReport" xml:space="preserve">
+    <value>1)文件,2)当前状态,3)文件夹,4)格式,5)前缀,6)版本,7)修订号,8)创建状态,9)更新状态,10)范围,11)域</value>
+  </data>
+  <data name="ErrFileReportEmpty" xml:space="preserve">
+    <value>报告文件名路径为空</value>
+  </data>
+  <data name="ReportTitle" xml:space="preserve">
+    <value>ADR-PLUS：报告</value>
+  </data>
+  <data name="Folder" xml:space="preserve">
+    <value>文件夹</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>格式</value>
+  </data>
+  <data name="CurrentStatus" xml:space="preserve">
+    <value>当前状态</value>
+  </data>
+  <data name="StatusCreated" xml:space="preserve">
+    <value>创建状态</value>
+  </data>
+  <data name="StatusUpdated" xml:space="preserve">
+    <value>更新状态</value>
+  </data>
+  <data name="PromptFieldsReport" xml:space="preserve">
+    <value>要显示的字段</value>
+  </data>
+  <data name="PromptShowOrCreateReport" xml:space="preserve">
+    <value>是否要显示 ADR 还是创建报告？</value>
+  </data>
+  <data name="ShowAdrs" xml:space="preserve">
+    <value>显示 ADR</value>
+  </data>
+  <data name="CreateReport" xml:space="preserve">
+    <value>创建报告</value>
+  </data>
+  <data name="PromptFileNameReport" xml:space="preserve">
+    <value>报告文件名（不含扩展名）</value>
+  </data>
+  <data name="PromptSelectFolderForReport" xml:space="preserve">
+    <value>选择报告的文件夹</value>
+  </data>
+  <data name="PromptOpenReportAfterCreate" xml:space="preserve">
+    <value>创建后打开报告？</value>
+  </data>
+  <data name="PromptOpenAdrAfterSelection" xml:space="preserve">
+    <value>选择后打开 ADR？</value>
+  </data>
+  <data name="FileReportSummary" xml:space="preserve">
+    <value>报告文件名 </value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>打开文件</value>
+  </data>
+  <data name="WizardGroupExploreReportTitle" xml:space="preserve">
+    <value>报告与浏览</value>
+  </data>
+  <data name="WizardGroupExploreReportDescription" xml:space="preserve">
+    <value>创建报告并显示 ADR 元数据</value>
+  </data>
+  <data name="FilesExplored" xml:space="preserve">
+    <value>已浏览的文件</value>
+  </data>
+  <data name="WizardHelpExploreTitle" xml:space="preserve">
+    <value>explore 命令帮助</value>
+  </data>
+  <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
+    <value>迁移模式</value>
+  </data>
+  <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
+    <value>迁移设置向导（未提供文件参数时使用）</value>
+  </data>
+  <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
+    <value>迁移模式错误</value>
+  </data>
+  <data name="ConfigPromptOverwriteMigration" xml:space="preserve">
+    <value>仅迁移模式将被覆盖。是否要覆盖它？</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>编号</value>
+  </data>
+  <data name="PromptFieldsMigrationTitle" xml:space="preserve">
+    <value>选择 ADR 文件标题中存在的元素</value>
+  </data>
+  <data name="Prefix" xml:space="preserve">
+    <value>前缀</value>
+  </data>
+  <data name="ErrorLenFileSampleMigration" xml:space="preserve">
+    <value>文件名长度必须至少为 {0} 个字符</value>
+  </data>
+  <data name="PromptFileSampleMigration" xml:space="preserve">
+    <value>输入一个示例 ADR 文件名以验证模式</value>
+  </data>
+  <data name="SummarySampleFilename" xml:space="preserve">
+    <value>示例文件名</value>
+  </data>
+  <data name="PromptPrefixPosition" xml:space="preserve">
+    <value>选择“前缀”元素在文件名中的位置</value>
+  </data>
+  <data name="SampleResult" xml:space="preserve">
+    <value>示例结果</value>
+  </data>
+  <data name="PromptPrefixLength" xml:space="preserve">
+    <value>选择“前缀”元素在文件名中的长度</value>
+  </data>
+  <data name="PromptNumberPosition" xml:space="preserve">
+    <value>选择“编号”元素在文件名中的位置</value>
+  </data>
+  <data name="PromptNumberLength" xml:space="preserve">
+    <value>选择“编号”元素在文件名中的长度</value>
+  </data>
+  <data name="PromptVersionPosition" xml:space="preserve">
+    <value>选择“版本”元素在文件名中的位置</value>
+  </data>
+  <data name="PromptVersionLength" xml:space="preserve">
+    <value>选择“版本”元素在文件名中的长度</value>
+  </data>
+  <data name="PromptRevisionPosition" xml:space="preserve">
+    <value>选择“修订号”元素在文件名中的位置</value>
+  </data>
+  <data name="PromptRevisionLength" xml:space="preserve">
+    <value>选择“修订号”元素在文件名中的长度</value>
+  </data>
+  <data name="PromptTitlePosition" xml:space="preserve">
+    <value>选择“标题”元素在文件名中的位置</value>
+  </data>
+  <data name="PromptConfirmParamMigration" xml:space="preserve">
+    <value>确认这些参数？</value>
+  </data>
+  <data name="WizardConfigMigration" xml:space="preserve">
+    <value>配置 ADR 迁移</value>
+  </data>
+  <data name="AlredyAdrPlusCreated" xml:space="preserve">
+    <value>已存在使用此工具创建的 ADR</value>
+  </data>
+  <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
+    <value>文件已存在 {0}</value>
+  </data>
+  <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
+    <value>配置文件已存在。是否要更新？</value>
+  </data>
+  <data name="ErrMsgNewLenSeqGreatConfigSetting" xml:space="preserve">
+    <value>存在大于已配置值（{1}）的编号（{0}）</value>
+  </data>
+  <data name="ErrMsgNewLenVerGreatConfigSetting" xml:space="preserve">
+    <value>存在大于已配置值（{1}）的版本（{0}）</value>
+  </data>
+  <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
+    <value>存在大于已配置值（{1}）的修订号（{0}）</value>
+  </data>
+  <data name="InitConfigBannerMessage" xml:space="preserve">
+    <value>让我们开始初始配置。（按 &lt;ESC&gt; 跳过初始配置）</value>
+  </data>
+  <data name="InitConfigSkipConfirmation" xml:space="preserve">
+    <value>是否要跳过初始配置？</value>
+  </data>
+  <data name="InitConfigSelectLanguage" xml:space="preserve">
+    <value>选择界面语言</value>
+  </data>
+  <data name="InitConfigLanguageEnglish" xml:space="preserve">
+    <value>英语</value>
+  </data>
+  <data name="InitConfigLanguagePortuguese" xml:space="preserve">
+    <value>葡萄牙语</value>
+  </data>
+  <data name="InitConfigLanguageOther" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="InitConfigLanguageEnglishDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用英语</value>
+  </data>
+  <data name="InitConfigLanguagePortugueseDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用葡萄牙语</value>
+  </data>
+  <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
+    <value>工具界面将使用英语，状态和标题由用户自定义</value>
+  </data>
+  <data name="InitConfigLanguageGerman" xml:space="preserve">
+    <value>德语</value>
+  </data>
+  <data name="InitConfigLanguageGermanDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用德语</value>
+  </data>
+  <data name="InitConfigLanguageSpanish" xml:space="preserve">
+    <value>西班牙语</value>
+  </data>
+  <data name="InitConfigLanguageSpanishDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用西班牙语</value>
+  </data>
+  <data name="InitConfigLanguageFrench" xml:space="preserve">
+    <value>法语</value>
+  </data>
+  <data name="InitConfigLanguageFrenchDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用法语</value>
+  </data>
+  <data name="InitConfigLanguageItalian" xml:space="preserve">
+    <value>意大利语</value>
+  </data>
+  <data name="InitConfigLanguageItalianDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用意大利语</value>
+  </data>
+  <data name="InitConfigLanguageJapanese" xml:space="preserve">
+    <value>日语</value>
+  </data>
+  <data name="InitConfigLanguageJapaneseDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用日语</value>
+  </data>
+  <data name="InitConfigLanguageKorean" xml:space="preserve">
+    <value>韩语</value>
+  </data>
+  <data name="InitConfigLanguageKoreanDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用韩语</value>
+  </data>
+  <data name="InitConfigLanguageDutch" xml:space="preserve">
+    <value>荷兰语</value>
+  </data>
+  <data name="InitConfigLanguageDutchDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用荷兰语</value>
+  </data>
+  <data name="InitConfigLanguageRussian" xml:space="preserve">
+    <value>俄语</value>
+  </data>
+  <data name="InitConfigLanguageRussianDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用俄语</value>
+  </data>
+  <data name="InitConfigLanguageChinese" xml:space="preserve">
+    <value>中文</value>
+  </data>
+  <data name="InitConfigLanguageChineseDesc" xml:space="preserve">
+    <value>工具界面、状态和标题将使用中文</value>
+  </data>
+  <data name="InitConfigSelectEditor" xml:space="preserve">
+    <value>选择创建/替代 ADR 时用于打开 ADR 的编辑器</value>
+  </data>
+  <data name="InitConfigEditorNone" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="InitConfigEditorNoneDesc" xml:space="preserve">
+    <value>不使用全局路径</value>
+  </data>
+  <data name="InitConfigSelectPatterns" xml:space="preserve">
+    <value>选择 ADR 文件所需的模式</value>
+  </data>
+  <data name="InitConfigEnterPrefix" xml:space="preserve">
+    <value>输入 ADR 文件名的前缀</value>
+  </data>
+  <data name="InitConfigEnterNumberLength" xml:space="preserve">
+    <value>输入 ADR 编号的长度</value>
+  </data>
+  <data name="InitConfigEnterVersionLength" xml:space="preserve">
+    <value>输入 ADR 版本的长度</value>
+  </data>
+  <data name="InitConfigEnterRevisionLength" xml:space="preserve">
+    <value>输入 ADR 修订号的长度</value>
+  </data>
+  <data name="InitConfigEnterCaseTransform" xml:space="preserve">
+    <value>输入文本转换方式</value>
+  </data>
+  <data name="InitConfigEnterScopeLength" xml:space="preserve">
+    <value>输入 ADR 范围的长度</value>
+  </data>
+  <data name="InitConfigCreateFolderByScope" xml:space="preserve">
+    <value>是否要为每个范围创建文件夹？</value>
+  </data>
+  <data name="InitConfigSelectTemplate" xml:space="preserve">
+    <value>为新 ADR 选择一个 markdown 模板文件</value>
+  </data>
+  <data name="InitConfigTemplateDefault" xml:space="preserve">
+    <value>工具默认模板（madr）</value>
+  </data>
+  <data name="InitConfigTemplateEmbedded" xml:space="preserve">
+    <value>其他内置模板</value>
+  </data>
+  <data name="InitConfigTemplateCustom" xml:space="preserve">
+    <value>自定义模板</value>
+  </data>
+  <data name="InitConfigSelectCustomTemplate" xml:space="preserve">
+    <value>选择一个自定义模板文件</value>
+  </data>
+  <data name="InitConfigMigrationQuestion" xml:space="preserve">
+    <value>是否要迁移现有 ADR？</value>
+  </data>
+  <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
+    <value>请记得将状态和标题文本设置为您的语言</value>
+  </data>
+  <data name="InitConfigDefaultFolderADR" xml:space="preserve">
+    <value>输入 ADR 的默认文件夹</value>
+  </data>
+  <data name="InitConfigEnterSpecialCases" xml:space="preserve">
+    <value>特殊情况（范围、按范围分文件夹）</value>
+  </data>
+  <data name="InitConfigListScopes" xml:space="preserve">
+    <value>输入范围列表</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="SummaryOpenAdrWith" xml:space="preserve">
+    <value>使用以下方式打开 ADR</value>
+  </data>
+  <data name="SummaryFolderForAdrFiles" xml:space="preserve">
+    <value>ADR 文件的文件夹</value>
+  </data>
+  <data name="SummaryPrefixInAdrFileName" xml:space="preserve">
+    <value>ADR 文件名中的前缀</value>
+  </data>
+  <data name="SummaryLengthForNumberInAdrFileName" xml:space="preserve">
+    <value>ADR 文件名中编号的长度</value>
+  </data>
+  <data name="SummaryLengthForVersionInAdrFileName" xml:space="preserve">
+    <value>ADR 文件名中版本的长度</value>
+  </data>
+  <data name="SummaryLengthForRevisionInAdrFileName" xml:space="preserve">
+    <value>ADR 文件名中修订号的长度</value>
+  </data>
+  <data name="SummaryLengthForScopeInAdrFileName" xml:space="preserve">
+    <value>ADR 文件名中范围的长度</value>
+  </data>
+  <data name="SummaryScopes" xml:space="preserve">
+    <value>范围</value>
+  </data>
+  <data name="SummarySkipDomainCheckForScopes" xml:space="preserve">
+    <value>跳过范围的域检查</value>
+  </data>
+  <data name="SummaryFolderByScope" xml:space="preserve">
+    <value>按范围分文件夹</value>
+  </data>
+  <data name="SummaryCaseTransformForAdrFileName" xml:space="preserve">
+    <value>ADR 文件名的大小写转换</value>
+  </data>
+  <data name="SummarySampleMigration" xml:space="preserve">
+    <value>示例迁移</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>注释</value>
+  </data>
+  <data name="StatusSuperseded" xml:space="preserve">
+    <value>替代状态</value>
+  </data>
+  <data name="CmdDescRevise" xml:space="preserve">
+    <value>创建具有新修订版的 ADR（递增修订号，编号和版本相同）</value>
+  </data>
+  <data name="ErrMsgWithoutArgs" xml:space="preserve">
+    <value>行为值无效（{0}）。必须为 'Help'、'Wizard' 或 'None'</value>
+  </data>
+  <data name="ConfigFieldDescBehaviorWithoutArgs" xml:space="preserve">
+    <value>未提供参数时应用程序的行为</value>
+  </data>
+  <data name="FieldTitleBehaviorWithoutArgs" xml:space="preserve">
+    <value>无参数时的行为</value>
+  </data>
+  <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
+    <value>未找到参数或缺少参数：{0}</value>
+  </data>
+  <data name="NotFoundRecreatedVersionMigration" xml:space="preserve">
+    <value>未找到现有版本文件。已重新创建版本 {0}</value>
+  </data>
+  <data name="ErrMigrationVersionFailed" xml:space="preserve">
+    <value>从版本 {0} 迁移到 {1} 失败</value>
+  </data>
+  <data name="MigrationVersionSuccess" xml:space="preserve">
+    <value>从版本 {0} 迁移到 {1} 已成功完成</value>
+  </data>
+  <data name="WizardGroupInitAndMigrate" xml:space="preserve">
+    <value>启动仓库 / 迁移 ADR</value>
+  </data>
+  <data name="WizardGroupInitAndMigrateDescription" xml:space="preserve">
+    <value>仓库初始化配置 / 现有 ADR 的迁移</value>
+  </data>
+  <data name="ErrMsgCommandMissing" xml:space="preserve">
+    <value>缺少命令</value>
+  </data>
+</root>

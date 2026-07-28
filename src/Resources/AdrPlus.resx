@@ -361,7 +361,7 @@
     <value>Warning text displayed in ADR headers</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Language code for localization (e.g., en-US, pt-BR)</value>
+    <value>Language code for the tool's UI and ADR templates (e.g., en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Length of the revision number in file names</value>
@@ -1088,6 +1088,60 @@
   </data>
   <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
     <value>Interface tool will be in English, status and header custom by user</value>
+  </data>
+  <data name="InitConfigLanguageGerman" xml:space="preserve">
+    <value>German</value>
+  </data>
+  <data name="InitConfigLanguageGermanDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in German</value>
+  </data>
+  <data name="InitConfigLanguageSpanish" xml:space="preserve">
+    <value>Spanish</value>
+  </data>
+  <data name="InitConfigLanguageSpanishDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Spanish</value>
+  </data>
+  <data name="InitConfigLanguageFrench" xml:space="preserve">
+    <value>French</value>
+  </data>
+  <data name="InitConfigLanguageFrenchDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in French</value>
+  </data>
+  <data name="InitConfigLanguageItalian" xml:space="preserve">
+    <value>Italian</value>
+  </data>
+  <data name="InitConfigLanguageItalianDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Italian</value>
+  </data>
+  <data name="InitConfigLanguageJapanese" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="InitConfigLanguageJapaneseDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Japanese</value>
+  </data>
+  <data name="InitConfigLanguageKorean" xml:space="preserve">
+    <value>Korean</value>
+  </data>
+  <data name="InitConfigLanguageKoreanDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Korean</value>
+  </data>
+  <data name="InitConfigLanguageDutch" xml:space="preserve">
+    <value>Dutch</value>
+  </data>
+  <data name="InitConfigLanguageDutchDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Dutch</value>
+  </data>
+  <data name="InitConfigLanguageRussian" xml:space="preserve">
+    <value>Russian</value>
+  </data>
+  <data name="InitConfigLanguageRussianDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Russian</value>
+  </data>
+  <data name="InitConfigLanguageChinese" xml:space="preserve">
+    <value>Chinese</value>
+  </data>
+  <data name="InitConfigLanguageChineseDesc" xml:space="preserve">
+    <value>Interface tool, status and header will be in Chinese</value>
   </data>
   <data name="InitConfigSelectEditor" xml:space="preserve">
     <value>Select the editor to open ADR when creating/superseding a ADR</value>

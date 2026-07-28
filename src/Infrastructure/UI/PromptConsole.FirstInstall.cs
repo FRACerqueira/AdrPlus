@@ -79,18 +79,30 @@ namespace AdrPlus.Infrastructure.UI
                     .TextSelector(item => item.Name)
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageEnglish, Code = "en-us" })
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguagePortuguese, Code = "pt-br" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageGerman, Code = "de-de" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageSpanish, Code = "es-es" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageFrench, Code = "fr-fr" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageItalian, Code = "it-it" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageJapanese, Code = "ja-jp" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageKorean, Code = "ko-kr" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageDutch, Code = "nl-be" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageRussian, Code = "ru-ru" })
+                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageChinese, Code = "zh-cn" })
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigLanguageOther, Code = "" })
-                    .ExtraInfo(item =>
+                    .ExtraInfo(item => item.Code switch
                     {
-                        if (item.Code == "en-us")
-                        {
-                            return Resources.AdrPlus.InitConfigLanguageEnglishDesc;
-                        }
-                        if (item.Code == "pt-br")
-                        {
-                            return Resources.AdrPlus.InitConfigLanguagePortugueseDesc;
-                        }
-                        return Resources.AdrPlus.InitConfigLanguageOtherDesc;
+                        "en-us" => Resources.AdrPlus.InitConfigLanguageEnglishDesc,
+                        "pt-br" => Resources.AdrPlus.InitConfigLanguagePortugueseDesc,
+                        "de-de" => Resources.AdrPlus.InitConfigLanguageGermanDesc,
+                        "es-es" => Resources.AdrPlus.InitConfigLanguageSpanishDesc,
+                        "fr-fr" => Resources.AdrPlus.InitConfigLanguageFrenchDesc,
+                        "it-it" => Resources.AdrPlus.InitConfigLanguageItalianDesc,
+                        "ja-jp" => Resources.AdrPlus.InitConfigLanguageJapaneseDesc,
+                        "ko-kr" => Resources.AdrPlus.InitConfigLanguageKoreanDesc,
+                        "nl-be" => Resources.AdrPlus.InitConfigLanguageDutchDesc,
+                        "ru-ru" => Resources.AdrPlus.InitConfigLanguageRussianDesc,
+                        "zh-cn" => Resources.AdrPlus.InitConfigLanguageChineseDesc,
+                        _ => Resources.AdrPlus.InitConfigLanguageOtherDesc
                     })
                     .Run(cancellationToken);
                 if (languageinstall.IsAborted)
@@ -98,9 +110,9 @@ namespace AdrPlus.Infrastructure.UI
                     tryabort = true;
                     continue;
                 }
-                if (languageinstall.Content.Code == "pt-br")
+                if (!string.IsNullOrEmpty(languageinstall.Content.Code))
                 {
-                    PromptEnsureCulture(new AdrPlusConfig() { Language = "pt-br" });
+                    PromptEnsureCulture(new AdrPlusConfig() { Language = languageinstall.Content.Code });
                 }
                 if (languageinstall.Content.Code == "")
                 {

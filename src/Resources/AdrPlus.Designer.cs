@@ -1841,7 +1841,43 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigEnterVersionLength", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Chinese.
+        /// </summary>
+        internal static string InitConfigLanguageChinese {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageChinese", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Chinese.
+        /// </summary>
+        internal static string InitConfigLanguageChineseDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageChineseDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Dutch.
+        /// </summary>
+        internal static string InitConfigLanguageDutch {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageDutch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Dutch.
+        /// </summary>
+        internal static string InitConfigLanguageDutchDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageDutchDesc", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
@@ -1859,7 +1895,97 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageEnglishDesc", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to French.
+        /// </summary>
+        internal static string InitConfigLanguageFrench {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageFrench", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in French.
+        /// </summary>
+        internal static string InitConfigLanguageFrenchDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageFrenchDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to German.
+        /// </summary>
+        internal static string InitConfigLanguageGerman {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageGerman", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in German.
+        /// </summary>
+        internal static string InitConfigLanguageGermanDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageGermanDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Italian.
+        /// </summary>
+        internal static string InitConfigLanguageItalian {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageItalian", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Italian.
+        /// </summary>
+        internal static string InitConfigLanguageItalianDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageItalianDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Japanese.
+        /// </summary>
+        internal static string InitConfigLanguageJapanese {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageJapanese", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Japanese.
+        /// </summary>
+        internal static string InitConfigLanguageJapaneseDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageJapaneseDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Korean.
+        /// </summary>
+        internal static string InitConfigLanguageKorean {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageKorean", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Korean.
+        /// </summary>
+        internal static string InitConfigLanguageKoreanDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageKoreanDesc", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Other.
         /// </summary>
@@ -1895,7 +2021,43 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguagePortugueseDesc", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Russian.
+        /// </summary>
+        internal static string InitConfigLanguageRussian {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageRussian", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Russian.
+        /// </summary>
+        internal static string InitConfigLanguageRussianDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageRussianDesc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Spanish.
+        /// </summary>
+        internal static string InitConfigLanguageSpanish {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageSpanish", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Interface tool, status and header will be in Spanish.
+        /// </summary>
+        internal static string InitConfigLanguageSpanishDesc {
+            get {
+                return ResourceManager.GetString("InitConfigLanguageSpanishDesc", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Enter the list of scopes.
         /// </summary>
