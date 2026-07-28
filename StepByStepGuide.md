@@ -86,7 +86,7 @@ When you execute any AdrPlus command for the first time (except `help`), an inte
 
 The **first time you run an AdrPlus command**, the setup wizard will automatically:
 
-1. **Select your preferred language** (`en-US`, `pt-BR`, or other)
+1. **Select your preferred language** (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, or other)
 2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
 3. **Set your ADR repository folder** (default: `doc/adr`)
 4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
@@ -141,7 +141,7 @@ adrplus config --application
 ```
 
 This creates/edits `adrplus.json` with:
-- **language**: UI language for prompts and messages (`en-US`, `pt-BR`, etc.)
+- **language**: UI language for prompts and messages (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, etc.). ADR templates remain English/Portuguese-only.
 - **comandopenadr**: Command to open files after creation (e.g., `code {0}` for VS Code)
 - **withoutargs**: Behavior when no arguments are provided (`Help`, `Wizard`, or `None`)
 

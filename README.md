@@ -72,7 +72,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 💾 **Preserve settings and configuration** across upgrades and reinitializations
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
-- 🌍 Multi-language support (`en-US`, `pt-BR`) for messages and UX
+- 🌍 Multi-language support (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`) for messages and UX — see [TRANSLATIONS.md](TRANSLATIONS.md) for review status. ADR templates remain English/Portuguese-only.
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
 ---
@@ -356,7 +356,7 @@ adrplus config --application
 
 | Key | Description |
 |-----|-------------|
-|`language`| UI language/culture used by the tool (`en-US`, `pt-BR`). Defines the language for all prompts and messages displayed in the wizard and command outputs. |
+|`language`| UI language/culture used by the tool (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, or any other valid culture code). Defines the language for all prompts and messages displayed in the wizard and command outputs. ADR templates remain English/Portuguese-only regardless of this setting. |
 |`comandopenadr`| Command to open an ADR file after creation/update when supported. See examples below. |
 |`withoutargs`| Behavior when no arguments are provided (`Help`, `Wizard`, or `None`). Default is `Help`. |
 

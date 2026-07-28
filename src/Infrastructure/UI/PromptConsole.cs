@@ -619,7 +619,7 @@ namespace AdrPlus.Infrastructure.UI
                 .Default(fieldsJson.Value)
                 .MaxLength(5)
                 .AcceptInput(input => char.IsAsciiLetter(input) || input == '-')
-                .SuggestionHandler(input => ["en-us","pt-br"])
+                .SuggestionHandler(input => ["en-us", "pt-br", "de-de", "es-es", "fr-fr", "it-it", "ja-jp", "ko-kr", "nl-be", "ru-ru", "zh-cn"])
                 .PredicateValid(input =>
                 {
                     if (input.Trim().Length == 0)

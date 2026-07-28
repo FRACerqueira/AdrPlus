@@ -1,17 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +27,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -118,1173 +119,1173 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ErrMsgDefaultSettingsMissing" xml:space="preserve">
-    <value>DefaultSettings section is missing from configuration</value>
+    <value>De sectie DefaultSettings ontbreekt in de configuratie</value>
   </data>
   <data name="ErrMsgContentInvalidPath" xml:space="preserve">
-    <value>'content' contains an invalid file path: {0}</value>
+    <value>'content' bevat een ongeldig bestandspad: {0}</value>
   </data>
   <data name="ErrMsgContentPathTooLong" xml:space="preserve">
-    <value>'content' file path is too long: '{0}'</value>
+    <value>'content' — bestandspad is te lang: '{0}'</value>
   </data>
   <data name="ErrMsgContentPathNotSupported" xml:space="preserve">
-    <value>'content' file path format is not supported: '{0}'</value>
+    <value>'content' — bestandspadformaat wordt niet ondersteund: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' must be a relative path. Absolute paths are not allowed: '{0}'</value>
+    <value>'folderRepo' moet een relatief pad zijn. Absolute paden zijn niet toegestaan: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
-    <value>Usage</value>
+    <value>Gebruik</value>
   </data>
   <data name="ErrMsgInvalidLanguageCode" xml:space="preserve">
-    <value>'language' contains an invalid language code: '{0}'. </value>
+    <value>'language' bevat een ongeldige taalcode: '{0}'. </value>
   </data>
   <data name="ExceptionDirectoryNotFound" xml:space="preserve">
-    <value>Directory not found: {0}</value>
+    <value>Map niet gevonden: {0}</value>
   </data>
   <data name="ExceptionUnknownCommand" xml:space="preserve">
-    <value>Unknown command: {0}</value>
+    <value>Onbekend commando: {0}</value>
   </data>
   <data name="ExceptionMissingArgumentValue" xml:space="preserve">
-    <value>Missing value for argument '{0}' ({1})</value>
+    <value>Ontbrekende waarde voor argument '{0}' ({1})</value>
   </data>
   <data name="ExceptionMissingRequiredArgument" xml:space="preserve">
-    <value>Required argument '{0}' ({1}) is missing</value>
+    <value>Verplicht argument '{0}' ({1}) ontbreekt</value>
   </data>
   <data name="Arguments" xml:space="preserve">
-    <value>Arguments</value>
+    <value>Argumenten</value>
   </data>
   <data name="ErrMsgTemplateRepoFileNotFound" xml:space="preserve">
-    <value>ADR configuration file (template/adr-config.adrplus) not found. </value>
+    <value>ADR-configuratiebestand (template/adr-config.adrplus) niet gevonden. </value>
   </data>
   <data name="ExceptionInvalidArgumentToken" xml:space="preserve">
-    <value>Invalid Argument: {0}</value>
+    <value>Ongeldig argument: {0}</value>
   </data>
   <data name="MsgCommandStarted" xml:space="preserve">
-    <value>'{0}' command started</value>
+    <value>Commando '{0}' gestart</value>
   </data>
   <data name="MsgCommandFinished" xml:space="preserve">
-    <value>'{0}' command finished</value>
+    <value>Commando '{0}' voltooid</value>
   </data>
   <data name="StatusNew" xml:space="preserve">
-    <value>Proposed</value>
+    <value>Voorgesteld</value>
   </data>
   <data name="StatusAcc" xml:space="preserve">
-    <value>Accepted</value>
+    <value>Goedgekeurd</value>
   </data>
   <data name="StatusRej" xml:space="preserve">
-    <value>Rejected</value>
+    <value>Afgekeurd</value>
   </data>
   <data name="StatusSup" xml:space="preserve">
-    <value>Superseded</value>
+    <value>Vervangen</value>
   </data>
   <data name="DefaultScope" xml:space="preserve">
     <value>Enterprise*;CrossDomain;Project</value>
   </data>
   <data name="DefaultHeaderDisclaimer" xml:space="preserve">
-    <value>Do not remove this comment, lines and table</value>
+    <value>Verwijder deze opmerking, lijnen en tabel niet</value>
   </data>
   <data name="DefaultPrefix" xml:space="preserve">
     <value>ADR</value>
   </data>
   <data name="Examples" xml:space="preserve">
-    <value>Examples</value>
+    <value>Voorbeelden</value>
   </data>
   <data name="Required" xml:space="preserve">
-    <value>Required</value>
+    <value>Verplicht</value>
   </data>
   <data name="FieldTitleFolderRepo" xml:space="preserve">
-    <value>ADR Repository Folder</value>
+    <value>ADR-repositorymap</value>
   </data>
   <data name="FieldTitlePrefix" xml:space="preserve">
-    <value>File Prefix</value>
+    <value>Bestandsvoorvoegsel</value>
   </data>
   <data name="FieldTitleLenSeq" xml:space="preserve">
-    <value>Length Sequence</value>
+    <value>Lengte volgnummer</value>
   </data>
   <data name="FieldTitleLenVersion" xml:space="preserve">
-    <value>Length Version</value>
+    <value>Lengte versie</value>
   </data>
   <data name="FieldTitleLenRevision" xml:space="preserve">
-    <value>Length Revision</value>
+    <value>Lengte revisie</value>
   </data>
   <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Length Scope</value>
+    <value>Lengte bereik</value>
   </data>
   <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Scopes</value>
+    <value>Bereiken</value>
   </data>
   <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Folder By Scope</value>
+    <value>Map per bereik</value>
   </data>
   <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Skip Domain when</value>
+    <value>Domein overslaan wanneer</value>
   </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
-    <value>Separator</value>
+    <value>Scheidingsteken</value>
   </data>
   <data name="FieldTitleCaseTransform" xml:space="preserve">
-    <value>Case Transform</value>
+    <value>Hoofdlettertransformatie</value>
   </data>
   <data name="FieldTitleStatusNew" xml:space="preserve">
-    <value>Text status Proposed</value>
+    <value>Tekst voor status Voorgesteld</value>
   </data>
   <data name="FieldTitleStatusAccepted" xml:space="preserve">
-    <value>Text status Accepted</value>
+    <value>Tekst voor status Goedgekeurd</value>
   </data>
   <data name="FieldTitleStatusRejected" xml:space="preserve">
-    <value>Text status Rejected</value>
+    <value>Tekst voor status Afgekeurd</value>
   </data>
   <data name="FieldTitleStatusSuperseded" xml:space="preserve">
-    <value>Text status Superseded</value>
+    <value>Tekst voor status Vervangen</value>
   </data>
   <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
-    <value>Disclaimer header</value>
+    <value>Disclaimer in de header</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>Version</value>
+    <value>Versie</value>
   </data>
   <data name="Revision" xml:space="preserve">
-    <value>Revision</value>
+    <value>Revisie</value>
   </data>
   <data name="FieldTitleHeaderVersion" xml:space="preserve">
-    <value>Version text in header</value>
+    <value>Versietekst in de header</value>
   </data>
   <data name="FieldTitleHeaderRevision" xml:space="preserve">
-    <value>Revision text in header</value>
+    <value>Revisietekst in de header</value>
   </data>
   <data name="Optional" xml:space="preserve">
-    <value>Optional</value>
+    <value>Optioneel</value>
   </data>
   <data name="ExceptionDirectoryPathEmpty" xml:space="preserve">
-    <value>Directory path cannot be empty</value>
+    <value>Het mappad mag niet leeg zijn</value>
   </data>
   <data name="ExceptionInvalidCaseFormat" xml:space="preserve">
-    <value>Invalid case model format: {0}</value>
+    <value>Ongeldig hoofdlettermodelformaat: {0}</value>
   </data>
   <data name="ExceptionJsonStringNull" xml:space="preserve">
-    <value>The JSON string cannot be null or empty</value>
+    <value>De JSON-tekenreeks mag niet null of leeg zijn</value>
   </data>
   <data name="ExceptionFilenameEmpty" xml:space="preserve">
-    <value>Filename cannot be empty</value>
+    <value>De bestandsnaam mag niet leeg zijn</value>
   </data>
   <data name="ExceptionFilenameMustHaveMdExtension" xml:space="preserve">
-    <value>Filename must have a .md extension</value>
+    <value>De bestandsnaam moet de extensie .md hebben</value>
   </data>
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
-    <value>Invalid filename format. Expected at least number and title</value>
+    <value>Ongeldig bestandsnaamformaat. Minimaal een nummer en een titel verwacht</value>
   </data>
   <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Invalid scope format: {0}</value>
+    <value>Ongeldig bereikformaat: {0}</value>
   </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
-    <value>Missing required field: '{0}'</value>
+    <value>Verplicht veld ontbreekt: '{0}'</value>
   </data>
   <data name="ValidationFieldWrongType" xml:space="preserve">
-    <value>Field '{0}' must be of type {1}, but found: {2}</value>
+    <value>Veld '{0}' moet van het type {1} zijn, maar gevonden: {2}</value>
   </data>
   <data name="ValidationUnexpectedFields" xml:space="preserve">
-    <value>Unexpected fields found: {0}</value>
+    <value>Onverwachte velden gevonden: {0}</value>
   </data>
   <data name="ValidationInvalidJsonFormat" xml:space="preserve">
-    <value>Invalid JSON format: {0}</value>
+    <value>Ongeldig JSON-formaat: {0}</value>
   </data>
   <data name="ValidationFieldMustBeNonNegative" xml:space="preserve">
-    <value>Field '{0}' must be a non-negative number</value>
+    <value>Veld '{0}' moet een niet-negatief getal zijn</value>
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
-    <value>Field '{0}' must be at least {1}</value>
+    <value>Veld '{0}' moet minstens {1} zijn</value>
   </data>
   <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Field '{0}' must be empty when '{1}' is 0</value>
+    <value>Veld '{0}' moet leeg zijn wanneer '{1}' 0 is</value>
   </data>
   <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Field '{0}' must be not empty when '{1}' is greater than 0</value>
+    <value>Veld '{0}' mag niet leeg zijn wanneer '{1}' groter is dan 0</value>
   </data>
   <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Each scope in '{0}' must be at least as long as the '{1}' value ({2})</value>
+    <value>Elk bereik in '{0}' moet minstens zo lang zijn als de waarde van '{1}' ({2})</value>
   </data>
   <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>The following scopes are not defined: {0}</value>
+    <value>De volgende bereiken zijn niet gedefinieerd: {0}</value>
   </data>
   <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Field '{0}' cannot be true when '{1}' is empty</value>
+    <value>Veld '{0}' mag niet true zijn wanneer '{1}' leeg is</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
-    <value>Field '{0}' must be one of: {1}</value>
+    <value>Veld '{0}' moet een van de volgende zijn: {1}</value>
   </data>
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
-    <value>Field '{0}' cannot be empty</value>
+    <value>Veld '{0}' mag niet leeg zijn</value>
   </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
-    <value>Failed to start process</value>
+    <value>Kan het proces niet starten</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Beschrijving</value>
   </data>
   <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
-    <value>Invalid culture: {0}</value>
+    <value>Ongeldige cultuur: {0}</value>
   </data>
   <data name="FieldTitleLanguage" xml:space="preserve">
-    <value>Language</value>
+    <value>Taal</value>
   </data>
   <data name="FieldTitleOpenAdr" xml:space="preserve">
-    <value>Command to Open ADR</value>
+    <value>Commando om ADR te openen</value>
   </data>
   <data name="CancelledByUser" xml:space="preserve">
-    <value>Cancelled by user</value>
+    <value>Geannuleerd door gebruiker</value>
   </data>
   <data name="ConfigActionSaveAndFinish" xml:space="preserve">
-    <value>Finish</value>
+    <value>Voltooien</value>
   </data>
   <data name="ConfigActionSaveAndFinishDesc" xml:space="preserve">
-    <value>Save configuration and exit</value>
+    <value>Configuratie opslaan en afsluiten</value>
   </data>
   <data name="ConfigErrorInvalidBoolean" xml:space="preserve">
-    <value>Invalid boolean value. Please enter 'true' or 'false' ({0})</value>
+    <value>Ongeldige booleaanse waarde. Voer 'true' of 'false' in ({0})</value>
   </data>
   <data name="ConfigErrorInvalidNumber" xml:space="preserve">
-    <value>Invalid number format. Please enter a valid number</value>
+    <value>Ongeldig getalformaat. Voer een geldig getal in</value>
   </data>
   <data name="ConfigErrorMinThreeChars" xml:space="preserve">
-    <value>Minimum of 3 characters required</value>
+    <value>Minimaal 3 tekens vereist</value>
   </data>
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
-    <value>Text transformation applied to file names</value>
+    <value>Teksttransformatie toegepast op bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>Organize ADRs in separate folders by scope</value>
+    <value>ADR's ordenen in afzonderlijke mappen per bereik</value>
   </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
-    <value>Relative path to the ADR repository folder</value>
+    <value>Relatief pad naar de ADR-repositorymap</value>
   </data>
   <data name="ConfigFieldDescHeaderDisclaimer" xml:space="preserve">
-    <value>Warning text displayed in ADR headers</value>
+    <value>Waarschuwingstekst weergegeven in ADR-headers</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Language code for the tool's UI (e.g., en-US, pt-BR, de-DE). ADR templates remain English/Portuguese-only.</value>
+    <value>Taalcode voor de UI van de tool (bijv. en-US, pt-BR, de-DE). ADR-templates blijven alleen Engels/Portugees.</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
-    <value>Length of the revision number in file names</value>
+    <value>Lengte van het revisienummer in bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Length of the scope abbreviation in file names</value>
+    <value>Lengte van de bereikafkorting in bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
-    <value>Length of the sequence number in file names</value>
+    <value>Lengte van het volgnummer in bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescLenVersion" xml:space="preserve">
-    <value>Length of the version number in file names</value>
+    <value>Lengte van het versienummer in bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
-    <value>Command to open ADR files (must contain the text '{0}')</value>
+    <value>Commando om ADR-bestanden te openen (moet de tekst '{0}' bevatten)</value>
   </data>
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
-    <value>Prefix for ADR file names</value>
+    <value>Voorvoegsel voor ADR-bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>List of valid scopes for ADRs (separated by semicolon. '*' at the end of each scope to avoid using the domain)</value>
+    <value>Lijst van geldige bereiken voor ADR's (gescheiden door puntkomma. '*' aan het einde van elk bereik om het domein niet te gebruiken)</value>
   </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
-    <value>Character used to separate file name parts</value>
+    <value>Teken gebruikt om delen van de bestandsnaam te scheiden</value>
   </data>
   <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Scopes where domain information is omitted</value>
+    <value>Bereiken waarvoor domeininformatie wordt weggelaten</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
-    <value>Text label for the 'Accepted' status</value>
+    <value>Tekstlabel voor de status 'Goedgekeurd'</value>
   </data>
   <data name="ConfigFieldDescStatusNew" xml:space="preserve">
-    <value>Text label for the 'Proposed' status</value>
+    <value>Tekstlabel voor de status 'Voorgesteld'</value>
   </data>
   <data name="ConfigFieldDescStatusRejected" xml:space="preserve">
-    <value>Text label for the 'Rejected' status</value>
+    <value>Tekstlabel voor de status 'Afgekeurd'</value>
   </data>
   <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
-    <value>Text label for the 'Superseded' status</value>
+    <value>Tekstlabel voor de status 'Vervangen'</value>
   </data>
   <data name="ConfigInfoFileNameSample" xml:space="preserve">
-    <value>File name examples:</value>
+    <value>Voorbeelden van bestandsnamen:</value>
   </data>
   <data name="ConfigPromptChooseNewValue" xml:space="preserve">
-    <value>Choose a new value</value>
+    <value>Kies een nieuwe waarde</value>
   </data>
   <data name="ConfigPromptEnterNewValue" xml:space="preserve">
-    <value>Enter a new value</value>
+    <value>Voer een nieuwe waarde in</value>
   </data>
   <data name="ConfigPromptOverwriteConfig" xml:space="preserve">
-    <value>The configuration file already exists. Do you want to overwrite it?</value>
+    <value>Het configuratiebestand bestaat al. Wilt u het overschrijven?</value>
   </data>
   <data name="ConfigPromptSelectField" xml:space="preserve">
-    <value>Select a field to edit</value>
+    <value>Selecteer een veld om te bewerken</value>
   </data>
   <data name="ConfigPromptSelectNewValues" xml:space="preserve">
-    <value>Select the new values</value>
+    <value>Selecteer de nieuwe waarden</value>
   </data>
   <data name="Date" xml:space="preserve">
-    <value>Date</value>
+    <value>Datum</value>
   </data>
   <data name="Domain" xml:space="preserve">
-    <value>Domain</value>
+    <value>Domein</value>
   </data>
   <data name="DomainSample" xml:space="preserve">
-    <value>Sample Domain</value>
+    <value>Voorbeelddomein</value>
   </data>
   <data name="ErrMsgConfigValidationFailed" xml:space="preserve">
-    <value>Configuration validation failed</value>
+    <value>Configuratievalidatie mislukt</value>
   </data>
   <data name="ErrMsgCritical" xml:space="preserve">
-    <value>Critical error occurred</value>
+    <value>Er is een kritieke fout opgetreden</value>
   </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
-    <value>Too many arguments provided for help command</value>
+    <value>Te veel argumenten opgegeven voor het commando help</value>
   </data>
   <data name="ErrMsgInvalidRepoConfig" xml:space="preserve">
-    <value>Invalid repository configuration: {0}</value>
+    <value>Ongeldige repositoryconfiguratie: {0}</value>
   </data>
   <data name="ErrMsgNotEmpty" xml:space="preserve">
-    <value>This field cannot be empty</value>
+    <value>Dit veld mag niet leeg zijn</value>
   </data>
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
-    <value>The command to open ADR must contain the text '{0}'</value>
+    <value>Het commando om ADR te openen moet de tekst '{0}' bevatten</value>
   </data>
   <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Duplicate scope entries found</value>
+    <value>Dubbele bereikvermeldingen gevonden</value>
   </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
-    <value>The repository is not initialized</value>
+    <value>De repository is niet geïnitialiseerd</value>
   </data>
   <data name="ExceptionConfigFileNotFound" xml:space="preserve">
-    <value>Configuration file not found: {0}</value>
+    <value>Configuratiebestand niet gevonden: {0}</value>
   </data>
   <data name="Fields" xml:space="preserve">
-    <value>Fields</value>
+    <value>Velden</value>
   </data>
   <data name="HelpHeaderAvailableCommands" xml:space="preserve">
-    <value>Available Commands</value>
+    <value>Beschikbare commando's</value>
   </data>
   <data name="InitCmdConfigFileAlreadyExists" xml:space="preserve">
-    <value>Configuration file already exists at: {0}</value>
+    <value>Configuratiebestand bestaat al op: {0}</value>
   </data>
   <data name="ErrorDateFormat" xml:space="preserve">
-    <value>Invalid date format. Expected format: {0}</value>
+    <value>Ongeldig datumformaat. Verwacht formaat: {0}</value>
   </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
-    <value>External command executed but failed: {0}</value>
+    <value>Extern commando uitgevoerd maar mislukt: {0}</value>
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
-    <value>Error in configuration file: {0}</value>
+    <value>Fout in configuratiebestand: {0}</value>
   </data>
   <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Invalid scope '{0}'. Valid scopes are: {1}</value>
+    <value>Ongeldig bereik '{0}'. Geldige bereiken zijn: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
-    <value>An ADR with this title already exists: {0}</value>
+    <value>Een ADR met deze titel bestaat al: {0}</value>
   </data>
   <data name="NewAdrPromptConfirmCreation" xml:space="preserve">
-    <value>Confirm ADR creation with these details?</value>
+    <value>ADR-aanmaak met deze gegevens bevestigen?</value>
   </data>
   <data name="NewAdrPromptSelectDate" xml:space="preserve">
-    <value>Select reference date</value>
+    <value>Selecteer referentiedatum</value>
   </data>
   <data name="NewAdrPromptSelectDrive" xml:space="preserve">
-    <value>Select drive</value>
+    <value>Selecteer station</value>
   </data>
   <data name="SuccessExternalCommand" xml:space="preserve">
-    <value>External command executed successfully: {0}</value>
+    <value>Extern commando succesvol uitgevoerd: {0}</value>
   </data>
   <data name="SelectRepo" xml:space="preserve">
-    <value>Selected repository</value>
+    <value>Geselecteerde repository</value>
   </data>
   <data name="PromptEnterAdrDomain" xml:space="preserve">
-    <value>Enter ADR domain</value>
+    <value>Voer het ADR-domein in</value>
   </data>
   <data name="PromptEnterAdrTitle" xml:space="preserve">
-    <value>Enter ADR title</value>
+    <value>Voer de ADR-titel in</value>
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
-    <value>Reading registered domains...</value>
+    <value>Geregistreerde domeinen worden gelezen...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
-    <value>Select repository path</value>
+    <value>Selecteer repositorypad</value>
   </data>
   <data name="PromptSelectAdrScope" xml:space="preserve">
-    <value>Select ADR scope</value>
+    <value>Selecteer ADR-bereik</value>
   </data>
   <data name="Scope" xml:space="preserve">
-    <value>Scope</value>
+    <value>Bereik</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Title</value>
+    <value>Titel</value>
   </data>
   <data name="TitleSample" xml:space="preserve">
-    <value>Sample Title</value>
+    <value>Voorbeeldtitel</value>
   </data>
   <data name="Welcome" xml:space="preserve">
-    <value>Welcome to AdrPlus ({0})</value>
+    <value>Welkom bij AdrPlus ({0})</value>
   </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
-    <value>Wizard to create new ADR (supress all other arguments)</value>
+    <value>Wizard om een nieuwe ADR aan te maken (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardInit" xml:space="preserve">
-    <value>Wizard to configure the file repository (supress all other arguments)</value>
+    <value>Wizard om de bestandsrepository te configureren (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
-    <value>Path to the repository's root folder</value>
+    <value>Pad naar de hoofdmap van de repository</value>
   </data>
   <data name="HelpUsageJsonFile" xml:space="preserve">
-    <value>Path to repository(repo) configuration json file</value>
+    <value>Pad naar het JSON-configuratiebestand van de repository</value>
   </data>
   <data name="HelpUsageTitleAdr" xml:space="preserve">
-    <value>Title of ADR</value>
+    <value>Titel van de ADR</value>
   </data>
   <data name="HelpUsageDomainAdr" xml:space="preserve">
-    <value>Domain of ADR</value>
+    <value>Domein van de ADR</value>
   </data>
   <data name="HelpUsageScopeAdr" xml:space="preserve">
-    <value>Scope of ADR</value>
+    <value>Bereik van de ADR</value>
   </data>
   <data name="HelpUsageOpenFile" xml:space="preserve">
-    <value>Open file after execute command</value>
+    <value>Bestand openen na uitvoeren van het commando</value>
   </data>
   <data name="HelpUsageDateRefAdr" xml:space="preserve">
-    <value>Reference date of ADR</value>
+    <value>Referentiedatum van de ADR</value>
   </data>
   <data name="HelpUsageOverwriteInit" xml:space="preserve">
-    <value>Overwrite the configuration file repository</value>
+    <value>Configuratiebestand van de repository overschrijven</value>
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
-    <value>Display help information (supress all other arguments)</value>
+    <value>Hulpinformatie weergeven (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
-    <value>Wizard to create a new version of an ADR (supress all other arguments)</value>
+    <value>Wizard om een nieuwe versie van een ADR aan te maken (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
-    <value>ADR sequence {0} not found in {1}</value>
+    <value>ADR-volgnummer {0} niet gevonden in {1}</value>
   </data>
   <data name="ErrMsgAdrTooShort" xml:space="preserve">
-    <value>The ADR file is too short</value>
+    <value>Het ADR-bestand is te kort</value>
   </data>
   <data name="ErrMsgAdrFileEmpty" xml:space="preserve">
-    <value>The ADR file is empty</value>
+    <value>Het ADR-bestand is leeg</value>
   </data>
   <data name="ErrMsgAdrFieldHeaderNotFound" xml:space="preserve">
-    <value>The ADR file does not have the expected {0} header</value>
+    <value>Het ADR-bestand heeft niet de verwachte {0}-header</value>
   </data>
   <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
-    <value>Status line does not have the expected format</value>
+    <value>De statusregel heeft niet het verwachte formaat</value>
   </data>
   <data name="ErrMsgAdrStatusLineParenthesesInvalid" xml:space="preserve">
-    <value>Status line has invalid parentheses order</value>
+    <value>De statusregel heeft een ongeldige volgorde van haakjes</value>
   </data>
   <data name="ErrMsgAdrStatusUnknown" xml:space="preserve">
-    <value>Unknown status: {0}</value>
+    <value>Onbekende status: {0}</value>
   </data>
   <data name="ErrMsgAdrStatusDateFormatInvalid" xml:space="preserve">
-    <value>Invalid date format: {0}</value>
+    <value>Ongeldig datumformaat: {0}</value>
   </data>
   <data name="ErrMsgAdrHeaderParsingError" xml:space="preserve">
-    <value>Error parsing ADR header: {0}</value>
+    <value>Fout bij het verwerken van de ADR-header: {0}</value>
   </data>
   <data name="NewVerChooseAdr" xml:space="preserve">
-    <value>Choose an ADR</value>
+    <value>Kies een ADR</value>
   </data>
   <data name="NotFoundADR" xml:space="preserve">
-    <value>No ADRs found</value>
+    <value>Geen ADR's gevonden</value>
   </data>
   <data name="File" xml:space="preserve">
-    <value>File</value>
+    <value>Bestand</value>
   </data>
   <data name="ErrorRevisionNotconfig" xml:space="preserve">
-    <value>Revision number not configured for repository {0}</value>
+    <value>Revisienummer niet geconfigureerd voor repository {0}</value>
   </data>
   <data name="CmdDescHelp" xml:space="preserve">
-    <value>Display help information for the available commands</value>
+    <value>Hulpinformatie weergeven voor de beschikbare commando's</value>
   </data>
   <data name="CmdDescWizard" xml:space="preserve">
-    <value>Wizard for guided operations</value>
+    <value>Wizard voor begeleide bewerkingen</value>
   </data>
   <data name="CmdDescConfig" xml:space="preserve">
-    <value>Application configuration editor, repository, and default template ADR</value>
+    <value>Configuratie-editor voor de applicatie, de repository en de standaard ADR-template</value>
   </data>
   <data name="CmdDescInit" xml:space="preserve">
-    <value>Initialize or update a repository with ADRs settings</value>
+    <value>Initialiseer of werk een repository bij met ADR-instellingen</value>
   </data>
   <data name="CmdDescNew" xml:space="preserve">
-    <value>Create a new ADR with a new number (incremental number)</value>
+    <value>Maak een nieuwe ADR aan met een nieuw nummer (oplopend nummer)</value>
   </data>
   <data name="CmdDescVersion" xml:space="preserve">
-    <value>Create a new ADR with a new version (incremental version, same number)</value>
+    <value>Maak een nieuwe ADR aan met een nieuwe versie (oplopende versie, hetzelfde nummer)</value>
   </data>
   <data name="CmdDescAccepted" xml:space="preserve">
-    <value>Update the status of an ADR to 'accepted'</value>
+    <value>Werk de status van een ADR bij naar 'goedgekeurd'</value>
   </data>
   <data name="CmdDescRejected" xml:space="preserve">
-    <value>Update the status of an ADR to 'rejected'</value>
+    <value>Werk de status van een ADR bij naar 'afgekeurd'</value>
   </data>
   <data name="CmdDescSupersede" xml:space="preserve">
-    <value>Supersede an ADR (incremental number)</value>
+    <value>Vervang een ADR (oplopend nummer)</value>
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
-    <value>Undo the status (accepted/rejected) of an ADR</value>
+    <value>Maak de status (goedgekeurd/afgekeurd) van een ADR ongedaan</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
-    <value>Wizard to create a new revision of an ADR (supress all other arguments)</value>
+    <value>Wizard om een nieuwe revisie van een ADR aan te maken (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardSupersede" xml:space="preserve">
-    <value>Wizard for supersede an ADR (supress all other arguments)</value>
+    <value>Wizard om een ADR te vervangen (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardApprove" xml:space="preserve">
-    <value>Wizard for approve of ADR (supress all other arguments)</value>
+    <value>Wizard om een ADR goed te keuren (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardReject" xml:space="preserve">
-    <value>Wizard to reject an ADR (supress all other arguments)</value>
+    <value>Wizard om een ADR af te keuren (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
-    <value>Wizard to undo the status (accepted/rejected) of an ADR (suppress all other arguments)</value>
+    <value>Wizard om de status (goedgekeurd/afgekeurd) van een ADR ongedaan te maken (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="WaitReadFiles" xml:space="preserve">
-    <value>Please wait, reading ADRs...</value>
+    <value>Een moment, ADR's worden gelezen...</value>
   </data>
   <data name="InvalidAppStructure" xml:space="preserve">
-    <value>Invalid application JSON file structure</value>
+    <value>Ongeldige structuur van het applicatie-JSON-bestand</value>
   </data>
   <data name="InvalidRepoStructure" xml:space="preserve">
-    <value>Invalid repository JSON file structure</value>
+    <value>Ongeldige structuur van het repository-JSON-bestand</value>
   </data>
   <data name="WhenNotWizard" xml:space="preserve">
-    <value>When not in wizard mode</value>
+    <value>Wanneer niet in wizardmodus</value>
   </data>
   <data name="HelpUsageWizardConfigApp" xml:space="preserve">
-    <value>Application settings wizard (if file argument is not provided)</value>
+    <value>Wizard voor applicatie-instellingen (als het bestandsargument niet is opgegeven)</value>
   </data>
   <data name="HelpUsageWizardConfigRepo" xml:space="preserve">
-    <value>Repository settings wizard (if file argument is not provided)</value>
+    <value>Wizard voor repository-instellingen (als het bestandsargument niet is opgegeven)</value>
   </data>
   <data name="ErrMsgAdrStatusLineSupersedeFormatInvalid" xml:space="preserve">
-    <value>Status missing filename format: {0}</value>
+    <value>Bestandsnaamformaat ontbreekt in status: {0}</value>
   </data>
   <data name="HelpUsageFileAdr" xml:space="preserve">
-    <value>File path name from ADR</value>
+    <value>Bestandspadnaam van de ADR</value>
   </data>
   <data name="ExceptionFileNotFound" xml:space="preserve">
-    <value>File not found: {0}</value>
+    <value>Bestand niet gevonden: {0}</value>
   </data>
   <data name="NotLatestVersion" xml:space="preserve">
-    <value>The specified ADR file is not the latest version. Please select the latest version</value>
+    <value>Het opgegeven ADR-bestand is niet de nieuwste versie. Selecteer de nieuwste versie</value>
   </data>
   <data name="NotValidStatusForUpdate" xml:space="preserve">
-    <value>The specified ADR file does not have a valid status({0}) for update or superseded</value>
+    <value>Het opgegeven ADR-bestand heeft geen geldige status ({0}) voor bijwerken of vervangen</value>
   </data>
   <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
-    <value>The specified ADR file not has a valid status ({0}) for updating</value>
+    <value>Het opgegeven ADR-bestand heeft geen geldige status ({0}) voor bijwerken</value>
   </data>
   <data name="NotValidStatusForUndo" xml:space="preserve">
-    <value>The specified ADR file does not have a valid status ({0}) for undo</value>
+    <value>Het opgegeven ADR-bestand heeft geen geldige status ({0}) om ongedaan te maken</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Onbekend</value>
   </data>
   <data name="NotValidStatusForSupersede" xml:space="preserve">
-    <value>The specified ADR file does not have a valid status ({0}) or has already been superseded</value>
+    <value>Het opgegeven ADR-bestand heeft geen geldige status ({0}) of is al vervangen</value>
   </data>
   <data name="Undone" xml:space="preserve">
-    <value>Undone</value>
+    <value>Ongedaan gemaakt</value>
   </data>
   <data name="SelectAnOption" xml:space="preserve">
-    <value>Select an option</value>
+    <value>Selecteer een optie</value>
   </data>
   <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
-    <value>ADR template settings wizard  (if file argument is not provided)</value>
+    <value>Wizard voor ADR-templateinstellingen (als het bestandsargument niet is opgegeven)</value>
   </data>
   <data name="InvalidMenuOption" xml:space="preserve">
-    <value>Menu option not implemented : {0}</value>
+    <value>Menuoptie niet geïmplementeerd: {0}</value>
   </data>
   <data name="HelpUsageFileConfig" xml:space="preserve">
-    <value>Path to configuration file</value>
+    <value>Pad naar het configuratiebestand</value>
   </data>
   <data name="FileTemplateMusbeMd" xml:space="preserve">
-    <value>The file template must be a ".md" extension file</value>
+    <value>Het templatebestand moet een bestand met de extensie ".md" zijn</value>
   </data>
   <data name="PromptSelectAdrTemplatePath" xml:space="preserve">
-    <value>Select ADR template path</value>
+    <value>Selecteer het pad van de ADR-template</value>
   </data>
   <data name="WizardGroupConfigurationsTitle" xml:space="preserve">
-    <value>Configurations</value>
+    <value>Configuraties</value>
   </data>
   <data name="WizardGroupConfigurationsDescription" xml:space="preserve">
-    <value>Configure the application, repository template and the ADR content template settings</value>
+    <value>Configureer de instellingen voor de applicatie, de repositorytemplate en de ADR-inhoudstemplate</value>
   </data>
   <data name="WizardGroupAdrsTitle" xml:space="preserve">
-    <value>ADRs</value>
+    <value>ADR's</value>
   </data>
   <data name="WizardGroupAdrsDescription" xml:space="preserve">
-    <value>Create and manage your ADRs</value>
+    <value>Maak en beheer uw ADR's</value>
   </data>
   <data name="WizardGroupCommandHelpTitle" xml:space="preserve">
-    <value>Command help</value>
+    <value>Hulp bij commando's</value>
   </data>
   <data name="WizardGroupExitTitle" xml:space="preserve">
-    <value>Exit</value>
+    <value>Afsluiten</value>
   </data>
   <data name="WizardGroupExitDescription" xml:space="preserve">
-    <value>Exit the wizard</value>
+    <value>De wizard afsluiten</value>
   </data>
   <data name="WizardMainMenu" xml:space="preserve">
-    <value>Main menu</value>
+    <value>Hoofdmenu</value>
   </data>
   <data name="WizardAdrInitTitle" xml:space="preserve">
-    <value>Initialize or update a repository with ADRs settings</value>
+    <value>Initialiseer of werk een repository bij met ADR-instellingen</value>
   </data>
   <data name="WizardAdrNewTitle" xml:space="preserve">
-    <value>Create a new ADR</value>
+    <value>Maak een nieuwe ADR aan</value>
   </data>
   <data name="WizardAdrApproveTitle" xml:space="preserve">
-    <value>Approve an existing ADR</value>
+    <value>Keur een bestaande ADR goed</value>
   </data>
   <data name="EscForReturnWizard" xml:space="preserve">
-    <value>After confirming the selection, press ‘ESC’ if you want to return to the wizard</value>
+    <value>Druk na het bevestigen van de selectie op ‘ESC’ als u wilt terugkeren naar de wizard</value>
   </data>
   <data name="WizardAdrRejectTitle" xml:space="preserve">
-    <value>Reject an existing ADR</value>
+    <value>Keur een bestaande ADR af</value>
   </data>
   <data name="WizardAdrVersionTitle" xml:space="preserve">
-    <value>Create a new version an existing ADR</value>
+    <value>Maak een nieuwe versie van een bestaande ADR</value>
   </data>
   <data name="WizardAdrRevisionTitle" xml:space="preserve">
-    <value>Create a new revision an existing ADR</value>
+    <value>Maak een nieuwe revisie van een bestaande ADR</value>
   </data>
   <data name="WizardAdrSupersedeTitle" xml:space="preserve">
-    <value>Supersede an existing ADR</value>
+    <value>Vervang een bestaande ADR</value>
   </data>
   <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
-    <value>Undo accepted/reject an existing ADR</value>
+    <value>Maak goedkeuring/afkeuring van een bestaande ADR ongedaan</value>
   </data>
   <data name="WizardConfigApplicationTitle" xml:space="preserve">
-    <value>Configure this application</value>
+    <value>Configureer deze applicatie</value>
   </data>
   <data name="WizardConfigTemplateTitle" xml:space="preserve">
-    <value>Config default content template</value>
+    <value>Configureer de standaard inhoudstemplate</value>
   </data>
   <data name="WizardConfigRepositoryTitle" xml:space="preserve">
-    <value>Configure the default ADR repository</value>
+    <value>Configureer de standaard ADR-repository</value>
   </data>
   <data name="WizardHelpMainMenuDescription" xml:space="preserve">
-    <value>Return to main menu</value>
+    <value>Terug naar het hoofdmenu</value>
   </data>
   <data name="WizardHelpConfigTitle" xml:space="preserve">
-    <value>Config command help</value>
+    <value>Hulp bij het commando config</value>
   </data>
   <data name="WizardHelpInitTitle" xml:space="preserve">
-    <value>Init command help</value>
+    <value>Hulp bij het commando init</value>
   </data>
   <data name="WizardHelpNewTitle" xml:space="preserve">
-    <value>New command help</value>
+    <value>Hulp bij het commando new</value>
   </data>
   <data name="WizardHelpApproveTitle" xml:space="preserve">
-    <value>Approve command help</value>
+    <value>Hulp bij het commando approve</value>
   </data>
   <data name="ShowHelpInfo" xml:space="preserve">
-    <value>Show help information</value>
+    <value>Hulpinformatie weergeven</value>
   </data>
   <data name="WizardHelpRejectTitle" xml:space="preserve">
-    <value>Reject command help</value>
+    <value>Hulp bij het commando reject</value>
   </data>
   <data name="WizardHelpVersionTitle" xml:space="preserve">
-    <value>Version command help</value>
+    <value>Hulp bij het commando version</value>
   </data>
   <data name="WizardHelpRevisionTitle" xml:space="preserve">
-    <value>Revision command help</value>
+    <value>Hulp bij het commando revision</value>
   </data>
   <data name="WizardHelpSupersedeTitle" xml:space="preserve">
-    <value>Supersede command help</value>
+    <value>Hulp bij het commando supersede</value>
   </data>
   <data name="WizardHelpUndoTitle" xml:space="preserve">
-    <value>Undo command help</value>
+    <value>Hulp bij het commando undo</value>
   </data>
   <data name="PressAnyKey" xml:space="preserve">
-    <value>Press any key to continue</value>
+    <value>Druk op een willekeurige toets om door te gaan</value>
   </data>
   <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
-    <value>The ADR has been rejected. Do you want to continue?</value>
+    <value>De ADR is afgekeurd. Wilt u doorgaan?</value>
   </data>
   <data name="HelpUsageEmptyAdr" xml:space="preserve">
-    <value>Use only template when creating it (not copy content)</value>
+    <value>Alleen de template gebruiken bij het aanmaken (inhoud niet kopiëren)</value>
   </data>
   <data name="PromptEmptyTemplate" xml:space="preserve">
-    <value>Use model without data</value>
+    <value>Model zonder gegevens gebruiken</value>
   </data>
   <data name="Template" xml:space="preserve">
-    <value>Template</value>
+    <value>Sjabloon</value>
   </data>
   <data name="CmdDescMigrate" xml:space="preserve">
-    <value>Migrate existing ADRs to use the tool (create header)</value>
+    <value>Migreer bestaande ADR's naar het gebruik van de tool (header aanmaken)</value>
   </data>
   <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
-    <value>Cannot determine root path with ADR config: {0}</value>
+    <value>Kan het hoofdpad niet bepalen met ADR-configuratie: {0}</value>
   </data>
   <data name="HelpUsageWizardMigrate" xml:space="preserve">
-    <value>Wizard for migrating ADRs to use the AdrPlus tool (header creation)</value>
+    <value>Wizard om ADR's te migreren naar het gebruik van de AdrPlus-tool (aanmaken van de header)</value>
   </data>
   <data name="DefaultHeaderTitleFile" xml:space="preserve">
-    <value>File title md</value>
+    <value>Titel van het md-bestand</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Created</value>
+    <value>Aangemaakt</value>
   </data>
   <data name="Changed" xml:space="preserve">
-    <value>Changed</value>
+    <value>Gewijzigd</value>
   </data>
   <data name="Values" xml:space="preserve">
-    <value>Values</value>
+    <value>Waarden</value>
   </data>
   <data name="Migrated" xml:space="preserve">
-    <value>Migrated</value>
+    <value>Gemigreerd</value>
   </data>
   <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
-    <value>File Title text in header</value>
+    <value>Bestandstiteltekst in de header</value>
   </data>
   <data name="FieldTitleHeaderScope" xml:space="preserve">
-    <value>Scope text in header</value>
+    <value>Bereiktekst in de header</value>
   </data>
   <data name="FieldTitleHeaderDomain" xml:space="preserve">
-    <value>Domain text in header</value>
+    <value>Domeintekst in de header</value>
   </data>
   <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
-    <value>Status Created text in header</value>
+    <value>Tekst voor status Aangemaakt in de header</value>
   </data>
   <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
-    <value>Status changed text in header</value>
+    <value>Tekst voor status Gewijzigd in de header</value>
   </data>
   <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
-    <value>Status superseded text in header</value>
+    <value>Tekst voor status Vervangen in de header</value>
   </data>
   <data name="FieldTitleHeaderTableFields" xml:space="preserve">
-    <value>Fields text header</value>
+    <value>Tekst voor koptekst velden</value>
   </data>
   <data name="FieldTitleHeaderTableValues" xml:space="preserve">
-    <value>Values text header</value>
+    <value>Tekst voor koptekst waarden</value>
   </data>
   <data name="FieldTitleHeaderMigrated" xml:space="preserve">
-    <value>Migration comment</value>
+    <value>Migratieopmerking</value>
   </data>
   <data name="Superseded" xml:space="preserve">
-    <value>Superseded</value>
+    <value>Vervangen</value>
   </data>
   <data name="PromptConfirmMigration" xml:space="preserve">
-    <value>Confirm the ADR migration to these files?</value>
+    <value>De ADR-migratie voor deze bestanden bevestigen?</value>
   </data>
   <data name="NotFoundValidMigrateADR" xml:space="preserve">
-    <value>No ADRs were found with valid criteria for migration</value>
+    <value>Geen ADR's gevonden met geldige criteria voor migratie</value>
   </data>
   <data name="PromptAdrToMigrate" xml:space="preserve">
-    <value>ADRs to migrate</value>
+    <value>ADR's om te migreren</value>
   </data>
   <data name="MsgUnknownStructure" xml:space="preserve">
-    <value>Unknown structure</value>
+    <value>Onbekende structuur</value>
   </data>
   <data name="AdrPlusFormat" xml:space="preserve">
-    <value>AdrPlus Format</value>
+    <value>AdrPlus-formaat</value>
   </data>
   <data name="InvalidFormatHeader" xml:space="preserve">
-    <value>Invalid header</value>
+    <value>Ongeldige header</value>
   </data>
   <data name="ReadyToMigrate" xml:space="preserve">
-    <value>Ready to migrate</value>
+    <value>Gereed voor migratie</value>
   </data>
   <data name="ViewOnlyPrompt" xml:space="preserve">
-    <value>View only. Press Enter to continue</value>
+    <value>Alleen weergave. Druk op Enter om door te gaan</value>
   </data>
   <data name="WizardConfigMigratedTitle" xml:space="preserve">
-    <value>Migrate existing ADRs to ADRs Plus compatibility</value>
+    <value>Migreer bestaande ADR's naar AdrPlus-compatibiliteit</value>
   </data>
   <data name="WizardHelpMigrateTitle" xml:space="preserve">
-    <value>Migrate command help</value>
+    <value>Hulp bij het commando migrate</value>
   </data>
   <data name="CmdDescExplore" xml:space="preserve">
-    <value>ADR file explorer ,viewer and report</value>
+    <value>ADR-bestandsverkenner, viewer en rapport</value>
   </data>
   <data name="HelpUsageFileReport" xml:space="preserve">
-    <value>File path name (md file) for the explorer report</value>
+    <value>Bestandspadnaam (md-bestand) voor het verkennerrapport</value>
   </data>
   <data name="HelpUsageWizardExplore" xml:space="preserve">
-    <value>Wizard to explorer ADR files (supress all other arguments)</value>
+    <value>Wizard om ADR-bestanden te verkennen (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="PromptConfirmExplore" xml:space="preserve">
-    <value>Confirm the explorer with this parameters?</value>
+    <value>De verkenner met deze parameters bevestigen?</value>
   </data>
   <data name="ListFieldReport" xml:space="preserve">
-    <value>1)File,2)Current Status,3)Folder,4)Format,5)Prefix,6)Version,7)Revision,8)Status Created,9)Status Updated,10)Scope,11)Domain</value>
+    <value>1)Bestand,2)Huidige status,3)Map,4)Formaat,5)Voorvoegsel,6)Versie,7)Revisie,8)Status aangemaakt,9)Status bijgewerkt,10)Bereik,11)Domein</value>
   </data>
   <data name="ErrFileReportEmpty" xml:space="preserve">
-    <value>Path to file name report is empty</value>
+    <value>Het pad naar de bestandsnaam van het rapport is leeg</value>
   </data>
   <data name="ReportTitle" xml:space="preserve">
-    <value>ADR-PLUS : Report</value>
+    <value>ADR-PLUS: Rapport</value>
   </data>
   <data name="Folder" xml:space="preserve">
-    <value>Folder</value>
+    <value>Map</value>
   </data>
   <data name="Format" xml:space="preserve">
-    <value>Format</value>
+    <value>Formaat</value>
   </data>
   <data name="CurrentStatus" xml:space="preserve">
-    <value>Current Status</value>
+    <value>Huidige status</value>
   </data>
   <data name="StatusCreated" xml:space="preserve">
-    <value>Status created</value>
+    <value>Status aangemaakt</value>
   </data>
   <data name="StatusUpdated" xml:space="preserve">
-    <value>Status updated</value>
+    <value>Status bijgewerkt</value>
   </data>
   <data name="PromptFieldsReport" xml:space="preserve">
-    <value>Fields to show</value>
+    <value>Weer te geven velden</value>
   </data>
   <data name="PromptShowOrCreateReport" xml:space="preserve">
-    <value>Do you want to show ADRs or create report?</value>
+    <value>Wilt u ADR's weergeven of een rapport aanmaken?</value>
   </data>
   <data name="ShowAdrs" xml:space="preserve">
-    <value>Show ADRs</value>
+    <value>ADR's weergeven</value>
   </data>
   <data name="CreateReport" xml:space="preserve">
-    <value>Create a report</value>
+    <value>Een rapport aanmaken</value>
   </data>
   <data name="PromptFileNameReport" xml:space="preserve">
-    <value>Name file report (without extension)</value>
+    <value>Naam van het rapportbestand (zonder extensie)</value>
   </data>
   <data name="PromptSelectFolderForReport" xml:space="preserve">
-    <value>Select folder for report</value>
+    <value>Selecteer map voor het rapport</value>
   </data>
   <data name="PromptOpenReportAfterCreate" xml:space="preserve">
-    <value>Open report after create?</value>
+    <value>Rapport openen na aanmaken?</value>
   </data>
   <data name="PromptOpenAdrAfterSelection" xml:space="preserve">
-    <value>Open ADR after selection?</value>
+    <value>ADR openen na selectie?</value>
   </data>
   <data name="FileReportSummary" xml:space="preserve">
-    <value>Name file report </value>
+    <value>Naam van het rapportbestand </value>
   </data>
   <data name="OpenFile" xml:space="preserve">
-    <value>Open file</value>
+    <value>Bestand openen</value>
   </data>
   <data name="WizardGroupExploreReportTitle" xml:space="preserve">
-    <value>Report and explorer</value>
+    <value>Rapport en verkenner</value>
   </data>
   <data name="WizardGroupExploreReportDescription" xml:space="preserve">
-    <value>Creates reports and displays ARDs metadata</value>
+    <value>Maakt rapporten aan en toont ADR-metadata</value>
   </data>
   <data name="FilesExplored" xml:space="preserve">
-    <value>Files explored</value>
+    <value>Verkende bestanden</value>
   </data>
   <data name="WizardHelpExploreTitle" xml:space="preserve">
-    <value>Explore command help</value>
+    <value>Hulp bij het commando explore</value>
   </data>
   <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
-    <value>Migration pattern</value>
+    <value>Migratiepatroon</value>
   </data>
   <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
-    <value>Migration settings wizard (if file argument is not provided)</value>
+    <value>Wizard voor migratie-instellingen (als het bestandsargument niet is opgegeven)</value>
   </data>
   <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
-    <value>Wrong migration pattern</value>
+    <value>Onjuist migratiepatroon</value>
   </data>
   <data name="ConfigPromptOverwriteMigration" xml:space="preserve">
-    <value>Only the migration pattern will be overwritten. Do you want to overwrite it?</value>
+    <value>Alleen het migratiepatroon wordt overschreven. Wilt u het overschrijven?</value>
   </data>
   <data name="Number" xml:space="preserve">
-    <value>Number</value>
+    <value>Nummer</value>
   </data>
   <data name="PromptFieldsMigrationTitle" xml:space="preserve">
-    <value>Select the elements that exist in the ADR file title</value>
+    <value>Selecteer de elementen die aanwezig zijn in de titel van het ADR-bestand</value>
   </data>
   <data name="Prefix" xml:space="preserve">
-    <value>Prefix</value>
+    <value>Voorvoegsel</value>
   </data>
   <data name="ErrorLenFileSampleMigration" xml:space="preserve">
-    <value>Filename must be at least {0} characters long</value>
+    <value>De bestandsnaam moet minstens {0} tekens lang zijn</value>
   </data>
   <data name="PromptFileSampleMigration" xml:space="preserve">
-    <value>Enter a sample ADR filename to validate the pattern</value>
+    <value>Voer een voorbeeld-ADR-bestandsnaam in om het patroon te valideren</value>
   </data>
   <data name="SummarySampleFilename" xml:space="preserve">
-    <value>Sample filename</value>
+    <value>Voorbeeldbestandsnaam</value>
   </data>
   <data name="PromptPrefixPosition" xml:space="preserve">
-    <value>Select a position for the 'Prefix' element at filename</value>
+    <value>Selecteer een positie voor het element 'Voorvoegsel' in de bestandsnaam</value>
   </data>
   <data name="SampleResult" xml:space="preserve">
-    <value>Sample result</value>
+    <value>Voorbeeldresultaat</value>
   </data>
   <data name="PromptPrefixLength" xml:space="preserve">
-    <value>Select a length for the 'Prefix' element at filename</value>
+    <value>Selecteer een lengte voor het element 'Voorvoegsel' in de bestandsnaam</value>
   </data>
   <data name="PromptNumberPosition" xml:space="preserve">
-    <value>Select a position for the 'Number' element at filename</value>
+    <value>Selecteer een positie voor het element 'Nummer' in de bestandsnaam</value>
   </data>
   <data name="PromptNumberLength" xml:space="preserve">
-    <value>Select a length for the 'Number' element at filename</value>
+    <value>Selecteer een lengte voor het element 'Nummer' in de bestandsnaam</value>
   </data>
   <data name="PromptVersionPosition" xml:space="preserve">
-    <value>Select a position for the 'Version' element at filename</value>
+    <value>Selecteer een positie voor het element 'Versie' in de bestandsnaam</value>
   </data>
   <data name="PromptVersionLength" xml:space="preserve">
-    <value>Select a length for the 'Version' element at filename</value>
+    <value>Selecteer een lengte voor het element 'Versie' in de bestandsnaam</value>
   </data>
   <data name="PromptRevisionPosition" xml:space="preserve">
-    <value>Select a position for the 'Revision' element at filename</value>
+    <value>Selecteer een positie voor het element 'Revisie' in de bestandsnaam</value>
   </data>
   <data name="PromptRevisionLength" xml:space="preserve">
-    <value>Select a length for the 'Revision' element at filename</value>
+    <value>Selecteer een lengte voor het element 'Revisie' in de bestandsnaam</value>
   </data>
   <data name="PromptTitlePosition" xml:space="preserve">
-    <value>Select a position for the 'Title' element at filename</value>
+    <value>Selecteer een positie voor het element 'Titel' in de bestandsnaam</value>
   </data>
   <data name="PromptConfirmParamMigration" xml:space="preserve">
-    <value>Confirm this parameters?</value>
+    <value>Deze parameters bevestigen?</value>
   </data>
   <data name="WizardConfigMigration" xml:space="preserve">
-    <value>Configure the ADR migration</value>
+    <value>Configureer de ADR-migratie</value>
   </data>
   <data name="AlredyAdrPlusCreated" xml:space="preserve">
-    <value>There are already ADRs that were created using this tool</value>
+    <value>Er zijn al ADR's aangemaakt met deze tool</value>
   </data>
   <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
-    <value>The file already exists {0}</value>
+    <value>Het bestand bestaat al: {0}</value>
   </data>
   <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
-    <value>Configuration file already exists. Do you want to update?</value>
+    <value>Configuratiebestand bestaat al. Wilt u het bijwerken?</value>
   </data>
   <data name="ErrMsgNewLenSeqGreatConfigSetting" xml:space="preserve">
-    <value>There is a number ({0}) greater than the Configured ({1})</value>
+    <value>Er is een nummer ({0}) groter dan het geconfigureerde ({1})</value>
   </data>
   <data name="ErrMsgNewLenVerGreatConfigSetting" xml:space="preserve">
-    <value>There is a version ({0}) greater than Configured ({1})</value>
+    <value>Er is een versie ({0}) groter dan het geconfigureerde ({1})</value>
   </data>
   <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
-    <value>There is a revision ({0}) greater than Configured ({1})</value>
+    <value>Er is een revisie ({0}) groter dan het geconfigureerde ({1})</value>
   </data>
   <data name="InitConfigBannerMessage" xml:space="preserve">
-    <value>Let's start with the initial configuration. (Press &lt;ESC&gt; to skip initial configuration)</value>
+    <value>Laten we beginnen met de initiële configuratie. (Druk op &lt;ESC&gt; om de initiële configuratie over te slaan)</value>
   </data>
   <data name="InitConfigSkipConfirmation" xml:space="preserve">
-    <value>Do you want to skip the initial configuration?</value>
+    <value>Wilt u de initiële configuratie overslaan?</value>
   </data>
   <data name="InitConfigSelectLanguage" xml:space="preserve">
-    <value>Select the language for the interface</value>
+    <value>Selecteer de taal voor de interface</value>
   </data>
   <data name="InitConfigLanguageEnglish" xml:space="preserve">
-    <value>English</value>
+    <value>Engels</value>
   </data>
   <data name="InitConfigLanguagePortuguese" xml:space="preserve">
-    <value>Portuguese</value>
+    <value>Portugees</value>
   </data>
   <data name="InitConfigLanguageOther" xml:space="preserve">
-    <value>Other</value>
+    <value>Andere</value>
   </data>
   <data name="InitConfigLanguageEnglishDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in English</value>
+    <value>Interface van de tool, status en header zullen in het Engels zijn</value>
   </data>
   <data name="InitConfigLanguagePortugueseDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Portuguese</value>
+    <value>Interface van de tool, status en header zullen in het Portugees zijn</value>
   </data>
   <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
-    <value>Interface tool will be in English, status and header custom by user</value>
+    <value>Interface van de tool zal in het Engels zijn, status en header aangepast door de gebruiker</value>
   </data>
   <data name="InitConfigLanguageGerman" xml:space="preserve">
-    <value>German</value>
+    <value>Duits</value>
   </data>
   <data name="InitConfigLanguageGermanDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in German</value>
+    <value>Interface van de tool, status en header zullen in het Duits zijn</value>
   </data>
   <data name="InitConfigLanguageSpanish" xml:space="preserve">
-    <value>Spanish</value>
+    <value>Spaans</value>
   </data>
   <data name="InitConfigLanguageSpanishDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Spanish</value>
+    <value>Interface van de tool, status en header zullen in het Spaans zijn</value>
   </data>
   <data name="InitConfigLanguageFrench" xml:space="preserve">
-    <value>French</value>
+    <value>Frans</value>
   </data>
   <data name="InitConfigLanguageFrenchDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in French</value>
+    <value>Interface van de tool, status en header zullen in het Frans zijn</value>
   </data>
   <data name="InitConfigLanguageItalian" xml:space="preserve">
-    <value>Italian</value>
+    <value>Italiaans</value>
   </data>
   <data name="InitConfigLanguageItalianDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Italian</value>
+    <value>Interface van de tool, status en header zullen in het Italiaans zijn</value>
   </data>
   <data name="InitConfigLanguageJapanese" xml:space="preserve">
-    <value>Japanese</value>
+    <value>Japans</value>
   </data>
   <data name="InitConfigLanguageJapaneseDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Japanese</value>
+    <value>Interface van de tool, status en header zullen in het Japans zijn</value>
   </data>
   <data name="InitConfigLanguageKorean" xml:space="preserve">
-    <value>Korean</value>
+    <value>Koreaans</value>
   </data>
   <data name="InitConfigLanguageKoreanDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Korean</value>
+    <value>Interface van de tool, status en header zullen in het Koreaans zijn</value>
   </data>
   <data name="InitConfigLanguageDutch" xml:space="preserve">
-    <value>Dutch</value>
+    <value>Nederlands</value>
   </data>
   <data name="InitConfigLanguageDutchDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Dutch</value>
+    <value>Interface van de tool, status en header zullen in het Nederlands zijn</value>
   </data>
   <data name="InitConfigLanguageRussian" xml:space="preserve">
-    <value>Russian</value>
+    <value>Russisch</value>
   </data>
   <data name="InitConfigLanguageRussianDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Russian</value>
+    <value>Interface van de tool, status en header zullen in het Russisch zijn</value>
   </data>
   <data name="InitConfigLanguageChinese" xml:space="preserve">
-    <value>Chinese</value>
+    <value>Chinees</value>
   </data>
   <data name="InitConfigLanguageChineseDesc" xml:space="preserve">
-    <value>Interface tool, status and header will be in Chinese</value>
+    <value>Interface van de tool, status en header zullen in het Chinees zijn</value>
   </data>
   <data name="InitConfigSelectEditor" xml:space="preserve">
-    <value>Select the editor to open ADR when creating/superseding a ADR</value>
+    <value>Selecteer de editor om ADR te openen bij het aanmaken/vervangen van een ADR</value>
   </data>
   <data name="InitConfigEditorNone" xml:space="preserve">
-    <value>None</value>
+    <value>Geen</value>
   </data>
   <data name="InitConfigEditorNoneDesc" xml:space="preserve">
-    <value>without global path</value>
+    <value>zonder globaal pad</value>
   </data>
   <data name="InitConfigSelectPatterns" xml:space="preserve">
-    <value>Select the desired patterns in the ADR files</value>
+    <value>Selecteer de gewenste patronen in de ADR-bestanden</value>
   </data>
   <data name="InitConfigEnterPrefix" xml:space="preserve">
-    <value>Enter the prefix for the ADR file name</value>
+    <value>Voer het voorvoegsel voor de ADR-bestandsnaam in</value>
   </data>
   <data name="InitConfigEnterNumberLength" xml:space="preserve">
-    <value>Enter the length for number ADR</value>
+    <value>Voer de lengte voor het ADR-nummer in</value>
   </data>
   <data name="InitConfigEnterVersionLength" xml:space="preserve">
-    <value>Enter the length for version ADR</value>
+    <value>Voer de lengte voor de ADR-versie in</value>
   </data>
   <data name="InitConfigEnterRevisionLength" xml:space="preserve">
-    <value>Enter the length for revision ADR</value>
+    <value>Voer de lengte voor de ADR-revisie in</value>
   </data>
   <data name="InitConfigEnterCaseTransform" xml:space="preserve">
-    <value>Enter text transform</value>
+    <value>Voer de teksttransformatie in</value>
   </data>
   <data name="InitConfigEnterScopeLength" xml:space="preserve">
-    <value>Enter the length for scope ADR</value>
+    <value>Voer de lengte voor het ADR-bereik in</value>
   </data>
   <data name="InitConfigCreateFolderByScope" xml:space="preserve">
-    <value>Do you want to create folder for each scope?</value>
+    <value>Wilt u voor elk bereik een map aanmaken?</value>
   </data>
   <data name="InitConfigSelectTemplate" xml:space="preserve">
-    <value>Select a file markdown template for new ADRs</value>
+    <value>Selecteer een markdown-template voor nieuwe ADR's</value>
   </data>
   <data name="InitConfigTemplateDefault" xml:space="preserve">
-    <value>Default by tool(madr)</value>
+    <value>Standaard van de tool (madr)</value>
   </data>
   <data name="InitConfigTemplateEmbedded" xml:space="preserve">
-    <value>Other embedded templates</value>
+    <value>Andere ingebouwde templates</value>
   </data>
   <data name="InitConfigTemplateCustom" xml:space="preserve">
-    <value>Custom template</value>
+    <value>Aangepaste template</value>
   </data>
   <data name="InitConfigSelectCustomTemplate" xml:space="preserve">
-    <value>Select a custom template file</value>
+    <value>Selecteer een aangepast templatebestand</value>
   </data>
   <data name="InitConfigMigrationQuestion" xml:space="preserve">
-    <value>Do you want to migrate existing ADRs?</value>
+    <value>Wilt u bestaande ADR's migreren?</value>
   </data>
   <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
-    <value>Remember to set the status and header texts to your language</value>
+    <value>Vergeet niet de status- en headerteksten naar uw taal aan te passen</value>
   </data>
   <data name="InitConfigDefaultFolderADR" xml:space="preserve">
-    <value>Enter the default folder for ADRs</value>
+    <value>Voer de standaardmap voor ADR's in</value>
   </data>
   <data name="InitConfigEnterSpecialCases" xml:space="preserve">
-    <value>Special cases (Scope,Folder by Scope)</value>
+    <value>Speciale gevallen (Bereik, Map per bereik)</value>
   </data>
   <data name="InitConfigListScopes" xml:space="preserve">
-    <value>Enter the list of scopes</value>
+    <value>Voer de lijst met bereiken in</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>Ja</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>No</value>
+    <value>Nee</value>
   </data>
   <data name="SummaryOpenAdrWith" xml:space="preserve">
-    <value>Open ADR with</value>
+    <value>ADR openen met</value>
   </data>
   <data name="SummaryFolderForAdrFiles" xml:space="preserve">
-    <value>Folder for ADR files</value>
+    <value>Map voor ADR-bestanden</value>
   </data>
   <data name="SummaryPrefixInAdrFileName" xml:space="preserve">
-    <value>Prefix in ADR file name</value>
+    <value>Voorvoegsel in de ADR-bestandsnaam</value>
   </data>
   <data name="SummaryLengthForNumberInAdrFileName" xml:space="preserve">
-    <value>Length for Number in ADR file name</value>
+    <value>Lengte voor Nummer in de ADR-bestandsnaam</value>
   </data>
   <data name="SummaryLengthForVersionInAdrFileName" xml:space="preserve">
-    <value>Length for Version in ADR file name</value>
+    <value>Lengte voor Versie in de ADR-bestandsnaam</value>
   </data>
   <data name="SummaryLengthForRevisionInAdrFileName" xml:space="preserve">
-    <value>Length for Revision in ADR file name</value>
+    <value>Lengte voor Revisie in de ADR-bestandsnaam</value>
   </data>
   <data name="SummaryLengthForScopeInAdrFileName" xml:space="preserve">
-    <value>Length for Scope in ADR file name</value>
+    <value>Lengte voor Bereik in de ADR-bestandsnaam</value>
   </data>
   <data name="SummaryScopes" xml:space="preserve">
-    <value>Scopes</value>
+    <value>Bereiken</value>
   </data>
   <data name="SummarySkipDomainCheckForScopes" xml:space="preserve">
-    <value>Skip domain check for scopes</value>
+    <value>Domeincontrole overslaan voor bereiken</value>
   </data>
   <data name="SummaryFolderByScope" xml:space="preserve">
-    <value>Folder by scope</value>
+    <value>Map per bereik</value>
   </data>
   <data name="SummaryCaseTransformForAdrFileName" xml:space="preserve">
-    <value>Case transform for ADR file name</value>
+    <value>Hoofdlettertransformatie voor de ADR-bestandsnaam</value>
   </data>
   <data name="SummarySampleMigration" xml:space="preserve">
-    <value>Sample migration</value>
+    <value>Voorbeeldmigratie</value>
   </data>
   <data name="Comment" xml:space="preserve">
-    <value>comment</value>
+    <value>opmerking</value>
   </data>
   <data name="StatusSuperseded" xml:space="preserve">
-    <value>Status superseded</value>
+    <value>Status vervangen</value>
   </data>
   <data name="CmdDescRevise" xml:space="preserve">
-    <value>Create a new ADR with a new revision (incremental revision, same number and version)</value>
+    <value>Maak een nieuwe ADR aan met een nieuwe revisie (oplopende revisie, hetzelfde nummer en dezelfde versie)</value>
   </data>
   <data name="ErrMsgWithoutArgs" xml:space="preserve">
-    <value>Invalid behavior value ({0}). Must be 'Help', 'Wizard' or 'None'</value>
+    <value>Ongeldige gedragswaarde ({0}). Moet 'Help', 'Wizard' of 'None' zijn</value>
   </data>
   <data name="ConfigFieldDescBehaviorWithoutArgs" xml:space="preserve">
-    <value>Behavior of the application when no arguments are provided</value>
+    <value>Gedrag van de applicatie wanneer geen argumenten worden opgegeven</value>
   </data>
   <data name="FieldTitleBehaviorWithoutArgs" xml:space="preserve">
-    <value>Behavior without arguments</value>
+    <value>Gedrag zonder argumenten</value>
   </data>
   <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
-    <value>Not found arguments or missing arguments: {0}</value>
+    <value>Geen argumenten gevonden of argumenten ontbreken: {0}</value>
   </data>
   <data name="NotFoundRecreatedVersionMigration" xml:space="preserve">
-    <value>No existing version file found. Recreated Version  {0}</value>
+    <value>Geen bestaand versiebestand gevonden. Versie {0} opnieuw aangemaakt</value>
   </data>
   <data name="ErrMigrationVersionFailed" xml:space="preserve">
-    <value>Migration from version {0} to {1} failed</value>
+    <value>Migratie van versie {0} naar {1} mislukt</value>
   </data>
   <data name="MigrationVersionSuccess" xml:space="preserve">
-    <value>Migration from version {0} to {1} done successfully</value>
+    <value>Migratie van versie {0} naar {1} succesvol voltooid</value>
   </data>
   <data name="WizardGroupInitAndMigrate" xml:space="preserve">
-    <value>Start repository / Migrate ADRs</value>
+    <value>Repository starten / ADR's migreren</value>
   </data>
   <data name="WizardGroupInitAndMigrateDescription" xml:space="preserve">
-    <value>Initialization configuration for repositories / Migration of existing ADRs</value>
+    <value>Initialisatieconfiguratie voor repositories / migratie van bestaande ADR's</value>
   </data>
   <data name="ErrMsgCommandMissing" xml:space="preserve">
-    <value>Command missing</value>
+    <value>Commando ontbreekt</value>
   </data>
 </root>

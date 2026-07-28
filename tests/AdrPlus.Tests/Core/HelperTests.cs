@@ -25,6 +25,9 @@ public class HelperTests
     [InlineData("es-ES")]
     [InlineData("ja-JP")]
     [InlineData("zh-CN")]
+    [InlineData("ko-KR")]
+    [InlineData("nl-BE")]
+    [InlineData("ru-RU")]
     public void IsValidCultureName_WithValidCultureNames_ReturnsTrue(string cultureName)
     {
         // Act
