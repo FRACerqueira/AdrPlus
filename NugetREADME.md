@@ -50,7 +50,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ## Using AdrPlus with Claude Code
 
-Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly - a skill that teaches Claude the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0-beta or later.
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly - a skill that teaches Claude the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0-beta1 or later (any 1.x release, including pre-releases).
 
 ---
 

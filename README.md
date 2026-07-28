@@ -192,7 +192,7 @@ Prefer managing ADRs in plain language instead of typing commands yourself? The 
 - An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
 - An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
 
-Requires `adrplus` v1.0.0-beta or later — earlier versions weren't safe to drive non-interactively.
+Requires `adrplus` v1.0.0-beta1 or later (any 1.x release, including pre-releases) — earlier versions weren't safe to drive non-interactively.
 
 ---
 
