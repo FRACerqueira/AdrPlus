@@ -36,7 +36,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <summary>
         /// Console color for help messages.
         /// </summary>
-        private const string ColorHelp = "skyblue2";
+        private const string ColorHelp = "Skyblue";
 
             /// <summary>
         /// Console color for the welcome banner.
@@ -46,27 +46,27 @@ namespace AdrPlus.Infrastructure.UI
         /// <summary>
         /// Console color for error messages.
         /// </summary>
-        private const string ColorError = "red";
+        private const string ColorError = "Red";
 
         /// <summary>
         /// Console color for informational messages.
         /// </summary>
-        private const string ColorInfo = "grey";
+        private const string ColorInfo = "Grey";
 
         /// <summary>
         /// Console color for command results.
         /// </summary>
-        private const string ColorResult = "white";
+        private const string ColorResult = "White";
 
         /// <summary>
         /// Console color for warning messages.
         /// </summary>
-        private const string ColorWarning = "gold1";
+        private const string ColorWarning = "Gold";
 
         /// <summary>
         /// Console color for summary messages.
         /// </summary>  
-        private const string ColorSummary = "navajowhite1";
+        private const string ColorSummary = "Navajowhite";
 
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IConfiguration _configuration = configuration;
