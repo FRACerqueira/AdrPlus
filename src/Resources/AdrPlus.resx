@@ -361,7 +361,7 @@
     <value>Warning text displayed in ADR headers</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Language code for the tool's UI (e.g., en-US, pt-BR, de-DE). ADR templates remain English/Portuguese-only.</value>
+    <value>Language code for the tool's UI and ADR templates (e.g., en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Length of the revision number in file names</value>

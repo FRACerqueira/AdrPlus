@@ -362,7 +362,7 @@
     <value>ADR のヘッダーに表示される警告テキスト</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>ツールの UI 用の言語コードです(例: en-US、pt-BR、de-DE)。ADR テンプレートは英語/ポルトガル語のみです。</value>
+    <value>ツールの UI と ADR テンプレート用の言語コードです(例: en-US、pt-BR、de-DE)。</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>ファイル名内のリビジョン番号の桁数</value>

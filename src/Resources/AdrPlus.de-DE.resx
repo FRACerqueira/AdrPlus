@@ -362,7 +362,7 @@
     <value>Warntext, der in ADR-Headern angezeigt wird</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Sprachcode für die Benutzeroberfläche des Tools (z. B. en-US, pt-BR, de-DE). ADR-Vorlagen bleiben weiterhin nur auf Englisch/Portugiesisch verfügbar.</value>
+    <value>Sprachcode für die Benutzeroberfläche und die ADR-Vorlagen des Tools (z. B. en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Länge der Revisionsnummer in Dateinamen</value>

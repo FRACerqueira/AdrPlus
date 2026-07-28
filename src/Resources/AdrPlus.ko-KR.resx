@@ -362,7 +362,7 @@
     <value>ADR 헤더에 표시되는 경고 텍스트</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>도구 UI의 언어 코드입니다(예: en-US, pt-BR, de-DE). ADR 템플릿은 영어/포르투갈어로만 제공됩니다.</value>
+    <value>도구 UI 및 ADR 템플릿의 언어 코드입니다(예: en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>파일 이름의 리비전 번호 길이</value>

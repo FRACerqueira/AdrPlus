@@ -362,7 +362,7 @@
     <value>Testo di avviso mostrato nelle intestazioni degli ADR</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Codice lingua per l'interfaccia dello strumento (es. en-US, pt-BR, de-DE). I modelli ADR restano disponibili solo in inglese/portoghese.</value>
+    <value>Codice lingua per l'interfaccia e i modelli ADR dello strumento (es. en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Lunghezza del numero di revisione nei nomi dei file</value>

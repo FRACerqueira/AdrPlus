@@ -361,7 +361,7 @@
     <value>Texto de aviso exibido nos cabeçalhos ADR</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Código de idioma para a interface da ferramenta (ex: en-US, pt-BR, de-DE). Os templates de ADR continuam disponíveis apenas em inglês/português.</value>
+    <value>Código de idioma para a interface e os templates de ADR da ferramenta (ex: en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Comprimento do número de revisão nos nomes de arquivo</value>

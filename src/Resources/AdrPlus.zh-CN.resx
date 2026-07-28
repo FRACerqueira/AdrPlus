@@ -362,7 +362,7 @@
     <value>ADR 标题中显示的警告文本</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>工具界面使用的语言代码（例如 en-US、pt-BR、de-DE）。ADR 模板仍仅提供英语/葡萄牙语版本。</value>
+    <value>工具界面和 ADR 模板使用的语言代码（例如 en-US、pt-BR、de-DE）。</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>文件名中修订号的长度</value>

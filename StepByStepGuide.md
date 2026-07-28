@@ -141,7 +141,7 @@ adrplus config --application
 ```
 
 This creates/edits `adrplus.json` with:
-- **language**: UI language for prompts and messages (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, etc.). ADR templates remain English/Portuguese-only.
+- **language**: UI language for prompts, messages, and ADR templates (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, etc.).
 - **comandopenadr**: Command to open files after creation (e.g., `code {0}` for VS Code)
 - **withoutargs**: Behavior when no arguments are provided (`Help`, `Wizard`, or `None`)
 

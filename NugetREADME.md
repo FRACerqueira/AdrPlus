@@ -42,7 +42,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 💾 **Preserve settings and configuration** across upgrades and reinitializations
 - 🗂️ **Multiple ADR** model options for different project needs and for each team
-- 🌍 Multi-language support (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`) for messages and UX. ADR templates remain English/Portuguese-only.
+- 🌍 Multi-language support (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`) for messages, UX, and ADR templates.
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
 

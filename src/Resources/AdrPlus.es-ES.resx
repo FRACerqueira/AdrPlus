@@ -362,7 +362,7 @@
     <value>Texto de advertencia mostrado en los encabezados de ADR</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Código de idioma para la interfaz de la herramienta (p. ej., en-US, pt-BR, de-DE). Las plantillas de ADR siguen disponibles solo en inglés/portugués.</value>
+    <value>Código de idioma para la interfaz y las plantillas de ADR de la herramienta (p. ej., en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Longitud del número de revisión en los nombres de archivo</value>

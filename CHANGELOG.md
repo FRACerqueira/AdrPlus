@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 9 new UI languages (`de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`), matching the set already shipped by the `PromptPlus` dependency. The first-run wizard's language picker now lists all 11 languages explicitly (plus "Other" for any other valid culture code). See [TRANSLATIONS.md](TRANSLATIONS.md) for per-language review status — the 9 new languages are machine-translated, pending native-speaker review. ADR templates remain English/Portuguese-only.
+- 9 new UI languages (`de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`), matching the set already shipped by the `PromptPlus` dependency. The first-run wizard's language picker now lists all 11 languages explicitly (plus "Other" for any other valid culture code).
+- ADR templates (all 7 methodology templates, in all 11 languages) are now selected based on the configured UI language, instead of only offering English/Portuguese variants.
+- See [TRANSLATIONS.md](TRANSLATIONS.md) for per-language review status — the 9 new languages are machine-translated, pending native-speaker review.
 
 ---
 

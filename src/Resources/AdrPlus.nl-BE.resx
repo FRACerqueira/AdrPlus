@@ -362,7 +362,7 @@
     <value>Waarschuwingstekst weergegeven in ADR-headers</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Taalcode voor de UI van de tool (bijv. en-US, pt-BR, de-DE). ADR-templates blijven alleen Engels/Portugees.</value>
+    <value>Taalcode voor de UI en de ADR-templates van de tool (bijv. en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Lengte van het revisienummer in bestandsnamen</value>

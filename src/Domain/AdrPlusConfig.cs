@@ -14,7 +14,7 @@ namespace AdrPlus.Domain
     internal sealed record AdrPlusConfig
     {
         /// <summary>
-        /// Language for the tool's UI, e.g. "en-us", "pt-br", "de-de", "es-es", "fr-fr", "it-it", "ja-jp", "ko-kr", "nl-be", "ru-ru", "zh-cn". Optional. ADR templates remain English/Portuguese-only.
+        /// Language for the tool's UI and ADR templates, e.g. "en-us", "pt-br", "de-de", "es-es", "fr-fr", "it-it", "ja-jp", "ko-kr", "nl-be", "ru-ru", "zh-cn". Optional.
         /// </summary>
         public string Language { get; set; } = AppConstants.GetNeutralLanguage;
 

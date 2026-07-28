@@ -460,6 +460,20 @@ namespace AdrPlus.Core
             await _fileSystem.WriteAllTextAsync(fullFilePath, content, cancellationToken);
         }
 
+        private static readonly Dictionary<string, string> TemplateLanguageSuffixes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["pt"] = "ptbr",
+            ["de"] = "de",
+            ["es"] = "es",
+            ["fr"] = "fr",
+            ["it"] = "it",
+            ["ja"] = "ja",
+            ["ko"] = "ko",
+            ["nl"] = "nl",
+            ["ru"] = "ru",
+            ["zh"] = "zh"
+        };
+
         private static string GetResourceFileName(string templateFileName, string? appculture)
         {
             if (string.IsNullOrWhiteSpace(appculture) || !Helper.IsValidCultureName(appculture))
@@ -467,15 +481,16 @@ namespace AdrPlus.Core
                 return templateFileName;
             }
 
-            if (!appculture.StartsWith("pt-", StringComparison.OrdinalIgnoreCase))
+            var twoLetterLanguage = appculture.Split('-')[0];
+            if (!TemplateLanguageSuffixes.TryGetValue(twoLetterLanguage, out var suffix))
             {
                 return templateFileName;
             }
 
-            // Converts "template-name.md" to "template-nameptbr.md"
+            // Converts "template-name.md" to "template-name-<suffix>.md"
             var nameWithoutExtension = Path.GetFileNameWithoutExtension(templateFileName);
             var extension = Path.GetExtension(templateFileName);
-            return $"{nameWithoutExtension}ptbr{extension}";
+            return $"{nameWithoutExtension}-{suffix}{extension}";
         }
 
         /// <summary>

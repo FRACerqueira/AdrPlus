@@ -362,7 +362,7 @@
     <value>Текст предупреждения, отображаемый в заголовках ADR</value>
   </data>
   <data name="ConfigFieldDescLanguage" xml:space="preserve">
-    <value>Код языка для интерфейса инструмента (например, en-US, pt-BR, de-DE). Шаблоны ADR доступны только на английском/португальском языке.</value>
+    <value>Код языка для интерфейса и шаблонов ADR инструмента (например, en-US, pt-BR, de-DE).</value>
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Длина номера ревизии в именах файлов</value>
