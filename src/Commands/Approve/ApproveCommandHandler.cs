@@ -106,10 +106,6 @@ namespace AdrPlus.Commands.Approve
                     return;
                 }
 
-                if (!_validateconfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-                }
 
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardApprove);
                 if (hasWizard)

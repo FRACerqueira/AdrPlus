@@ -667,6 +667,10 @@ namespace AdrPlus.Core
             var result = new List<AdrFileNameComponents>();
             var searchPattern = $"*{sequence}*.md";
             var adrfolder = Path.GetFullPath(Path.Combine(rootpath, config.FolderAdr));
+            if (!fileSystemService.DirectoryExists(adrfolder))
+            {
+                return [];
+            }
             var mdFiles = fileSystemService.GetFiles(adrfolder, searchPattern);
 
             foreach (var filePath in mdFiles)
@@ -696,6 +700,10 @@ namespace AdrPlus.Core
             }
             var result = new List<AdrFileNameComponents>();
             var folderadr = Path.GetFullPath(Path.Combine(directoryPath, config.FolderAdr));
+            if (!fileSystemService.DirectoryExists(folderadr))
+            {
+                return [];
+            }
             var mdFiles = fileSystemService.GetFiles(folderadr, "*.md", SearchOption.AllDirectories);
 
             foreach (var filePath in mdFiles)

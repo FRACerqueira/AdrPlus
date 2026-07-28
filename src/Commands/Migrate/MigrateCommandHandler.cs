@@ -82,11 +82,6 @@ namespace AdrPlus.Commands.Migrate
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
 
-                if (!_validateConfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-                }
-
                 var configPath = Path.GetFullPath(Path.Combine(targetPath, _validateConfig.GetFileNameRepoConfig()));
                 if (!_fileSystem.FileExists(configPath))
                 {

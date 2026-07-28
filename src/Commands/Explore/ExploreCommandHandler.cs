@@ -67,10 +67,6 @@ namespace AdrPlus.Commands.Explore
                     return;
                 }
 
-                if (!_validateConfig.HasTemplateRepoFile())
-                {
-                    throw new FileNotFoundException(Resources.AdrPlus.ErrMsgTemplateRepoFileNotFound);
-                }
                 string[] fields = Resources.AdrPlus.ListFieldReport.Split(',');
 
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardExplore);
@@ -179,8 +175,8 @@ namespace AdrPlus.Commands.Explore
                 throw new InvalidDataException(Resources.AdrPlus.ErrFileReportEmpty);
             }
             var folderadr = Path.GetFullPath(Path.Combine(targetPath, repoconfig.FolderAdr));
-            var dirreport = Path.GetDirectoryName(targetreport)!;
-            if (!_fileSystem.DirectoryExists(dirreport))
+            var dirreport = Path.GetDirectoryName(targetreport);
+            if (!string.IsNullOrEmpty(dirreport) && !_fileSystem.DirectoryExists(dirreport))
             {
                 throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, dirreport));
             }
