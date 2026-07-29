@@ -38,6 +38,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Suggested profiles](#suggested-settings-per-team-profile)
 - [Configuration](#configuration)
 - [Settings and configuration across upgrades](#settings-and-configuration-across-upgrades)
+- [Architecture Decisions of this Project](#architecture-decisions-of-this-project)
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
 - [Security](#security)
@@ -604,6 +605,12 @@ Your configuration persists automatically:
 - ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns, folder structure, and scope definitions are maintained
 
 No manual reconfiguration is needed after upgrading — simply update the tool and continue using it as before.
+
+---
+
+## Architecture Decisions of this Project
+
+AdrPlus is used to manage its own architecture decisions — see the [ADR Index](doc/adr/INDEX.md) for the list of decisions recorded for this repository.
 
 ---
 
