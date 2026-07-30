@@ -5,7 +5,6 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
-using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.Formatting;
 using ConsolePlusLibrary;
 using PromptPlusLibrary;

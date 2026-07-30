@@ -5,7 +5,6 @@
 
 using AdrPlus.Core;
 using AdrPlus.Domain;
-using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;

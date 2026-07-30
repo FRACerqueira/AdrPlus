@@ -7,7 +7,6 @@ using AdrPlus.Commands;
 using AdrPlus.Commands.Config;
 using AdrPlus.Core;
 using AdrPlus.Domain;
-using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Tests.Helpers;
