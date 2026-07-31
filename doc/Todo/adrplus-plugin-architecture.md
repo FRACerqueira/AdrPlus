@@ -12,10 +12,10 @@
 ### 1.1 What AdrPlus is
 AdrPlus is a .NET CLI tool that manages **Architecture Decision Records (ADRs)** — Markdown files describing architectural decisions. It creates, versions, revises, and changes the status of ADR files following configurable naming conventions and templates.
 
-- **Solution**: `C:\Sources\AdrPlus\AdrPlus.sln`
-- **Main project**: `src\AdrPlus.csproj`
+- **Solution**: `C:\Sources\AdrPlus\AdrPlus.slnx`
+- **Main project**: `src\AdrPlus\AdrPlus.csproj`
 - **Tests**: `tests\AdrPlus.Tests\AdrPlus.Tests.csproj`
-- **Target frameworks**: .NET 10, .NET 9, .NET 8
+- **Target framework**: .NET 10 only (dropped .NET 8/.NET 9 — see §4.1 note)
 - **Repo**: https://github.com/FRACerqueira/AdrPlus
 
 ### 1.2 Feature goal
@@ -29,13 +29,13 @@ Existing traits that make the plugin system feasible with minimal core change:
 
 | Element | Location | Relevance |
 |---|---|---|
-| Dependency Injection | `src\Extensions\ServiceCollectionExtensions.cs` (`AddAdrPlusServices`) | Plugin manager registers here |
-| `IConfiguration` injected | `src\Commands\CommandRouter.cs`, `src\adrplus.json` | Source for allowlist / global plugin settings |
-| Decoupled handlers | `ICommandHandler` (`src\Commands\ICommandHandler.cs`) + `CommandRouter` | Central place to emit post-command events |
-| Command registry | `src\Commands\CommandsAdr.cs` (enum + `[Command(...)]`) | New `sync` / `plugins` commands added here |
-| Domain model | `src\Domain\AdrRecord.cs`, `AdrPlusRepoConfig.cs`, `AdrStatus.cs` | Source for immutable event snapshots |
-| Async status ops | `src\Core\AdrService.cs` / `IAdrServices` | Natural hook points for status events |
-| Logging + localization | `src\Infrastructure\Logging\LogMessages.cs`, `Resources\*.resx` (10+ languages) | File logging + localized host messages |
+| Dependency Injection | `src\AdrPlus\Extensions\ServiceCollectionExtensions.cs` (`AddAdrPlusServices`) | Plugin manager registers here |
+| `IConfiguration` injected | `src\AdrPlus\Commands\CommandRouter.cs`, `src\AdrPlus\adrplus.json` | Source for allowlist / global plugin settings |
+| Decoupled handlers | `ICommandHandler` (`src\AdrPlus\Commands\ICommandHandler.cs`) + `CommandRouter` | Central place to emit post-command events |
+| Command registry | `src\AdrPlus\Commands\CommandsAdr.cs` (enum + `[Command(...)]`) | New `sync` / `plugins` commands added here |
+| Domain model | `src\AdrPlus\Domain\AdrRecord.cs`, `AdrPlusRepoConfig.cs`, `AdrStatus.cs` | Source for immutable event snapshots |
+| Async status ops | `src\AdrPlus\Core\AdrService.cs` / `IAdrServices` | Natural hook points for status events |
+| Logging + localization | `src\AdrPlus\Infrastructure\Logging\LogMessages.cs`, `Resources\*.resx` (10+ languages) | File logging + localized host messages |
 
 **Limitations to overcome:** everything is `internal` (no public contract); commands are static (no dynamic loading); no lifecycle-event mechanism.
 
@@ -85,9 +85,9 @@ Existing traits that make the plugin system feasible with minimal core change:
 ### 4.1 New public project: `AdrPlus.Abstractions`
 Contains **only interfaces and immutable DTOs**, **resolved by the host** (loaded once), never copied into plugin folders (otherwise types differ and casts fail).
 
-**Target framework:** `net8.0` only — the lowest TFM the host multi-targets (`net10.0;net9.0;net8.0`). This is **not** a restriction on plugin authors (corrected in this revision — the earlier wording wrongly implied it was): .NET's TFM compatibility rules mean a `net8.0` asset automatically satisfies any consuming project with `TargetFramework >= net8.0`, so a plugin project can freely target `net8.0`, `net9.0`, or `net10.0` and reference this same `Abstractions` build with zero extra configuration — NuGet resolves it. The only actual constraint enforced is the floor itself: a plugin targeting below `net8.0` (netstandard2.0, .NET Framework, net6.0/net7.0) fails to reference it — which is the desired behavior, since the host never runs under anything older anyway. At runtime, ALC-loaded plugin assemblies are likewise forward-compatible with a net9.0/net10.0 host process.
+**Target framework:** `net10.0` only — matching the host, which dropped its `net10.0;net9.0;net8.0` multi-target in favor of `net10.0` only (decision made 2026-07-31: .NET 9 (STS) is already past EOL, and .NET 8 (LTS) reaches EOL November 2026 — no reason to keep building/testing against runtimes the project no longer wants to support). With a single-target host, `Abstractions` has no "lowest common TFM" to float below — it simply matches. A plugin project can target `net10.0` or anything with `TargetFramework >= net10.0` and reference this build with zero extra configuration (standard TFM forward-compatibility); a plugin targeting below `net10.0` fails to reference it, which is desired.
 
-Trade-off to accept knowingly: single-targeting `net8.0` is a one-way door only for `Abstractions` **itself** — if the contract ever needs a net9.0/net10.0-only BCL type internally, the floor would have to move (a breaking change for existing plugins). Given `Abstractions` is only interfaces and immutable records, this is unlikely to bite, but worth confirming before locking it in. Multi-targeting `Abstractions` like the host (`net8.0;net9.0;net10.0`) would avoid that one-way door, at the cost of extra packaging complexity for no functional benefit today — not recommended unless that trade-off is specifically wanted.
+Trade-off to accept knowingly (smaller now than the original net8.0-floor version of this decision, but not zero): single-targeting `net10.0` is still a one-way door for `Abstractions` **itself** — if the contract ever needs a future-TFM-only BCL type internally, the floor moves, breaking existing plugins built against the older floor. Given `Abstractions` is only interfaces and immutable records, this is unlikely to bite.
 
 **Public surface:**
 ```

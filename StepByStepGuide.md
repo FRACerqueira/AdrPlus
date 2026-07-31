@@ -25,7 +25,7 @@ Welcome! This guide will walk you through installing **AdrPlus** and creating yo
 
 Before you begin, ensure you have:
 
-- **.NET 8 Runtime** or later installed on your system
+- **.NET 10 Runtime** or later installed on your system
   - Download from: [https://dotnet.microsoft.com/download/dotnet](https://dotnet.microsoft.com/download/dotnet)
   - Verify installation: `dotnet --version`
 
@@ -672,7 +672,7 @@ git commit -m "chore: upgrade ADR repository settings - add scope support"
 ### Issue: Command not found: `adrplus`
 
 **Solution:**
-- Ensure .NET 8+ is installed: `dotnet --version`
+- Ensure .NET 10+ is installed: `dotnet --version`
 - Verify installation: `dotnet tool list -g`
 - Reinstall if needed: `dotnet tool uninstall -g adrplus && dotnet tool install -g adrplus`
 

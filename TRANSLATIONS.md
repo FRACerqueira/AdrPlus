@@ -2,7 +2,7 @@
 
 # Translations
 
-AdrPlus's own UI strings (`src/Resources/AdrPlus.*.resx`) and ADR templates (`src/Resources/*-template*.md`, `src/Resources/adr-template*.adrplus`) are localized into 11 cultures, matching the set already shipped by the `PromptPlus` dependency.
+AdrPlus's own UI strings (`src/AdrPlus/Resources/AdrPlus.*.resx`) and ADR templates (`src/AdrPlus/Resources/*-template*.md`, `src/AdrPlus/Resources/adr-template*.adrplus`) are localized into 11 cultures, matching the set already shipped by the `PromptPlus` dependency.
 
 ## UI strings
 

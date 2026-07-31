@@ -82,13 +82,13 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ### For running
 
-- [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) or later
 
 `AdrPlus` can be used in repositories of **any language or framework** (C#, Java, Node.js, Python, Go, etc.), because it manages ADR files in Markdown and does not depend on your application stack.
 
 ### For building and packaging from source
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (builds all three target frameworks: `net8.0`, `net9.0`, `net10.0`)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ---
 

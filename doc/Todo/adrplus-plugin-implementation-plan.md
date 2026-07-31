@@ -8,19 +8,19 @@
 
 ## Phase 1 — `AdrPlus.Abstractions` project
 
-- New project `AdrPlus.Abstractions.csproj`, `TargetFramework=net8.0` only (spec §4.1 — a deliberate one-way door for the contract itself, not for plugin authors; confirm this trade-off is accepted before locking it in).
-- Add to `AdrPlus.sln`.
+- New project `AdrPlus.Abstractions.csproj`, `TargetFramework=net10.0` only, matching the host (spec §4.1 — the host itself dropped its `net10.0;net9.0;net8.0` multi-target down to `net10.0` only; see risk note below).
+- Add to `AdrPlus.slnx`.
 - Define the public surface: `IAdrPlugin`, `IPluginContext`, `IPluginConfiguration`, `AdrEventContext` (with lazy `GetAdrRenderedContent`), `AdrEventType`, `PluginResult` (incl. `IsRetryable`), `PluginResultStatus`, `AdrRecordSnapshot`, `RepoInfoSnapshot`, `AdrPluginBase` (optional convenience: `Success()`/`Skip()`/`Fail(message)`/`Fail(message, isRetryable:false)`).
-- Reference `AdrPlus.Abstractions` from `src\AdrPlus.csproj`.
+- Reference `AdrPlus.Abstractions` from `src\AdrPlus\AdrPlus.csproj`.
 
-**Verify:** solution builds under net8/net9/net10; `AdrPlus.Abstractions` itself only targets net8.0.
+**Verify:** solution builds under net10.0; `AdrPlus.Abstractions` itself only targets net10.0.
 
 ---
 
 ## Phase 2 — Domain snapshots
 
-- `AdrRecordSnapshot`: public immutable record mirroring `src\Domain\AdrRecord.cs` (`Number`, `Version`, `Revision`, `Title`, `Domain`, `Scope`, `StatusCreate`/`StatusUpdate`/`StatusChange`, `CreateRef`/`UpdateRef`/`ChangeRef`, `Superseded`).
-- `RepoInfoSnapshot`: public immutable subset of `src\Domain\AdrPlusRepoConfig.cs` relevant to plugins.
+- `AdrRecordSnapshot`: public immutable record mirroring `src\AdrPlus\Domain\AdrRecord.cs` (`Number`, `Version`, `Revision`, `Title`, `Domain`, `Scope`, `StatusCreate`/`StatusUpdate`/`StatusChange`, `CreateRef`/`UpdateRef`/`ChangeRef`, `Superseded`).
+- `RepoInfoSnapshot`: public immutable subset of `src\AdrPlus\Domain\AdrPlusRepoConfig.cs` relevant to plugins.
 - Internal mapping/extension methods `AdrRecord → AdrRecordSnapshot`, `AdrPlusRepoConfig → RepoInfoSnapshot`.
 
 **Verify:** unit tests asserting every snapshot field matches its source field (in particular `Adr.Number`, since D26 depends on plugin authors using it correctly for cross-revision identity).
@@ -29,12 +29,12 @@
 
 ## Phase 3 — Plugin discovery & loading (`IPluginManager` / `PluginLoader`)
 
-- New internal types (suggested location: `src\Plugins\`): `IPluginManager`, `PluginManager`, `PluginLoader`.
+- New internal types (suggested location: `src\AdrPlus\Plugins\`): `IPluginManager`, `PluginManager`, `PluginLoader`.
 - Folder-based discovery: enumerate `./plugins/<name>/` subfolders (D2).
 - Parse `plugin.json` per the final schema (D12) — including `subscribedEvents`, `maxConcurrency`, `foregroundTimeoutMs`, `timeoutMs`, `retryPolicy`, `settings` (D27).
 - One `AssemblyLoadContext` per subfolder; private deps via `AssemblyDependencyResolver` over `.deps.json` (D2/D6).
 - Structural load validation (cheap, no plugin code runs): manifest schema, `entryType` implements `IAdrPlugin`, `Name`/`Version` match manifest, `abstractionsVersion` SemVer-major compatible (D13), allowlist check against `adrplus.json` (D22/§10), duplicate-`name` rejection (D22, both rejected).
-- Register `IPluginManager` in `src\Extensions\ServiceCollectionExtensions.cs` (`AddAdrPlusServices`).
+- Register `IPluginManager` in `src\AdrPlus\Extensions\ServiceCollectionExtensions.cs` (`AddAdrPlusServices`).
 
 **Verify:** fixture-based tests — valid plugin loads; each rejection case (bad manifest, `abstractionsVersion` major mismatch, missing/wrong `entryType`, duplicate name, not on allowlist) is rejected with a warning and does not crash the host.
 
@@ -59,7 +59,7 @@
 - `./plugins/<name>/state/pending.json` read/write, schema per §7 (`adrKey`, `eventType`, `correlationId`, `lastError`, `attempts`, `timestamp`).
 - Background retry engine implementing `retryPolicy` (`maxAttempts`, `Fixed`/`Exponential` backoff, `jitter`) — §4.4's formula.
 - New `SyncCommandHandler`, default (no-flag) mode: for each plugin, iterate its `pending.json`, re-attempt via `retryPolicy`, remove entry on success, update `attempts`/`lastError` on failure.
-- Register `sync` in `src\Commands\CommandsAdr.cs` (enum + routing).
+- Register `sync` in `src\AdrPlus\Commands\CommandsAdr.cs` (enum + routing).
 
 **Verify:** unit tests for the backoff/jitter formula; integration test seeding a `pending.json` fixture, running `sync`, asserting successful items are removed and failed ones have updated `attempts`.
 
@@ -152,6 +152,6 @@ Phase 10 (last — documents the finished behavior)
 
 ---
 
-## Risk to confirm before starting Phase 1
+## Risk — confirmed 2026-07-31
 
-`AdrPlus.Abstractions` targeting `net8.0` only is a one-way door for the contract itself (not for plugin authors — see spec §4.1): if it ever needs a net9.0/net10.0-only BCL type internally, the floor must move, breaking existing plugins. Low probability given the project is only interfaces and immutable records, but worth an explicit go/no-go before Phase 1 starts.
+`AdrPlus.Abstractions` targeting `net10.0` only is a one-way door for the contract itself (not for plugin authors — see spec §4.1): if it ever needs a future-TFM-only BCL type internally, the floor must move, breaking existing plugins. Low probability given the project is only interfaces and immutable records. **Superseded decision, also confirmed 2026-07-31:** the host (`src/AdrPlus/AdrPlus.csproj`, `tests/AdrPlus.Tests/AdrPlus.Tests.csproj`) dropped its `net10.0;net9.0;net8.0` multi-target down to `net10.0` only — .NET 9 (STS) is already past EOL and .NET 8 (LTS) reaches EOL November 2026. `AdrPlus.Abstractions` matches at `net10.0` only; there is no lower-TFM host build left to stay compatible with.

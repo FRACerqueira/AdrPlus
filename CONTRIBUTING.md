@@ -71,7 +71,7 @@ dotnet build
 ### Run locally
 
 ```bash
-dotnet run --project src/AdrPlus.csproj -- help
+dotnet run --project src/AdrPlus/AdrPlus.csproj -- help
 ```
 
 ---
