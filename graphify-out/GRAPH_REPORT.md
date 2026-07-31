@@ -1,58 +1,58 @@
 # Graph Report - AdrPlus  (2026-07-31)
 
 ## Corpus Check
-- 224 files · ~176,269 words
+- 226 files · ~176,746 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3102 nodes · 9177 edges · 152 communities (140 shown, 12 thin omitted)
-- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 2685 edges (avg confidence: 0.8)
+- 3115 nodes · 9205 edges · 154 communities (144 shown, 10 thin omitted)
+- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 2687 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `197cd49c`
+- Built from commit: `38659989`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- .DirectoryExists
+- .GetFileNameRepoConfig
 - .StatusUpdateAdrAsync
 - ValidateJsonConfigTests
 - .ParseFileName
-- FieldsJson
+- IConfigPrompts
 - .ParseArgs
 - FileSystemServiceEnhancedTests
 - PatternParserTests
 - HelperTests
 - TemplateResourcesTests
-- .ValidateRepoStructure
+- SupersedeCommandHandlerTests
 - IConsoleWriter
 - .RouteAsync
 - AdrFileNameComponentsTests
 - AdrServiceTests
-- PromptConsole
+- CancellationToken
 - AdrPlusRepoConfigTests
 - ValidateConfig
 - AdrPlus README
 - AdrPlus.Domain
-- AdrEventContext
+- AdrPlus.Abstractions
 - AdrPlus.Infrastructure.FileSystem
 - HelpCommandHandlerTests
 - UndoStatusCommandHandlerTests
 - AdrRecordTests
 - HelpUsageAttributeTests
 - AdrPlus CHANGELOG
-- AdrPlusRepoConfig
+- IFileSystemService
 - ConfigCommandHandler
 - ADR record model tests
 - AdrPlus.Infrastructure.UI
 - AdrHeaderTests
-- IValidateConfig
-- IFileSystemService
+- .PromptWriteSuccess
+- .ParseAdrHeaderAndContentAsync
 - ADR discovery/query service
 - .GetFullNameFile
 - WizardCommandHandler
-- AdrFileNameComponents
+- PromptConsole
 - AdrPlus — Plugin Architecture Specification (Final)
 - .StatusChangeAdrAsync
 - AdrPlus.Abstractions.Tests.csproj
@@ -68,7 +68,7 @@
 - [Título breve de la decisión]
 - [Titre bref de la décision]
 - .GetCommands
-- ConfigCommandHandlerTests
+- .FileExists
 - [Titolo breve della decisione]
 - CommandAttribute
 - [決定の簡潔なタイトル]
@@ -79,8 +79,8 @@
 - AppConstants
 - [Краткое название решения]
 - [决策简要标题]
-- Fact
-- .IsValidCultureName
+- .ExploreWizardAsync
+- AdrEventContext
 - FormatMessages
 - [Brief title of the decision]
 - AdrPlus
@@ -111,7 +111,7 @@
 - [Título breve da decisão]
 - [Краткое название решения]
 - [决策简要标题]
-- AdrStatus
+- AdrRecord
 - IMainProgram
 - [Brief title of the decision]
 - [Kurzer Titel der Entscheidung]
@@ -125,10 +125,11 @@
 - [Краткое название решения]
 - [决策简要标题]
 - .PromptSelectLogicalDrive
+- IAdrPlugin
 - ItemMenuWizardTests
-- CommandRouterTests.cs
-- .OpenFile
-- Helper
+- AdrPluginBaseTests
+- IValidateConfig
+- .PromptGetArrayDomainsAdr
 - [Brief title of the decision]
 - [Kurzer Titel der Entscheidung]
 - [Título breve de la decisión]
@@ -141,6 +142,7 @@
 - [Краткое название решения]
 - [决策简要标题]
 - .ExecuteAsync
+- .ReadHistoryAsync
 - [Brief title of the decision]
 - [Kurzer Titel der Entscheidung]
 - [Título breve de la decisión]
@@ -171,10 +173,10 @@
 3. `IFileSystemService` - 80 edges
 4. `AdrServiceTests` - 79 edges
 5. `HelperTests` - 68 edges
-6. `AdrPlus.Domain` - 65 edges
+6. `AdrPlus.Domain` - 67 edges
 7. `AdrPlus.Core` - 61 edges
-8. `ReviseCommandHandlerTests` - 60 edges
-9. `AdrPlusRepoConfig` - 59 edges
+8. `AdrPlusRepoConfig` - 60 edges
+9. `ReviseCommandHandlerTests` - 60 edges
 10. `VersionCommandHandlerTests` - 59 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -198,27 +200,27 @@
 - **AdrPlus Documentation Set** — readme, migrationguide, stepbystepguide, nugetreadme, security, faq [INFERRED 0.85]
 - **Test Mock Helper Architecture** — tests_test_architecture_command_handler_pattern, tests_test_architecture_mock_helper_pattern, tests_test_architecture_supersede_case_study [EXTRACTED 1.00]
 
-## Communities (152 total, 12 thin omitted)
+## Communities (154 total, 10 thin omitted)
 
-### Community 0 - ".DirectoryExists"
-Cohesion: 0.17
+### Community 0 - ".GetFileNameRepoConfig"
+Cohesion: 0.20
 Nodes (14): InitCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, List, Task, MaxNumber (+6 more)
 
 ### Community 1 - ".StatusUpdateAdrAsync"
 Cohesion: 0.06
-Nodes (32): ApproveCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, RejectCommandHandler (+24 more)
+Nodes (38): ApproveCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, RejectCommandHandler (+30 more)
 
 ### Community 2 - "ValidateJsonConfigTests"
 Cohesion: 0.07
 Nodes (4): ValidateJsonConfigTests, Dictionary, Fact, Task
 
 ### Community 3 - ".ParseFileName"
-Cohesion: 0.06
-Nodes (27): ReviseCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, VersionCommandHandler (+19 more)
+Cohesion: 0.05
+Nodes (44): ReviseCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, UndoStatusCommandHandler (+36 more)
 
-### Community 4 - "FieldsJson"
+### Community 4 - "IConfigPrompts"
 Cohesion: 0.17
-Nodes (13): JsonConfig, PrefixValue, FieldsJson, JsonValueKind, IConfigPrompts, CancellationToken, Content, FieldsFromFileAdr (+5 more)
+Nodes (11): JsonConfig, PrefixValue, IConfigPrompts, CancellationToken, Content, FieldsFromFileAdr, IEnumerable, IsAborted (+3 more)
 
 ### Community 6 - "FileSystemServiceEnhancedTests"
 Cohesion: 0.06
@@ -228,17 +230,21 @@ Nodes (20): AdrPlus.Tests.Infrastructure.FileSystem, FileSystemService, Cancella
 Cohesion: 0.06
 Nodes (20): editorcmd, hasRider, hasVisualStudio, hasVSCode, Length, Position, PatternParser, Dictionary (+12 more)
 
+### Community 8 - "HelperTests"
+Cohesion: 0.05
+Nodes (17): bool, date, Helper, DateTime, error, GeneratedRegex, int, JsonElement (+9 more)
+
 ### Community 9 - "TemplateResourcesTests"
 Cohesion: 0.15
 Nodes (10): AdrPlus.Tests.Localization, SatelliteResourcesTests, MemberData, Theory, TheoryData, TemplateResourcesTests, MemberData, string (+2 more)
 
-### Community 10 - ".ValidateRepoStructure"
-Cohesion: 0.20
-Nodes (9): CancellationToken, ConfirmYes, Content, DateTime, Func, info, IsAborted, left (+1 more)
+### Community 10 - "SupersedeCommandHandlerTests"
+Cohesion: 0.13
+Nodes (15): Arguments, SupersedeCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task (+7 more)
 
 ### Community 11 - "IConsoleWriter"
-Cohesion: 0.08
-Nodes (17): IOptionsMonitor, IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type, IConfigurationMigrator (+9 more)
+Cohesion: 0.07
+Nodes (20): IOptionsMonitor, IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type, AdrPlusConfig (+12 more)
 
 ### Community 12 - ".RouteAsync"
 Cohesion: 0.29
@@ -248,77 +254,77 @@ Nodes (5): CancellationToken, Task, CommandRouterTests, Fact, Task
 Cohesion: 0.12
 Nodes (3): AdrServiceTests, Fact, IConfiguration
 
-### Community 15 - "PromptConsole"
-Cohesion: 0.05
-Nodes (28): Color, FrozenDictionary, RepoActions, PromptConsole, CancellationToken, ConfirmYes, Content, CountSelected (+20 more)
+### Community 15 - "CancellationToken"
+Cohesion: 0.12
+Nodes (14): FieldsJson, JsonValueKind, CancellationToken, ConfirmYes, Content, CountSelected, DateTime, FieldsExplore (+6 more)
 
 ### Community 16 - "AdrPlusRepoConfigTests"
-Cohesion: 0.13
-Nodes (3): AdrPlusRepoConfigTests, Fact, string
+Cohesion: 0.10
+Nodes (5): AdrPlusRepoConfigTests, Fact, string, PluginSnapshotExtensionsTests, Fact
 
 ### Community 17 - "ValidateConfig"
-Cohesion: 0.13
-Nodes (12): JsonNode, ValidateConfig, CancellationToken, Dictionary, ErrorReport, IConfiguration, IsValid, List (+4 more)
+Cohesion: 0.11
+Nodes (13): JsonNode, ValidateConfig, CancellationToken, Dictionary, ErrorReport, IConfiguration, IsValid, JsonElement (+5 more)
 
 ### Community 18 - "AdrPlus README"
 Cohesion: 0.20
 Nodes (19): Architecture Decision Record (ADR), FAQ (referenced, not read), AdrPlus Icon, Migration Guide, AdrPlus Migrated Header Table Format, ADR Migration Process, Migration Prerequisites, NuGet README (+11 more)
 
 ### Community 19 - "AdrPlus.Domain"
-Cohesion: 0.11
-Nodes (10): AdrPlus.Extensions, AdrPlus.Domain, AdrPlus.Infrastructure.Configuration, AdrPlus, AdrPlus.Tests.Commands.Init, AdrPlus.Tests.Domain, AdrPlus.Tests.Core, AdrPlus.Core (+2 more)
+Cohesion: 0.08
+Nodes (13): AdrPlus.Extensions, AdrPlus.Domain, AdrPlus.Tests.Commands, AdrPlus.Tests.Extensions, AdrPlus.Infrastructure.Configuration, AdrPlus, AdrPlus.Tests.Commands.Init, AdrPlus.Tests.Domain (+5 more)
 
-### Community 20 - "AdrEventContext"
-Cohesion: 0.06
-Nodes (31): AdrPlus.Abstractions, AdrPlus.Abstractions.Domain, AdrPlus.Abstractions.Tests, IAsyncDisposable, IReadOnlyDictionary, IReadOnlyList, AdrEventContext, Func (+23 more)
+### Community 20 - "AdrPlus.Abstractions"
+Cohesion: 0.12
+Nodes (7): AdrPlus.Abstractions, AdrPlus.Abstractions.Tests, AdrEventType, IPluginContext, IPluginLogger, Exception, PluginResultStatus
 
 ### Community 21 - "AdrPlus.Infrastructure.FileSystem"
 Cohesion: 0.10
 Nodes (14): AdrPlus.Tests.Commands.Reject, AdrPlus.Tests.Commands.NewAdr, AdrPlus.Tests.Commands.Explore, AdrPlus.Tests.Commands.Attributes, AdrPlus.Tests.Commands.Approve, AdrPlus.Tests.Commands.Revise, AdrPlus.Tests.Helpers, AdrPlus.Infrastructure.FileSystem (+6 more)
 
 ### Community 22 - "HelpCommandHandlerTests"
-Cohesion: 0.06
-Nodes (33): Fields, ICommandHandler, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger (+25 more)
+Cohesion: 0.13
+Nodes (15): ICommandHandler, HelpCommandHandler, CancellationToken, CommandRouter, ILogger, Task, Alias, Command (+7 more)
 
 ### Community 23 - "UndoStatusCommandHandlerTests"
-Cohesion: 0.15
-Nodes (11): UndoStatusCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task, UndoStatusCommandHandlerTests, Dictionary (+3 more)
-
-### Community 24 - "AdrRecordTests"
-Cohesion: 0.14
-Nodes (6): CancellationToken, Task, AdrRecord, DateTime, AdrRecordTests, Fact
+Cohesion: 0.21
+Nodes (5): UndoStatusCommandHandlerTests, Dictionary, Fact, ILogger, Task
 
 ### Community 26 - "AdrPlus CHANGELOG"
 Cohesion: 0.12
 Nodes (26): approve command, config command, AdrPlus CHANGELOG, explorer command, help command, init command, Keep a Changelog format, migrate command (+18 more)
 
-### Community 27 - "AdrPlusRepoConfig"
-Cohesion: 0.13
-Nodes (5): Task, AdrPlusRepoConfig, Dictionary, SearchOption, Task
+### Community 27 - "IFileSystemService"
+Cohesion: 0.09
+Nodes (9): content, header, Task, AdrPlusRepoConfig, Dictionary, IFileSystemService, IEnumerable, SearchOption (+1 more)
 
 ### Community 28 - "ConfigCommandHandler"
-Cohesion: 0.13
-Nodes (13): EditField, ConfigCommandHandler, Arguments, CancellationToken, Content, Func, ILogger, IsAborted (+5 more)
+Cohesion: 0.14
+Nodes (12): EditField, ConfigCommandHandler, Arguments, CancellationToken, Content, Func, ILogger, IsAborted (+4 more)
 
 ### Community 30 - "AdrPlus.Infrastructure.UI"
 Cohesion: 0.10
 Nodes (19): AdrPlus.Infrastructure.UI, AdrPlus.Commands.Migrate, AdrPlus.Commands.UndoStatus, AdrPlus.Commands.Config, AdrPlus.Commands.Explore, AdrPlus.Infrastructure.Logging, AdrPlus.Commands.Revise, AdrPlus.Tests.Commands.Help (+11 more)
 
-### Community 32 - "IValidateConfig"
+### Community 32 - ".PromptWriteSuccess"
 Cohesion: 0.15
-Nodes (11): IValidateConfig, CancellationToken, ErrorReport, Task, ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration (+3 more)
+Nodes (7): ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration, ILogger, Regex, Task
 
-### Community 33 - "IFileSystemService"
-Cohesion: 0.09
-Nodes (9): content, header, content, header, IFileSystemService, IEnumerable, Result, Success (+1 more)
+### Community 33 - ".ParseAdrHeaderAndContentAsync"
+Cohesion: 0.33
+Nodes (4): content, header, AdrHeader, DateTime
 
 ### Community 35 - ".GetFullNameFile"
-Cohesion: 0.06
-Nodes (37): Arguments, NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task (+29 more)
+Cohesion: 0.11
+Nodes (19): NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, INewAdrPrompts (+11 more)
 
 ### Community 36 - "WizardCommandHandler"
 Cohesion: 0.18
 Nodes (15): NotImplementedException, WizardCommandHandler, Arguments, CancellationToken, CommandRouter, CommandsAdr, IConfiguration, ILogger (+7 more)
+
+### Community 37 - "PromptConsole"
+Cohesion: 0.06
+Nodes (12): Color, FrozenDictionary, PromptConsole, Filename, Func, IConfiguration, info, left (+4 more)
 
 ### Community 38 - "AdrPlus — Plugin Architecture Specification (Final)"
 Cohesion: 0.09
@@ -341,7 +347,7 @@ Cohesion: 0.27
 Nodes (4): LoggerMessage, LogMessages, Exception, ILogger
 
 ### Community 43 - "AdrService"
-Cohesion: 0.21
+Cohesion: 0.28
 Nodes (7): IAdrServices, AdrService, IConfiguration, Result, string, Success, StringComparison
 
 ### Community 44 - ".ResolveAppVersion"
@@ -380,9 +386,9 @@ Nodes (14): Argumentation, Artefacts connexes, Contraintes, Décision, Décision
 Cohesion: 0.15
 Nodes (7): CommandsAdr, Alias, Command, ConfigCommandHandler, Description, Dictionary, Type
 
-### Community 53 - "ConfigCommandHandlerTests"
-Cohesion: 0.14
-Nodes (5): FilePathAdrTemplate, ConfigCommandHandlerTests, Fact, ILogger, Task
+### Community 53 - ".FileExists"
+Cohesion: 0.12
+Nodes (6): Task, FilePathAdrTemplate, ConfigCommandHandlerTests, Fact, ILogger, Task
 
 ### Community 54 - "[Titolo breve della decisione]"
 Cohesion: 0.13
@@ -420,13 +426,13 @@ Nodes (14): Аргументация, Группа, [Краткое назван
 Cohesion: 0.13
 Nodes (14): 假设, 决策, [决策简要标题], 分组, 备注, 影响, 相关决策, 相关制品 (+6 more)
 
-### Community 64 - "Fact"
-Cohesion: 0.18
-Nodes (5): date, DateTime, error, status, Fact
+### Community 64 - ".ExploreWizardAsync"
+Cohesion: 0.14
+Nodes (16): Fields, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task (+8 more)
 
-### Community 65 - ".IsValidCultureName"
-Cohesion: 0.24
-Nodes (3): JsonElement, InlineData, Theory
+### Community 65 - "AdrEventContext"
+Cohesion: 0.25
+Nodes (8): AdrEventContext, Func, AdrPluginBase, CancellationToken, Task, PluginResult, TestPlugin, CancellationToken
 
 ### Community 66 - "FormatMessages"
 Cohesion: 0.40
@@ -548,9 +554,9 @@ Nodes (13): [вариант 1], [вариант 2], [вариант 3], Итог
 Cohesion: 0.14
 Nodes (13): [决策简要标题], 决策结果, 决策者, 决策驱动因素 <!-- 可选 -->, [备选方案 1], [备选方案 2], [备选方案 3], 备选方案的优缺点 <!-- 可选 --> (+5 more)
 
-### Community 97 - "AdrStatus"
-Cohesion: 0.14
-Nodes (5): AdrHeader, DateTime, AdrStatus, InlineData, Theory
+### Community 97 - "AdrRecord"
+Cohesion: 0.17
+Nodes (10): AdrPlus.Abstractions.Domain, IReadOnlyDictionary, IReadOnlyList, AdrRecordSnapshot, DateTime, AdrStatus, RepoInfoSnapshot, AdrRecord (+2 more)
 
 ### Community 98 - "IMainProgram"
 Cohesion: 0.40
@@ -604,9 +610,21 @@ Nodes (11): 优先级, 作者, 假设, [决策简要标题], 利益相关方, �
 Cohesion: 0.12
 Nodes (19): Adrfiles, ArgsWizard, MigrateCommandHandler, Arguments, CancellationToken, Dictionary, IEnumerable, ILogger (+11 more)
 
-### Community 116 - "Helper"
-Cohesion: 0.38
-Nodes (5): bool, Helper, GeneratedRegex, int, Regex
+### Community 111 - "IAdrPlugin"
+Cohesion: 0.22
+Nodes (5): IAsyncDisposable, IAdrPlugin, CancellationToken, Task, IPluginConfiguration
+
+### Community 113 - "AdrPluginBaseTests"
+Cohesion: 0.40
+Nodes (4): AdrPluginBaseTests, Fact, Task, ValueTask
+
+### Community 114 - "IValidateConfig"
+Cohesion: 0.40
+Nodes (4): IValidateConfig, CancellationToken, ErrorReport, Task
+
+### Community 116 - ".PromptGetArrayDomainsAdr"
+Cohesion: 0.40
+Nodes (3): domains, Exception, Task
 
 ### Community 117 - "[Brief title of the decision]"
 Cohesion: 0.29
@@ -749,24 +767,24 @@ Cohesion: 0.40
 Nodes (4): 决策, [决策简要标题], 后果, 背景
 
 ## Knowledge Gaps
-- **698 isolated node(s):** `net10.0`, `Microsoft.NET.Sdk`, `net10.0`, `Microsoft.Extensions.Hosting (10.0.10)`, `PromptPlus (6.0.0-Beta7)` (+693 more)
+- **699 isolated node(s):** `net10.0`, `Microsoft.NET.Sdk`, `net10.0`, `Microsoft.Extensions.Hosting (10.0.10)`, `PromptPlus (6.0.0-Beta7)` (+694 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `IFileSystemService` connect `IFileSystemService` to `.DirectoryExists`, `.StatusUpdateAdrAsync`, `ValidateJsonConfigTests`, `.ParseFileName`, `.ParseArgs`, `FileSystemServiceEnhancedTests`, `.ValidateRepoStructure`, `PromptConsole`, `ValidateConfig`, `AdrPlus.Infrastructure.FileSystem`, `HelpCommandHandlerTests`, `UndoStatusCommandHandlerTests`, `AdrPlusRepoConfig`, `ConfigCommandHandler`, `IValidateConfig`, `.GetFullNameFile`, `WizardCommandHandler`, `.StatusChangeAdrAsync`, `AdrService`, `PathHelper`, `ConfigCommandHandlerTests`, `.PromptSelectLogicalDrive`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
-- **Why does `PromptConsole` connect `PromptConsole` to `IValidateConfig`, `IFileSystemService`, `.GetFullNameFile`, `FieldsJson`, `WizardCommandHandler`, `.ParseFileName`, `AdrFileNameComponents`, `IConsoleWriter`, `.PromptSelectLogicalDrive`, `HelpCommandHandlerTests`, `AdrPlus.Infrastructure.UI`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
-- **Why does `IAdrServices` connect `.GetFullNameFile` to `.DirectoryExists`, `.StatusUpdateAdrAsync`, `IFileSystemService`, `.ParseFileName`, `WizardCommandHandler`, `.ParseArgs`, `ValidateJsonConfigTests`, `.ValidateRepoStructure`, `.PromptSelectLogicalDrive`, `PromptConsole`, `PathHelper`, `ValidateConfig`, `AdrPlus.Infrastructure.FileSystem`, `HelpCommandHandlerTests`, `UndoStatusCommandHandlerTests`, `ConfigCommandHandlerTests`, `ConfigCommandHandler`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Why does `IFileSystemService` connect `IFileSystemService` to `.GetFileNameRepoConfig`, `.StatusUpdateAdrAsync`, `.ReadHistoryAsync`, `.ParseFileName`, `ValidateJsonConfigTests`, `.ParseArgs`, `FileSystemServiceEnhancedTests`, `SupersedeCommandHandlerTests`, `IConsoleWriter`, `CancellationToken`, `ValidateConfig`, `AdrPlus.Infrastructure.FileSystem`, `UndoStatusCommandHandlerTests`, `ConfigCommandHandler`, `.PromptWriteSuccess`, `.ParseAdrHeaderAndContentAsync`, `.GetFullNameFile`, `WizardCommandHandler`, `PromptConsole`, `.StatusChangeAdrAsync`, `PathHelper`, `.FileExists`, `.ExploreWizardAsync`, `.PromptSelectLogicalDrive`, `.PromptGetArrayDomainsAdr`?**
+  _High betweenness centrality (0.067) - this node is a cross-community bridge._
+- **Why does `AdrPlusRepoConfig` connect `IFileSystemService` to `.GetFileNameRepoConfig`, `.StatusUpdateAdrAsync`, `.ParseFileName`, `HelperTests`, `SupersedeCommandHandlerTests`, `AdrServiceTests`, `CancellationToken`, `AdrPlusRepoConfigTests`, `ValidateConfig`, `AdrPlus.Domain`, `AdrRecordTests`, `ConfigCommandHandler`, `.ParseAdrHeaderAndContentAsync`, `.GetFullNameFile`, `PromptConsole`, `.StatusChangeAdrAsync`, `AdrService`, `StringCaseExtensionsTests`, `.ExploreWizardAsync`, `AdrRecord`, `.PromptSelectLogicalDrive`, `.PromptGetArrayDomainsAdr`?**
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Why does `AdrPlus.Core` connect `AdrPlus.Domain` to `IMainProgram`, `WizardCommandHandler`, `TemplateResourcesTests`, `LowercaseNamingPolicyTests`, `AdrPlus.Infrastructure.FileSystem`, `AppConstants`, `AdrPlus.Infrastructure.UI`?**
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **What connects `net10.0`, `Microsoft.NET.Sdk`, `net10.0` to the rest of the system?**
-  _698 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _699 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `.StatusUpdateAdrAsync` be split into smaller, more focused modules?**
-  _Cohesion score 0.06030701754385965 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05577765086617171 - nodes in this community are weakly interconnected._
 - **Should `ValidateJsonConfigTests` be split into smaller, more focused modules?**
   _Cohesion score 0.07211646136618141 - nodes in this community are weakly interconnected._
 - **Should `.ParseFileName` be split into smaller, more focused modules?**
-  _Cohesion score 0.058394160583941604 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05188945290468133 - nodes in this community are weakly interconnected._

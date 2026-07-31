@@ -1138,5 +1138,15 @@
     "mtime": 1785533419.7606244,
     "ast_hash": "43cd464f75805fe4e379f62de4e7da42",
     "semantic_hash": ""
+  },
+  "src/AdrPlus/Extensions/PluginSnapshotExtensions.cs": {
+    "mtime": 1785534393.3489537,
+    "ast_hash": "c27a5ee888d29c2470b1207ec5158104",
+    "semantic_hash": ""
+  },
+  "tests/AdrPlus.Tests/Extensions/PluginSnapshotExtensionsTests.cs": {
+    "mtime": 1785534444.3421545,
+    "ast_hash": "d178488c9cb571a1516ef104f0258162",
+    "semantic_hash": ""
   }
 }
