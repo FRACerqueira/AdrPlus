@@ -1,0 +1,364 @@
+# AdrPlus — Plugin Architecture Specification (Final)
+
+> **Purpose**: Technical specification for adding a plugin system to the AdrPlus CLI.
+> **Audience**: An LLM (Claude) that will implement or reason about this feature.
+> **Status**: Design finalized — reviewed against the repo across multiple passes; all 30 decisions (§3) are settled, each tagged Essential or Deferred (v1.1+). **Not yet implemented.**
+> **Guiding constraint**: **Minimal, surgical impact on the main product.** The core emits events; everything else lives in a new isolated extensibility layer.
+
+---
+
+## 1. Context
+
+### 1.1 What AdrPlus is
+AdrPlus is a .NET CLI tool that manages **Architecture Decision Records (ADRs)** — Markdown files describing architectural decisions. It creates, versions, revises, and changes the status of ADR files following configurable naming conventions and templates.
+
+- **Solution**: `C:\Sources\AdrPlus\AdrPlus.sln`
+- **Main project**: `src\AdrPlus.csproj`
+- **Tests**: `tests\AdrPlus.Tests\AdrPlus.Tests.csproj`
+- **Target frameworks**: .NET 10, .NET 9, .NET 8
+- **Repo**: https://github.com/FRACerqueira/AdrPlus
+
+### 1.2 Feature goal
+Allow external tools (e.g., **Confluence**, Jira, Teams) to **react to ADR lifecycle events** so ADRs can be summarized/synced elsewhere, **without changing the core** for each new integration. Motivating case: when an ADR is created/updated, a plugin copies/summarizes it to Confluence in a structured, synchronized way.
+
+---
+
+## 2. Current architecture (relevant facts)
+
+Existing traits that make the plugin system feasible with minimal core change:
+
+| Element | Location | Relevance |
+|---|---|---|
+| Dependency Injection | `src\Extensions\ServiceCollectionExtensions.cs` (`AddAdrPlusServices`) | Plugin manager registers here |
+| `IConfiguration` injected | `src\Commands\CommandRouter.cs`, `src\adrplus.json` | Source for allowlist / global plugin settings |
+| Decoupled handlers | `ICommandHandler` (`src\Commands\ICommandHandler.cs`) + `CommandRouter` | Central place to emit post-command events |
+| Command registry | `src\Commands\CommandsAdr.cs` (enum + `[Command(...)]`) | New `sync` / `plugins` commands added here |
+| Domain model | `src\Domain\AdrRecord.cs`, `AdrPlusRepoConfig.cs`, `AdrStatus.cs` | Source for immutable event snapshots |
+| Async status ops | `src\Core\AdrService.cs` / `IAdrServices` | Natural hook points for status events |
+| Logging + localization | `src\Infrastructure\Logging\LogMessages.cs`, `Resources\*.resx` (10+ languages) | File logging + localized host messages |
+
+**Limitations to overcome:** everything is `internal` (no public contract); commands are static (no dynamic loading); no lifecycle-event mechanism.
+
+**Conclusion:** this is an **added extensibility layer**, not a rewrite.
+
+---
+
+## 3. Approved design decisions (authoritative)
+
+| # | Decision | Value | Tier |
+|---|---|---|---|
+| D1 | Failure behavior | **Fail-soft**: warn + log to file; never abort the local operation | Essential |
+| D2 | Discovery | Folder-based: `./plugins/<name>/`, each plugin in its own subfolder with its own artifacts | Essential |
+| D3 | Multiplicity | Multiple independent plugins; fan-out of the same event to all | Essential |
+| D4 | Autonomy | Plugins receive events and decide whether to act | Essential |
+| D5 | Reconciliation | Failures produce a reconcilable **pending state (per-plugin)**, not just a log line — without this, D1's fail-soft promise is just silent data loss against a flaky network dependency | Essential |
+| D6 | Contract sharing | The host depends **only** on the public interface `IAdrPlugin` in `AdrPlus.Abstractions`, resolved by the host, versioned via SemVer | Essential |
+| D7 | AOT | Not used → dynamic assembly loading allowed | Essential (context) |
+| D8 | `migrate` event | `migrate` is not only infra; it emits an event | Essential |
+| D9 | Pending state location | Per-plugin (each plugin owns its state) | Essential |
+| D10 | Secrets/config | 100% the plugin's responsibility; host provides no secrets API | Essential |
+| D11 | Hook result | Structured `PluginResult` (`Success`/`Skipped`/`Failed`, extended by D30's `IsRetryable`) | Essential |
+| D12 | Discovery metadata | Manifest file (`plugin.json`) per subfolder | Essential |
+| D13 | Contract versioning | Plugin declares `abstractionsVersion`; host validates **SemVer major**; incompatible → ignore with warning | Essential |
+| D14 | Replay/backfill | `adrplus sync` has two modes (§6): **default** = re-drive `pending.json` only (self-limiting, safe to automate via cron/CI); **`--backfill`** = full repo sweep, re-emitting each existing ADR's current settled-status event with `IsReplay=true` (not self-limiting, not cron-safe, deliberate/manual). Both are load-bearing: `--backfill` is the *only* path for a plugin installed on a pre-existing repo (the realistic adoption case) to ever receive historical ADRs. | Essential |
+| D15 | Retry policy | Host-managed retry: `maxAttempts`, base delay, backoff `Fixed`/`Exponential`, optional `jitter`. **Scoped to background re-drive only** (D27) — the foreground path is a single non-retried attempt; pending state is written on that attempt's failure, not after `retryPolicy`'s attempts are exhausted. | Essential |
+| D16 | Mandatory contract | Every plugin **MUST** implement the single interface `IAdrPlugin`. Host validates the manifest `entryType` implements it and `Name`/`Version` match the manifest; otherwise not loaded + warning | Essential |
+| D17 | Optional base class | `AdrPluginBase` is an **optional** convenience implementing `IAdrPlugin` (result helpers including D30's `Fail(message)`/`Fail(message, isRetryable:false)`, exception→`Failed` shielding, manifest validation). Host never depends on it | Essential |
+| D18 | Instance lifetime & concurrency | One singleton instance per plugin, reused across events. `OnAdrEventAsync` must be reentrant; host caps concurrency per plugin (`maxConcurrency`, fixed default 1) — this serializes dispatch to a plugin across the many ADRs a `--backfill` sweep touches, so it doesn't burst-hammer the external system. | Essential mechanism; user-tunability of the knob is **Deferred (v1.1+)** |
+| D19 | Disposal & unload | `IAdrPlugin : IAsyncDisposable`; host disposes plugins and flushes pending state on graceful shutdown. Explicit `AssemblyLoadContext` unload is a "good citizen" step, not a correctness requirement, for a short-lived CLI process that's about to exit and reclaim everything anyway (§4.2). | Essential |
+| D20 | Host-provided services | Host injects an `ILogger`-backed `IPluginLogger` (with `CorrelationId`) via `IPluginContext`. Still no secrets. | Essential |
+| D21 | Event schema forward-compat | Unknown `AdrEventType` values MUST be treated as `Skipped`; a plugin must never throw on an unknown event | Essential |
+| D22 | Name collision | Two subfolders with the same `name` → both rejected + warning (avoids duplicate sync) | Essential |
+| D23 | Replay dedup | Host deduplicates by `adrKey + eventType` before dispatch — relevant mainly within/across repeated `--backfill` runs, since the default re-drive mode is already self-limiting and normal lifecycle events can't recur on the same `adrKey+eventType` (AdrPlus's own status guards, e.g. `ApproveCommandHandler.SelectionCondition`, already prevent that). Correctness doesn't depend on it — the plugin's own idempotent upsert (§7/D11) already covers that; dedup only saves redundant API calls on a `--backfill` re-run. | Deferred (v1.1+) |
+| D24 | Global dispatch timeout | An aggregate dispatch timeout, bounding total wait when several plugins run in parallel, is largely redundant once `foregroundTimeoutMs` (D27) is enforced via forced task abandonment (`Task.WhenAny` against `Task.Delay`) — parallel dispatch's total wait is `max()`, not `sum()`, of per-plugin timeouts regardless of plugin count. Adds value only against pathological slowness in dispatch orchestration itself, a low-probability case for a handful of folder-based plugins. | Deferred (v1.1+) |
+| D25 | Diagnostics commands | `adrplus plugins list` / `adrplus plugins validate` report loaded plugins, versions, SemVer compatibility, manifest errors, allowlist status, and a pending-item count per plugin (§8) | Essential |
+| D26 | `adrKey` / `ExternalKey` scope | `adrKey` (e.g. `"0007-v1-r0"`) identifies a specific **version+revision file** and changes on every `Revised`/`Versioned` event — it is **not** a stable identity for an ADR's lifetime. The host's dedup (D23) and pending-state (D5/D9) keys use this scoped `adrKey` on purpose (they track one file's delivery, not the decision's history). If a plugin wants **one external artifact that persists across revisions** (e.g. a single Confluence page), it must derive its own external identity from the ADR's stable sequence number (`Adr.Number` in `AdrRecordSnapshot`, mirroring `AdrRecord.Number`), not from `adrKey`. The host makes no cross-revision continuity guarantee — see §6 and §7 for why this matters. | Essential |
+| D27 | Foreground/background dispatch split | The CLI command makes exactly **one bounded, non-retried attempt per plugin** inline, in the foreground, bounded by a new `foregroundTimeoutMs` (default `5000`). If that single attempt doesn't return `Success`/`Skipped` within budget, the host **immediately** writes pending state (§7) and returns control to the user. The full `retryPolicy` (§4.4: `maxAttempts`, exponential backoff, jitter) runs **only** during background re-drive of pending items (§6/§7) — never in the foreground. This bounds interactive CLI latency to ~`foregroundTimeoutMs` per plugin (plus D24's aggregate cap across plugins) regardless of how unhealthy the external system is, instead of the ~90s worst case (3 × 30s timeout + backoff) the original single-schedule design allowed. | Essential |
+| D28 | Exit code semantics | The process exit code reflects **only the local ADR operation** (file write / status change) — plugin dispatch outcomes (`Success`/`Skipped`/`Failed`/queued-pending) never change it, consistent with D1's fail-soft guarantee. Scripts/CI that need to know whether external sync succeeded must check `adrplus plugins list` (pending counts, D25) or the file log — not the exit code. | Essential |
+| D29 | Deployment model | v1 targets **local, per-developer execution**: dispatch happens on whichever developer's machine ran the state-changing command (`approve`/`reject`/etc.), using whatever plugin credentials are configured on *that* machine (D10). Coverage of the external system (e.g. Confluence) is therefore only as consistent as credential provisioning across the team's machines — accepted as a v1 trade-off, not treated as a bug. A CI-authoritative model (a pipeline running `adrplus sync --backfill` on merge, with one centralized credential and one shared pending state) is a coherent alternative but a larger scope change, deferred pending real usage data. `./plugins/<name>/plugin.json`/DLLs may be committed to the repo so the whole team gets the same plugins on clone; `./plugins/<name>/state/pending.json` is local, per-machine, per-developer runtime state (should be gitignored) — nobody but that developer can see or re-drive their own pending items. | Essential (accepted constraint) |
+| D30 | Retryable vs. permanent failure | Not every `Failed` result is worth retrying: a missing/invalid credential will fail identically on every retry attempt, no matter the backoff. `PluginResult` gets an `IsRetryable` flag (default `true`, preserving current behavior for plugins that don't think about the distinction). `Failed` + `IsRetryable: false` — and `InitializeAsync` throwing, treated the same way — is **not** written to `pending.json` at all (there is nothing productive to retry automatically). Instead: one distinct, prominent warning + file log entry telling the developer to fix configuration, then run `adrplus sync --backfill` manually once fixed (reusing the essential backfill mechanism, D14, rather than inventing a second recovery path). `InitializeAsync` is called **lazily** — only the first time a plugin is about to receive an event it actually subscribes to in this process run, not unconditionally on every command — so a developer running e.g. `adrplus new` never sees a Confluence-credential warning for a plugin that isn't even subscribed to `Created`. **Protocol-agnostic by construction (follows from D6/D16):** the host never sees HTTP status codes, socket errors, or any transport detail — only `PluginResult`. Classifying "this specific failure is permanent" (a 401 over HTTP, an auth rejection over gRPC, a timeout on a custom UDP protocol, whatever a future non-Confluence plugin uses) is entirely the plugin's own job, same as credential resolution (D10). D30 therefore generalizes to any future plugin without the host or `AdrPlus.Abstractions` ever needing protocol-specific knowledge. | Essential |
+
+---
+
+## 4. Solution components
+
+### 4.1 New public project: `AdrPlus.Abstractions`
+Contains **only interfaces and immutable DTOs**, **resolved by the host** (loaded once), never copied into plugin folders (otherwise types differ and casts fail).
+
+**Target framework:** `net8.0` only — the lowest TFM the host multi-targets (`net10.0;net9.0;net8.0`). This is **not** a restriction on plugin authors (corrected in this revision — the earlier wording wrongly implied it was): .NET's TFM compatibility rules mean a `net8.0` asset automatically satisfies any consuming project with `TargetFramework >= net8.0`, so a plugin project can freely target `net8.0`, `net9.0`, or `net10.0` and reference this same `Abstractions` build with zero extra configuration — NuGet resolves it. The only actual constraint enforced is the floor itself: a plugin targeting below `net8.0` (netstandard2.0, .NET Framework, net6.0/net7.0) fails to reference it — which is the desired behavior, since the host never runs under anything older anyway. At runtime, ALC-loaded plugin assemblies are likewise forward-compatible with a net9.0/net10.0 host process.
+
+Trade-off to accept knowingly: single-targeting `net8.0` is a one-way door only for `Abstractions` **itself** — if the contract ever needs a net9.0/net10.0-only BCL type internally, the floor would have to move (a breaking change for existing plugins). Given `Abstractions` is only interfaces and immutable records, this is unlikely to bite, but worth confirming before locking it in. Multi-targeting `Abstractions` like the host (`net8.0;net9.0;net10.0`) would avoid that one-way door, at the cost of extra packaging complexity for no functional benefit today — not recommended unless that trade-off is specifically wanted.
+
+**Public surface:**
+```
+IAdrPlugin               // the single mandatory contract (D16)
+IPluginContext           // host-provided services (logger, correlation id) (D20)
+IPluginConfiguration     // typed access to the plugin's own manifest "settings"
+AdrEventContext          // immutable event DTO
+AdrEventType             // enum
+PluginResult             // return DTO
+PluginResultStatus       // enum: Success | Skipped | Failed
+AdrRecordSnapshot        // public immutable copy of internal AdrRecord
+RepoInfoSnapshot         // public immutable copy of relevant AdrPlusRepoConfig data
+AdrPluginBase            // OPTIONAL convenience (D17)
+```
+
+**Mandatory contract (D16, D18, D19, D20, D21):**
+```csharp
+public interface IAdrPlugin : IAsyncDisposable
+{
+	// Identity — must match plugin.json (host validates on load)
+	string Name { get; }
+	string Version { get; }
+
+	// Lifecycle — receives host services (logger/correlation) and typed settings
+	Task InitializeAsync(IPluginContext context, IPluginConfiguration config, CancellationToken ct);
+
+	// Cheap declarative filter — host may skip invocation entirely
+	bool ShouldHandle(AdrEventContext context);
+
+	// Reaction — MUST return PluginResult; MUST treat unknown events as Skipped; MUST NOT throw for control flow
+	Task<PluginResult> OnAdrEventAsync(AdrEventContext context, CancellationToken ct);
+}
+
+public sealed record AdrEventContext
+{
+	public required AdrEventType EventType { get; init; }
+	public required bool IsReplay { get; init; }
+	public required AdrRecordSnapshot Adr { get; init; }
+	public required string AdrFilePath { get; init; }
+	public required Func<string> GetAdrRenderedContent { get; init; }   // lazy — see note below
+	public required RepoInfoSnapshot Repo { get; init; }
+	public required string CorrelationId { get; init; }
+}
+
+public sealed record PluginResult
+{
+	public required PluginResultStatus Status { get; init; }
+	public string? Message { get; init; }
+	public string? ExternalKey { get; init; }   // e.g., Confluence pageId (idempotency)
+	public bool IsRetryable { get; init; } = true;   // D30 — false for permanent/config failures (e.g. bad credentials)
+}
+
+public enum PluginResultStatus { Success, Skipped, Failed }
+```
+
+**Note on `GetAdrRenderedContent` (fixes a self-contradiction found in review):** the field was originally `AdrRenderedContent` (a plain `required string`), which forces the host to render/materialize content **before** `subscribedEvents`/`ShouldHandle` get to filter the event — defeating §4.3's own claim that those filters let the host "skip un-subscribed events cheaply." Making it a lazy delegate means rendering only happens if a plugin's filter actually decides to handle the event. **Trade-off:** `AdrEventContext` is a `record`, and a bare `Func<string>`/`Lazy<string>` member breaks the record's structural (value) equality — two events with identical data but different delegate instances would compare unequal. Not a problem today (nothing compares `AdrEventContext` instances), but worth flagging since D23's dedup works on `adrKey + eventType`, not on the event object itself, so it's unaffected — just don't assume `AdrEventContext` supports value equality later without revisiting this.
+
+**Optional convenience base (D17):** `AdrPluginBase : IAdrPlugin` centralizes `try/catch`→`Failed`, exposes `Success()`/`Skip()`/`Fail(message)` (retryable by default, D30) and `Fail(message, isRetryable: false)` (permanent — e.g. bad credentials) helpers, validates the manifest, and turns `OnAdrEventAsync` into a template method calling `ShouldHandle` + an abstract `HandleAsync`. Authors may ignore it and implement `IAdrPlugin` directly.
+
+### 4.2 Host components (internal to AdrPlus)
+- **`IPluginManager`** — orchestrates discovery, load, validate, dispatch, retry, reconciliation, and shutdown.
+- **`PluginLoader`** — isolated loading and unloading.
+
+**Loading (D2, D6, D13, D16, D22):**
+- One isolated **`AssemblyLoadContext` (ALC)** per subfolder; private deps resolved via `AssemblyDependencyResolver` over the plugin's `.deps.json`.
+- `AdrPlus.Abstractions` resolved by the **host** only.
+- On load, validate: manifest schema, `entryType` implements `IAdrPlugin`, `Name`/`Version` match manifest, `abstractionsVersion` SemVer-major compatible, allowlist, and **duplicate name** (both rejected). Any failure → skip + localized warning. This is structural/cheap validation — no plugin code runs yet.
+- **`InitializeAsync` is deferred (D30), not part of load validation above.** It only runs the first time, in this process, that a subscribed event is about to be dispatched to that plugin — a developer running a command the plugin doesn't subscribe to (e.g. `adrplus new` against a plugin only subscribed to `Approved`) never triggers it, and never sees a spurious credential warning for a system they aren't touching right now.
+
+**Dispatch (D1, D3, D18, D23, D24, D27):**
+- Deduplicate by `adrKey + eventType` (D23), filter by `subscribedEvents` + `ShouldHandle`, then invoke subscribed hooks **in parallel**, isolated per plugin (`try/catch`).
+- Per-plugin **`foregroundTimeoutMs`** (D27, default 5000ms), **enforced by the host** (race the hook's `Task` against `Task.Delay(foregroundTimeoutMs)` via `Task.WhenAny` and abandon it on timeout) — not merely passed as a `CancellationToken` and trusted to be honored. This matters: it's what lets a single plugin's timeout bound the command's wait even if that plugin's own code ignores cancellation (a buggy/misbehaving plugin), without needing a separate aggregate timeout to catch that case. Per-plugin **maxConcurrency** (default 1, fixed — user-tunability is Deferred v1.1+, D18).
+- **Foreground attempt is single-shot, no retry** (D27): if a plugin doesn't return `Success`/`Skipped` within `foregroundTimeoutMs`, the host writes pending state (§7) immediately — attempt count `0`/`1` recorded, not "exhausted" — and moves on. The command returns to the user bounded by `foregroundTimeoutMs` × plugin count (or D24's aggregate cap), not by `retryPolicy`'s full schedule.
+- **Background re-drive runs the full `retryPolicy`** (§4.4: `maxAttempts`, exponential backoff, jitter) against pending items, outside the interactive command — see §6/§7. This is where `timeoutMs` (per-attempt, can afford to be generous, e.g. `30000`) and the backoff schedule apply.
+- **Permanent failures never reach `pending.json` at all (D30):** a `Failed` result with `IsRetryable: false`, or `InitializeAsync` throwing, gets a distinct, prominent warning (not the routine "queued for retry" message) and the file log entry — but no pending-state record and no automatic re-drive, since retrying a bad credential changes nothing. Recovery is manual: fix the configuration, then run `adrplus sync --backfill` to catch up.
+
+**Shutdown (D19):** on graceful exit, cancel in-flight work within the aggregate timeout, `DisposeAsync` each plugin, and flush pending state. `DisposeAsync` matters regardless of process lifetime (it lets a plugin flush an `HttpClient`, close a file handle, etc.). Explicit ALC unload matters less here than it would in a long-running host: an `adrplus` invocation is a short-lived CLI process that is about to exit and reclaim everything anyway — unload is a "be a good citizen" step (frees memory a fraction of a second early), not a correctness requirement the way it would be for a host that hot-swaps plugins across many invocations.
+
+### 4.3 Manifest — `plugin.json` (per subfolder)
+```json
+{
+  "name": "confluence",
+  "version": "1.0.0",
+  "entryAssembly": "AdrPlus.Plugin.Confluence.dll",
+  "entryType": "AdrPlus.Plugin.Confluence.ConfluencePlugin",
+  "abstractionsVersion": "1.0.0",
+  "subscribedEvents": [ "Approved", "Rejected", "Superseded", "StatusUndone", "Migrated" ],
+  "maxConcurrency": 1,
+  "foregroundTimeoutMs": 5000,
+  "timeoutMs": 30000,
+  "retryPolicy": {
+	"maxAttempts": 3,
+	"delayMs": 2000,
+	"backoff": "Exponential",
+	"jitter": true
+  },
+  "settings": { "baseUrl": "https://...", "spaceKey": "ARCH" }
+}
+```
+- **`foregroundTimeoutMs` (new, D27):** bounds the single, non-retried attempt made inline while the CLI command is running. Keep this short (default `5000`) — it directly adds to how long a user waits for `adrplus approve`/etc. to return.
+- **`timeoutMs`/`retryPolicy` now scope to background re-drive only** (D27): these govern attempts made outside the interactive command (via the pending-item re-drive mechanism, §6/§7), so a generous per-attempt timeout and a multi-step backoff schedule are appropriate there in a way they are not for the foreground path.
+- `subscribedEvents` lets the host skip un-subscribed events cheaply (complements `ShouldHandle`).
+- **Secrets are NOT stored here** (D10) — the plugin resolves credentials itself (env vars, own vault).
+- **Why the example above excludes `Created`/`Revised`/`Versioned`** (fixes an issue found in review): `adrplus new`/`revise`/`version` only ever capture metadata (title, domain, scope, date) — never the decision body. `revise` can even start from `--empty`. The `.md` content at those events is template scaffolding or a blank draft, not a finished decision; the user edits it by hand afterward, outside AdrPlus, before running `approve`/`reject`. A plugin that syncs "the decision" should trigger on `Approved`/`Rejected`/`Superseded`/`StatusUndone`/`Migrated` — the events where `Adr.StatusUpdate`/`Adr.StatusChange` (already present in `AdrRecordSnapshot`) indicate settled content. Subscribing to `Revised`/`Versioned` is actively dangerous, not just noisy: per D26, if a plugin upserts by an `ExternalKey` tied to the ADR's stable identity, a `Revised`/`Versioned` event fires *after* the prior content was already synced as final — upserting on it would overwrite a published, approved decision with a blank draft. A plugin author who does want a "draft created" signal can still subscribe to `Created`/`Revised`/`Versioned` deliberately, but should write to a *different* external identity (e.g. a separate "drafts" key) than the one used for approved content, precisely because the host gives no continuity guarantee between them (D26).
+
+### 4.4 Retry policy (D15, D27)
+Host-managed so behavior is uniform and feeds the pending `attempts` counter. **Applies only to background re-drive of pending items — not to the single foreground attempt** (D27), which has no retry and is bounded solely by `foregroundTimeoutMs`.
+
+| Field | Type | Meaning | Default |
+|---|---|---|---|
+| `maxAttempts` | int | Total attempts before `Failed` + pending state | `3` |
+| `delayMs` | int | Base delay between attempts (ms) | `2000` |
+| `backoff` | enum | `Fixed` or `Exponential` | `Exponential` |
+| `jitter` | bool | Randomize delay to avoid retry storms | `true` |
+
+Delay for attempt `n` (1-based): `Fixed` → `delayMs`; `Exponential` → `delayMs * 2^(n-1)` (2s, 4s, 8s…). With `jitter`: `random(0, delay(n))`. `Skipped` is never retried; `CancellationToken`/timeout honored between attempts.
+
+> **Exponential** (not "logarithmic") is used because it progressively relieves a stressed remote (HTTP 429/503); logarithmic growth would be the opposite of desired.
+
+---
+
+## 5. Lifecycle events (`AdrEventType`)
+
+Emitted from existing handlers/service methods:
+
+| Event | Core origin |
+|---|---|
+| `Created` | `NewAdrCommandHandler` (after file write) |
+| `Versioned` | `VersionCommandHandler` |
+| `Revised` | `ReviseCommandHandler` |
+| `Superseded` | `SupersedeCommandHandler` (calls `IAdrServices.StatusChangeSupersedeAdrAsync`) |
+| `Approved` | `ApproveCommandHandler` |
+| `Rejected` | `RejectCommandHandler` |
+| `StatusUndone` | `UndoStatusCommandHandler` |
+| `Migrated` | `MigrateCommandHandler` |
+
+**Do NOT emit:** `help`, `wizard`, `config`, `explore`, and the app `version` command.
+**Forward-compat (D21):** new event types may be added later; plugins must treat unknown values as `Skipped`.
+
+**Content readiness varies by event (see §4.3 for the full rationale and D26):** `Created`/`Revised`/`Versioned` fire on metadata-only scaffolding — the decision body is not yet authored at that point. `Approved`/`Rejected`/`StatusUndone`/`Superseded`/`Migrated` fire on files whose content is settled. Plugins that sync "the decision" (not just "a file changed") should subscribe accordingly.
+
+---
+
+## 6. Replay / Backfill (D14, D23)
+
+`adrplus sync` has **two distinct behaviors** (revised in this discussion — the original single-mode design didn't separate them, which made the two safe only in isolation, not together):
+
+- **`adrplus sync` (default): re-drive pending items only.** Reprocesses whatever is already recorded in each plugin's `./plugins/<name>/state/pending.json` (§7), running the full `retryPolicy`. This is **self-limiting** — a successful item leaves `pending.json`, so repeated runs converge to a no-op — which is what makes it **safe to automate via cron/CI** (§ operational note below).
+- **`adrplus sync --backfill` (explicit opt-in): full repo sweep.** For each *existing* ADR, re-emits the event matching its **current settled status** (`Approved`/`Rejected`/`Superseded`, or `Migrated` for migrated files) with `IsReplay = true` — this is how a plugin installed on a repo that already has ADRs gets them for the first time (there is no pending entry for something that was never dispatched, so the default mode above can never reach it). An ADR still in `Proposed` has nothing settled to replay; skipped.
+  - **This is essential, not deferrable** (D14): a plugin installed on a pre-existing ADR repo — the realistic adoption case, not the exception — has no other way to receive historical ADRs. Deferring it would mean v1 only works for repos that install the plugin on day one.
+  - **This is NOT self-limiting** — it re-dispatches *every* settled ADR every time it runs, relying on the plugin's own idempotent upsert (§7) for correctness. **It must never be wired into a recurring/cron trigger** — it's a deliberate, occasional, human-invoked operation (first install, "I suspect something was missed"), documented as such. `--backfill` on every cron tick would re-upsert the entire ADR history forever.
+  - **Retry behavior during `--backfill` (closes an ambiguity found in final review):** each event uses the full `retryPolicy` per item (not the fast single-shot D27 path) — the user explicitly chose to wait by running this command, unlike an interactive `approve`. A failure that exhausts `maxAttempts` during `--backfill` is **only logged, not written to `pending.json`**: since `--backfill` is itself idempotent and rediscovers every settled ADR on each run, "run `--backfill` again" is already the correct recovery path — writing hundreds of pending entries from one bad sweep (e.g. against a temporarily dead endpoint) would just make every subsequent cron-driven default `adrplus sync` grind through all of them with full backoff, for no benefit `--backfill` doesn't already provide on its own.
+  - **`maxConcurrency` (D18, default 1, fixed) matters most here:** it serializes dispatch to a given plugin across the ADRs being swept, so a `--backfill` over hundreds of ADRs doesn't burst-hammer the external system with concurrent upserts all at once — the field is not dead weight in the manifest even though it isn't user-tunable yet (D18); it's doing real, load-bearing work at its fixed value.
+- Host **deduplicates by `adrKey + eventType`** (D23) to avoid redundant re-dispatch **within a `--backfill` run** (or across repeated manual `--backfill` runs); plugins stay idempotent via `ExternalKey` regardless. Since `--backfill` is manual/rare rather than routine, dedup's value is "saves redundant API calls on an operation the user chose to run" rather than a correctness requirement — genuinely deferrable to v1.1/v2 (D23), unlike the sweep itself.
+- **Operational note:** only the default (pending-only) mode belongs in an automated scheduler. `adrplus sync` (no flag) run periodically via cron/Task Scheduler is the recommended way to get eventual delivery without a daemon (§ below); `--backfill` is run by hand when onboarding a plugin or recovering from a known gap.
+- **Re-drive is not autonomous (D27):** AdrPlus has no daemon or persistent background process — it's a short-lived CLI invocation like any other command. The `retryPolicy` schedule for a pending item only runs when something explicitly invokes `adrplus sync` again: a user, a script, or an external scheduler the deploying team sets up. AdrPlus does not manage that scheduler itself.
+
+---
+
+## 7. State / Reconciliation (per-plugin — D5, D9, D15)
+
+- Location: `./plugins/<name>/state/pending.json`.
+- Written by the host **after the single foreground attempt fails/times out** (D27) — not after `retryPolicy`'s `maxAttempts` is exhausted, since that schedule no longer runs in the foreground. `attempts` in the record below starts at whatever the foreground made (`0` or `1`) and increments as background re-drive runs `retryPolicy` against it. **Exception (D30):** a `Failed` result with `IsRetryable: false` (or an `InitializeAsync` failure) is never written here — see §4.2.
+  ```json
+  {
+	"adrKey": "0007-v1-r0",
+	"eventType": "Approved",
+	"correlationId": "…",
+	"lastError": "…",
+	"attempts": 3,
+	"timestamp": "2026-01-01T00:00:00Z"
+  }
+  ```
+- Re-emitted on the next relevant event or via `adrplus sync`. **Idempotency** via `ExternalKey` (e.g., Confluence `pageId`) → upsert.
+- **`adrKey` is not decision identity (D26):** it's scoped to one version+revision file. A plugin choosing what `ExternalKey` to upsert against is choosing whether it wants per-file artifacts (safe, but no continuity across revisions) or one artifact for the ADR's whole lifetime (continuity, but only safe if the plugin never upserts on pre-content events — see §4.3/§5).
+
+---
+
+## 8. Diagnostics & Observability (D20, D25)
+
+- **`adrplus plugins list`** — loaded plugins, versions, subscribed events, allowlist status, **and a pending-item count per plugin** (read from `./plugins/<name>/state/pending.json`, D27/§7) — the cheapest way for a user to answer "did my last sync actually go through?" without a new command, since the foreground path (D27) no longer blocks long enough to guarantee an answer before the command returns.
+- **`adrplus plugins validate`** — manifest schema, `IAdrPlugin` implementation, SemVer-major compatibility, duplicate-name and allowlist checks; reports without emitting real events.
+- **`IPluginLogger`** (host-provided via `IPluginContext`) unifies plugin logs with the host file log and `CorrelationId`. Host also records per-plugin timing and result counts.
+
+---
+
+## 9. Logging & Localization (D1)
+
+- Failure/timeout/skip → **file log** with `CorrelationId`, plugin name, event, attempt count, message.
+- Console shows a concise **warning** (fail-soft), never breaking the command — including when the foreground attempt (D27) times out and the item is queued to pending, so the user gets immediate feedback (e.g. "confluence: queued for retry") even though the command itself doesn't wait for the eventual outcome.
+- **Permanent failures get a visibly different message** (D30) — e.g. "confluence: permanent failure, not queued for retry — fix configuration and run `adrplus sync --backfill`" — distinguishable at a glance from the routine "queued for retry" transient case, so a developer doesn't mistake a broken credential for a network blip that will self-heal.
+- **Host messages** about plugins are localized (existing `.resx`). **Plugin messages** are the plugin's responsibility (consistent with D4/D10).
+
+---
+
+## 10. Security (D22)
+
+- Optional **allowlist** in `adrplus.json` (names and/or assembly hashes); anything outside → not loaded + warning.
+- Duplicate names rejected (D22).
+- Documented risk: plugins run with the **user's permissions** (third-party code from `./plugins`).
+- **`plugin.json` may be committed to the repo** (D29, to give the whole team the same installed plugins on clone) — `settings` is plain JSON, checked into git along with it. Since D10 puts secrets entirely on the plugin, this is a process/documentation safeguard, not something the host enforces: plugin authors and teams must not put real credential values in `settings`, only non-secret config (base URLs, space keys, etc.). Worth stating explicitly in plugin-author docs, since a committed `plugin.json` is an easy place to accidentally leak a token if this isn't called out.
+
+---
+
+## 11. Impact on the core (minimal, surgical)
+
+1. New project `AdrPlus.Abstractions` (isolated; core references it).
+2. `IPluginManager` / `PluginLoader` (+ retry, dedup, timeouts, disposal) registered in `ServiceCollectionExtensions`.
+3. A single `await _pluginManager.DispatchAsync(...)` at the end of each handler in §5 — the **only touch points in existing handlers**.
+4. New `sync` and `plugins` commands (added to the command registry; no change to existing commands). **`sync`'s handler is not a one-liner** (fixed in this revision, see §6): it has two modes — default (re-drive `pending.json` only) and `--backfill` (read every existing ADR's current settled status and pick the matching event type to replay). Both live entirely in the new `SyncCommandHandler`, so neither touches existing handlers, but it's more than trivial glue and belongs in this impact list.
+5. Public snapshots of `AdrRecord` / `AdrPlusRepoConfig`.
+6. Graceful-shutdown hook to dispose/unload plugins.
+
+> Existing command behavior is unchanged when no plugins are installed (empty `./plugins` → dispatch is a no-op).
+
+---
+
+## 12. End-to-end flow (Confluence example)
+
+```
+adrplus approve   (adrplus new also dispatches, but §4.3's recommended manifest doesn't subscribe to Created — see below)
+  → Core writes/updates the .md  (already durable at this point)
+  → Handler calls IPluginManager.DispatchAsync(event)
+  → Dedup (adrKey+eventType) → filter (subscribedEvents + ShouldHandle)
+  → Invoke subscribed hooks in parallel (per-plugin foregroundTimeoutMs, maxConcurrency, aggregate timeout — D27/D24)
+  → [first time this run: InitializeAsync — if it throws (e.g. missing credentials), skip this plugin for the whole run,
+     one distinct loud warning, no pending entry — see D30]
+  → Per hook: ONE attempt, no retry (D27)
+    ├─ Success/Skipped within foregroundTimeoutMs → PluginResult { Success, ExternalKey = pageId } → command returns
+    └─ Failed/timed out → host writes pending.json (per-plugin) + warns + file log → command returns immediately (does NOT wait for retries)
+  → [not part of this CLI invocation — requires a later, separately-triggered `adrplus sync` run, see §6]
+    re-drive of pending.json runs the full retryPolicy (maxAttempts, Fixed/Exponential + jitter)
+    until Success or a new failure is recorded
+  → On CLI graceful exit: dispose plugins, flush pending, unload ALCs
+```
+
+---
+
+## 13. Accepted trade-offs
+
+- Synchronization is **eventual** (retry + idempotency + reconcilable pending state), not transactional.
+- Higher memory from isolated ALC per plugin — accepted.
+- Secrets delegated to plugins — heterogeneous config UX, simpler host.
+- Singleton plugin instance requires reentrant hooks — mitigated by `maxConcurrency` default 1.
+- **Interactive latency is bounded, but delivery is not automatic over time** (D27): a slow/unhealthy plugin adds at most `foregroundTimeoutMs` (+ D24's aggregate cap) to any command, not the full retry schedule — but a failed sync then sits in `pending.json` until something explicitly runs `adrplus sync` again (there is no background daemon). Teams relying on a plugin for anything time-sensitive need their own external trigger (cron/CI) for `sync`.
+- **Exit code carries no plugin-outcome signal** (D28): scripts must inspect `adrplus plugins list`'s pending counts, not the exit code, to know whether sync succeeded.
+- **Coverage depends on who ran the command and what's configured on their machine** (D29): v1 is local/per-developer, not CI-authoritative. An ADR approved by a developer without valid plugin credentials configured locally simply doesn't sync — loudly (D30), but it doesn't sync — until someone with working credentials runs `adrplus sync --backfill`. Accepted for v1; a CI-based model would remove this but is a larger scope change.
+- **Permanent (credential/config) failures fail fast instead of retrying forever** (D30): distinguishing this from transient failures avoids wasted retry cycles and silent "it'll fix itself" false hope on something that structurally can't self-heal.
+
+---
+
+## 14. Roadmap (v2, out of scope for v1)
+
+- Host-provided secrets API.
+- Sandboxing / resource limits beyond timeout.
+- Hot-reload of plugins at runtime.
+- Plugin-to-plugin communication.
+- Plugin SDK: `dotnet new adrplus-plugin` template + test harness (mock `AdrEventContext`).
+- `adrplus plugin install <package>` distribution flow (v1: manual copy into `./plugins/<name>/`).
+- **D23 (dedup)**, **D24 (aggregate dispatch timeout)**, and **D18's `maxConcurrency` as a user-tunable knob** — deferred until a second real plugin exists to validate they generalize beyond the single-plugin Confluence case (§3 marks these "Deferred (v1.1+)"; `adrplus sync --backfill` itself is essential for v1, not deferred — see §6).
+
+---
+
+## 15. Glossary
+
+- **ADR** — Architecture Decision Record.
+- **ALC** — `AssemblyLoadContext`; isolated assembly loading/unloading.
+- **Backoff** — delay-growth strategy between retries (`Fixed`/`Exponential`).
+- **Fail-soft** — failure is logged/warned but never aborts the main operation.
+- **Fan-out** — same event delivered to multiple independent consumers.
+- **Idempotency** — repeating an operation yields the same end state (via `ExternalKey`).
+- **Jitter** — randomization of retry delays to avoid synchronized storms.
+- **Host** — the AdrPlus core process loading/dispatching to plugins.
+- **Hook** — a plugin method invoked in reaction to a lifecycle event.
