@@ -179,31 +179,255 @@ namespace AdrPlus.Plugins
             await Task.WhenAll(filtered.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, cancellationToken)));
         }
 
+        /// <inheritdoc/>
+        public async Task<SyncSummary> RetryPendingAsync(
+            Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
+            RepoInfoSnapshot repo,
+            CancellationToken cancellationToken = default)
+        {
+            var summary = new SyncSummary();
+
+            foreach (var plugin in _loadedPlugins)
+            {
+                var entries = await PendingStateStore.ReadAllAsync(_fileSystem, plugin.FolderPath, cancellationToken);
+                if (entries.Count == 0)
+                {
+                    continue;
+                }
+
+                if (!await EnsureInitializedAsync(plugin, cancellationToken))
+                {
+                    // Config is broken, not the entries themselves — leave them untouched; the user fixes the
+                    // plugin and reruns sync (D30).
+                    continue;
+                }
+
+                var retryPolicy = plugin.Manifest.RetryPolicy ?? new PluginRetryPolicy();
+                var remaining = new List<PendingEntry>();
+
+                foreach (var entry in entries)
+                {
+                    if (!Enum.TryParse<AdrEventType>(entry.EventType, out var eventType))
+                    {
+                        WriteWarning($"{plugin.Manifest.Name}: pending entry for '{entry.AdrKey}' has an unrecognized eventType '{entry.EventType}', dropping");
+                        summary.Dropped++;
+                        continue;
+                    }
+
+                    var resolved = resolveAdr(entry.AdrKey);
+                    if (resolved is not { } adr)
+                    {
+                        WriteWarning(string.Format(null, FormatMessages.PluginPendingAdrNotFound, plugin.Manifest.Name, entry.AdrKey));
+                        summary.Dropped++;
+                        continue;
+                    }
+
+                    var context = new AdrEventContext
+                    {
+                        EventType = eventType,
+                        IsReplay = false,
+                        Adr = adr.Adr,
+                        AdrFilePath = adr.FilePath,
+                        GetAdrRenderedContent = () => adr.Content,
+                        Repo = repo,
+                        CorrelationId = Guid.NewGuid().ToString()
+                    };
+
+                    bool shouldHandle;
+                    try
+                    {
+                        shouldHandle = plugin.Instance.ShouldHandle(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw on retry, skipping for this entry");
+                        remaining.Add(entry);
+                        summary.StillPending++;
+                        continue;
+                    }
+
+                    if (!shouldHandle)
+                    {
+                        summary.Skipped++;
+                        continue;
+                    }
+
+                    var retried = await RetryEntryAsync(plugin, context, entry, retryPolicy, summary, cancellationToken);
+                    if (retried is not null)
+                    {
+                        remaining.Add(retried);
+                    }
+                }
+
+                await PendingStateStore.WriteAllAsync(_fileSystem, plugin.FolderPath, remaining, cancellationToken);
+            }
+
+            return summary;
+        }
+
+        /// <summary>
+        /// Retries a single pending entry against <paramref name="retryPolicy"/>, guaranteeing at least one
+        /// attempt this run even if <see cref="PendingEntry.Attempts"/> already reached
+        /// <see cref="PluginRetryPolicy.MaxAttempts"/> in a previous <c>sync</c> run — otherwise the user's
+        /// "keep pending across runs" policy silently becomes "never retried again".
+        /// </summary>
+        /// <returns>
+        /// <see langword="null"/> when the entry should be removed from <c>pending.json</c> (succeeded, skipped,
+        /// or permanently failed); the (possibly updated) entry when it should remain pending.
+        /// </returns>
+        private async Task<PendingEntry?> RetryEntryAsync(LoadedPlugin plugin, AdrEventContext context, PendingEntry entry, PluginRetryPolicy retryPolicy, SyncSummary summary, CancellationToken cancellationToken)
+        {
+            var startAttempts = entry.Attempts;
+            var attemptsThisRun = Math.Max(1, retryPolicy.MaxAttempts - startAttempts);
+
+            for (var i = 1; i <= attemptsThisRun; i++)
+            {
+                var absoluteAttempt = startAttempts + i;
+
+                if (absoluteAttempt > 1)
+                {
+                    var delayMs = ComputeDelay(retryPolicy, absoluteAttempt);
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+                }
+
+                var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.TimeoutMs, cancellationToken);
+
+                switch (outcome.Status)
+                {
+                    case PluginInvokeStatus.Success:
+                        summary.Succeeded++;
+                        return null;
+                    case PluginInvokeStatus.Skipped:
+                        summary.Skipped++;
+                        return null;
+                    default:
+                        if (!outcome.IsRetryable)
+                        {
+                            WritePermanentFailure(plugin.Manifest.Name!, outcome.ErrorMessage ?? string.Empty);
+                            summary.PermanentlyFailed++;
+                            return null;
+                        }
+                        entry.Attempts = absoluteAttempt;
+                        entry.LastError = outcome.ErrorMessage;
+                        entry.Timestamp = DateTime.UtcNow;
+                        break;
+                }
+            }
+
+            summary.StillPending++;
+            return entry;
+        }
+
+        /// <summary>
+        /// Computes the backoff delay (ms) for <paramref name="attempt"/> (1-based, absolute across every
+        /// <c>sync</c> run an entry has ever survived) per spec §4.4. <c>Fixed</c> is a flat <see cref="PluginRetryPolicy.DelayMs"/>;
+        /// <c>Exponential</c> doubles per attempt. The exponent and the result are both clamped — <paramref name="attempt"/>
+        /// is cumulative and unbounded (the user's chosen "keep pending across runs" policy), so an unclamped
+        /// <c>2^(attempt-1)</c> overflows and goes negative around attempt≈32, which would make <c>Task.Delay</c> throw.
+        /// </summary>
+        // internal (not private): lets ComputeDelayTests exercise the Fixed/Exponential/jitter/overflow-clamp
+        // formula in isolation, without any Task.Delay actually elapsing.
+        internal static int ComputeDelay(PluginRetryPolicy retryPolicy, int attempt)
+        {
+            const int MaxDelayMs = 300_000; // 5 minutes
+
+            long delay = string.Equals(retryPolicy.Backoff, "Exponential", StringComparison.OrdinalIgnoreCase)
+                ? retryPolicy.DelayMs * (1L << Math.Min(attempt - 1, 30))
+                : retryPolicy.DelayMs;
+
+            delay = Math.Min(delay, MaxDelayMs);
+
+            if (retryPolicy.Jitter)
+            {
+                delay = Random.Shared.NextInt64(0, delay + 1);
+            }
+
+            return (int)delay;
+        }
+
         private async Task DispatchToPluginAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, CancellationToken cancellationToken)
         {
             var name = plugin.Manifest.Name!;
 
-            if (!_initializedPlugins.Contains(name))
+            if (!await EnsureInitializedAsync(plugin, cancellationToken))
             {
-                try
-                {
-                    var pluginLogger = new HostPluginLogger(_logger);
-                    var pluginContext = new HostPluginContext(pluginLogger);
-                    var pluginConfig = new HostPluginConfiguration(plugin.Manifest.Settings);
-                    await plugin.Instance.InitializeAsync(pluginContext, pluginConfig, cancellationToken);
-                    _initializedPlugins.Add(name);
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    _initFailedPlugins.Add(name);
-                    WritePermanentFailure(name, ex);
-                    return;
-                }
+                return;
             }
+
+            var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.ForegroundTimeoutMs, cancellationToken);
+
+            switch (outcome.Status)
+            {
+                case PluginInvokeStatus.Success:
+                case PluginInvokeStatus.Skipped:
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        var message = string.Concat(name, ": ", outcome.Status.ToString());
+                        LogMessages.LogPluginInfo(_logger, message);
+                    }
+                    return;
+                default:
+                    var attempts = outcome.WasTimeout ? 0 : 1;
+                    await HandleFailureAsync(plugin, context, correlationId, outcome.ErrorMessage ?? string.Empty, outcome.IsRetryable, attempts, cancellationToken);
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Lazily runs <see cref="IAdrPlugin.InitializeAsync"/> once per plugin per process (D30). Shared by
+        /// the foreground dispatch path and the background retry engine so "already tried to initialize this
+        /// run" state (<see cref="_initializedPlugins"/>/<see cref="_initFailedPlugins"/>) is consistent
+        /// between both callers.
+        /// </summary>
+        /// <returns><see langword="true"/> when the plugin is ready to be invoked; <see langword="false"/> when
+        /// initialization already failed (permanently, for this process) and the caller should skip it.</returns>
+        private async Task<bool> EnsureInitializedAsync(LoadedPlugin plugin, CancellationToken cancellationToken)
+        {
+            var name = plugin.Manifest.Name!;
+
+            if (_initializedPlugins.Contains(name))
+            {
+                return true;
+            }
+            if (_initFailedPlugins.Contains(name))
+            {
+                return false;
+            }
+
+            try
+            {
+                var pluginLogger = new HostPluginLogger(_logger);
+                var pluginContext = new HostPluginContext(pluginLogger);
+                var pluginConfig = new HostPluginConfiguration(plugin.Manifest.Settings);
+                await plugin.Instance.InitializeAsync(pluginContext, pluginConfig, cancellationToken);
+                _initializedPlugins.Add(name);
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _initFailedPlugins.Add(name);
+                WritePermanentFailure(name, ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Invokes <see cref="IAdrPlugin.OnAdrEventAsync"/> exactly once, racing it against
+        /// <paramref name="timeoutMs"/>. Shared by the foreground dispatch path (<paramref name="timeoutMs"/> =
+        /// <see cref="PluginManifest.ForegroundTimeoutMs"/>) and the background retry engine
+        /// (<paramref name="timeoutMs"/> = <see cref="PluginManifest.TimeoutMs"/>) — the only difference between
+        /// the two callers is which timeout they race against and how they interpret a non-success outcome.
+        /// </summary>
+        private async Task<PluginInvokeOutcome> InvokeOnceAsync(LoadedPlugin plugin, AdrEventContext context, int timeoutMs, CancellationToken cancellationToken)
+        {
+            var name = plugin.Manifest.Name!;
 
             Task<PluginResult> hookTask;
             try
@@ -216,13 +440,12 @@ namespace AdrPlus.Plugins
             }
             catch (Exception ex)
             {
-                await HandleFailureAsync(plugin, context, correlationId, ex.Message, isRetryable: true, attempts: 1, cancellationToken);
-                return;
+                return PluginInvokeOutcome.Failed(ex.Message, isRetryable: true);
             }
 
             // The delay uses CancellationToken.None deliberately: if the user cancels the command, the delay must
             // not race to "elapsed" and get misread as a plugin timeout — cancellation is checked explicitly below.
-            var delayTask = Task.Delay(plugin.Manifest.ForegroundTimeoutMs, CancellationToken.None);
+            var delayTask = Task.Delay(timeoutMs, CancellationToken.None);
             var completed = await Task.WhenAny(hookTask, delayTask);
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -232,13 +455,12 @@ namespace AdrPlus.Plugins
                 // The losing hook task keeps running; observe its eventual fault so it never surfaces as an
                 // unobserved task exception later. Its result is never used.
                 _ = hookTask.ContinueWith(
-                    t => LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after the foreground timeout elapsed"),
+                    t => LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after timeout ({timeoutMs}ms) elapsed"),
                     CancellationToken.None,
                     TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
                     TaskScheduler.Default);
 
-                await HandleFailureAsync(plugin, context, correlationId, $"foreground timeout ({plugin.Manifest.ForegroundTimeoutMs}ms) elapsed", isRetryable: true, attempts: 0, cancellationToken);
-                return;
+                return PluginInvokeOutcome.Timeout(timeoutMs);
             }
 
             PluginResult result;
@@ -252,24 +474,15 @@ namespace AdrPlus.Plugins
             }
             catch (Exception ex)
             {
-                await HandleFailureAsync(plugin, context, correlationId, ex.Message, isRetryable: true, attempts: 1, cancellationToken);
-                return;
+                return PluginInvokeOutcome.Failed(ex.Message, isRetryable: true);
             }
 
-            switch (result.Status)
+            return result.Status switch
             {
-                case PluginResultStatus.Success:
-                case PluginResultStatus.Skipped:
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        var message = string.Concat(name, ": ", result.Status.ToString());
-                        LogMessages.LogPluginInfo(_logger, message);
-                    }
-                    return;
-                default:
-                    await HandleFailureAsync(plugin, context, correlationId, result.Message ?? string.Empty, result.IsRetryable, attempts: 1, cancellationToken);
-                    return;
-            }
+                PluginResultStatus.Success => PluginInvokeOutcome.Success(),
+                PluginResultStatus.Skipped => PluginInvokeOutcome.Skipped(),
+                _ => PluginInvokeOutcome.Failed(result.Message ?? string.Empty, result.IsRetryable)
+            };
         }
 
         private async Task HandleFailureAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, string lastError, bool isRetryable, int attempts, CancellationToken cancellationToken)
@@ -291,11 +504,11 @@ namespace AdrPlus.Plugins
                 Attempts = attempts,
                 Timestamp = DateTime.UtcNow
             };
-            await PendingStateWriter.UpsertAsync(_fileSystem, plugin.FolderPath, entry, cancellationToken);
+            await PendingStateStore.UpsertAsync(_fileSystem, plugin.FolderPath, entry, cancellationToken);
             WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name));
         }
 
-        private static string BuildAdrKey(AdrRecordSnapshot adr) => $"{adr.Number:D4}-v{adr.Version}-r{adr.Revision ?? 0}";
+        private static string BuildAdrKey(AdrRecordSnapshot adr) => AdrKeyFormatter.Format(adr.Number, adr.Version, adr.Revision);
 
         private void WriteWarning(string message)
         {

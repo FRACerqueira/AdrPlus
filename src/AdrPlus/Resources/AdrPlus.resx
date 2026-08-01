@@ -345,6 +345,12 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': permanent failure, not queued for retry — fix configuration and run 'adrplus sync --backfill'</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Plugin '{0}': pending entry for ADR '{1}' no longer resolves to a file, dropping</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Sync complete: {0} succeeded, {1} skipped, {2} still pending, {3} permanently failed, {4} dropped</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Failed to start process</value>
   </data>
@@ -656,6 +662,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Undo the status (accepted/rejected) of an ADR</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Re-attempt pending plugin events (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>Wizard to create a new revision of an ADR (supress all other arguments)</value>

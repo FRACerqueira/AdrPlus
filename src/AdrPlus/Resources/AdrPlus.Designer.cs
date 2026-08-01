@@ -203,7 +203,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("CmdDescUndoStatus", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Re-attempt pending plugin events (adrplus sync).
+        /// </summary>
+        internal static string CmdDescSync {
+            get {
+                return ResourceManager.GetString("CmdDescSync", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Create a new ADR with a new version (incremental version, same number).
         /// </summary>
@@ -2469,6 +2478,24 @@ namespace AdrPlus.Resources {
         internal static string PluginPermanentFailure {
             get {
                 return ResourceManager.GetString("PluginPermanentFailure", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: pending entry for ADR &apos;{1}&apos; no longer resolves to a file, dropping.
+        /// </summary>
+        internal static string PluginPendingAdrNotFound {
+            get {
+                return ResourceManager.GetString("PluginPendingAdrNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sync complete: {0} succeeded, {1} skipped, {2} still pending, {3} permanently failed, {4} dropped.
+        /// </summary>
+        internal static string SyncSummaryReport {
+            get {
+                return ResourceManager.GetString("SyncSummaryReport", resourceCulture);
             }
         }
 

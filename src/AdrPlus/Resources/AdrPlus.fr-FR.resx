@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>Plugin '{0}' : mis en file d'attente pour une nouvelle tentative</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Plugin '{0}' : l'entrée en attente pour l'ADR '{1}' ne correspond plus à un fichier, abandon</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Synchronisation terminée : {0} réussies, {1} ignorées, {2} toujours en attente, {3} en échec permanent, {4} abandonnées</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}' : échec permanent, ne sera pas mis en file d'attente — corrigez la configuration et exécutez 'adrplus sync --backfill'</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Annuler le statut (accepté/rejeté) d'un ADR</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Retenter les événements de plugin en attente (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>Assistant pour créer une nouvelle révision d'un ADR (supprime tous les autres arguments)</value>

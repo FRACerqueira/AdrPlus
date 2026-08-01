@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>Плагин '{0}': поставлен в очередь на повтор</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Плагин '{0}': отложенная запись для ADR '{1}' больше не соответствует файлу, удаляется</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Синхронизация завершена: успешно {0}, пропущено {1}, всё ещё ожидает {2}, окончательно не удалось {3}, удалено {4}</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Плагин '{0}': необратимый сбой, не будет поставлен в очередь на повтор — исправьте конфигурацию и выполните 'adrplus sync --backfill'</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Отменить статус (принято/отклонено) ADR</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Повторить отложенные события плагинов (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>Мастер создания новой ревизии ADR (подавляет все остальные аргументы)</value>

@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>Plugin '{0}': in wachtrij voor nieuwe poging</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Plugin '{0}': wachtende invoer voor ADR '{1}' verwijst niet meer naar een bestand, wordt verwijderd</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Synchronisatie voltooid: {0} geslaagd, {1} overgeslagen, {2} nog in behandeling, {3} permanent mislukt, {4} verwijderd</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': permanente fout, wordt niet in de wachtrij geplaatst voor een nieuwe poging — corrigeer de configuratie en voer 'adrplus sync --backfill' uit</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Maak de status (goedgekeurd/afgekeurd) van een ADR ongedaan</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Probeer wachtende plugin-gebeurtenissen opnieuw (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>Wizard om een nieuwe revisie van een ADR aan te maken (onderdrukt alle andere argumenten)</value>

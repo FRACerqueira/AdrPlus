@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>Plugin '{0}': zur Wiederholung eingereiht</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Plugin '{0}': ausstehender Eintrag für ADR '{1}' verweist nicht mehr auf eine Datei, wird verworfen</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Synchronisierung abgeschlossen: {0} erfolgreich, {1} übersprungen, {2} weiterhin ausstehend, {3} dauerhaft fehlgeschlagen, {4} verworfen</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': dauerhafter Fehler, wird nicht zur Wiederholung eingereiht — Konfiguration korrigieren und 'adrplus sync --backfill' ausführen</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>Macht den Status (angenommen/abgelehnt) eines ADR rückgängig</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Ausstehende Plugin-Ereignisse erneut versuchen (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>Assistent zum Erstellen einer neuen Revision eines ADR (unterdrückt alle anderen Argumente)</value>

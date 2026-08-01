@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>플러그인 '{0}': 재시도 대기열에 추가됨</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>플러그인 '{0}': ADR '{1}'에 대한 대기 항목이 더 이상 파일과 일치하지 않아 삭제합니다</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>동기화 완료: 성공 {0}건, 건너뜀 {1}건, 대기 중 {2}건, 영구 실패 {3}건, 삭제됨 {4}건</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>플러그인 '{0}': 영구적인 실패로 재시도 대기열에 추가되지 않습니다 — 설정을 수정하고 'adrplus sync --backfill'을 실행하세요</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>ADR의 상태(승인됨/거부됨)를 취소합니다</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>대기 중인 플러그인 이벤트를 다시 시도합니다 (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>ADR의 새 리비전을 생성하는 마법사(다른 모든 인수를 무시함)</value>

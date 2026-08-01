@@ -13,6 +13,7 @@ using AdrPlus.Commands.NewAdr;
 using AdrPlus.Commands.Reject;
 using AdrPlus.Commands.Revise;
 using AdrPlus.Commands.Supersede;
+using AdrPlus.Commands.Sync;
 using AdrPlus.Commands.UndoStatus;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
@@ -88,6 +89,11 @@ namespace AdrPlus.Commands
         /// Updates the status of an ADR to rejected
         /// </summary>
         [Command("undo", typeof(UndoStatusCommandHandler), "CmdDescUndoStatus")]
-        UndoStatus
+        UndoStatus,
+        /// <summary>
+        /// Re-attempts pending plugin lifecycle events queued in each plugin's state.
+        /// </summary>
+        [Command("sync", typeof(SyncCommandHandler), "CmdDescSync")]
+        Sync
     }
 }

@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>プラグイン '{0}': 再試行のためキューに入れられました</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>プラグイン '{0}': 保留中のエントリ（ADR '{1}'）がファイルに対応しなくなったため破棄します</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>同期が完了しました: 成功 {0} 件、スキップ {1} 件、保留中 {2} 件、恒久的な失敗 {3} 件、破棄 {4} 件</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>プラグイン '{0}': 永続的な失敗のため再試行キューに入れません — 設定を修正して 'adrplus sync --backfill' を実行してください</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>ADR のステータス (承認済み/却下済み) を元に戻します</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>保留中のプラグインイベントを再試行します (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>ADR の新しいリビジョンを作成するウィザード (他のすべての引数を無視します)</value>

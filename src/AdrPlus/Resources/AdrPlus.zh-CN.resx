@@ -343,6 +343,12 @@
   <data name="PluginQueuedForRetry" xml:space="preserve">
     <value>插件 '{0}'：已加入重试队列</value>
   </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>插件 '{0}'：待处理条目对应的 ADR '{1}' 已不再存在，正在丢弃</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>同步完成：成功 {0} 项，跳过 {1} 项，仍待处理 {2} 项，永久失败 {3} 项，已丢弃 {4} 项</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>插件 '{0}'：永久性失败，不会加入重试队列 — 请修正配置后运行 'adrplus sync --backfill'</value>
   </data>
@@ -657,6 +663,9 @@
   </data>
   <data name="CmdDescUndoStatus" xml:space="preserve">
     <value>撤销 ADR 的状态（已接受/已拒绝）</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>重试待处理的插件事件 (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
     <value>创建 ADR 新修订版的向导（将忽略所有其他参数）</value>

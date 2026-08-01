@@ -64,5 +64,26 @@ namespace AdrPlus.Plugins
             RepoInfoSnapshot repo,
             bool isReplay,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Re-attempts every pending entry across every loaded plugin's <c>state/pending.json</c>, using each
+        /// plugin's <see cref="PluginManifest.RetryPolicy"/> (spec §4.4) — <c>adrplus sync</c>'s default mode
+        /// (Fase 5). Unlike <see cref="DispatchAsync"/>, this runs a real in-process retry loop (with backoff
+        /// delays) per entry, bounded by <see cref="PluginManifest.TimeoutMs"/> per attempt rather than
+        /// <see cref="PluginManifest.ForegroundTimeoutMs"/>.
+        /// </summary>
+        /// <param name="resolveAdr">
+        /// Resolves a pending entry's <c>adrKey</c> back to the ADR's current snapshot, file path, and rendered
+        /// content, or <see langword="null"/> if the ADR no longer exists (deleted/renamed since the original
+        /// failure) — in which case the entry is dropped. Kept as a callback so <see cref="IPluginManager"/> stays
+        /// independent of <c>IAdrServices</c>/<c>AdrPlusRepoConfig</c>; the caller (<c>SyncCommandHandler</c>)
+        /// owns ADR resolution.
+        /// </param>
+        /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        Task<SyncSummary> RetryPendingAsync(
+            Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
+            RepoInfoSnapshot repo,
+            CancellationToken cancellationToken = default);
     }
 }

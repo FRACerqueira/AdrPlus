@@ -2,7 +2,7 @@
 
 > **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D30).
 > **Scope**: Builds every decision tagged **Essential** in §3 of the spec. Decisions tagged **Deferred (v1.1+)** — D23 (dedup), D24 (aggregate dispatch timeout), D18's `maxConcurrency` user-tunability — are explicitly **not** built here; see "Out of scope" below.
-> **Status**: Phases 1–4 implemented (`3865998`, `dee7b20`, `81c32db` and Phase 4's commit). Phase 5 (pending state & background re-drive) not yet started; Phase 4 already writes `pending.json` entries per §7's schema, established in this phase — Phase 5 must read/retry against that same format.
+> **Status**: Phases 1–5 implemented (`3865998`, `dee7b20`, `81c32db`, `303ffe5`, and Phase 5's commit). Phase 6 (full backfill, `adrplus sync --backfill`) not yet started. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by the new `SyncCommandHandler` (`adrplus sync`, default mode). `PluginManager`'s foreground dispatch (Phase 4) and background retry (Phase 5) now share two extracted helpers, `EnsureInitializedAsync`/`InvokeOnceAsync`, so the init-once-per-process and timeout-race mechanics aren't duplicated.
 
 ---
 
@@ -62,6 +62,17 @@
 - Register `sync` in `src\AdrPlus\Commands\CommandsAdr.cs` (enum + routing).
 
 **Verify:** unit tests for the backoff/jitter formula; integration test seeding a `pending.json` fixture, running `sync`, asserting successful items are removed and failed ones have updated `attempts`.
+
+**Implemented as:** a real in-process retry loop per pending entry within one `sync` invocation (not one attempt per invocation) — `Task.Delay` is honored between attempts, matching §4.4's "timeout honored between attempts" and the jitter formula's `random(0, delay(n))`. Key decisions locked in during implementation:
+- **Esgotamento não é permanente**: quando `maxAttempts` se esgota dentro de uma execução, a entrada continua em `pending.json` (não removida, não convertida em falha permanente) com `attempts`/`lastError`/`timestamp` atualizados — `attempts` é cumulativo entre execuções. Sustenta a promessa do §6 de entrega eventual via `sync` em cron sem daemon.
+- **Toda entrada recebe ao menos 1 tentativa por execução**, mesmo que `attempts` acumulado já tenha atingido `maxAttempts` em execuções anteriores — sem essa garantia, a política acima vira silenciosamente "nunca mais tenta".
+- **`ShouldHandle` é reavaliado no retry** (o contexto é reconstruído do estado atual do arquivo, que pode ter mudado desde a falha original); `false` é tratado como `Skipped`.
+- **ADR que não resolve mais para um arquivo** (deletado/renomeado) descarta a entrada com aviso distinto, contabilizado separadamente no resumo do comando.
+- **`PluginRetryPolicy.Backoff`/`Jitter` defaults corrigidos** de `Fixed`/`false` (bug introduzido na Fase 3, nunca batia com o spec) para `Exponential`/`true`, batendo com §4.4.
+- **`PluginManager.DispatchAsync`/`DispatchToPluginAsync` (Fase 4) refatorados** para extrair `EnsureInitializedAsync`/`InvokeOnceAsync`, reusados por `RetryPendingAsync` — mesma mecânica de init-once-por-processo e corrida de timeout, parametrizada por `timeoutMs` (`ForegroundTimeoutMs` no caminho síncrono, `TimeoutMs` no motor de retry). Refatoração comportamento-preservada, confirmada pelos testes da Fase 4 continuando 100% verdes.
+- **`IPluginManager.RetryPendingAsync` recebe um resolver `Func<string, (AdrRecordSnapshot, string, string)?>`** em vez de depender de `IAdrServices`/`AdrPlusRepoConfig` diretamente — quem resolve `adrKey → arquivo` é o `SyncCommandHandler` (que já tem `IAdrServices`), mantendo `IPluginManager` só dependente de tipos de `AdrPlus.Abstractions`.
+- **`adrKey` format extraído** para `AdrKeyFormatter.Format(number, version, revision)` (`src/AdrPlus/Plugins/AdrKeyFormatter.cs`), compartilhado entre `PluginManager` e `SyncCommandHandler`.
+- **`PendingStateWriter` renomeado para `PendingStateStore`** (passou a ler, não só escrever) — ganhou `ReadAllAsync`/`WriteAllAsync` (lista inteira, um read/write por plugin por execução) ao lado do `UpsertAsync` já existente da Fase 4.
 
 ---
 

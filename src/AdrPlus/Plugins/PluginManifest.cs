@@ -60,8 +60,8 @@ namespace AdrPlus.Plugins
 
         public int DelayMs { get; set; } = 2000;
 
-        public string Backoff { get; set; } = "Fixed";
+        public string Backoff { get; set; } = "Exponential";
 
-        public bool Jitter { get; set; }
+        public bool Jitter { get; set; } = true;
     }
 }
