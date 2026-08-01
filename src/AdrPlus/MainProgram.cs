@@ -9,6 +9,7 @@ using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,6 +30,7 @@ namespace AdrPlus
     /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
     /// <param name="validateConfig">The JSON configuration validator.</param>
     /// <param name="prompt">The prompt console for user interactions.</param>
+    /// <param name="pluginManager">The plugin manager, used to dispose loaded plugins on graceful shutdown.</param>
     internal sealed class MainProgram(
             ILogger<MainProgram> logger,
             IOptionsMonitor<AdrPlusConfig> optionsconfig,
@@ -36,7 +38,8 @@ namespace AdrPlus
             IConfiguration configuration,
             IConfigurationMigrator configurationMigrator,
             IValidateConfig validateConfig,
-            IConsoleWriter prompt) : IMainProgram
+            IConsoleWriter prompt,
+            IPluginManager pluginManager) : IMainProgram
     {
         private readonly ILogger<MainProgram> _logger = logger;
         private readonly CommandRouter _commandRouter = commandRouter;
@@ -45,6 +48,7 @@ namespace AdrPlus
         private readonly IConfigurationMigrator _configurationMigrator = configurationMigrator;
         private readonly IOptionsMonitor<AdrPlusConfig> _adrPlusConfig = optionsconfig;
         private readonly IValidateConfig _validateConfig = validateConfig;
+        private readonly IPluginManager _pluginManager = pluginManager;
 
         /// <summary>
         /// Executes the background command processing loop for the application host lifecycle.
@@ -95,28 +99,37 @@ namespace AdrPlus
                 }
             }
 
-            do
+            try
             {
-                Helper.HasAppConfigChange = false;
-                _prompt.PromptEnsureCulture(_adrPlusConfig.CurrentValue);
-                _prompt.PromptConfigure(_adrPlusConfig.CurrentValue);
-                _prompt.PromptShowBanner(AppConstants.BannerText);
-                _prompt.PromptShowWellcome(appVersion);
-                try
+                do
                 {
-                    await _commandRouter.RouteAsync(commandName, args, stoppingToken);
-                }
-                catch
-                {
-                    Helper.ExitCode = 1;
-                    if (!stoppingToken.IsCancellationRequested)
+                    Helper.HasAppConfigChange = false;
+                    _prompt.PromptEnsureCulture(_adrPlusConfig.CurrentValue);
+                    _prompt.PromptConfigure(_adrPlusConfig.CurrentValue);
+                    _prompt.PromptShowBanner(AppConstants.BannerText);
+                    _prompt.PromptShowWellcome(appVersion);
+                    try
                     {
-                        LogMessages.LogStoppedAdrPlus(_logger);
-                        throw;
+                        await _commandRouter.RouteAsync(commandName, args, stoppingToken);
                     }
-                    break;
-                }
-            } while (Helper.HasAppConfigChange);
+                    catch
+                    {
+                        Helper.ExitCode = 1;
+                        if (!stoppingToken.IsCancellationRequested)
+                        {
+                            LogMessages.LogStoppedAdrPlus(_logger);
+                            throw;
+                        }
+                        break;
+                    }
+                } while (Helper.HasAppConfigChange);
+            }
+            finally
+            {
+                // CancellationToken.None deliberately: shutdown cleanup must still run even when stoppingToken is
+                // already cancelled — the same rationale as the timeout delay in PluginManager.InvokeOnceAsync.
+                await _pluginManager.DisposeLoadedPluginsAsync(CancellationToken.None);
+            }
             LogMessages.LogStoppedAdrPlus(_logger);
         }
     }

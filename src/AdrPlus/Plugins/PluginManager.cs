@@ -266,6 +266,37 @@ namespace AdrPlus.Plugins
         }
 
         /// <inheritdoc/>
+        public async Task DisposeLoadedPluginsAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var plugin in _loadedPlugins)
+            {
+                try
+                {
+                    await plugin.Instance.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: DisposeAsync threw during shutdown");
+                }
+            }
+
+            foreach (var plugin in _loadedPlugins)
+            {
+                try
+                {
+                    plugin.LoadContext?.Unload();
+                }
+                catch (Exception ex)
+                {
+                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: AssemblyLoadContext.Unload threw during shutdown");
+                }
+            }
+
+            _loadedPlugins.Clear();
+            _rejections.Clear();
+        }
+
+        /// <inheritdoc/>
         public async Task<SyncSummary> BackfillAsync(
             IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
             RepoInfoSnapshot repo,

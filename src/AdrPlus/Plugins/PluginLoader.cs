@@ -39,7 +39,12 @@ namespace AdrPlus.Plugins
     /// <param name="Instance">The loaded plugin instance.</param>
     /// <param name="Manifest">The plugin's parsed <c>plugin.json</c> manifest.</param>
     /// <param name="FolderPath">The plugin's subfolder under <c>./plugins</c>.</param>
-    internal sealed record LoadedPlugin(IAdrPlugin Instance, PluginManifest Manifest, string FolderPath);
+    /// <param name="LoadContext">
+    /// The isolated <see cref="AssemblyLoadContext"/> this plugin's assembly was loaded into (Fase 9), so it can
+    /// be unloaded on graceful shutdown. <see langword="null"/> for plugins seeded directly in tests rather than
+    /// loaded via <see cref="PluginLoader.LoadAssembly"/> — there is no real ALC to unload in that case.
+    /// </param>
+    internal sealed record LoadedPlugin(IAdrPlugin Instance, PluginManifest Manifest, string FolderPath, AssemblyLoadContext? LoadContext = null);
 
     /// <summary>
     /// The outcome of validating and loading a single plugin subfolder: either a <see cref="LoadedPlugin"/>
@@ -190,9 +195,10 @@ namespace AdrPlus.Plugins
             }
 
             IAdrPlugin instance;
+            PluginAssemblyLoadContext loadContext;
             try
             {
-                var loadContext = new PluginAssemblyLoadContext(assemblyPath);
+                loadContext = new PluginAssemblyLoadContext(assemblyPath);
                 var assembly = loadContext.LoadFromAssemblyPath(assemblyPath);
                 var entryType = assembly.GetType(manifest.EntryType!, throwOnError: false);
 
@@ -215,7 +221,7 @@ namespace AdrPlus.Plugins
                 return PluginLoadOutcome.Failure(RejectEntryTypeIncompatible(folderPath, manifest.Name!, manifest.EntryType!));
             }
 
-            return PluginLoadOutcome.Success(new LoadedPlugin(instance, manifest, folderPath));
+            return PluginLoadOutcome.Success(new LoadedPlugin(instance, manifest, folderPath, loadContext));
         }
 
         private static bool HasRequiredFields(PluginManifest manifest) =>

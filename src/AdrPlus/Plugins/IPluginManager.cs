@@ -108,5 +108,17 @@ namespace AdrPlus.Plugins
             IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
             RepoInfoSnapshot repo,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Disposes every plugin in <see cref="LoadedPlugins"/> (spec §11.6/§12, Fase 9) — the CLI's
+        /// graceful-shutdown hook, called once at process exit. Each plugin's <c>DisposeAsync</c> is invoked
+        /// independently: one plugin throwing does not prevent the others from being disposed (fail-soft). Each
+        /// plugin's isolated <see cref="System.Runtime.Loader.AssemblyLoadContext"/> is then unloaded on a
+        /// best-effort basis (D19) — not guaranteed to actually free the assembly in a short-lived CLI process,
+        /// and not required for correctness. Idempotent: clears <see cref="LoadedPlugins"/> and
+        /// <see cref="Rejections"/> afterward, so a second call is a no-op rather than disposing twice.
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        Task DisposeLoadedPluginsAsync(CancellationToken cancellationToken = default);
     }
 }
