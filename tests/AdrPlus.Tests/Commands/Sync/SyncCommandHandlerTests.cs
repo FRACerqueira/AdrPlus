@@ -3,6 +3,7 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Abstractions.Domain;
 using AdrPlus.Commands;
 using AdrPlus.Commands.Sync;
@@ -195,6 +196,88 @@ public class SyncCommandHandlerTests
 
         await _mockPluginManager.Received(1).LoadPluginsAsync(Path.Combine(RepositoryPath, "plugins"), Arg.Any<CancellationToken>());
         await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    private static LoadedPlugin CreateDummyLoadedPlugin() => new(
+        Substitute.For<IAdrPlugin>(),
+        new PluginManifest { Name = "p1", Version = "1.0.0", EntryAssembly = "x.dll", EntryType = "x", AbstractionsVersion = "1.0.0" },
+        "/repo/plugins/p1");
+
+    private void ArrangeValidRepoConfig(string[] args, string jsonConfig)
+    {
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.TargetRepo, RepositoryPath } };
+        if (args.Contains("--backfill"))
+        {
+            parsedArgs[Arguments.Backfill] = string.Empty;
+        }
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithBackfillAndNoPluginsLoaded_SkipsReadingAdrsEntirely()
+    {
+        var args = new[] { "--path", RepositoryPath, "--backfill" };
+        ArrangeValidRepoConfig(args, """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""");
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin>());
+
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        await _mockPluginManager.Received(1).LoadPluginsAsync(Path.Combine(RepositoryPath, "plugins"), Arg.Any<CancellationToken>());
+        await _mockAdrServices.DidNotReceive().ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>());
+        await _mockPluginManager.DidNotReceive().BackfillAsync(
+            Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithBackfill_FiltersProposedAndMapsSettledStatusesCorrectly()
+    {
+        var args = new[] { "--path", RepositoryPath, "--backfill" };
+        ArrangeValidRepoConfig(args, """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""");
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { CreateDummyLoadedPlugin() });
+
+        static AdrFileNameComponents MakeFile(int number, AdrHeader header) => new()
+        {
+            FileName = Path.Combine(RepositoryPath, $"adr-{number:D4}.md"),
+            IsValid = true,
+            Number = number,
+            Title = "Test decision",
+            ContentAdr = "## Context\n\nTest decision.",
+            Header = header
+        };
+
+        var proposed = MakeFile(1, new AdrHeader { IsValid = true, StatusCreate = AdrPlus.Domain.AdrStatus.Proposed, Version = 1 });
+        var approved = MakeFile(2, new AdrHeader { IsValid = true, StatusCreate = AdrPlus.Domain.AdrStatus.Proposed, StatusUpdate = AdrPlus.Domain.AdrStatus.Accepted, Version = 1 });
+        var rejected = MakeFile(3, new AdrHeader { IsValid = true, StatusCreate = AdrPlus.Domain.AdrStatus.Proposed, StatusUpdate = AdrPlus.Domain.AdrStatus.Rejected, Version = 1 });
+        var superseded = MakeFile(4, new AdrHeader { IsValid = true, StatusCreate = AdrPlus.Domain.AdrStatus.Proposed, StatusUpdate = AdrPlus.Domain.AdrStatus.Accepted, StatusChange = AdrPlus.Domain.AdrStatus.Superseded, Version = 1 });
+        var migrated = MakeFile(5, new AdrHeader { IsValid = false, IsMigrated = true, StatusCreate = AdrPlus.Domain.AdrStatus.Unknown, Version = 1 });
+
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false)
+            .Returns([proposed, approved, rejected, superseded, migrated]);
+
+        IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)>? captured = null;
+        _mockPluginManager.BackfillAsync(
+            Arg.Do<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(items => captured = items),
+            Arg.Any<RepoInfoSnapshot>(),
+            Arg.Any<CancellationToken>())
+            .Returns(new SyncSummary { Succeeded = 4 });
+
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        captured.Should().NotBeNull();
+        var items = captured!.ToList();
+        items.Should().HaveCount(4);
+        items.Should().Contain(i => i.Adr.Number == 2 && i.EventType == AdrEventType.Approved);
+        items.Should().Contain(i => i.Adr.Number == 3 && i.EventType == AdrEventType.Rejected);
+        items.Should().Contain(i => i.Adr.Number == 4 && i.EventType == AdrEventType.Superseded);
+        items.Should().Contain(i => i.Adr.Number == 5 && i.EventType == AdrEventType.Migrated);
+        items.Should().NotContain(i => i.Adr.Number == 1);
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 }

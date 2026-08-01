@@ -265,6 +265,122 @@ namespace AdrPlus.Plugins
             return summary;
         }
 
+        /// <inheritdoc/>
+        public async Task<SyncSummary> BackfillAsync(
+            IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
+            RepoInfoSnapshot repo,
+            CancellationToken cancellationToken = default)
+        {
+            var total = new SyncSummary();
+
+            if (_loadedPlugins.Count == 0)
+            {
+                return total;
+            }
+
+            var items = settledAdrs.ToList();
+
+            // Sequential init phase: EnsureInitializedAsync mutates _initializedPlugins/_initFailedPlugins
+            // (plain HashSets, not thread-safe). Running it here — before the parallel per-plugin sweep below —
+            // means those sets are only ever read, never mutated, once concurrency starts.
+            foreach (var plugin in _loadedPlugins)
+            {
+                await EnsureInitializedAsync(plugin, cancellationToken);
+            }
+
+            var readyPlugins = _loadedPlugins.Where(plugin => !_initFailedPlugins.Contains(plugin.Manifest.Name!));
+            var perPluginSummaries = await Task.WhenAll(readyPlugins.Select(plugin => BackfillPluginAsync(plugin, items, repo, cancellationToken)));
+
+            foreach (var summary in perPluginSummaries)
+            {
+                total.Succeeded += summary.Succeeded;
+                total.Skipped += summary.Skipped;
+                total.PermanentlyFailed += summary.PermanentlyFailed;
+                total.Exhausted += summary.Exhausted;
+            }
+
+            return total;
+        }
+
+        private async Task<SyncSummary> BackfillPluginAsync(
+            LoadedPlugin plugin,
+            IReadOnlyList<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> items,
+            RepoInfoSnapshot repo,
+            CancellationToken cancellationToken)
+        {
+            var summary = new SyncSummary();
+            var retryPolicy = plugin.Manifest.RetryPolicy ?? new PluginRetryPolicy();
+
+            foreach (var item in items)
+            {
+                if (!(plugin.Manifest.SubscribedEvents?.Contains(item.EventType.ToString(), StringComparer.OrdinalIgnoreCase) ?? false))
+                {
+                    continue;
+                }
+
+                var context = new AdrEventContext
+                {
+                    EventType = item.EventType,
+                    IsReplay = true,
+                    Adr = item.Adr,
+                    AdrFilePath = item.FilePath,
+                    GetAdrRenderedContent = item.GetContent,
+                    Repo = repo,
+                    CorrelationId = Guid.NewGuid().ToString()
+                };
+
+                bool shouldHandle;
+                try
+                {
+                    shouldHandle = plugin.Instance.ShouldHandle(context);
+                }
+                catch (Exception ex)
+                {
+                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw during backfill, skipping this ADR");
+                    continue;
+                }
+
+                if (!shouldHandle)
+                {
+                    summary.Skipped++;
+                    continue;
+                }
+
+                AttemptLoopOutcome outcome;
+                try
+                {
+                    outcome = await RunAttemptLoopAsync(plugin, context, retryPolicy, startAttempts: 0, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Return whatever this plugin already accomplished rather than losing it — a backfill sweep
+                    // can run for a long time (D18 serializes per plugin, full retryPolicy per item) and a
+                    // cancelled item shouldn't erase every prior item's outcome.
+                    return summary;
+                }
+
+                switch (outcome.Result)
+                {
+                    case AttemptLoopResult.Succeeded:
+                        summary.Succeeded++;
+                        break;
+                    case AttemptLoopResult.Skipped:
+                        summary.Skipped++;
+                        break;
+                    case AttemptLoopResult.PermanentlyFailed:
+                        WritePermanentFailure(plugin.Manifest.Name!, outcome.LastError ?? string.Empty);
+                        summary.PermanentlyFailed++;
+                        break;
+                    default: // Exhausted
+                        WriteWarning(string.Format(null, FormatMessages.PluginBackfillExhausted, plugin.Manifest.Name, BuildAdrKey(item.Adr)));
+                        summary.Exhausted++;
+                        break;
+                }
+            }
+
+            return summary;
+        }
+
         /// <summary>
         /// Retries a single pending entry against <paramref name="retryPolicy"/>, guaranteeing at least one
         /// attempt this run even if <see cref="PendingEntry.Attempts"/> already reached
@@ -277,12 +393,48 @@ namespace AdrPlus.Plugins
         /// </returns>
         private async Task<PendingEntry?> RetryEntryAsync(LoadedPlugin plugin, AdrEventContext context, PendingEntry entry, PluginRetryPolicy retryPolicy, SyncSummary summary, CancellationToken cancellationToken)
         {
-            var startAttempts = entry.Attempts;
+            var outcome = await RunAttemptLoopAsync(plugin, context, retryPolicy, entry.Attempts, cancellationToken);
+
+            switch (outcome.Result)
+            {
+                case AttemptLoopResult.Succeeded:
+                    summary.Succeeded++;
+                    return null;
+                case AttemptLoopResult.Skipped:
+                    summary.Skipped++;
+                    return null;
+                case AttemptLoopResult.PermanentlyFailed:
+                    WritePermanentFailure(plugin.Manifest.Name!, outcome.LastError ?? string.Empty);
+                    summary.PermanentlyFailed++;
+                    return null;
+                default: // Exhausted
+                    entry.Attempts = outcome.AttemptsMade;
+                    entry.LastError = outcome.LastError;
+                    entry.Timestamp = DateTime.UtcNow;
+                    summary.StillPending++;
+                    return entry;
+            }
+        }
+
+        /// <summary>
+        /// Runs the attempt loop for one (plugin, event) pair against <paramref name="retryPolicy"/>, guaranteeing
+        /// at least one attempt even if <paramref name="startAttempts"/> already reached
+        /// <see cref="PluginRetryPolicy.MaxAttempts"/> — shared by Fase 5's pending re-drive (<c>startAttempts</c>
+        /// = the entry's prior attempt count) and Fase 6's backfill sweep (<c>startAttempts</c> = <c>0</c>,
+        /// always a fresh sweep). The delay before attempt N uses N's absolute, cumulative number — it grows
+        /// even across separate <c>sync</c> runs for the same logical item — but the very first attempt made in
+        /// this call never sleeps first (the caller's own state already reflects real elapsed time).
+        /// </summary>
+        private async Task<AttemptLoopOutcome> RunAttemptLoopAsync(LoadedPlugin plugin, AdrEventContext context, PluginRetryPolicy retryPolicy, int startAttempts, CancellationToken cancellationToken)
+        {
             var attemptsThisRun = Math.Max(1, retryPolicy.MaxAttempts - startAttempts);
+            string? lastError = null;
+            var lastAttempt = startAttempts;
 
             for (var i = 1; i <= attemptsThisRun; i++)
             {
                 var absoluteAttempt = startAttempts + i;
+                lastAttempt = absoluteAttempt;
 
                 if (absoluteAttempt > 1)
                 {
@@ -298,27 +450,20 @@ namespace AdrPlus.Plugins
                 switch (outcome.Status)
                 {
                     case PluginInvokeStatus.Success:
-                        summary.Succeeded++;
-                        return null;
+                        return new AttemptLoopOutcome(AttemptLoopResult.Succeeded, absoluteAttempt, null);
                     case PluginInvokeStatus.Skipped:
-                        summary.Skipped++;
-                        return null;
+                        return new AttemptLoopOutcome(AttemptLoopResult.Skipped, absoluteAttempt, null);
                     default:
                         if (!outcome.IsRetryable)
                         {
-                            WritePermanentFailure(plugin.Manifest.Name!, outcome.ErrorMessage ?? string.Empty);
-                            summary.PermanentlyFailed++;
-                            return null;
+                            return new AttemptLoopOutcome(AttemptLoopResult.PermanentlyFailed, absoluteAttempt, outcome.ErrorMessage);
                         }
-                        entry.Attempts = absoluteAttempt;
-                        entry.LastError = outcome.ErrorMessage;
-                        entry.Timestamp = DateTime.UtcNow;
+                        lastError = outcome.ErrorMessage;
                         break;
                 }
             }
 
-            summary.StillPending++;
-            return entry;
+            return new AttemptLoopOutcome(AttemptLoopResult.Exhausted, lastAttempt, lastError);
         }
 
         /// <summary>

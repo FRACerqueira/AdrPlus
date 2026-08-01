@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>Synchronisatie voltooid: {0} geslaagd, {1} overgeslagen, {2} nog in behandeling, {3} permanent mislukt, {4} verwijderd</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill voltooid: {0} geslaagd, {1} overgeslagen, {2} permanent mislukt, {3} met uitgeputte pogingen</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Plugin '{0}': backfill-pogingen uitgeput voor ADR '{1}', niet in wachtrij geplaatst — voer 'adrplus sync --backfill' opnieuw uit om het nogmaals te proberen</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': permanente fout, wordt niet in de wachtrij geplaatst voor een nieuwe poging — corrigeer de configuratie en voer 'adrplus sync --backfill' uit</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>Hulpinformatie weergeven (onderdrukt alle andere argumenten)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Volledige repository-scan — verzendt elke afgeronde ADR opnieuw. Alleen handmatig/incidenteel gebruik, nooit automatiseren via cron/CI</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>Wizard om een nieuwe versie van een ADR aan te maken (onderdrukt alle andere argumenten)</value>

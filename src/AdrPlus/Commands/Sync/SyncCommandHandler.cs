@@ -3,6 +3,7 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Abstractions.Domain;
 using AdrPlus.Core;
 using AdrPlus.Domain;
@@ -18,9 +19,10 @@ using System.Text.Json;
 namespace AdrPlus.Commands.Sync
 {
     /// <summary>
-    /// Handles the <c>sync</c> command, which re-attempts every plugin's pending lifecycle events queued in
-    /// <c>./plugins/&lt;name&gt;/state/pending.json</c> (spec §6/§7, Fase 5's default mode). Scriptable/cron-friendly
-    /// — no wizard, no <c>--backfill</c> (full repo sweep, Fase 6).
+    /// Handles the <c>sync</c> command. Default mode re-attempts every plugin's pending lifecycle events queued
+    /// in <c>./plugins/&lt;name&gt;/state/pending.json</c> (spec §6/§7, Fase 5). <c>--backfill</c> instead sweeps
+    /// every ADR in the repo and re-emits the event matching its current settled status (Fase 6) — scriptable/
+    /// cron-friendly for the default mode, manual-only for <c>--backfill</c> (never self-limiting).
     /// </summary>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
@@ -44,6 +46,7 @@ namespace AdrPlus.Commands.Sync
         private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.TargetRepo,
+             Arguments.Backfill,
              Arguments.Help];
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
@@ -59,6 +62,7 @@ namespace AdrPlus.Commands.Sync
                         ValidCommandArgs,
                         [
                             "adrplus sync --path \"path/to/repository/\"",
+                            "adrplus sync --path \"path/to/repository/\" --backfill",
                         ]));
                     return;
                 }
@@ -86,41 +90,116 @@ namespace AdrPlus.Commands.Sync
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                // Every valid ADR in the repo, keyed by the same adrKey format pending.json entries use — a
-                // pending entry may reference an ADR that's since been deleted/renamed, which resolveAdr below
-                // reports as "not found" rather than treating it as fatal.
-                var adrFiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, includeNotMatched: false);
-                var adrsByKey = new Dictionary<string, AdrFileNameComponents>(StringComparer.Ordinal);
-                foreach (var file in adrFiles)
+                if (parsedArgs.ContainsKey(Arguments.Backfill))
                 {
-                    if (file.IsValid)
-                    {
-                        adrsByKey[AdrKeyFormatter.Format(file.Number, file.Version, file.Revision)] = file;
-                    }
+                    await ExecuteBackfillAsync(targetPath, repoconfig, cancellationToken);
+                    return;
                 }
 
-                (AdrRecordSnapshot Adr, string FilePath, string Content)? ResolveAdr(string adrKey)
-                {
-                    if (!adrsByKey.TryGetValue(adrKey, out var file))
-                    {
-                        return null;
-                    }
-                    var record = Helper.CreateAdrRecord(file, repoconfig);
-                    return (record.ToSnapshot(), file.FileName, file.ContentAdr ?? string.Empty);
-                }
-
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-                var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), cancellationToken);
-
-                var message = string.Format(null, FormatMessages.SyncSummaryReport, summary.Succeeded, summary.Skipped, summary.StillPending, summary.PermanentlyFailed, summary.Dropped);
-                LogMessages.LogCommandSuccessful(_logger, message);
-                _prompt.PromptWriteSuccess(message);
+                await ExecuteDefaultSyncAsync(targetPath, repoconfig, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessages.LogCommandException(_logger, ex);
                 throw;
             }
+        }
+
+        private async Task ExecuteDefaultSyncAsync(string targetPath, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
+        {
+            // Every valid ADR in the repo, keyed by the same adrKey format pending.json entries use — a
+            // pending entry may reference an ADR that's since been deleted/renamed, which resolveAdr below
+            // reports as "not found" rather than treating it as fatal.
+            var adrFiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, includeNotMatched: false);
+            var adrsByKey = new Dictionary<string, AdrFileNameComponents>(StringComparer.Ordinal);
+            foreach (var file in adrFiles)
+            {
+                if (file.IsValid)
+                {
+                    adrsByKey[AdrKeyFormatter.Format(file.Number, file.Version, file.Revision)] = file;
+                }
+            }
+
+            (AdrRecordSnapshot Adr, string FilePath, string Content)? ResolveAdr(string adrKey)
+            {
+                if (!adrsByKey.TryGetValue(adrKey, out var file))
+                {
+                    return null;
+                }
+                var record = Helper.CreateAdrRecord(file, repoconfig);
+                return (record.ToSnapshot(), file.FileName, file.ContentAdr ?? string.Empty);
+            }
+
+            await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+            var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), cancellationToken);
+
+            var message = string.Format(null, FormatMessages.SyncSummaryReport, summary.Succeeded, summary.Skipped, summary.StillPending, summary.PermanentlyFailed, summary.Dropped);
+            LogMessages.LogCommandSuccessful(_logger, message);
+            _prompt.PromptWriteSuccess(message);
+        }
+
+        private async Task ExecuteBackfillAsync(string targetPath, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
+        {
+            // Backfill is the expensive path (full retryPolicy per settled ADR) — load plugins first and skip
+            // reading the whole repo's ADRs entirely when nothing is loaded to receive them.
+            await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+
+            var summary = new SyncSummary();
+            if (_pluginManager.LoadedPlugins.Count > 0)
+            {
+                var adrFiles = await _adrServices.ReadAllAdr(_fileSystem, targetPath, repoconfig, includeNotMatched: false);
+                var settledItems = new List<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)>();
+
+                foreach (var file in adrFiles)
+                {
+                    if (!file.IsValid || !(file.Header.IsValid || file.Header.IsMigrated))
+                    {
+                        continue;
+                    }
+
+                    var eventType = DetermineSettledEventType(file.Header);
+                    if (eventType is null)
+                    {
+                        continue;
+                    }
+
+                    var record = Helper.CreateAdrRecord(file, repoconfig);
+                    settledItems.Add((eventType.Value, record.ToSnapshot(), file.FileName, () => file.ContentAdr ?? string.Empty));
+                }
+
+                summary = await _pluginManager.BackfillAsync(settledItems, repoconfig.ToSnapshot(), cancellationToken);
+            }
+
+            var message = string.Format(null, FormatMessages.BackfillSummaryReport, summary.Succeeded, summary.Skipped, summary.PermanentlyFailed, summary.Exhausted);
+            LogMessages.LogCommandSuccessful(_logger, message);
+            _prompt.PromptWriteSuccess(message);
+        }
+
+        /// <summary>
+        /// Determines the <see cref="AdrEventType"/> matching an ADR's current settled status (spec §6):
+        /// <see cref="AdrEventType.Superseded"/> &gt; <see cref="AdrEventType.Rejected"/> &gt;
+        /// <see cref="AdrEventType.Approved"/> &gt; <see cref="AdrEventType.Migrated"/>, in that priority order —
+        /// or <see langword="null"/> when the ADR is still <c>Proposed</c> (nothing settled to replay).
+        /// </summary>
+        private static AdrEventType? DetermineSettledEventType(AdrHeader header)
+        {
+            if (header.StatusChange == AdrPlus.Domain.AdrStatus.Superseded)
+            {
+                return AdrEventType.Superseded;
+            }
+            if (header.StatusUpdate == AdrPlus.Domain.AdrStatus.Rejected)
+            {
+                return AdrEventType.Rejected;
+            }
+            if (header.StatusUpdate == AdrPlus.Domain.AdrStatus.Accepted)
+            {
+                return AdrEventType.Approved;
+            }
+            if (header.IsMigrated)
+            {
+                return AdrEventType.Migrated;
+            }
+            return null;
         }
 
         private void LogAndWriteErrors(string[] errors)

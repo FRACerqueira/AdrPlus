@@ -1544,7 +1544,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("HelpUsageHelp", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Full repository sweep — re-emits every settled ADR. Manual/occasional use only, never automate via cron/CI.
+        /// </summary>
+        internal static string HelpUsageBackfill {
+            get {
+                return ResourceManager.GetString("HelpUsageBackfill", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Path to repository(repo) configuration json file.
         /// </summary>
@@ -2496,6 +2505,24 @@ namespace AdrPlus.Resources {
         internal static string SyncSummaryReport {
             get {
                 return ResourceManager.GetString("SyncSummaryReport", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Backfill complete: {0} succeeded, {1} skipped, {2} permanently failed, {3} retries exhausted.
+        /// </summary>
+        internal static string BackfillSummaryReport {
+            get {
+                return ResourceManager.GetString("BackfillSummaryReport", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: backfill retries exhausted for ADR &apos;{1}&apos;, not queued — rerun &apos;adrplus sync --backfill&apos; to retry.
+        /// </summary>
+        internal static string PluginBackfillExhausted {
+            get {
+                return ResourceManager.GetString("PluginBackfillExhausted", resourceCulture);
             }
         }
 

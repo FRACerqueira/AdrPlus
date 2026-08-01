@@ -351,6 +351,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>Sync complete: {0} succeeded, {1} skipped, {2} still pending, {3} permanently failed, {4} dropped</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill complete: {0} succeeded, {1} skipped, {2} permanently failed, {3} retries exhausted</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Plugin '{0}': backfill retries exhausted for ADR '{1}', not queued — rerun 'adrplus sync --backfill' to retry</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Failed to start process</value>
   </data>
@@ -590,6 +596,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>Display help information (supress all other arguments)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Full repository sweep — re-emits every settled ADR. Manual/occasional use only, never automate via cron/CI</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>Wizard to create a new version of an ADR (supress all other arguments)</value>

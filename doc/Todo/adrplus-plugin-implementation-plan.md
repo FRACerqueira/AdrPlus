@@ -2,7 +2,7 @@
 
 > **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D30).
 > **Scope**: Builds every decision tagged **Essential** in §3 of the spec. Decisions tagged **Deferred (v1.1+)** — D23 (dedup), D24 (aggregate dispatch timeout), D18's `maxConcurrency` user-tunability — are explicitly **not** built here; see "Out of scope" below.
-> **Status**: Phases 1–5 implemented (`3865998`, `dee7b20`, `81c32db`, `303ffe5`, and Phase 5's commit). Phase 6 (full backfill, `adrplus sync --backfill`) not yet started. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by the new `SyncCommandHandler` (`adrplus sync`, default mode). `PluginManager`'s foreground dispatch (Phase 4) and background retry (Phase 5) now share two extracted helpers, `EnsureInitializedAsync`/`InvokeOnceAsync`, so the init-once-per-process and timeout-race mechanics aren't duplicated.
+> **Status**: Phases 1–6 implemented (`3865998`, `dee7b20`, `81c32db`, `303ffe5`, `5ce4a9d`, and Phase 6's commit). Phase 7 (diagnostics: `adrplus plugins list`/`validate`) not yet started. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by `SyncCommandHandler`'s default mode. Phase 6 added `--backfill` (full repo sweep, `IPluginManager.BackfillAsync`), reusing the same attempt-loop mechanics via a further-extracted `RunAttemptLoopAsync` shared with Phase 5's retry engine. `PluginManager` now has three layers of shared helpers: `EnsureInitializedAsync`/`InvokeOnceAsync` (Phase 4/5, per-attempt mechanics) and `RunAttemptLoopAsync` (Phase 5/6, the backoff loop around them).
 
 ---
 
@@ -84,6 +84,14 @@
 - **Never wire `--backfill` into an automated scheduler** — document this prominently in user-facing help text (`adrplus sync --help`) and any cron/CI setup guidance, since it's the one footgun in this design that's easy to get wrong operationally.
 
 **Verify:** fixture repo with ADRs across all statuses — assert only settled ones dispatch; assert plugin invocations for this sweep are serialized (no concurrent calls); assert exhausted-retry failures are logged, not written to `pending.json`.
+
+**Implemented as:** `IPluginManager.BackfillAsync(IEnumerable<(AdrEventType, AdrRecordSnapshot, string FilePath, Func<string> GetContent)>, RepoInfoSnapshot, CancellationToken)` — `SyncCommandHandler` owns reading the repo and mapping each ADR's `AdrHeader` to a settled `AdrEventType` (`DetermineSettledEventType`: `StatusChange==Superseded` > `StatusUpdate==Rejected` > `StatusUpdate==Accepted` > `IsMigrated` > skip), same separation of concerns as Phase 5's `resolveAdr` callback. Key decisions:
+- **`RunAttemptLoopAsync` extracted from Phase 5's `RetryEntryAsync`** — the backoff loop itself (using `ComputeDelay`/`InvokeOnceAsync`) is identical between "retry a pending entry" and "backfill one settled ADR"; only the bookkeeping around the loop differs (Phase 5: update/remove a `PendingEntry`; Phase 6: log-only via `AttemptLoopResult.Exhausted`, never persisted). Verified behavior-preserving against Phase 5's own test suite.
+- **D18 concurrency**: different plugins swept in parallel (`Task.WhenAll`, same pattern as Phase 4's `DispatchAsync`), but each plugin processes its own ADR list sequentially — no `Task.WhenAll` inside a single plugin's sweep.
+- **Real bug caught in plan review, fixed before coding**: `_initializedPlugins`/`_initFailedPlugins` are plain `HashSet<string>`, not thread-safe. `BackfillAsync` runs `EnsureInitializedAsync` for every plugin **sequentially before** the parallel per-plugin sweep starts — those sets are only ever read (never mutated) once concurrency begins.
+- **Cancellation mid-sweep returns the partial `SyncSummary`**, doesn't lose it — `BackfillPluginAsync` catches `OperationCanceledException` per item and returns whatever that plugin already accomplished, since a backfill sweep (full `retryPolicy` per item, sequential per plugin) can run for a long time and Ctrl-C shouldn't erase prior progress.
+- **`SyncSummary` gained an `Exhausted` field** (backfill-only; `StillPending`/`Dropped` are default-mode-only) and a distinct `BackfillSummaryReport` string — avoids showing always-zero fields depending on which mode ran.
+- D23 (dedup) and D18's user-tunability remain out of scope, as before.
 
 ---
 

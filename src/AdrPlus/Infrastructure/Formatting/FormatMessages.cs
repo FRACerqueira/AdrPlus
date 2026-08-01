@@ -101,5 +101,7 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginPermanentFailure => Get(() => Resources.AdrPlus.PluginPermanentFailure);
         public static CompositeFormat PluginPendingAdrNotFound => Get(() => Resources.AdrPlus.PluginPendingAdrNotFound);
         public static CompositeFormat SyncSummaryReport => Get(() => Resources.AdrPlus.SyncSummaryReport);
+        public static CompositeFormat PluginBackfillExhausted => Get(() => Resources.AdrPlus.PluginBackfillExhausted);
+        public static CompositeFormat BackfillSummaryReport => Get(() => Resources.AdrPlus.BackfillSummaryReport);
     }
 }

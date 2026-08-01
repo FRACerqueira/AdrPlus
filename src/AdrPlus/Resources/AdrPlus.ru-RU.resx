@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>Синхронизация завершена: успешно {0}, пропущено {1}, всё ещё ожидает {2}, окончательно не удалось {3}, удалено {4}</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill завершён: успешно {0}, пропущено {1}, окончательно не удалось {2}, попытки исчерпаны {3}</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Плагин '{0}': попытки backfill для ADR '{1}' исчерпаны, не поставлено в очередь — запустите 'adrplus sync --backfill' повторно, чтобы попробовать снова</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Плагин '{0}': необратимый сбой, не будет поставлен в очередь на повтор — исправьте конфигурацию и выполните 'adrplus sync --backfill'</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>Отобразить справочную информацию (подавляет все остальные аргументы)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Полная проверка репозитория — повторно отправляет каждый согласованный ADR. Только ручное/периодическое использование, никогда не автоматизировать через cron/CI</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>Мастер создания новой версии ADR (подавляет все остальные аргументы)</value>

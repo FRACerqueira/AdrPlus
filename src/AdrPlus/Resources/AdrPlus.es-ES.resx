@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>Sincronización completada: {0} con éxito, {1} omitidas, {2} aún pendientes, {3} con fallo permanente, {4} descartadas</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill completado: {0} con éxito, {1} omitidas, {2} con fallo permanente, {3} con reintentos agotados</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Plugin '{0}': reintentos de backfill agotados para la ADR '{1}', no encolado — vuelva a ejecutar 'adrplus sync --backfill' para reintentar</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': fallo permanente, no se pondrá en cola para reintento — corrija la configuración y ejecute 'adrplus sync --backfill'</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>Mostrar información de ayuda (suprime todos los demás argumentos)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Barrido completo del repositorio — reemite cada ADR ya resuelta. Uso manual/ocasional únicamente, nunca automatizar mediante cron/CI</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>Asistente para crear una nueva versión de un ADR (suprime todos los demás argumentos)</value>

@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>同步完成：成功 {0} 项，跳过 {1} 项，仍待处理 {2} 项，永久失败 {3} 项，已丢弃 {4} 项</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>回填完成：成功 {0} 项，跳过 {1} 项，永久失败 {2} 项，重试耗尽 {3} 项</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>插件 '{0}'：ADR '{1}' 的回填重试已耗尽，未加入队列——重新运行 'adrplus sync --backfill' 以重试</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>插件 '{0}'：永久性失败，不会加入重试队列 — 请修正配置后运行 'adrplus sync --backfill'</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>显示帮助信息（将忽略所有其他参数）</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>完整仓库扫描——重新发送每个已定案的 ADR。仅限手动/偶尔使用，切勿通过 cron/CI 自动化</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>创建 ADR 新版本的向导（将忽略所有其他参数）</value>

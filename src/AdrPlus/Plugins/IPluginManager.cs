@@ -85,5 +85,28 @@ namespace AdrPlus.Plugins
             Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
             RepoInfoSnapshot repo,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Re-emits the settled-status event for every ADR in <paramref name="settledAdrs"/> to every loaded
+        /// plugin whose manifest subscribes to it — <c>adrplus sync --backfill</c> (Fase 6). Unlike
+        /// <see cref="RetryPendingAsync"/>, every item always starts at attempt 1 (a backfill sweep has no prior
+        /// state to continue), and an item whose retries exhaust <see cref="PluginRetryPolicy.MaxAttempts"/> is
+        /// only logged — never written to <c>state/pending.json</c> (§6: re-running <c>--backfill</c> is itself
+        /// the recovery path). Different plugins are swept in parallel; a single plugin processes its own list of
+        /// ADRs sequentially (D18's <c>maxConcurrency</c>, fixed at 1). If cancelled mid-sweep, the partial
+        /// <see cref="SyncSummary"/> accumulated so far is returned rather than lost.
+        /// </summary>
+        /// <param name="settledAdrs">
+        /// Every ADR with a settled (non-<c>Proposed</c>) status, paired with the <see cref="AdrEventType"/> that
+        /// status corresponds to. Built by the caller (<c>SyncCommandHandler</c>), which owns reading the repo's
+        /// ADRs and determining each one's current status — kept out of <see cref="IPluginManager"/> for the same
+        /// reason <see cref="RetryPendingAsync"/>'s resolver callback is.
+        /// </param>
+        /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        Task<SyncSummary> BackfillAsync(
+            IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
+            RepoInfoSnapshot repo,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -85,5 +85,8 @@ namespace AdrPlus.Commands
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]
         Help,
+        [CommandArgument("-b", "--backfill")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsageBackfill")]
+        Backfill,
     }
 }

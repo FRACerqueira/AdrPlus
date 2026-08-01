@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>동기화 완료: 성공 {0}건, 건너뜀 {1}건, 대기 중 {2}건, 영구 실패 {3}건, 삭제됨 {4}건</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>백필 완료: 성공 {0}건, 건너뜀 {1}건, 영구 실패 {2}건, 재시도 소진 {3}건</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>플러그인 '{0}': ADR '{1}'에 대한 백필 재시도가 소진되었습니다. 대기열에 추가되지 않습니다 — 다시 시도하려면 'adrplus sync --backfill'을 다시 실행하세요</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>플러그인 '{0}': 영구적인 실패로 재시도 대기열에 추가되지 않습니다 — 설정을 수정하고 'adrplus sync --backfill'을 실행하세요</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>도움말 정보를 표시합니다(다른 모든 인수를 무시함)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>저장소 전체를 훑어 확정된 모든 ADR을 다시 전송합니다. 수동/비정기적 사용 전용 — cron/CI로 절대 자동화하지 마세요</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>ADR의 새 버전을 생성하는 마법사(다른 모든 인수를 무시함)</value>

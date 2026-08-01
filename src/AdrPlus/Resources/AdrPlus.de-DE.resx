@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>Synchronisierung abgeschlossen: {0} erfolgreich, {1} übersprungen, {2} weiterhin ausstehend, {3} dauerhaft fehlgeschlagen, {4} verworfen</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill abgeschlossen: {0} erfolgreich, {1} übersprungen, {2} dauerhaft fehlgeschlagen, {3} mit erschöpften Wiederholungen</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Plugin '{0}': Backfill-Wiederholungen für ADR '{1}' erschöpft, nicht eingereiht — 'adrplus sync --backfill' erneut ausführen, um es erneut zu versuchen</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': dauerhafter Fehler, wird nicht zur Wiederholung eingereiht — Konfiguration korrigieren und 'adrplus sync --backfill' ausführen</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>Hilfeinformationen anzeigen (unterdrückt alle anderen Argumente)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Vollständiger Repository-Scan — sendet jedes abgeschlossene ADR erneut. Nur manuelle/gelegentliche Nutzung, niemals über Cron/CI automatisieren</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>Assistent zum Erstellen einer neuen Version eines ADR (unterdrückt alle anderen Argumente)</value>

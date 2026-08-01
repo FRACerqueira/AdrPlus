@@ -349,6 +349,12 @@
   <data name="SyncSummaryReport" xml:space="preserve">
     <value>同期が完了しました: 成功 {0} 件、スキップ {1} 件、保留中 {2} 件、恒久的な失敗 {3} 件、破棄 {4} 件</value>
   </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>バックフィル完了: 成功 {0} 件、スキップ {1} 件、恒久的な失敗 {2} 件、再試行上限到達 {3} 件</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>プラグイン '{0}': ADR '{1}' のバックフィル再試行が上限に達しました。キューには入れられません — 再試行するには 'adrplus sync --backfill' を再実行してください</value>
+  </data>
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>プラグイン '{0}': 永続的な失敗のため再試行キューに入れません — 設定を修正して 'adrplus sync --backfill' を実行してください</value>
   </data>
@@ -591,6 +597,9 @@
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
     <value>ヘルプ情報を表示します (他のすべての引数を無視します)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>リポジトリ全体を走査し、確定済みのすべての ADR を再送信します。手動・不定期の利用のみ — cron/CI で絶対に自動化しないでください</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
     <value>ADR の新しいバージョンを作成するウィザード (他のすべての引数を無視します)</value>
