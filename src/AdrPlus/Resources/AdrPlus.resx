@@ -315,6 +315,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>Field '{0}' cannot be empty</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>Plugin allowlist entry at index {0} is missing required field 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Plugin in '{0}': manifest is invalid: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Plugin in '{0}': 'entryAssembly' must be a plain file name, without path separators or '..': '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Plugin '{0}': not in the configured plugin allowlist; skipped</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Plugin '{0}': allowlist 'hash' is set but not enforced in this version; it provides no security guarantee yet</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Plugin '{0}' in '{1}': duplicate name shared with another plugin folder; neither will be loaded</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': entryType '{1}' does not implement IAdrPlugin, or its Name/Version do not match the manifest</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': abstractionsVersion '{1}' is not compatible with the host's major version ({2})</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Failed to start process</value>
   </data>

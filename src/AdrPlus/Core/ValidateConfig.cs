@@ -956,7 +956,10 @@ namespace AdrPlus.Core
                     actualFields.Add(property.Name);
                 }
 
-                var extraFields = actualFields.Except(requiredFields.Keys).ToList();
+                var extraFields = actualFields
+                    .Where(field => !string.Equals(field, AppConstants.FieldPluginAllowlist, StringComparison.OrdinalIgnoreCase))
+                    .Except(requiredFields.Keys)
+                    .ToList();
                 if (extraFields.Count > 0)
                 {
                     errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFields, string.Join(", ", extraFields)));
@@ -1010,6 +1013,39 @@ namespace AdrPlus.Core
                 errors.Add(string.Format(null, FormatMessages.ValidationMustFollowPattern, AppConstants.FieldWithoutArgs, "Help,Wizard,None"));
             }
 
+            if (root.GetProperty(AppConstants.DefaultSettingsRoot).TryGetProperty(AppConstants.FieldPluginAllowlist, out var pluginAllowlistProperty))
+            {
+                errors.AddRange(ValidatePluginAllowlist(pluginAllowlistProperty));
+            }
+
+            return [.. errors];
+        }
+
+        /// <summary>
+        /// Validates the shape of the optional <c>pluginallowlist</c> field: must be an array of objects,
+        /// each with a required string <c>name</c> and optional string <c>hash</c>.
+        /// </summary>
+        /// <param name="pluginAllowlistProperty">The <c>pluginallowlist</c> JSON element.</param>
+        /// <returns>An array of validation error messages; empty if the field is valid.</returns>
+        private static string[] ValidatePluginAllowlist(JsonElement pluginAllowlistProperty)
+        {
+            List<string> errors = [];
+
+            if (pluginAllowlistProperty.ValueKind != JsonValueKind.Array)
+            {
+                errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongType, AppConstants.FieldPluginAllowlist, JsonValueKind.Array, pluginAllowlistProperty.ValueKind));
+                return [.. errors];
+            }
+
+            var index = 0;
+            foreach (var entry in pluginAllowlistProperty.EnumerateArray())
+            {
+                if (!entry.TryGetProperty("name", out var nameProperty) || nameProperty.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(nameProperty.GetString()))
+                {
+                    errors.Add(string.Format(null, FormatMessages.ValidationPluginAllowlistEntryMissingName, index));
+                }
+                index++;
+            }
 
             return [.. errors];
         }

@@ -132,6 +132,14 @@ namespace AdrPlus.Infrastructure.FileSystem
         string[] GetFiles(string path, string searchPattern, SearchOption searchOption = SearchOption.AllDirectories);
 
         /// <summary>
+        /// Retrieves the names of subdirectories in the specified directory.
+        /// </summary>
+        /// <param name="path">The relative or absolute path to the directory to search.</param>
+        /// <param name="searchOption">Specifies whether to search only the current directory or all subdirectories.</param>
+        /// <returns>An array of full directory paths matching the search criteria.</returns>
+        string[] GetDirectories(string path, SearchOption searchOption = SearchOption.TopDirectoryOnly);
+
+        /// <summary>
         /// Retrieves the names of all logical drives on the current computer.
         /// </summary>
         /// <returns>An array of drive name strings (e.g. <c>"C:\"</c>, <c>"D:\"</c>).</returns>

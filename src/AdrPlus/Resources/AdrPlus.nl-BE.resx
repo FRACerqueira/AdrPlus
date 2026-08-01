@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>Veld '{0}' mag niet leeg zijn</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>Item {0} van de plugin-allowlist mist het verplichte veld 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Plugin in '{0}': manifest is ongeldig: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Plugin in '{0}': 'entryAssembly' moet een eenvoudige bestandsnaam zijn, zonder padscheidingstekens of '..': '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Plugin '{0}': niet opgenomen in de geconfigureerde plugin-allowlist; overgeslagen</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Plugin '{0}': het veld 'hash' van de allowlist is ingesteld maar wordt in deze versie nog niet afgedwongen; biedt momenteel geen enkele beveiligingsgarantie</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Plugin '{0}' in '{1}': dubbele naam, gedeeld met een andere pluginmap; geen van beide wordt geladen</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': entryType '{1}' implementeert IAdrPlugin niet, of Name/Version komen niet overeen met het manifest</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': abstractionsVersion '{1}' is niet compatibel met de hoofdversie van de host ({2})</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Kan het proces niet starten</value>
   </data>

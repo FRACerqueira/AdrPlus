@@ -55,6 +55,10 @@ namespace AdrPlus.Infrastructure.FileSystem
             Directory.GetFiles(path, searchPattern, searchOption);
 
         /// <inheritdoc/>
+        public string[] GetDirectories(string path, SearchOption searchOption = SearchOption.TopDirectoryOnly) =>
+            Directory.GetDirectories(path, "*", searchOption);
+
+        /// <inheritdoc/>
         public string[] GetDrives() => Directory.GetLogicalDrives();
 
         /// <inheritdoc/>

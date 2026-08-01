@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>필드 '{0}'은 비워둘 수 없습니다</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>인덱스 {0}의 플러그인 허용 목록 항목에 필수 필드 'name'이 없습니다</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>'{0}'의 플러그인: 매니페스트가 유효하지 않습니다: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>'{0}'의 플러그인: 'entryAssembly'는 경로 구분자나 '..' 없이 단순한 파일 이름이어야 합니다: '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>플러그인 '{0}': 구성된 플러그인 허용 목록에 없어 건너뜁니다</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>플러그인 '{0}': 허용 목록의 'hash' 필드가 설정되어 있지만 이 버전에서는 아직 적용되지 않습니다. 현재로서는 보안을 보장하지 않습니다</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>'{1}'의 플러그인 '{0}': 다른 플러그인 폴더와 이름이 중복됩니다. 둘 다 로드되지 않습니다</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>플러그인 '{0}': entryType '{1}'이(가) IAdrPlugin을 구현하지 않거나 Name/Version이 매니페스트와 일치하지 않습니다</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>플러그인 '{0}': abstractionsVersion '{1}'이(가) 호스트의 주 버전 ({2})과 호환되지 않습니다</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>프로세스를 시작하지 못했습니다</value>
   </data>

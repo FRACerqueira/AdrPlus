@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>字段 '{0}' 不能为空</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>索引 {0} 处的插件允许列表条目缺少必需字段 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>'{0}' 中的插件：清单无效：{1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>'{0}' 中的插件：'entryAssembly' 必须是不含路径分隔符或 '..' 的纯文件名：'{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>插件 '{0}'：不在已配置的插件允许列表中；已跳过</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>插件 '{0}'：允许列表中的 'hash' 字段已设置，但此版本尚未强制执行；目前不提供任何安全保证</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>'{1}' 中的插件 '{0}'：名称与另一个插件文件夹重复；两者都不会被加载</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>插件 '{0}'：entryType '{1}' 未实现 IAdrPlugin，或者 Name/Version 与清单不匹配</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>插件 '{0}'：abstractionsVersion '{1}' 与主机的主版本 ({2}) 不兼容</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>启动进程失败</value>
   </data>

@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>Поле '{0}' не может быть пустым</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>В записи allowlist плагинов с индексом {0} отсутствует обязательное поле 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Плагин в '{0}': манифест недействителен: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Плагин в '{0}': 'entryAssembly' должен быть простым именем файла без разделителей пути и '..': '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Плагин '{0}': отсутствует в настроенном allowlist плагинов; пропущен</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Плагин '{0}': поле 'hash' в allowlist задано, но в этой версии пока не применяется; на данный момент не даёт никаких гарантий безопасности</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Плагин '{0}' в '{1}': имя дублируется с другой папкой плагина; ни один из них не будет загружен</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Плагин '{0}': entryType '{1}' не реализует IAdrPlugin, либо Name/Version не совпадают с манифестом</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Плагин '{0}': abstractionsVersion '{1}' несовместима с основной версией хоста ({2})</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Не удалось запустить процесс</value>
   </data>

@@ -109,7 +109,12 @@ namespace AdrPlus.Core
         public const string FieldOpenAdr = "comandopenadr";
 
         /// <summary>
-        /// The name of the configuration migration pattern preferences. 
+        /// Configuration field name for the plugin allowlist setting.
+        /// </summary>
+        public const string FieldPluginAllowlist = "pluginallowlist";
+
+        /// <summary>
+        /// The name of the configuration migration pattern preferences.
         /// </summary>
         public const string FieldMigrationPattern = "migrationpattern";
 

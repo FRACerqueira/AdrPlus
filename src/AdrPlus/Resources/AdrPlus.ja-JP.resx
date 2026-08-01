@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>フィールド '{0}' を空にすることはできません</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>プラグイン許可リストのインデックス {0} のエントリに必須フィールド 'name' がありません</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>'{0}' 内のプラグイン: マニフェストが無効です: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>'{0}' 内のプラグイン: 'entryAssembly' はパス区切り文字や '..' を含まない単純なファイル名である必要があります: '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>プラグイン '{0}': 設定されたプラグイン許可リストに含まれていないためスキップされました</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>プラグイン '{0}': 許可リストの 'hash' フィールドが設定されていますが、このバージョンではまだ適用されません。現時点ではセキュリティ保証にはなりません</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>'{1}' 内のプラグイン '{0}': 名前が別のプラグインフォルダーと重複しています。どちらも読み込まれません</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>プラグイン '{0}': entryType '{1}' が IAdrPlugin を実装していないか、Name/Version がマニフェストと一致しません</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>プラグイン '{0}': abstractionsVersion '{1}' はホストのメジャーバージョン ({2}) と互換性がありません</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>プロセスの開始に失敗しました</value>
   </data>

@@ -198,12 +198,18 @@ namespace AdrPlus.Infrastructure.Configuration
                                 case JsonValueKind.False:
                                     item?.SetValue(newconfigapp, false);
                                     break;
+                                case JsonValueKind.Array:
+                                    item?.SetValue(newconfigapp, JsonSerializer.Deserialize<List<PluginAllowlistEntry>>(jvalue.Value.GetRawText(), AppConstants.RepoSerializerOptions));
+                                    break;
                             }
                         }
                     }
                 }
             }
-            var jsoncontent = $"{{\"{AppConstants.DefaultSettingsRoot}\":{{\"{AppConstants.FieldLanguage}\": \"{newconfigapp.Language}\",\"{AppConstants.FieldOpenAdr}\": \"{newconfigapp.ComandOpenAdr}\",\"{AppConstants.FieldWithoutArgs}\": \"{newconfigapp.WithoutArgs}\"}}}}";
+            var pluginAllowlistField = newconfigapp.PluginAllowlist != null
+                ? $",\"{AppConstants.FieldPluginAllowlist}\": {JsonSerializer.Serialize(newconfigapp.PluginAllowlist, AppConstants.RepoSerializerOptions)}"
+                : string.Empty;
+            var jsoncontent = $"{{\"{AppConstants.DefaultSettingsRoot}\":{{\"{AppConstants.FieldLanguage}\": \"{newconfigapp.Language}\",\"{AppConstants.FieldOpenAdr}\": \"{newconfigapp.ComandOpenAdr}\",\"{AppConstants.FieldWithoutArgs}\": \"{newconfigapp.WithoutArgs}\"{pluginAllowlistField}}}}}";
             using (var jsonDoc = JsonDocument.Parse(jsoncontent))
             {
                 jsoncontent = JsonSerializer.Serialize(jsonDoc, AppConstants.RepoSerializerOptions);

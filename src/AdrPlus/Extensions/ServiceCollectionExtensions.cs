@@ -21,6 +21,7 @@ using AdrPlus.Core;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AdrPlus.Extensions
@@ -41,6 +42,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             services.AddSingleton<IFileSystemService, FileSystemService>();
             services.AddSingleton<IValidateConfig, ValidateConfig>();
+            services.AddSingleton<IPluginManager, PluginManager>();
             services.AddSingleton<PromptConsole>();
             services.AddSingleton<IConsoleWriter>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IConfigPrompts>(sp => sp.GetRequiredService<PromptConsole>());

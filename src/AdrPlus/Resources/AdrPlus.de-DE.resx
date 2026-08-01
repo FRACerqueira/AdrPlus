@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>Feld '{0}' darf nicht leer sein</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>Eintrag {0} der Plugin-Allowlist hat kein Pflichtfeld 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Plugin in '{0}': Manifest ist ungültig: {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Plugin in '{0}': 'entryAssembly' muss ein einfacher Dateiname ohne Verzeichnistrenner oder '..' sein: '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Plugin '{0}': nicht in der konfigurierten Plugin-Allowlist; übersprungen</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Plugin '{0}': das Allowlist-Feld 'hash' ist gesetzt, wird in dieser Version aber noch nicht durchgesetzt; bietet derzeit keine Sicherheitsgarantie</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Plugin '{0}' in '{1}': doppelter Name, geteilt mit einem anderen Plugin-Ordner; keines der beiden wird geladen</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': entryType '{1}' implementiert IAdrPlugin nicht, oder Name/Version stimmen nicht mit dem Manifest überein</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Plugin '{0}': abstractionsVersion '{1}' ist nicht mit der Hauptversion des Hosts kompatibel ({2})</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Prozess konnte nicht gestartet werden</value>
   </data>

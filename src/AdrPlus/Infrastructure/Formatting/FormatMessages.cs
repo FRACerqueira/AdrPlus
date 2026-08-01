@@ -87,5 +87,15 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ValidationFolderByScopeRequiresScopes => Get(() => Resources.AdrPlus.ValidationFolderByScopeRequiresScopes);
         public static CompositeFormat ValidationMustFollowPattern => Get(() => Resources.AdrPlus.ValidationMustbeFollowing);
         public static CompositeFormat ValidationFieldCannotBeEmpty => Get(() => Resources.AdrPlus.ValidationFieldCannotBeEmpty);
+        public static CompositeFormat ValidationPluginAllowlistEntryMissingName => Get(() => Resources.AdrPlus.ValidationPluginAllowlistEntryMissingName);
+
+        // ==================== PLUGIN MESSAGES ====================
+        public static CompositeFormat PluginRejectedManifestInvalid => Get(() => Resources.AdrPlus.PluginRejectedManifestInvalid);
+        public static CompositeFormat PluginRejectedEntryAssemblyPathTraversal => Get(() => Resources.AdrPlus.PluginRejectedEntryAssemblyPathTraversal);
+        public static CompositeFormat PluginRejectedNotInAllowlist => Get(() => Resources.AdrPlus.PluginRejectedNotInAllowlist);
+        public static CompositeFormat PluginAllowlistHashNotEnforced => Get(() => Resources.AdrPlus.PluginAllowlistHashNotEnforced);
+        public static CompositeFormat PluginRejectedDuplicateName => Get(() => Resources.AdrPlus.PluginRejectedDuplicateName);
+        public static CompositeFormat PluginRejectedEntryTypeIncompatible => Get(() => Resources.AdrPlus.PluginRejectedEntryTypeIncompatible);
+        public static CompositeFormat PluginRejectedAbstractionsVersionIncompatible => Get(() => Resources.AdrPlus.PluginRejectedAbstractionsVersionIncompatible);
     }
 }

@@ -316,6 +316,30 @@
   <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
     <value>Le champ '{0}' ne peut pas être vide</value>
   </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>L'entrée de la liste blanche des plugins à l'index {0} n'a pas le champ obligatoire 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Plugin dans '{0}' : le manifeste est invalide : {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Plugin dans '{0}' : 'entryAssembly' doit être un simple nom de fichier, sans séparateurs de chemin ni '..' : '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Plugin '{0}' : absent de la liste blanche de plugins configurée ; ignoré</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Plugin '{0}' : le champ 'hash' de la liste blanche est renseigné mais n'est pas encore appliqué dans cette version ; il n'offre pour l'instant aucune garantie de sécurité</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Plugin '{0}' dans '{1}' : nom en double partagé avec un autre dossier de plugin ; aucun des deux ne sera chargé</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Plugin '{0}' : entryType '{1}' n'implémente pas IAdrPlugin, ou Name/Version ne correspondent pas au manifeste</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Plugin '{0}' : abstractionsVersion '{1}' n'est pas compatible avec la version majeure de l'hôte ({2})</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Échec du démarrage du processus</value>
   </data>

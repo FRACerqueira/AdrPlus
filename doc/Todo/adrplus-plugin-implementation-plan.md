@@ -2,7 +2,7 @@
 
 > **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D30).
 > **Scope**: Builds every decision tagged **Essential** in §3 of the spec. Decisions tagged **Deferred (v1.1+)** — D23 (dedup), D24 (aggregate dispatch timeout), D18's `maxConcurrency` user-tunability — are explicitly **not** built here; see "Out of scope" below.
-> **Status**: Planning only. Nothing in this document has been executed.
+> **Status**: Phases 1–2 implemented (`3865998`, `dee7b20`). Phase 3 (plugin discovery & loading) in progress.
 
 ---
 

@@ -94,5 +94,10 @@ namespace AdrPlus.Infrastructure.Logging
             Message = "Error format date for culture: {culture}")]
         public static partial void LogErrorFormatDateForCulture(ILogger logger, string culture);
 
+        [LoggerMessage(
+            Level = LogLevel.Warning,
+            Message = "{message}")]
+        public static partial void LogPluginWarning(ILogger logger, string message);
+
     }
 }

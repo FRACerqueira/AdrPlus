@@ -2437,6 +2437,69 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: allowlist &apos;hash&apos; is set but not enforced in this version; it provides no security guarantee yet.
+        /// </summary>
+        internal static string PluginAllowlistHashNotEnforced {
+            get {
+                return ResourceManager.GetString("PluginAllowlistHashNotEnforced", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: abstractionsVersion &apos;{1}&apos; is not compatible with the host&apos;s major version ({2}).
+        /// </summary>
+        internal static string PluginRejectedAbstractionsVersionIncompatible {
+            get {
+                return ResourceManager.GetString("PluginRejectedAbstractionsVersionIncompatible", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name shared with another plugin folder; neither will be loaded.
+        /// </summary>
+        internal static string PluginRejectedDuplicateName {
+            get {
+                return ResourceManager.GetString("PluginRejectedDuplicateName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin in &apos;{0}&apos;: &apos;entryAssembly&apos; must be a plain file name, without path separators or &apos;..&apos;: &apos;{1}&apos;.
+        /// </summary>
+        internal static string PluginRejectedEntryAssemblyPathTraversal {
+            get {
+                return ResourceManager.GetString("PluginRejectedEntryAssemblyPathTraversal", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: entryType &apos;{1}&apos; does not implement IAdrPlugin, or its Name/Version do not match the manifest.
+        /// </summary>
+        internal static string PluginRejectedEntryTypeIncompatible {
+            get {
+                return ResourceManager.GetString("PluginRejectedEntryTypeIncompatible", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin in &apos;{0}&apos;: manifest is invalid: {1}.
+        /// </summary>
+        internal static string PluginRejectedManifestInvalid {
+            get {
+                return ResourceManager.GetString("PluginRejectedManifestInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: not in the configured plugin allowlist; skipped.
+        /// </summary>
+        internal static string PluginRejectedNotInAllowlist {
+            get {
+                return ResourceManager.GetString("PluginRejectedNotInAllowlist", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Prefix.
         /// </summary>
         internal static string Prefix {
@@ -3128,7 +3191,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ValidationMustbeFollowing", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin allowlist entry at index {0} is missing required field &apos;name&apos;.
+        /// </summary>
+        internal static string ValidationPluginAllowlistEntryMissingName {
+            get {
+                return ResourceManager.GetString("ValidationPluginAllowlistEntryMissingName", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Each scope in &apos;{0}&apos; must be at least as long as the &apos;{1}&apos; value ({2}).
         /// </summary>

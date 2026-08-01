@@ -262,6 +262,30 @@ public class FileSystemServiceTests
     }
 
     [Fact]
+    public void GetDirectories_ReturnsSubdirectories()
+    {
+        // Arrange
+        Directory.CreateDirectory(_testDirectory);
+        var subDir1 = Directory.CreateDirectory(Path.Combine(_testDirectory, "plugin-one")).FullName;
+        var subDir2 = Directory.CreateDirectory(Path.Combine(_testDirectory, "plugin-two")).FullName;
+
+        try
+        {
+            // Act
+            var result = _fileSystemService.GetDirectories(_testDirectory);
+
+            // Assert
+            result.Should().HaveCount(2);
+            result.Should().Contain(subDir1);
+            result.Should().Contain(subDir2);
+        }
+        finally
+        {
+            Directory.Delete(_testDirectory, true);
+        }
+    }
+
+    [Fact]
     public void GetDrives_ReturnsLogicalDrives()
     {
         // Act
