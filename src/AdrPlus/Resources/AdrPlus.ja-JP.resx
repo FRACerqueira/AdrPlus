@@ -340,6 +340,12 @@
   <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
     <value>プラグイン '{0}': abstractionsVersion '{1}' はホストのメジャーバージョン ({2}) と互換性がありません</value>
   </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>プラグイン '{0}': 再試行のためキューに入れられました</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>プラグイン '{0}': 永続的な失敗のため再試行キューに入れません — 設定を修正して 'adrplus sync --backfill' を実行してください</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>プロセスの開始に失敗しました</value>
   </data>

@@ -60,8 +60,8 @@ namespace AdrPlus.Core
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="fileSystemService">The file system service used to access and modify the file.</param>
         /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
-        /// <returns>A tuple containing a boolean indicating success and an error message if applicable.</returns>
-        Task<(bool Isvalid, string Error)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
+        /// <returns>A tuple containing a boolean indicating success, an error message if applicable, and the updated <see cref="AdrRecord"/> and rendered file content (both <see langword="null"/> on failure).</returns>
+        Task<(bool Isvalid, string Error, AdrRecord? Record, string? Content)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
 
         /// <summary>
         /// Changes the status of an ADR to superseded by another ADR asynchronously.
@@ -72,8 +72,8 @@ namespace AdrPlus.Core
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="fileSystemService">The file system service used to access and modify the file.</param>
         /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
-        /// <returns>A tuple containing a boolean indicating success and an error message if applicable.</returns>
-        Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string filename, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
+        /// <returns>A tuple containing a boolean indicating success, an error message if applicable, and the updated <see cref="AdrRecord"/> and rendered file content (both <see langword="null"/> on failure).</returns>
+        Task<(bool IsValid, string Error, AdrRecord? Record, string? Content)> StatusChangeSupersedeAdrAsync(string fullpath, string filename, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
 
         /// <summary>
         /// Changes the status of an ADR asynchronously.
@@ -84,8 +84,8 @@ namespace AdrPlus.Core
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="fileSystemService">The file system service used to access and modify the file.</param>
         /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
-        /// <returns>A tuple containing a boolean indicating success and an error message if applicable.</returns>
-        Task<(bool IsValid, string Error)> StatusChangeAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
+        /// <returns>A tuple containing a boolean indicating success, an error message if applicable, and the updated <see cref="AdrRecord"/> and rendered file content (both <see langword="null"/> on failure).</returns>
+        Task<(bool IsValid, string Error, AdrRecord? Record, string? Content)> StatusChangeAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken);
 
 
         /// <summary>

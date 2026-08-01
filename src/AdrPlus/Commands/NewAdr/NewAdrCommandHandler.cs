@@ -3,12 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -31,6 +34,7 @@ namespace AdrPlus.Commands.NewAdr
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, ADR file operations, and command metadata.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Created</c> lifecycle event.</param>
     internal sealed class NewAdrCommandHandler(
         ILogger<NewAdrCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -38,7 +42,8 @@ namespace AdrPlus.Commands.NewAdr
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
         INewAdrPrompts newAdrPrompts,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<NewAdrCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
@@ -47,6 +52,7 @@ namespace AdrPlus.Commands.NewAdr
         private readonly INewAdrPrompts _newAdrPrompts = newAdrPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardNew,
              Arguments.TargetRepo,
@@ -177,6 +183,9 @@ namespace AdrPlus.Commands.NewAdr
 
                 LogMessages.LogCommandSuccessful(_logger, filePath);
                 _prompt.PromptWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
+
+                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
 
                 // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);

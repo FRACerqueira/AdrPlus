@@ -2455,6 +2455,24 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: queued for retry.
+        /// </summary>
+        internal static string PluginQueuedForRetry {
+            get {
+                return ResourceManager.GetString("PluginQueuedForRetry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: permanent failure, not queued for retry — fix configuration and run &apos;adrplus sync --backfill&apos;.
+        /// </summary>
+        internal static string PluginPermanentFailure {
+            get {
+                return ResourceManager.GetString("PluginPermanentFailure", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name shared with another plugin folder; neither will be loaded.
         /// </summary>
         internal static string PluginRejectedDuplicateName {

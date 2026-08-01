@@ -757,7 +757,7 @@ namespace AdrPlus.Core
                     .Select(f => f.Domain!)];
         }
 
-        public async Task<(bool Isvalid, string Error)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
+        public async Task<(bool Isvalid, string Error, AdrRecord? Record, string? Content)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(fullpath);
             ArgumentNullException.ThrowIfNull(config);
@@ -765,11 +765,11 @@ namespace AdrPlus.Core
             var parsefile = await ParseFileName(fullpath, config, fileSystemService);
             if (!parsefile.IsValid)
             {
-                return (false, parsefile.ErrorMessage);
+                return (false, parsefile.ErrorMessage, null, null);
             }
             if (!parsefile.Header.IsValid)
             {
-                return (false, parsefile.Header.ErrorMessage);
+                return (false, parsefile.Header.ErrorMessage, null, null);
             }
             parsefile.Header.StatusUpdate = adrStatus;
             if (adrStatus != AdrStatus.Unknown)
@@ -780,10 +780,10 @@ namespace AdrPlus.Core
             var record = Helper.CreateAdrRecord(parsefile, config);
             var contentfile = $"{record.GetHeader(config, null, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
-            return (true, string.Empty);
+            return (true, string.Empty, record, contentfile);
         }
 
-        public async Task<(bool IsValid, string Error)> StatusChangeSupersedeAdrAsync(string fullpath, string seqsupersede, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
+        public async Task<(bool IsValid, string Error, AdrRecord? Record, string? Content)> StatusChangeSupersedeAdrAsync(string fullpath, string seqsupersede, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(fullpath);
             ArgumentException.ThrowIfNullOrWhiteSpace(seqsupersede);
@@ -792,21 +792,21 @@ namespace AdrPlus.Core
             var parsefile = await ParseFileName(fullpath, config, fileSystemService);
             if (!parsefile.IsValid)
             {
-                return (false, parsefile.ErrorMessage);
+                return (false, parsefile.ErrorMessage, null, null);
             }
             if (!parsefile.Header.IsValid)
             {
-                return (false, parsefile.Header.ErrorMessage);
+                return (false, parsefile.Header.ErrorMessage, null, null);
             }
             parsefile.Header.StatusChange = AdrStatus.Superseded;
             parsefile.Header.DateChange = dref;
             var record = Helper.CreateAdrRecord(parsefile, config);
             var contentfile = $"{record.GetHeader(config, seqsupersede, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
-            return (true, string.Empty);
+            return (true, string.Empty, record, contentfile);
         }
 
-        public async Task<(bool IsValid, string Error)> StatusChangeAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
+        public async Task<(bool IsValid, string Error, AdrRecord? Record, string? Content)> StatusChangeAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(fullpath);
             ArgumentNullException.ThrowIfNull(config);
@@ -814,18 +814,18 @@ namespace AdrPlus.Core
             var parsefile = await ParseFileName(fullpath, config, fileSystemService);
             if (!parsefile.IsValid)
             {
-                return (false, parsefile.ErrorMessage);
+                return (false, parsefile.ErrorMessage, null, null);
             }
             if (!parsefile.Header.IsValid)
             {
-                return (false, parsefile.Header.ErrorMessage);
+                return (false, parsefile.Header.ErrorMessage, null, null);
             }
             parsefile.Header.StatusChange = adrStatus;
             parsefile.Header.DateChange = dref;
             var record = Helper.CreateAdrRecord(parsefile, config);
             var contentfile = $"{record.GetHeader(config, null, parsefile.Header.IsMigrated)}{record.Template}";
             await fileSystemService.WriteAllTextAsync(fullpath, contentfile, cancellationToken);
-            return (true, string.Empty);
+            return (true, string.Empty, record, contentfile);
         }
 
         public Dictionary<string, Type> GenerateCommandsMap()

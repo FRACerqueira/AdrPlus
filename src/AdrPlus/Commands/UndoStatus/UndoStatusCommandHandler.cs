@@ -3,12 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -28,18 +31,21 @@ namespace AdrPlus.Commands.UndoStatus
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>StatusUndone</c> lifecycle event.</param>
     internal sealed partial class UndoStatusCommandHandler(
         ILogger<UndoStatusCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<UndoStatusCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardUndoStatus,
              Arguments.FileAdr,
@@ -158,13 +164,15 @@ namespace AdrPlus.Commands.UndoStatus
                     }
                 }
 
-                var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Unknown, DateTime.MinValue, repoconfig, _filesystem, cancellationToken);
-                if (!updok)
+                var (updok, upderror, record, content) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Unknown, DateTime.MinValue, repoconfig, _filesystem, cancellationToken);
+                if (!updok || record is null || content is null)
                 {
                     throw new InvalidDataException(upderror);
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {infoadr.FileName}");
 
+                await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
             }
             catch (Exception ex)
             {

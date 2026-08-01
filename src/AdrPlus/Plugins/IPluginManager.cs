@@ -3,11 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
+using AdrPlus.Abstractions.Domain;
+
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Orchestrates discovery and structural load validation of plugins under <c>./plugins/&lt;name&gt;/</c>
-    /// (spec §4.2). Dispatch, <c>InitializeAsync</c>, retry and shutdown are out of scope — see Fase 4.
+    /// Orchestrates discovery, structural load validation, and foreground dispatch of plugins under
+    /// <c>./plugins/&lt;name&gt;/</c> (spec §4.2). Background re-drive and full backfill are out of scope — see
+    /// Fase 5/6.
     /// </summary>
     internal interface IPluginManager
     {
@@ -33,5 +37,32 @@ namespace AdrPlus.Plugins
         /// <param name="pluginsRootPath">The full path to the repository's <c>./plugins</c> folder.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         Task LoadPluginsAsync(string pluginsRootPath, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Dispatches a single lifecycle event to every loaded plugin whose manifest subscribes to
+        /// <paramref name="eventType"/> and whose <see cref="IAdrPlugin.ShouldHandle"/> returns <see langword="true"/>
+        /// (spec §4.2). A no-op if <see cref="LoadPluginsAsync"/> was never called or found nothing to load.
+        /// </summary>
+        /// <remarks>
+        /// Does not take a plugins-root path — call <see cref="LoadPluginsAsync"/> once before the first dispatch
+        /// of a run. Single-shot per plugin, no retry (D27): a <c>Failed</c>/timed-out outcome is queued to
+        /// <c>state/pending.json</c> and this method still returns — it never waits out a plugin's own retry
+        /// schedule (that's background re-drive, Fase 5).
+        /// </remarks>
+        /// <param name="eventType">The lifecycle event being dispatched.</param>
+        /// <param name="adr">The snapshot of the ADR this event concerns.</param>
+        /// <param name="adrFilePath">The absolute path of the ADR's <c>.md</c> file.</param>
+        /// <param name="getAdrRenderedContent">Lazily renders the ADR's full Markdown content — only invoked if a plugin's filter accepts the event.</param>
+        /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="isReplay">Whether this dispatch is a replay (e.g. from <c>adrplus sync --backfill</c>, Fase 6) rather than a live event.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        Task DispatchAsync(
+            AdrEventType eventType,
+            AdrRecordSnapshot adr,
+            string adrFilePath,
+            Func<string> getAdrRenderedContent,
+            RepoInfoSnapshot repo,
+            bool isReplay,
+            CancellationToken cancellationToken = default);
     }
 }

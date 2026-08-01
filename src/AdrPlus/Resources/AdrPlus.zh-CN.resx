@@ -340,6 +340,12 @@
   <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
     <value>插件 '{0}'：abstractionsVersion '{1}' 与主机的主版本 ({2}) 不兼容</value>
   </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>插件 '{0}'：已加入重试队列</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>插件 '{0}'：永久性失败，不会加入重试队列 — 请修正配置后运行 'adrplus sync --backfill'</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>启动进程失败</value>
   </data>

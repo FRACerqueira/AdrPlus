@@ -2,7 +2,7 @@
 
 > **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D30).
 > **Scope**: Builds every decision tagged **Essential** in §3 of the spec. Decisions tagged **Deferred (v1.1+)** — D23 (dedup), D24 (aggregate dispatch timeout), D18's `maxConcurrency` user-tunability — are explicitly **not** built here; see "Out of scope" below.
-> **Status**: Phases 1–2 implemented (`3865998`, `dee7b20`). Phase 3 (plugin discovery & loading) in progress.
+> **Status**: Phases 1–4 implemented (`3865998`, `dee7b20`, `81c32db` and Phase 4's commit). Phase 5 (pending state & background re-drive) not yet started; Phase 4 already writes `pending.json` entries per §7's schema, established in this phase — Phase 5 must read/retry against that same format.
 
 ---
 
@@ -48,7 +48,7 @@
 - Enforce `foregroundTimeoutMs` (D27) via forced abandonment: race the hook's `Task` against `Task.Delay(foregroundTimeoutMs)` with `Task.WhenAny`; do not rely on the plugin honoring `CancellationToken` alone.
 - Single-shot, no retry, in the foreground.
 - Outcome handling: `Success`/`Skipped` → done. `Failed` with `IsRetryable: true` (default) and timeout → write `pending.json` entry (Phase 5's schema). `Failed` with `IsRetryable: false` (or `InitializeAsync` throwing) → distinct "permanent failure" warning, no `pending.json` entry (D30).
-- Wire **one** `await _pluginManager.DispatchAsync(...)` at the end of `ExecuteAsync` in each of: `NewAdrCommandHandler`, `VersionCommandHandler`, `ReviseCommandHandler`, `SupersedeCommandHandler`, `ApproveCommandHandler`, `RejectCommandHandler`, `UndoStatusCommandHandler`, `MigrateCommandHandler` (§5/§11 — the only touch points in existing handlers).
+- Wire `await _pluginManager.LoadPluginsAsync(...)` (once) + `DispatchAsync(...)` into each of the 8 handlers, at the point the ADR write is confirmed successful. Two deviations from the original "one call each" phrasing, both deliberate: **`RejectCommandHandler` dispatches twice** — `Rejected` for the rejected ADR, and `StatusUndone` for a secondary ADR it had superseded, when applicable (otherwise that secondary ADR's plugins never learn it became active again). **`MigrateCommandHandler` dispatches once per migrated file inside its loop**, since one invocation can migrate N files. `SupersedeCommandHandler` dispatches only `Superseded` for the superseded ADR — the newly-created successor stays `Proposed` (pre-content, D26), so no event fires for it. Getting `AdrRecordSnapshot`/rendered content for `ApproveCommandHandler`/`RejectCommandHandler`/`UndoStatusCommandHandler`/`SupersedeCommandHandler` required extending `IAdrServices.StatusUpdateAdrAsync`/`StatusChangeSupersedeAdrAsync`/`StatusChangeAdrAsync` to also return the `AdrRecord`/content they already build internally (previously only `(bool, string)`).
 
 **Verify:** per-handler integration test asserting the correct `AdrEventType` is dispatched; a fixture plugin that hangs past `foregroundTimeoutMs` doesn't block the test; a fixture plugin returning `IsRetryable:false` produces a warning and no pending entry; existing handler tests remain green (regression).
 

@@ -3,12 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -31,13 +34,15 @@ namespace AdrPlus.Commands.Supersede
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Superseded</c> lifecycle event.</param>
     internal sealed class SupersedeCommandHandler(
         ILogger<SupersedeCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<SupersedeCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
@@ -45,6 +50,7 @@ namespace AdrPlus.Commands.Supersede
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardSupersede,
              Arguments.FileAdr,
@@ -204,12 +210,15 @@ namespace AdrPlus.Commands.Supersede
                 }
 
                 var numbersupersede = nextNumber.ToString($"D{repoconfig.LenSeq}", null);
-                var (updok, upderror) = await _adrServices.StatusChangeSupersedeAdrAsync(infoadr.FileName, numbersupersede, dateAdr, repoconfig, _filesystem, cancellationToken);
-                if (!updok)
+                var (updok, upderror, oldrecord, oldcontent) = await _adrServices.StatusChangeSupersedeAdrAsync(infoadr.FileName, numbersupersede, dateAdr, repoconfig, _filesystem, cancellationToken);
+                if (!updok || oldrecord is null || oldcontent is null)
                 {
                     throw new InvalidDataException(upderror);
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
+
+                await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
 
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);

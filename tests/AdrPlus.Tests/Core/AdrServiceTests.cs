@@ -1106,11 +1106,13 @@ public class AdrServiceTests
         fileSystemService.ReadAllLinesAsync(fullpath, TestContext.Current.CancellationToken).Returns([]);
 
         // Act
-        var (isValid, error) = await _service.StatusUpdateAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
+        var (isValid, error, record, content) = await _service.StatusUpdateAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeFalse(); // Invalid because mock returns empty lines
         error.Should().NotBeNullOrEmpty();
+        record.Should().BeNull();
+        content.Should().BeNull();
     }
 
     [Fact]
@@ -1265,11 +1267,13 @@ public class AdrServiceTests
         fileSystemService.ReadAllLinesAsync(fullpath, TestContext.Current.CancellationToken).Returns([]);
 
         // Act
-        var (isValid, error) = await _service.StatusChangeAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
+        var (isValid, error, record, content) = await _service.StatusChangeAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeFalse(); // Invalid because mock returns empty lines
         error.Should().NotBeNullOrEmpty();
+        record.Should().BeNull();
+        content.Should().BeNull();
     }
 
     #endregion

@@ -340,6 +340,12 @@
   <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
     <value>Plugin '{0}' : abstractionsVersion '{1}' n'est pas compatible avec la version majeure de l'hôte ({2})</value>
   </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>Plugin '{0}' : mis en file d'attente pour une nouvelle tentative</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>Plugin '{0}' : échec permanent, ne sera pas mis en file d'attente — corrigez la configuration et exécutez 'adrplus sync --backfill'</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Échec du démarrage du processus</value>
   </data>

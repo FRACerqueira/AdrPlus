@@ -97,5 +97,7 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginRejectedDuplicateName => Get(() => Resources.AdrPlus.PluginRejectedDuplicateName);
         public static CompositeFormat PluginRejectedEntryTypeIncompatible => Get(() => Resources.AdrPlus.PluginRejectedEntryTypeIncompatible);
         public static CompositeFormat PluginRejectedAbstractionsVersionIncompatible => Get(() => Resources.AdrPlus.PluginRejectedAbstractionsVersionIncompatible);
+        public static CompositeFormat PluginQueuedForRetry => Get(() => Resources.AdrPlus.PluginQueuedForRetry);
+        public static CompositeFormat PluginPermanentFailure => Get(() => Resources.AdrPlus.PluginPermanentFailure);
     }
 }

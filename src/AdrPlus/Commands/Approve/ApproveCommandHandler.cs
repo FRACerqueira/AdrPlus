@@ -3,12 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -29,13 +32,15 @@ namespace AdrPlus.Commands.Approve
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Approved</c> lifecycle event.</param>
     internal sealed class ApproveCommandHandler(
         ILogger<ApproveCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<ApproveCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
@@ -43,6 +48,7 @@ namespace AdrPlus.Commands.Approve
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardApprove,
              Arguments.FileAdr,
@@ -160,13 +166,15 @@ namespace AdrPlus.Commands.Approve
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
-                var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Accepted, dateAdr, repoconfig, _filesystem, cancellationToken);
-                if (!updok)
+                var (updok, upderror, record, content) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Accepted, dateAdr, repoconfig, _filesystem, cancellationToken);
+                if (!updok || record is null || content is null)
                 {
                     throw new InvalidDataException(upderror);
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusAcc} : {infoadr.FileName}");
 
+                await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Approved, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
             }
             catch (Exception ex)
             {

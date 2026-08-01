@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,7 @@ namespace AdrPlus.Tests.Commands.Version
         private readonly IConsoleWriter _mockConsole;
         private readonly IValidateConfig _mockValidateConfig;
         private readonly IAdrServices _mockAdrServices;
+        private readonly IPluginManager _mockPluginManager;
         private readonly AdrPlusConfig _config;
         private readonly VersionCommandHandler _handler;
 
@@ -44,6 +46,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockConsole = Substitute.For<IConsoleWriter>();
             _mockValidateConfig = Substitute.For<IValidateConfig>();
             _mockAdrServices = Substitute.For<IAdrServices>();
+            _mockPluginManager = Substitute.For<IPluginManager>();
 
             _config = new AdrPlusConfig
             {
@@ -59,7 +62,8 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
-                _mockAdrServices);
+                _mockAdrServices,
+                _mockPluginManager);
         }
 
         #region Constructor Tests
@@ -74,7 +78,8 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
-                _mockAdrServices);
+                _mockAdrServices,
+                _mockPluginManager);
 
             // Assert
             handler.Should().NotBeNull();
@@ -1834,7 +1839,8 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
-                _mockAdrServices);
+                _mockAdrServices,
+                _mockPluginManager);
         }
 
         private static AdrPlusRepoConfig CreateMockAdrPlusRepoConfig()

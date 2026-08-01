@@ -340,6 +340,12 @@
   <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
     <value>Плагин '{0}': abstractionsVersion '{1}' несовместима с основной версией хоста ({2})</value>
   </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>Плагин '{0}': поставлен в очередь на повтор</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>Плагин '{0}': необратимый сбой, не будет поставлен в очередь на повтор — исправьте конфигурацию и выполните 'adrplus sync --backfill'</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Не удалось запустить процесс</value>
   </data>

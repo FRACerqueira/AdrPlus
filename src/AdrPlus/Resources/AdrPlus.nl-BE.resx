@@ -340,6 +340,12 @@
   <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
     <value>Plugin '{0}': abstractionsVersion '{1}' is niet compatibel met de hoofdversie van de host ({2})</value>
   </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>Plugin '{0}': in wachtrij voor nieuwe poging</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>Plugin '{0}': permanente fout, wordt niet in de wachtrij geplaatst voor een nieuwe poging — corrigeer de configuratie en voer 'adrplus sync --backfill' uit</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Kan het proces niet starten</value>
   </data>

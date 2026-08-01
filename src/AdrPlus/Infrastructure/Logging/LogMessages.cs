@@ -99,5 +99,15 @@ namespace AdrPlus.Infrastructure.Logging
             Message = "{message}")]
         public static partial void LogPluginWarning(ILogger logger, string message);
 
+        [LoggerMessage(
+            Level = LogLevel.Information,
+            Message = "{message}")]
+        public static partial void LogPluginInfo(ILogger logger, string message);
+
+        [LoggerMessage(
+            Level = LogLevel.Error,
+            Message = "{message}")]
+        public static partial void LogPluginError(ILogger logger, Exception? exception, string message);
+
     }
 }

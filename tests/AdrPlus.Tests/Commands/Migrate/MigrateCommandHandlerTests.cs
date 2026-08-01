@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using static AdrPlus.Tests.Helpers.TestPathData;
 
@@ -27,6 +28,7 @@ public class MigrateCommandHandlerTests
     private IMigratePrompts _mockMigratePrompts = null!;
     private IValidateConfig _mockValidateConfig = null!;
     private IAdrServices _mockAdrServices = null!;
+    private IPluginManager _mockPluginManager = null!;
     private MigrateCommandHandler _handler = null!;
 
     public MigrateCommandHandlerTests()
@@ -42,6 +44,7 @@ public class MigrateCommandHandlerTests
         _mockMigratePrompts = Substitute.For<IMigratePrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
+        _mockPluginManager = Substitute.For<IPluginManager>();
 
         _handler = new MigrateCommandHandler(
             _mockLogger,
@@ -49,7 +52,8 @@ public class MigrateCommandHandlerTests
             _mockValidateConfig,
             _mockConsole,
             _mockMigratePrompts,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
     }
 
     #region Constructor Tests
@@ -64,7 +68,8 @@ public class MigrateCommandHandlerTests
             _mockValidateConfig,
             _mockConsole,
             _mockMigratePrompts,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
 
         // Assert
         handler.Should().NotBeNull();

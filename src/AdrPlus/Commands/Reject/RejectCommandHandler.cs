@@ -3,12 +3,15 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -30,13 +33,15 @@ namespace AdrPlus.Commands.Reject
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Rejected</c>/<c>StatusUndone</c> lifecycle events.</param>
     internal sealed class RejectCommandHandler(
         ILogger<RejectCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<RejectCommandHandler> _logger = logger;
         private readonly AdrPlusConfig _config = config.Value;
@@ -44,6 +49,7 @@ namespace AdrPlus.Commands.Reject
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardReject,
              Arguments.FileAdr,
@@ -164,21 +170,27 @@ namespace AdrPlus.Commands.Reject
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
-                var (updok, upderror) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Rejected, dateAdr, repoconfig, _filesystem, cancellationToken);
-                if (!updok)
+                var (updok, upderror, record, content) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Rejected, dateAdr, repoconfig, _filesystem, cancellationToken);
+                if (!updok || record is null || content is null)
                 {
                     throw new InvalidDataException(upderror);
                 }
                 LogAndWriteSuccess($"{repoconfig.StatusRej} : {infoadr.FileName}");
+
+                await _pluginManager.LoadPluginsAsync(Path.Combine(rootpath, "plugins"), cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Rejected, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
+
                 if (infoadr.SupersededValue.HasValue)
                 {
                     var infoundo = await _adrServices.GetLatestADRSequence(infoadr.SupersededValue.Value, _filesystem, rootpath, repoconfig) ?? throw new InvalidDataException(string.Format(null, FormatMessages.ErrAdrSequenceNotFound, infoadr.SupersededValue.Value, "-"));
-                    var (updundo, updundoerror) = await _adrServices.StatusChangeAdrAsync(infoundo.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
-                    if (!updundo)
+                    var (updundo, updundoerror, undorecord, undocontent) = await _adrServices.StatusChangeAdrAsync(infoundo.FileName, AdrStatus.Unknown, dateAdr, repoconfig, _filesystem, cancellationToken);
+                    if (!updundo || undorecord is null || undocontent is null)
                     {
                         throw new InvalidDataException(updundoerror);
                     }
                     LogAndWriteSuccess($"{Resources.AdrPlus.Undone} {Helper.GetResourceStatus(AdrStatus.Superseded)} : {infoundo.FileName}");
+
+                    await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, undorecord.ToSnapshot(), infoundo.FileName, () => undocontent, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
                 }
             }
             catch (Exception ex)

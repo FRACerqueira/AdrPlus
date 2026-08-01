@@ -3,6 +3,7 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Core;
 // ***************************************************************************************
 // MIT LICENCE
@@ -10,10 +11,12 @@ using AdrPlus.Core;
 // ***************************************************************************************
 
 using AdrPlus.Domain;
+using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -28,13 +31,15 @@ namespace AdrPlus.Commands.Migrate
     /// <param name="validateConfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
+    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Migrated</c> lifecycle event, once per migrated file.</param>
     internal sealed class MigrateCommandHandler(
         ILogger<MigrateCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateConfig,
         IConsoleWriter prompt,
         IMigratePrompts migratePrompts,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<MigrateCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
@@ -42,6 +47,7 @@ namespace AdrPlus.Commands.Migrate
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IMigratePrompts _migratePrompts = migratePrompts;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardMigrate,
              Arguments.TargetRepo,
@@ -123,6 +129,7 @@ namespace AdrPlus.Commands.Migrate
                     }
                 }
 
+                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
                 var result = await MigrateRepositoryAsync(foundfiles, repoconfig, cancellationToken);
                 foreach (var item in result)
                 {
@@ -177,6 +184,8 @@ namespace AdrPlus.Commands.Migrate
                     var newcontent = $"{adrRecord.GetHeader(repoConfig,null,true)}{content}";
                     await _fileSystem.WriteAllTextAsync(file.FileName, newcontent, cancellationToken);
                     result.Add($"{Resources.AdrPlus.Migrated} : {file.FileName}");
+
+                    await _pluginManager.DispatchAsync(AdrEventType.Migrated, adrRecord.ToSnapshot(), file.FileName, () => newcontent, repoConfig.ToSnapshot(), isReplay: false, cancellationToken);
                 }
             }
             return result;

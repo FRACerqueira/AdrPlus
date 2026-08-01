@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,6 +29,7 @@ public class NewAdrCommandHandlerTests
     private readonly INewAdrPrompts _mockNewAdrPrompts;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
+    private readonly IPluginManager _mockPluginManager;
     private readonly AdrPlusConfig _config;
     private readonly NewAdrCommandHandler _handler;
 
@@ -54,6 +56,7 @@ public class NewAdrCommandHandlerTests
         _mockNewAdrPrompts = Substitute.For<INewAdrPrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
+        _mockPluginManager = Substitute.For<IPluginManager>();
 
         _config = new AdrPlusConfig
         {
@@ -69,7 +72,8 @@ public class NewAdrCommandHandlerTests
             _mockValidateConfig,
             _mockConsole,
             _mockNewAdrPrompts,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
     }
 
     #region Constructor Tests
@@ -85,7 +89,8 @@ public class NewAdrCommandHandlerTests
             _mockValidateConfig,
             _mockConsole,
             _mockNewAdrPrompts,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
 
         // Assert
         handler.Should().NotBeNull();
@@ -990,7 +995,8 @@ public class NewAdrCommandHandlerTests
             _mockValidateConfig,
             _mockConsole,
             _mockNewAdrPrompts,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
     }
 
     #endregion
