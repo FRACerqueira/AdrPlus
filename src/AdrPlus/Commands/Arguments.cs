@@ -88,5 +88,11 @@ namespace AdrPlus.Commands
         [CommandArgument("-b", "--backfill")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageBackfill")]
         Backfill,
+        [CommandArgument("-l", "--list")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsagePluginsList")]
+        PluginsList,
+        [CommandArgument("-v", "--validate")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsagePluginsValidate")]
+        PluginsValidate,
     }
 }

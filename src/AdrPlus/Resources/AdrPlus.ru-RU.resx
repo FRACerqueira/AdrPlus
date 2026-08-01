@@ -358,6 +358,48 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Плагин '{0}': необратимый сбой, не будет поставлен в очередь на повтор — исправьте конфигурацию и выполните 'adrplus sync --backfill'</value>
   </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>Проверяет плагины в ./plugins: выводит список загруженных плагинов или проверяет их структурную загрузку</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>Выводит список загруженных плагинов: имя, версия, подписанные события, статус allowlist и количество ожидающих элементов</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>Повторно выполняет структурную проверку загрузки и сообщает о загруженных и отклонённых плагинах, не отправляя ни одного события</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>Укажите подкоманду: 'adrplus plugins --list' или 'adrplus plugins --validate'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>Укажите --list или --validate, но не оба сразу</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>В allowlist</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>Allowlist не настроен (разрешены все плагины)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} v{1} | события: {2} | allowlist: {3} | ожидает: {4}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>Нет загруженных плагинов</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>Загружено плагинов: {0}, отклонено: {1}</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>ВЕРНО {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>ОТКЛОНЕНО {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>Кандидаты плагинов в ./plugins не найдены</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>Проверка завершена: корректных {0}, отклонённых {1}</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Не удалось запустить процесс</value>
   </data>

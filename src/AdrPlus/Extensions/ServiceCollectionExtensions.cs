@@ -11,6 +11,7 @@ using AdrPlus.Commands.Help;
 using AdrPlus.Commands.Init;
 using AdrPlus.Commands.Migrate;
 using AdrPlus.Commands.NewAdr;
+using AdrPlus.Commands.Plugins;
 using AdrPlus.Commands.Reject;
 using AdrPlus.Commands.Revise;
 using AdrPlus.Commands.Supersede;
@@ -67,6 +68,7 @@ namespace AdrPlus.Extensions
             services.AddSingleton<UndoStatusCommandHandler>();
             services.AddSingleton<SupersedeCommandHandler>();
             services.AddSingleton<SyncCommandHandler>();
+            services.AddSingleton<PluginsCommandHandler>();
             return services;
         }
     }

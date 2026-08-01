@@ -358,6 +358,48 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>플러그인 '{0}': 영구적인 실패로 재시도 대기열에 추가되지 않습니다 — 설정을 수정하고 'adrplus sync --backfill'을 실행하세요</value>
   </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>./plugins 아래의 플러그인을 검사합니다. 로드된 플러그인을 나열하거나 구조적 로드를 검증합니다</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>로드된 플러그인을 나열합니다: 이름, 버전, 구독 이벤트, allowlist 상태, 대기 중인 항목 수</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>구조적 로드 검증을 다시 실행하고 로드된 플러그인과 거부된 플러그인을 보고합니다(실제 이벤트는 발생시키지 않음)</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>하위 명령을 지정하세요: 'adrplus plugins --list' 또는 'adrplus plugins --validate'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>--list 또는 --validate 중 하나만 지정하세요</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>allowlist에 등록됨</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>allowlist가 구성되지 않음(모든 플러그인 허용)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} v{1} | 이벤트: {2} | allowlist: {3} | 대기 중: {4}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>로드된 플러그인이 없습니다</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>{0}개 플러그인 로드됨, {1}개 거부됨</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>VALID {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>REJECTED {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>./plugins 아래에서 후보 플러그인을 찾을 수 없습니다</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>검증 완료: 유효 {0}개, 거부 {1}개</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>프로세스를 시작하지 못했습니다</value>
   </data>

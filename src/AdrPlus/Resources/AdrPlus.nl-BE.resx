@@ -358,6 +358,48 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': permanente fout, wordt niet in de wachtrij geplaatst voor een nieuwe poging — corrigeer de configuratie en voer 'adrplus sync --backfill' uit</value>
   </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>Inspecteert plugins onder ./plugins: geeft geladen plugins weer of valideert hun structurele laadproces</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>Geeft geladen plugins weer: naam, versie, geabonneerde events, allowlist-status en aantal openstaande items</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>Voert de structurele laadvalidatie opnieuw uit en rapporteert geladen versus geweigerde plugins, zonder een event te versturen</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>Geef een subopdracht op: 'adrplus plugins --list' of 'adrplus plugins --validate'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>Geef ofwel --list of --validate op, niet beide</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>In de allowlist</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>Geen allowlist geconfigureerd (alle plugins toegestaan)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} v{1} | events: {2} | allowlist: {3} | openstaand: {4}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>Geen plugins geladen</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>{0} plugin(s) geladen, {1} geweigerd</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>GELDIG {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>GEWEIGERD {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>Geen kandidaat-plugins gevonden onder ./plugins</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>Validatie voltooid: {0} geldig, {1} geweigerd</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Kan het proces niet starten</value>
   </data>

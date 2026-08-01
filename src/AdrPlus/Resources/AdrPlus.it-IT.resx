@@ -358,6 +358,48 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>Plugin '{0}': errore permanente, non verrà messo in coda per un nuovo tentativo — correggi la configurazione ed esegui 'adrplus sync --backfill'</value>
   </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>Ispeziona i plugin in ./plugins: elenca i plugin caricati o ne valida il caricamento strutturale</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>Elenca i plugin caricati: nome, versione, eventi sottoscritti, stato della allowlist e numero di elementi in sospeso</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>Riesegue la validazione strutturale del caricamento e segnala i plugin caricati rispetto a quelli rifiutati, senza inviare alcun evento</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>Specificare un sottocomando: 'adrplus plugins --list' o 'adrplus plugins --validate'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>Specificare --list o --validate, non entrambi</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>Nella allowlist</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>Nessuna allowlist configurata (tutti i plugin consentiti)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} v{1} | eventi: {2} | allowlist: {3} | in sospeso: {4}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>Nessun plugin caricato</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>{0} plugin caricato/i, {1} rifiutato/i</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>VALIDO {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>RIFIUTATO {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>Nessun plugin candidato trovato in ./plugins</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>Convalida completata: {0} valido/i, {1} rifiutato/i</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Impossibile avviare il processo</value>
   </data>

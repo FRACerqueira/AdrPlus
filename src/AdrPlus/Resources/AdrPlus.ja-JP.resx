@@ -358,6 +358,48 @@
   <data name="PluginPermanentFailure" xml:space="preserve">
     <value>プラグイン '{0}': 永続的な失敗のため再試行キューに入れません — 設定を修正して 'adrplus sync --backfill' を実行してください</value>
   </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>./plugins 配下のプラグインを検査します。読み込まれたプラグインの一覧表示、または構造的な読み込みの検証を行います</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>読み込まれたプラグインを一覧表示します: 名前、バージョン、購読イベント、allowlist の状態、保留中の項目数</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>構造的な読み込み検証を再実行し、読み込まれたプラグインと拒否されたプラグインを報告します(実際のイベントは発行しません)</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>サブコマンドを指定してください: 'adrplus plugins --list' または 'adrplus plugins --validate'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>--list か --validate のどちらか一方だけを指定してください</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>allowlist に登録済み</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>allowlist は未設定です(すべてのプラグインが許可されます)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} v{1} | イベント: {2} | allowlist: {3} | 保留中: {4}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>読み込まれたプラグインはありません</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>{0} 件のプラグインを読み込み、{1} 件を拒否しました</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>VALID {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>REJECTED {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>./plugins 配下に候補となるプラグインが見つかりません</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>検証完了: 有効 {0} 件、拒否 {1} 件</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>プロセスの開始に失敗しました</value>
   </data>

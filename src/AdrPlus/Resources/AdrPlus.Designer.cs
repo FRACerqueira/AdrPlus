@@ -2527,6 +2527,132 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Inspect plugins under ./plugins: list loaded plugins or validate their structural load.
+        /// </summary>
+        internal static string CmdDescPlugins {
+            get {
+                return ResourceManager.GetString("CmdDescPlugins", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to List loaded plugins: name, version, subscribed events, allowlist status, and pending-item count.
+        /// </summary>
+        internal static string HelpUsagePluginsList {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsList", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Re-run structural load validation and report loaded vs. rejected plugins, without dispatching any event.
+        /// </summary>
+        internal static string HelpUsagePluginsValidate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsValidate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Specify a subcommand: &apos;adrplus plugins --list&apos; or &apos;adrplus plugins --validate&apos;.
+        /// </summary>
+        internal static string PluginsModeRequired {
+            get {
+                return ResourceManager.GetString("PluginsModeRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Specify either --list or --validate, not both.
+        /// </summary>
+        internal static string PluginsModeAmbiguous {
+            get {
+                return ResourceManager.GetString("PluginsModeAmbiguous", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allowlisted.
+        /// </summary>
+        internal static string PluginsAllowlisted {
+            get {
+                return ResourceManager.GetString("PluginsAllowlisted", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No allowlist configured (all plugins allowed).
+        /// </summary>
+        internal static string PluginsNoAllowlistConfigured {
+            get {
+                return ResourceManager.GetString("PluginsNoAllowlistConfigured", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} v{1} | events: {2} | allowlist: {3} | pending: {4}.
+        /// </summary>
+        internal static string PluginsListEntry {
+            get {
+                return ResourceManager.GetString("PluginsListEntry", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No plugins loaded.
+        /// </summary>
+        internal static string PluginsListEmpty {
+            get {
+                return ResourceManager.GetString("PluginsListEmpty", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} plugin(s) loaded, {1} rejected.
+        /// </summary>
+        internal static string PluginsListSummary {
+            get {
+                return ResourceManager.GetString("PluginsListSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to VALID {0} v{1}.
+        /// </summary>
+        internal static string PluginsValidateEntryValid {
+            get {
+                return ResourceManager.GetString("PluginsValidateEntryValid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to REJECTED {0} — {1}: {2}.
+        /// </summary>
+        internal static string PluginsValidateEntryRejected {
+            get {
+                return ResourceManager.GetString("PluginsValidateEntryRejected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No plugin candidates found under ./plugins.
+        /// </summary>
+        internal static string PluginsValidateEmpty {
+            get {
+                return ResourceManager.GetString("PluginsValidateEmpty", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Validate complete: {0} valid, {1} rejected.
+        /// </summary>
+        internal static string PluginsValidateSummary {
+            get {
+                return ResourceManager.GetString("PluginsValidateSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name shared with another plugin folder; neither will be loaded.
         /// </summary>
         internal static string PluginRejectedDuplicateName {

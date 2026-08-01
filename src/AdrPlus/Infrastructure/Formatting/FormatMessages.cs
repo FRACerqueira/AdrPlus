@@ -103,5 +103,16 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat SyncSummaryReport => Get(() => Resources.AdrPlus.SyncSummaryReport);
         public static CompositeFormat PluginBackfillExhausted => Get(() => Resources.AdrPlus.PluginBackfillExhausted);
         public static CompositeFormat BackfillSummaryReport => Get(() => Resources.AdrPlus.BackfillSummaryReport);
+        public static CompositeFormat PluginsModeRequired => Get(() => Resources.AdrPlus.PluginsModeRequired);
+        public static CompositeFormat PluginsModeAmbiguous => Get(() => Resources.AdrPlus.PluginsModeAmbiguous);
+        public static CompositeFormat PluginsAllowlisted => Get(() => Resources.AdrPlus.PluginsAllowlisted);
+        public static CompositeFormat PluginsNoAllowlistConfigured => Get(() => Resources.AdrPlus.PluginsNoAllowlistConfigured);
+        public static CompositeFormat PluginsListEntry => Get(() => Resources.AdrPlus.PluginsListEntry);
+        public static CompositeFormat PluginsListEmpty => Get(() => Resources.AdrPlus.PluginsListEmpty);
+        public static CompositeFormat PluginsListSummary => Get(() => Resources.AdrPlus.PluginsListSummary);
+        public static CompositeFormat PluginsValidateEntryValid => Get(() => Resources.AdrPlus.PluginsValidateEntryValid);
+        public static CompositeFormat PluginsValidateEntryRejected => Get(() => Resources.AdrPlus.PluginsValidateEntryRejected);
+        public static CompositeFormat PluginsValidateEmpty => Get(() => Resources.AdrPlus.PluginsValidateEmpty);
+        public static CompositeFormat PluginsValidateSummary => Get(() => Resources.AdrPlus.PluginsValidateSummary);
     }
 }
