@@ -400,6 +400,93 @@
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>验证完成：有效 {0} 个，已拒绝 {1} 个</value>
   </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>选择同步模式和仓库路径的向导(会忽略其他所有参数)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>选择 list/validate 模式和仓库路径的向导(会忽略其他所有参数)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>选择同步模式</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default 只重新处理 pending.json；Backfill 扫描整个仓库</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default(重新处理待处理项)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill(完整仓库扫描)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>现在执行 backfill 吗?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>选择操作</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List 显示已加载的插件；Validate 报告结构验证结果</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>列出已加载的插件</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>验证插件结构</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>已加载的插件</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>插件验证报告</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>版本</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>事件</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>待处理</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>名称 / 文件夹</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>详情</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>有效</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>已拒绝</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>同步待处理的插件事件并检查已加载的插件</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>同步待处理的插件事件</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>列出或验证插件</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>sync 命令帮助</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>plugins 命令帮助</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>启动进程失败</value>
   </data>

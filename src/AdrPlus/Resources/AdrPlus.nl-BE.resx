@@ -400,6 +400,93 @@
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validatie voltooid: {0} geldig, {1} geweigerd</value>
   </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>Wizard om de sync-modus en het repositorypad te kiezen (onderdrukt alle andere argumenten)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>Wizard om de list/validate-modus en het repositorypad te kiezen (onderdrukt alle andere argumenten)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>Kies de sync-modus</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default verwerkt alleen pending.json opnieuw; Backfill doorzoekt de hele repository</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default (openstaande opnieuw verwerken)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill (volledige doorzoeking van de repository)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>Backfill nu uitvoeren?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>Kies de actie</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List toont geladen plugins; Validate rapporteert het resultaat van de structurele validatie</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>Geladen plugins weergeven</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>Pluginstructuur valideren</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>Geladen plugins</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>Pluginvalidatierapport</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>Versie</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>Allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>Openstaand</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>Naam / Map</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>GELDIG</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>GEWEIGERD</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>Synchroniseert openstaande plugin-events en inspecteert geladen plugins</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>Openstaande plugin-events synchroniseren</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>Plugins weergeven of valideren</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>Hulp bij het sync-commando</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>Hulp bij het plugins-commando</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Kan het proces niet starten</value>
   </data>

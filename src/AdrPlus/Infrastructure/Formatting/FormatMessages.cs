@@ -114,5 +114,7 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginsValidateEntryRejected => Get(() => Resources.AdrPlus.PluginsValidateEntryRejected);
         public static CompositeFormat PluginsValidateEmpty => Get(() => Resources.AdrPlus.PluginsValidateEmpty);
         public static CompositeFormat PluginsValidateSummary => Get(() => Resources.AdrPlus.PluginsValidateSummary);
+        public static CompositeFormat PluginsValidateStatusValid => Get(() => Resources.AdrPlus.PluginsValidateStatusValid);
+        public static CompositeFormat PluginsValidateStatusRejected => Get(() => Resources.AdrPlus.PluginsValidateStatusRejected);
     }
 }

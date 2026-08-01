@@ -850,6 +850,60 @@ namespace AdrPlus.Infrastructure.UI
             return (result.IsAborted, !result.IsAborted && (bool)result.Content!);
         }
 
+        /// <inheritdoc/>
+        public (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.WizardSyncModePrompt}: ";
+            var result = PromptPlus.Controls
+                .Select<string>(message, Resources.AdrPlus.WizardSyncModeDescription)
+                .AddItems([Resources.AdrPlus.WizardSyncModeDefault, Resources.AdrPlus.WizardSyncModeBackfill])
+                .Default(Resources.AdrPlus.WizardSyncModeDefault)
+                .Run(cancellationToken);
+            return (result.IsAborted, !result.IsAborted && result.Content == Resources.AdrPlus.WizardSyncModeBackfill);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, bool UseValidate) PromptSelectPluginsMode(CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}: ";
+            var result = PromptPlus.Controls
+                .Select<string>(message, Resources.AdrPlus.WizardPluginsModeDescription)
+                .AddItems([Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate])
+                .Default(Resources.AdrPlus.WizardPluginsModeList)
+                .Run(cancellationToken);
+            return (result.IsAborted, !result.IsAborted && result.Content == Resources.AdrPlus.WizardPluginsModeValidate);
+        }
+
+        /// <inheritdoc/>
+        public bool PromptShowPluginsListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default)
+        {
+            var result = PromptPlus.Controls
+                .Table<(string Name, string Version, string Events, string Allowlist, int Pending)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
+                .AddColumn(Resources.AdrPlus.TableColumnName, r => r.Name)
+                .AddColumn(Resources.AdrPlus.TableColumnVersion, r => r.Version)
+                .AddColumn(Resources.AdrPlus.TableColumnEvents, r => r.Events)
+                .AddColumn(Resources.AdrPlus.TableColumnAllowlist, r => r.Allowlist)
+                .AddColumn(Resources.AdrPlus.TableColumnPending, r => r.Pending)
+                .AddItems(rows)
+                .ViewOnly(true)
+                .Run(cancellationToken);
+            return result.IsAborted;
+        }
+
+        /// <inheritdoc/>
+        public bool PromptShowPluginsValidateTable(IReadOnlyList<(string Status, string NameOrFolder, string Detail)> rows, CancellationToken cancellationToken = default)
+        {
+            var result = PromptPlus.Controls
+                .Table<(string Status, string NameOrFolder, string Detail)>(Resources.AdrPlus.WizardPluginsValidateTableTitle, string.Empty)
+                .AddColumn(Resources.AdrPlus.TableColumnStatus, r => r.Status)
+                .AddColumn(Resources.AdrPlus.TableColumnNameOrFolder, r => r.NameOrFolder)
+                .AddColumn(Resources.AdrPlus.TableColumnDetail, r => r.Detail)
+                .AddItems(rows)
+                .ViewOnly(true)
+                .Run(cancellationToken);
+            return result.IsAborted;
+        }
+
 
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldCaseTransform(FieldsJson fieldsJson, CancellationToken cancellationToken = default)

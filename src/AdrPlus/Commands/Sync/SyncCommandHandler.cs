@@ -47,6 +47,7 @@ namespace AdrPlus.Commands.Sync
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.TargetRepo,
              Arguments.Backfill,
+             Arguments.WizardSync,
              Arguments.Help];
 
         public async Task ExecuteAsync(string[] args, CancellationToken cancellationToken = default)
@@ -61,10 +62,16 @@ namespace AdrPlus.Commands.Sync
                         "sync",
                         ValidCommandArgs,
                         [
+                            "adrplus sync --wizard",
                             "adrplus sync --path \"path/to/repository/\"",
                             "adrplus sync --path \"path/to/repository/\" --backfill",
                         ]));
                     return;
+                }
+
+                if (parsedArgs.ContainsKey(Arguments.WizardSync))
+                {
+                    parsedArgs = await SyncWizard(cancellationToken);
                 }
 
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
@@ -200,6 +207,69 @@ namespace AdrPlus.Commands.Sync
                 return AdrEventType.Migrated;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Interactive <c>adrplus sync --wizard</c>: resolves the repository path and sync mode via prompts,
+        /// then returns the same <see cref="Dictionary{Arguments, String}"/> shape <c>ParseArgs</c> would have
+        /// produced for the equivalent non-interactive flags — the rest of <see cref="ExecuteAsync"/> runs
+        /// unchanged from there. Mirrors the loop-until-confirmed pattern used by every other wizard in the app
+        /// (e.g. <c>ApproveCommandHandler.ApproveAdrWizard</c>).
+        /// </summary>
+        /// <exception cref="OperationCanceledException">Thrown when the user cancels any prompt.</exception>
+        private async Task<Dictionary<Arguments, string>> SyncWizard(CancellationToken cancellationToken)
+        {
+            var parsedArgs = new Dictionary<Arguments, string>();
+
+            while (true)
+            {
+                parsedArgs.Clear();
+
+                string[] drives = _fileSystem.GetDrives();
+                var rootPath = drives[0];
+                if (drives.Length > 1)
+                {
+                    var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+                    if (IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+                    rootPath = Content;
+                }
+
+                var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _fileSystem, _validateConfig, cancellationToken);
+                if (folderPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
+
+                var modePrompt = _prompt.PromptSelectSyncMode(cancellationToken);
+                if (modePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+
+                if (modePrompt.UseBackfill)
+                {
+                    // Extra safety gate that only the wizard can add: --backfill is documented as "never
+                    // automate" (spec §6), and automation is exactly what a TTY-only wizard can't do — this is
+                    // the one place in the whole flow where the wizard is stricter than the direct flag path.
+                    _prompt.PromptWriteInfo(Resources.AdrPlus.HelpUsageBackfill);
+                    var confirmBackfill = _prompt.PromptConfirm(Resources.AdrPlus.WizardConfirmBackfill, cancellationToken);
+                    if (confirmBackfill.IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+                    if (!confirmBackfill.ConfirmYes)
+                    {
+                        continue;
+                    }
+                    parsedArgs[Arguments.Backfill] = string.Empty;
+                }
+
+                return parsedArgs;
+            }
         }
 
         private void LogAndWriteErrors(string[] errors)

@@ -280,4 +280,135 @@ public class SyncCommandHandlerTests
         items.Should().NotContain(i => i.Adr.Number == 1);
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_DefaultSelected_RunsDefaultSyncWithoutExtraConfirm()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, false));
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+            .Returns(new SyncSummary());
+
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        _mockConsole.DidNotReceive().PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_BackfillConfirmed_RunsBackfill()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true));
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, true));
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin>());
+
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        // LoadedPlugins is empty, so ExecuteBackfillAsync short-circuits before reading ADRs (Fase 6) —
+        // this alone proves the backfill branch (not the default RetryPendingAsync branch) ran.
+        await _mockAdrServices.DidNotReceive().ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>());
+        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_BackfillDeclined_ReturnsToModeSelectionAndRunsDefault()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""";
+
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true), (false, false));
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, false));
+        _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
+        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
+        _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+            .Returns(new SyncSummary());
+
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(2).PromptSelectSyncMode(Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_FolderAborted_ThrowsOperationCanceledException()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty));
+
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ModeAborted_ThrowsOperationCanceledException()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((true, false));
+
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_BackfillConfirmAborted_ThrowsOperationCanceledException()
+    {
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true));
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((true, false));
+
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
 }

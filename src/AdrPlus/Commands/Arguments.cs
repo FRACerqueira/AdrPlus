@@ -94,5 +94,11 @@ namespace AdrPlus.Commands
         [CommandArgument("-v", "--validate")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsagePluginsValidate")]
         PluginsValidate,
+        [CommandArgument("-w", "--wizard")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardSync")]
+        WizardSync,
+        [CommandArgument("-w", "--wizard")]
+        [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardPlugins")]
+        WizardPlugins,
     }
 }

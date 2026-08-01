@@ -2653,6 +2653,267 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Wizard to choose sync mode and repository path (suppress all other arguments).
+        /// </summary>
+        internal static string HelpUsageWizardSync {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardSync", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard to choose list/validate mode and repository path (suppress all other arguments).
+        /// </summary>
+        internal static string HelpUsageWizardPlugins {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardPlugins", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Choose sync mode.
+        /// </summary>
+        internal static string WizardSyncModePrompt {
+            get {
+                return ResourceManager.GetString("WizardSyncModePrompt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Default re-drives only pending.json; Backfill sweeps the whole repository.
+        /// </summary>
+        internal static string WizardSyncModeDescription {
+            get {
+                return ResourceManager.GetString("WizardSyncModeDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Default (re-drive pending).
+        /// </summary>
+        internal static string WizardSyncModeDefault {
+            get {
+                return ResourceManager.GetString("WizardSyncModeDefault", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Backfill (full repository sweep).
+        /// </summary>
+        internal static string WizardSyncModeBackfill {
+            get {
+                return ResourceManager.GetString("WizardSyncModeBackfill", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Run backfill now?.
+        /// </summary>
+        internal static string WizardConfirmBackfill {
+            get {
+                return ResourceManager.GetString("WizardConfirmBackfill", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Choose action.
+        /// </summary>
+        internal static string WizardPluginsModePrompt {
+            get {
+                return ResourceManager.GetString("WizardPluginsModePrompt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to List shows loaded plugins; Validate reports structural load results.
+        /// </summary>
+        internal static string WizardPluginsModeDescription {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to List loaded plugins.
+        /// </summary>
+        internal static string WizardPluginsModeList {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeList", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Validate plugin structure.
+        /// </summary>
+        internal static string WizardPluginsModeValidate {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeValidate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded plugins.
+        /// </summary>
+        internal static string WizardPluginsListTableTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsListTableTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin validation report.
+        /// </summary>
+        internal static string WizardPluginsValidateTableTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsValidateTableTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string TableColumnName {
+            get {
+                return ResourceManager.GetString("TableColumnName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        internal static string TableColumnVersion {
+            get {
+                return ResourceManager.GetString("TableColumnVersion", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Events.
+        /// </summary>
+        internal static string TableColumnEvents {
+            get {
+                return ResourceManager.GetString("TableColumnEvents", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allowlist.
+        /// </summary>
+        internal static string TableColumnAllowlist {
+            get {
+                return ResourceManager.GetString("TableColumnAllowlist", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        internal static string TableColumnPending {
+            get {
+                return ResourceManager.GetString("TableColumnPending", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        internal static string TableColumnStatus {
+            get {
+                return ResourceManager.GetString("TableColumnStatus", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Name / Folder.
+        /// </summary>
+        internal static string TableColumnNameOrFolder {
+            get {
+                return ResourceManager.GetString("TableColumnNameOrFolder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Detail.
+        /// </summary>
+        internal static string TableColumnDetail {
+            get {
+                return ResourceManager.GetString("TableColumnDetail", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to VALID.
+        /// </summary>
+        internal static string PluginsValidateStatusValid {
+            get {
+                return ResourceManager.GetString("PluginsValidateStatusValid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to REJECTED.
+        /// </summary>
+        internal static string PluginsValidateStatusRejected {
+            get {
+                return ResourceManager.GetString("PluginsValidateStatusRejected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugins.
+        /// </summary>
+        internal static string WizardGroupPluginsTitle {
+            get {
+                return ResourceManager.GetString("WizardGroupPluginsTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sync pending plugin events and inspect loaded plugins.
+        /// </summary>
+        internal static string WizardGroupPluginsDescription {
+            get {
+                return ResourceManager.GetString("WizardGroupPluginsDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sync pending plugin events.
+        /// </summary>
+        internal static string WizardPluginsSyncTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsSyncTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to List or validate plugins.
+        /// </summary>
+        internal static string WizardPluginsDiagnosticsTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsDiagnosticsTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sync command help.
+        /// </summary>
+        internal static string WizardHelpSyncTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpSyncTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugins command help.
+        /// </summary>
+        internal static string WizardHelpPluginsTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpPluginsTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name shared with another plugin folder; neither will be loaded.
         /// </summary>
         internal static string PluginRejectedDuplicateName {

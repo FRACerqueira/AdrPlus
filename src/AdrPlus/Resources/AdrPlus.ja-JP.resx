@@ -400,6 +400,93 @@
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>検証完了: 有効 {0} 件、拒否 {1} 件</value>
   </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>同期モードとリポジトリのパスを選ぶウィザード(他の引数はすべて無視されます)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>list/validateモードとリポジトリのパスを選ぶウィザード(他の引数はすべて無視されます)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>同期モードを選択</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default は pending.json のみ再処理し、Backfill はリポジトリ全体を走査します</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default(保留分を再処理)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill(リポジトリ全体を走査)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>今すぐ backfill を実行しますか?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>操作を選択</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List は読み込まれたプラグインを表示し、Validate は構造検証の結果を報告します</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>読み込まれたプラグインを一覧表示</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>プラグインの構造を検証</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>読み込まれたプラグイン</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>プラグイン検証レポート</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>バージョン</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>イベント</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>保留中</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>状態</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>名前 / フォルダ</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>VALID</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>REJECTED</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>プラグイン</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>保留中のプラグインイベントを同期し、読み込まれたプラグインを検査します</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>保留中のプラグインイベントを同期</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>プラグインを一覧表示または検証</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>sync コマンドのヘルプ</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>plugins コマンドのヘルプ</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>プロセスの開始に失敗しました</value>
   </data>

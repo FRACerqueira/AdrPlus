@@ -190,5 +190,47 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected boolean value.</returns>
         (bool IsAborted, bool Content) PromptEmptyTemplate(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Prompts the user to choose between <c>sync</c>'s default (re-drive pending) and <c>--backfill</c>
+        /// (full repository sweep) modes (<c>adrplus sync --wizard</c>).
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple indicating whether the operation was aborted and whether backfill mode was chosen.</returns>
+        (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Prompts the user to choose between <c>plugins</c>' <c>list</c> and <c>validate</c> modes
+        /// (<c>adrplus plugins --wizard</c>).
+        /// </summary>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple indicating whether the operation was aborted and whether validate mode was chosen.</returns>
+        (bool IsAborted, bool UseValidate) PromptSelectPluginsMode(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Displays every loaded plugin as a read-only, navigable table (<c>adrplus plugins --list --wizard</c>).
+        /// </summary>
+        /// <param name="rows">
+        /// One row per loaded plugin (name, version, subscribed events, allowlist status, pending-item count).
+        /// Must contain at least one row — the caller is responsible for falling back to plain text when there
+        /// is nothing to show.
+        /// </param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns><see langword="true"/> if the user aborted (Esc) instead of dismissing the table (Enter).</returns>
+        bool PromptShowPluginsListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Displays every loaded and rejected plugin candidate as a read-only, navigable table
+        /// (<c>adrplus plugins --validate --wizard</c>).
+        /// </summary>
+        /// <param name="rows">
+        /// One row per plugin candidate — <c>Status</c> is <c>"VALID"</c> or <c>"REJECTED"</c>, <c>NameOrFolder</c>
+        /// is the plugin name (valid) or subfolder path (rejected), and <c>Detail</c> is its version (valid) or
+        /// <c>"{Reason}: {Message}"</c> (rejected). Must contain at least one row — the caller is responsible for
+        /// falling back to plain text when there is nothing to show.
+        /// </param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns><see langword="true"/> if the user aborted (Esc) instead of dismissing the table (Enter).</returns>
+        bool PromptShowPluginsValidateTable(IReadOnlyList<(string Status, string NameOrFolder, string Detail)> rows, CancellationToken cancellationToken = default);
     }
 }

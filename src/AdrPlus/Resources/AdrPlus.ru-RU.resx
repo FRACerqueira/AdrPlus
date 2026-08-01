@@ -400,6 +400,93 @@
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Проверка завершена: корректных {0}, отклонённых {1}</value>
   </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>Мастер для выбора режима синхронизации и пути к репозиторию (подавляет остальные аргументы)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>Мастер для выбора режима list/validate и пути к репозиторию (подавляет остальные аргументы)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>Выберите режим синхронизации</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default повторно обрабатывает только pending.json; Backfill просматривает весь репозиторий</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default (повторно обработать ожидающие)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill (полный обход репозитория)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>Запустить backfill сейчас?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>Выберите действие</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List показывает загруженные плагины; Validate сообщает результат структурной проверки</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>Показать загруженные плагины</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>Проверить структуру плагинов</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>Загруженные плагины</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>Отчёт о проверке плагинов</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>События</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>Allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>Ожидает</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>Имя / Папка</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>Подробности</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>ВЕРНО</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>ОТКЛОНЕНО</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>Плагины</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>Синхронизирует ожидающие события плагинов и проверяет загруженные плагины</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>Синхронизировать ожидающие события плагинов</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>Показать или проверить плагины</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>Справка по команде sync</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>Справка по команде plugins</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Не удалось запустить процесс</value>
   </data>

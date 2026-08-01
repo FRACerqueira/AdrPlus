@@ -34,6 +34,7 @@ public class PluginsCommandHandlerTests
     private IFileSystemService _mockFileSystem = null!;
     private IConsoleWriter _mockConsole = null!;
     private IAdrServices _mockAdrServices = null!;
+    private IValidateConfig _mockValidateConfig = null!;
     private IPluginManager _mockPluginManager = null!;
     private PluginsCommandHandler _handler = null!;
 
@@ -43,13 +44,14 @@ public class PluginsCommandHandlerTests
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IConsoleWriter>();
         _mockAdrServices = Substitute.For<IAdrServices>();
+        _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockPluginManager = Substitute.For<IPluginManager>();
 
         _handler = CreateHandler(new AdrPlusConfig());
     }
 
     private PluginsCommandHandler CreateHandler(AdrPlusConfig config) =>
-        new(_mockLogger, _mockFileSystem, _mockConsole, _mockAdrServices, Options.Create(config), _mockPluginManager);
+        new(_mockLogger, _mockFileSystem, _mockConsole, _mockAdrServices, _mockValidateConfig, Options.Create(config), _mockPluginManager);
 
     private static PluginManifest CreateManifest(string name, string version, IEnumerable<string> subscribedEvents) => new()
     {
@@ -301,5 +303,116 @@ public class PluginsCommandHandlerTests
             Arg.Any<Func<string>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
         await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, string)?>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
         await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+    }
+
+    private void SetupWizardParsedArgs()
+    {
+        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
+            .Returns(new Dictionary<Arguments, string> { { Arguments.WizardPlugins, string.Empty } });
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ListSelected_ShowsTableInsteadOfPlainText()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, false));
+        var plugin = CreateLoadedPlugin("SlackNotifier", "1.2.0", ["Approved"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptShowPluginsListTable(
+            Arg.Is<IReadOnlyList<(string Name, string Version, string Events, string Allowlist, int Pending)>>(rows => rows.Count == 1 && rows[0].Name == "SlackNotifier"),
+            Arg.Any<CancellationToken>());
+        _mockConsole.DidNotReceive().PromptWriteInfo(Arg.Is<string>(s => s.Contains("SlackNotifier")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ValidateSelected_ShowsTableInsteadOfPlainText()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, true));
+        var plugin = CreateLoadedPlugin("JiraSync", "2.0.0", ["Approved"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        var rejection = new PluginRejection(FolderPath, PluginRejectionReason.NotInAllowlist, "not allowed");
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection> { rejection });
+
+        await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptShowPluginsValidateTable(
+            Arg.Is<IReadOnlyList<(string Status, string NameOrFolder, string Detail)>>(rows => rows.Count == 2),
+            Arg.Any<CancellationToken>());
+        _mockConsole.DidNotReceive().PromptWriteInfo(Arg.Is<string>(s => s.Contains("JiraSync")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ListSelected_NoPluginsLoaded_FallsBackToTextNotTable()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, false));
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin>());
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+        _mockConsole.DidNotReceive().PromptShowPluginsListTable(Arg.Any<IReadOnlyList<(string, string, string, string, int)>>(), Arg.Any<CancellationToken>());
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("No plugins loaded")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_FolderAborted_ThrowsOperationCanceledException()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty));
+
+        await _handler.Invoking(h => h.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ModeAborted_ThrowsOperationCanceledException()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((true, false));
+
+        await _handler.Invoking(h => h.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_TableAborted_ThrowsOperationCanceledException()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, false));
+        var plugin = CreateLoadedPlugin("SlackNotifier", "1.2.0", ["Approved"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+        _mockConsole.PromptShowPluginsListTable(Arg.Any<IReadOnlyList<(string, string, string, string, int)>>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        await _handler.Invoking(h => h.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<OperationCanceledException>();
     }
 }

@@ -400,6 +400,93 @@
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validation terminée : {0} valide(s), {1} rejeté(s)</value>
   </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>Assistant pour choisir le mode de synchronisation et le chemin du dépôt (supprime les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>Assistant pour choisir le mode list/validate et le chemin du dépôt (supprime les autres arguments)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>Choisir le mode de sync</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default retraite seulement pending.json ; Backfill parcourt tout le dépôt</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default (retraiter les en attente)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill (balayage complet du dépôt)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>Exécuter le backfill maintenant ?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>Choisir l'action</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List affiche les plugins chargés ; Validate rapporte le résultat de la validation structurelle</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>Lister les plugins chargés</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>Valider la structure des plugins</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>Plugins chargés</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>Rapport de validation des plugins</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>Événements</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>Allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>En attente</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>Nom / Dossier</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>Détail</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>VALIDE</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>REJETÉ</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>Synchronise les événements de plugins en attente et inspecte les plugins chargés</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>Synchroniser les événements de plugins en attente</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>Lister ou valider les plugins</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>Aide de la commande sync</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>Aide de la commande plugins</value>
+  </data>
   <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
     <value>Échec du démarrage du processus</value>
   </data>
