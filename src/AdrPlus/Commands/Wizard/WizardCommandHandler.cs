@@ -54,6 +54,7 @@ namespace AdrPlus.Commands.Wizard
         private const string ConfigMenuHistoryKey = "DefaultConfigMenu";
         private const string AdrMenuHistoryKey = "DefaultAdrMenu";
         private const string HelpMenuHistoryKey = "DefaultHelpMenu";
+        private const string PluginsMenuHistoryKey = "DefaultPluginsMenu";
 
 
         /// <summary>
@@ -195,6 +196,23 @@ namespace AdrPlus.Commands.Wizard
                                 }
                                 break;
                             }
+                        case '6':
+                            try
+                            {
+                                currentMenu = await HandlePluginsMenuAsync(isRepoConfigured, cancellationToken);
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                if (cancellationToken.IsCancellationRequested)
+                                {
+                                    throw;
+                                }
+                            }
+                            catch
+                            {
+                                // If an exception occurs , skip excepion.
+                            }
+                            break;
                         default:
                             await _filesystem.SaveHistoryAsync(StartMenuHistoryKey, new ItemMenuWizard(), cancellationToken);
                             throw new NotImplementedException(string.Format(null, FormatMessages.ErrInvalidMenuOption, $"{currentMenu.Id} {currentMenu.Title}"));
@@ -410,6 +428,53 @@ namespace AdrPlus.Commands.Wizard
         }
 
         /// <summary>
+        /// Presents the plugins sub-menu, routes to <c>sync</c> or <c>plugins</c> in <c>--wizard</c> mode
+        /// (each of which asks its own mode — default/backfill, list/validate — internally), and returns the
+        /// selected item. Selecting "Back" returns an empty <see cref="ItemMenuWizard"/> to return to the main menu.
+        /// </summary>
+        /// <param name="isRepoConfigured">Whether the repository template file exists, used to enable/disable menu items.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>The selected <see cref="ItemMenuWizard"/> (or empty to navigate back).</returns>
+        /// <exception cref="OperationCanceledException">Thrown when the user cancels the prompt.</exception>
+        private async Task<ItemMenuWizard> HandlePluginsMenuAsync(bool isRepoConfigured, CancellationToken cancellationToken)
+        {
+            var (_, defaultMenu) = await _filesystem.ReadHistoryAsync<ItemMenuWizard>(PluginsMenuHistoryKey, cancellationToken);
+            var (isAborted, itemSelected) = _wizardMenuPrompts.PromptSelectMenu(isRepoConfigured, GetMenuPlugins(), defaultMenu ?? new ItemMenuWizard(), cancellationToken);
+
+            if (isAborted)
+            {
+                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+            }
+
+            if (itemSelected!.Id == "6.00")
+            {
+                return new ItemMenuWizard();
+            }
+
+            await _filesystem.SaveHistoryAsync(PluginsMenuHistoryKey, itemSelected, cancellationToken);
+
+            CommandsAdr command;
+            string[] args;
+
+            (command, args) = itemSelected.Id switch
+            {
+                "6.01" => (CommandsAdr.Sync, new[] { "-w" }),
+                "6.02" => (CommandsAdr.Plugins, new[] { "-w" }),
+                _ => throw await CreateInvalidMenuExceptionAsync(PluginsMenuHistoryKey, itemSelected, cancellationToken),
+            };
+            try
+            {
+                _prompt.PromptEnabledEscToAbort(true);
+                await _commandRouter.RouteAsync(GetCommandAlias(command), args, cancellationToken);
+            }
+            finally
+            {
+                _prompt.PromptEnabledEscToAbort(false);
+            }
+            return itemSelected;
+        }
+
+        /// <summary>
         /// Presents the command help sub-menu, routes to the selected command handler with the <c>--help</c>
         /// flag to display its detailed usage, and returns the selected item.
         /// Selecting "Back" returns an empty <see cref="ItemMenuWizard"/> to return to the main menu.
@@ -447,6 +512,8 @@ namespace AdrPlus.Commands.Wizard
                 "3.09" => CommandsAdr.Revise,
                 "3.10" => CommandsAdr.Supersede,
                 "3.11" => CommandsAdr.UndoStatus,
+                "3.12" => CommandsAdr.Sync,
+                "3.13" => CommandsAdr.Plugins,
                 _ => throw await CreateInvalidMenuExceptionAsync(HelpMenuHistoryKey, itemSelected, cancellationToken),
             };
             await _commandRouter.RouteAsync(GetCommandAlias(command), ["-h"], cancellationToken);
@@ -517,6 +584,13 @@ namespace AdrPlus.Commands.Wizard
                     Id = "4",
                     Title = Resources.AdrPlus.WizardGroupExploreReportTitle,
                     Description = Resources.AdrPlus.WizardGroupExploreReportDescription,
+                    EnabledWhenNotConfigured = false
+                },
+                new ItemMenuWizard
+                {
+                    Id = "6",
+                    Title = Resources.AdrPlus.WizardGroupPluginsTitle,
+                    Description = Resources.AdrPlus.WizardGroupPluginsDescription,
                     EnabledWhenNotConfigured = false
                 },
                 new ItemMenuWizard
@@ -621,6 +695,38 @@ namespace AdrPlus.Commands.Wizard
                 {
                     Id = "2.07",
                     Title = Resources.AdrPlus.WizardAdrUndoStatusTitle,
+                    Description = Resources.AdrPlus.EscForReturnWizard,
+                    EnabledWhenNotConfigured = false
+                },
+            ];
+        }
+
+        /// <summary>
+        /// Returns the plugins sub-menu items (sync, plugins, back).
+        /// </summary>
+        /// <returns>An array of <see cref="ItemMenuWizard"/> representing the plugins menu.</returns>
+        private static ItemMenuWizard[] GetMenuPlugins()
+        {
+            return
+            [
+                new ItemMenuWizard
+                {
+                    Id = "6.00",
+                    Title = Resources.AdrPlus.WizardMainMenu,
+                    Description = Resources.AdrPlus.WizardHelpMainMenuDescription,
+                    EnabledWhenNotConfigured = true
+                },
+                new ItemMenuWizard
+                {
+                    Id = "6.01",
+                    Title = Resources.AdrPlus.WizardPluginsSyncTitle,
+                    Description = Resources.AdrPlus.EscForReturnWizard,
+                    EnabledWhenNotConfigured = false
+                },
+                new ItemMenuWizard
+                {
+                    Id = "6.02",
+                    Title = Resources.AdrPlus.WizardPluginsDiagnosticsTitle,
                     Description = Resources.AdrPlus.EscForReturnWizard,
                     EnabledWhenNotConfigured = false
                 },
@@ -762,6 +868,20 @@ namespace AdrPlus.Commands.Wizard
                 {
                     Id = "3.11",
                     Title = Resources.AdrPlus.WizardHelpUndoTitle,
+                    Description = Resources.AdrPlus.ShowHelpInfo,
+                    EnabledWhenNotConfigured = true
+                },
+                new ItemMenuWizard
+                {
+                    Id = "3.12",
+                    Title = Resources.AdrPlus.WizardHelpSyncTitle,
+                    Description = Resources.AdrPlus.ShowHelpInfo,
+                    EnabledWhenNotConfigured = true
+                },
+                new ItemMenuWizard
+                {
+                    Id = "3.13",
+                    Title = Resources.AdrPlus.WizardHelpPluginsTitle,
                     Description = Resources.AdrPlus.ShowHelpInfo,
                     EnabledWhenNotConfigured = true
                 },
