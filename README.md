@@ -30,6 +30,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Quick Start](#quick-start)
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
+- [Plugin Development Guide](PluginDevelopmentGuide.md)  
 - [Using AdrPlus with Claude Code](#using-adrplus-with-claude-code)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
