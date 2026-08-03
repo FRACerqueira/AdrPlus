@@ -5,8 +5,9 @@
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/AdrPlus.svg?include_prereleases)](https://www.nuget.org/packages/AdrPlus)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
+[![NuGet Abstractions](https://img.shields.io/nuget/v/AdrPlus.Abstractions.svg?label=AdrPlus.Abstractions&include_prereleases)](https://www.nuget.org/packages/AdrPlus.Abstractions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4)](https://dotnet.microsoft.com)
 
 > 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
 
@@ -25,6 +26,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 
 - [Motivation and Benefits](#motivation-and-benefits)
 - [Features](#features)
+- [Plugins](#plugins)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -68,6 +70,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
+- 🧩 **Plugin support** for integrations that react to ADR lifecycle events — see the [Plugin Development Guide](PluginDevelopmentGuide.md)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
@@ -77,6 +80,16 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🌍 Multi-language support (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`) for messages, UX, and ADR templates — see [TRANSLATIONS.md](TRANSLATIONS.md) for review status.
   - **ADR content can be written in any language!**
 - 🖥️ Cross-platform (Windows, macOS, Linux)
+---
+
+## Plugins
+
+Not every ADR-related need belongs in the core CLI. Teams often want to react to ADR lifecycle events — regenerate an index, notify a channel, sync to an external system, enforce a custom policy — without AdrPlus growing built-in support for every possible target. The plugin system exists for exactly that: any command that changes an ADR's state (create, approve, reject, revise, supersede, undo) dispatches lifecycle events that plugins can subscribe to and react to independently of the core tool.
+
+Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus.Abstractions` package — see the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract and event lifecycle.
+
+You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is auto-installed by `adrplus init` into `./plugins/adr-indexer/`. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
+
 ---
 
 ## Requirements
@@ -289,6 +302,17 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
     adrplus version --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
+# Re-drive pending plugin dispatches (safe to schedule via cron/CI); --backfill sweeps every
+# existing ADR and is manual-only, never scheduled
+
+    adrplus sync --path "path/to/repository"
+    adrplus sync --path "path/to/repository" --backfill
+
+# Check installed plugins, or manage which ones are active for this repository
+
+    adrplus plugins --list --path "path/to/repository"
+    adrplus plugins --validate --path "path/to/repository"
+
 ```
 
 Use `adrplus help <command>` to check the available parameters for each command.
@@ -312,6 +336,8 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `approve`   | Set an ADR status to *Accepted* |
 | `reject`    | Set an ADR status to *Rejected* |
 | `undo`      | Revert the last status change of an ADR |
+| `sync`      | Re-drive pending plugin dispatches (`--backfill` sweeps every existing ADR and re-emits its current settled event) |
+| `plugins`   | Diagnostics for installed plugins (`--list`/`--validate`) and, via `--wizard`, manage which plugins are active for this repository |
 
 Run `adrplus help <command>` for detailed usage of any command.
 

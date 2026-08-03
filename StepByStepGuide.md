@@ -90,8 +90,8 @@ The **first time you run an AdrPlus command**, the setup wizard will automatical
 2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
 3. **Set your ADR repository folder** (default: `doc/adr`)
 4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
-6. **Configure migration pattern** 
-7. **Create the configuration files**:
+5. **Configure migration pattern** 
+6. **Create the configuration files**:
    - `adrplus.json` (application settings)
    - `adr-config.adrplus` (repository settings)
 
@@ -194,7 +194,9 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "headertitlestatussuperseded": "Superseded",
   "headertablefields": "Fields",
   "headertablevalues": "Values",
-  "headermigrated": "Migrated"
+  "headermigrated": "Migrated",
+  "activeplugins": [],
+  "disableplugins": false
 }
 ```
 
@@ -229,6 +231,8 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `headertablefields` | Table header for field names | `Field` |
 | `headertablevalues` | Table header for field values | `Value` |
 | `headermigrated` | Header label for "Migrated" indicator | `Migrated` |
+| `activeplugins` | Names of the plugins (under `./plugins/`) expected to be active for this repository. Written automatically by `init` from whatever's installed at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. | `[]` |
+| `disableplugins` | Repository-wide kill switch. When `true`, no plugin ever dispatches for this repo — the ADR operation itself still completes normally. | `false` |
 
 #### Understanding key configuration concepts
 
@@ -680,7 +684,7 @@ git commit -m "chore: upgrade ADR repository settings - add scope support"
 
 **Solution:**
 - Make sure you've run `adrplus init`
-- Check that `folderrepo` path in configuration is correct
+- Check that `folderadr` path in configuration is correct
 - Verify folder permissions
 
 ### Issue: Configuration file not found

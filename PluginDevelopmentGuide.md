@@ -37,7 +37,7 @@ None of this requires you to write any retry, timeout, or scheduling logic yours
 
 ## Project setup
 
-Create a class library targeting `net10.0` (or anything `>= net10.0`) and reference `AdrPlus.Abstractions` — the only assembly your plugin depends on from AdrPlus itself. It isn't published as a standalone NuGet package today; it ships bundled inside the `adrplus` tool package (as `AdrPlus.Abstractions.dll`, alongside `adrplus.dll` wherever the tool is installed), so reference it as a plain file:
+Create a class library targeting `net10.0` (or anything `>= net10.0`) and reference `AdrPlus.Abstractions` — the only assembly your plugin depends on from AdrPlus itself. It's published as its own [NuGet package](https://www.nuget.org/packages/AdrPlus.Abstractions), versioned and released independently of the `adrplus` CLI tool:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -45,15 +45,12 @@ Create a class library targeting `net10.0` (or anything `>= net10.0`) and refere
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AdrPlus.Abstractions">
-      <HintPath>path/to/installed/adrplus/AdrPlus.Abstractions.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0-beta6" Private="false" />
   </ItemGroup>
 </Project>
 ```
 
-`<Private>false</Private>` matters: it stops the build from copying `AdrPlus.Abstractions.dll` into your plugin's own output folder — see the warning below about why that copy breaks loading. If you're working inside a clone of the AdrPlus repository itself (e.g. contributing the plugin back), a `ProjectReference` to `src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj` works the same way, as the bundled `AdrIndexer` example does.
+`Private="false"` matters: it stops the build from copying `AdrPlus.Abstractions.dll` into your plugin's own output folder — see the warning below about why that copy breaks loading. If you're working inside a clone of the AdrPlus repository itself (e.g. contributing the plugin back), a `ProjectReference` to `src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj` works the same way, as the bundled `AdrIndexer` example does.
 
 Your build output — the plugin's `.dll`, its own dependencies (resolved from its `.deps.json`), and `plugin.json` — goes into its own folder under the target repository's `./plugins/<name>/`. **Do not** copy `AdrPlus.Abstractions.dll` itself into that folder: the host resolves that assembly once and expects your plugin to share the exact same type identity. A second copy alongside your plugin gives it a *different* `IAdrPlugin` type as far as the CLR is concerned, and the host will reject your plugin as not implementing the contract.
 
@@ -81,9 +78,68 @@ public interface IAdrPlugin : IAsyncDisposable
 - **`ShouldHandle` is a cheap, synchronous pre-filter**, evaluated *in addition to* `plugin.json`'s `subscribedEvents` — use it for anything `subscribedEvents` can't express (e.g. "only ADRs in the `security` scope").
 - **`OnAdrEventAsync` must never throw for control flow.** Return `PluginResultStatus.Failed` instead. It must also treat any `AdrEventType` value it doesn't recognize as `Skipped` — the host may add new event types later, and your plugin must not break on one it's never seen.
 
-### Using `AdrPluginBase` (recommended)
+### Implementing `IAdrPlugin`
 
-`AdrPluginBase` is an optional convenience that removes the exception-shielding boilerplate:
+Implement the interface directly — no base class required. The host already calls `ShouldHandle`
+for you and only invokes `OnAdrEventAsync` when it returned `true` (see `PluginManager.DispatchAsync`),
+so your `OnAdrEventAsync` only needs to react and shield its own exceptions into `Failed`:
+
+```csharp
+using AdrPlus.Abstractions;
+
+public sealed class MyPlugin : IAdrPlugin
+{
+    private string _apiKey = "";
+
+    public string Name => "MyPlugin";
+    public string Version => "1.0.0";
+
+    public Task InitializeAsync(IPluginContext context, IPluginConfiguration config, CancellationToken ct)
+    {
+        _apiKey = Environment.GetEnvironmentVariable("MYPLUGIN_API_KEY")
+            ?? throw new InvalidOperationException("MYPLUGIN_API_KEY is not set.");
+        return Task.CompletedTask;
+    }
+
+    public bool ShouldHandle(AdrEventContext context) => true;
+
+    public async Task<PluginResult> OnAdrEventAsync(AdrEventContext context, CancellationToken ct)
+    {
+        try
+        {
+            var pageId = await UpsertToMySystemAsync(context, ct);
+            return new PluginResult { Status = PluginResultStatus.Success, ExternalKey = pageId };
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            // Won't self-heal on retry.
+            return new PluginResult { Status = PluginResultStatus.Failed, Message = "Invalid API key.", IsRetryable = false };
+        }
+        catch (HttpRequestException ex)
+        {
+            // Transient — retryable by default.
+            return new PluginResult { Status = PluginResultStatus.Failed, Message = ex.Message };
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
+}
+```
+
+`OnAdrEventAsync` must never throw for control flow — catch what you expect and return `Failed`
+instead. It must also treat any `AdrEventType` it doesn't recognize as `Skipped`, since the host may
+add new event types later.
+
+### `AdrPluginBase`: an optional convenience
+
+Repeating the exception-shielding above in every plugin gets old — `AdrPluginBase` can help: it
+implements `IAdrPlugin` for you, turns `OnAdrEventAsync` into a template method that catches
+exceptions into a retryable `Fail(...)` automatically, and exposes `Success()`/`Skip()`/
+`Fail(message, isRetryable:)` helpers so you never construct `PluginResult` by hand:
 
 ```csharp
 using AdrPlus.Abstractions;
@@ -111,19 +167,18 @@ public sealed class MyPlugin : AdrPluginBase
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
         {
-            return Fail("Invalid API key.", isRetryable: false);   // won't self-heal on retry
+            return Fail("Invalid API key.", isRetryable: false);
         }
         catch (HttpRequestException ex)
         {
-            return Fail(ex.Message);   // transient — retryable by default
+            return Fail(ex.Message);
         }
     }
 }
 ```
 
-`HandleAsync` only runs after `ShouldHandle` has already returned `true` — any exception it throws is caught for you and turned into a retryable `Fail(...)`. `Success()`, `Skip()`, and `Fail(message, isRetryable:)` are protected helpers you call directly; you never construct `PluginResult` by hand.
-
-If `AdrPluginBase` doesn't fit your shape (e.g. you want different exception handling per exception type at the `OnAdrEventAsync` level), implement `IAdrPlugin` directly — the host has no special-cased knowledge of the base class either way.
+It's entirely optional — the host has no special-cased knowledge of the base class either way; use
+whichever fits your plugin's shape.
 
 ### What you receive: `AdrEventContext`
 
@@ -154,7 +209,7 @@ Every plugin folder needs one, alongside the compiled assembly:
   "version": "1.0.0",
   "entryAssembly": "MyCompany.AdrPlus.Confluence.dll",
   "entryType": "MyCompany.AdrPlus.Confluence.ConfluencePlugin",
-  "abstractionsVersion": "1.0.0",
+  "abstractionsVersion": "1.0.0-beta6",
   "subscribedEvents": [ "Approved", "Rejected", "Superseded", "StatusUndone", "Migrated" ],
   "foregroundTimeoutMs": 5000,
   "backgroundTimeoutMs": 30000,

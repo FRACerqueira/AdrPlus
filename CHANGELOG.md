@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Plugin system: AdrPlus now dispatches ADR lifecycle events (create, approve, reject, revise, supersede, undo) to plugins implementing the `IAdrPlugin` contract — see the [Plugin Development Guide](PluginDevelopmentGuide.md).
+- `sync` command to re-drive pending plugin dispatches, with `--backfill` to sweep every existing ADR and re-emit its current settled event.
+- `plugins` command (`--list`/`--validate`) for plugin diagnostics, plus `--wizard` support to manage which plugins are active for a repository.
+- Per-repo plugin activation management via the `activeplugins`/`disableplugins` settings in `adrplus.json`.
+- `AdrPlus.Plugins.AdrIndexer` — a reference plugin bundled with AdrPlus and auto-installed by `init`, generating a linked ADR index table.
+- `AdrPlus.Abstractions` (the `IAdrPlugin` plugin contract) is now published as its own NuGet package, decoupled from the CLI tool's own release/versioning — see [AbstractionsREADME.md](AbstractionsREADME.md). Released independently under `abstr-v*.*.*` tags.
+
+---
+
+## [1.0.0-beta5] - 2026-07-30
+
+### Changed
+
+- Updated `PromptPlus`/`PromptPlus.Hosting` dependencies.
+
 ---
 
 ## [1.0.0-beta4] - 2026-07-28

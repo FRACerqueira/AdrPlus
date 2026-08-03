@@ -7,6 +7,7 @@
 - [General](#general)
 - [Configuration](#configuration)
 - [Workflow and Commands](#workflow-and-commands)
+- [Plugins](#plugins)
 - [Troubleshooting and Best Practices](#troubleshooting-and-best-practices)
 
 ## General
@@ -43,7 +44,7 @@ Yes. Language is configurable (for example, `en-US` and `pt-BR`).
 
 ### What happens when I run AdrPlus without arguments?
 
-The behavior is controlled by the `WithoutArgs` setting in `adrplus.json`:
+The behavior is controlled by the `withoutargs` setting in `adrplus.json`:
 - **`Help`** (default): Displays the help information with all available commands
 - **`Wizard`**: Launches the interactive wizard for guided operations
 - **`None`**: Requires you to explicitly provide a command; otherwise, an error is shown
@@ -54,7 +55,7 @@ You can change this behavior anytime by running `adrplus config --application`.
 
 ### Can I customize ADR headers?
 
-No. You cannot customize ADR headers directly. You can customize status labels and header names in `adr-config.adrplus` using keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headertitlestatuscreated`, `headertitlestatuschanged`, and `headertitlestatussuperseded`.
+You can relabel the existing header fields, but you cannot add or remove fields from the header table itself. Relabel via `adr-config.adrplus` keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headertitlestatuscreated`, `headertitlestatuschanged`, and `headertitlestatussuperseded` — these change the displayed text, not the header's structure.
 
 ### Can I use custom status labels?
 
@@ -99,6 +100,20 @@ No. This version focuses on core ADR fields. You can include additional informat
 ### Can I configure different templates per scope or domain?
 
 Not as separate integrated template files, however the tool uses the template in the configuration file in each repository. In this scenario, you can use the tool without having to configure the template that has already been agreed upon by the team.
+
+## Plugins
+
+### How do I install a plugin?
+
+Drop the compiled plugin (its `.dll` plus a `plugin.json` manifest) into `./plugins/<name>/` and list it in `activeplugins` in `adrplus.json` — or use `adrplus plugins --wizard` to manage this interactively. See the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract.
+
+### What does the bundled `AdrIndexer` plugin do?
+
+`AdrPlus.Plugins.AdrIndexer` ships with AdrPlus and is auto-installed by `init`. It regenerates a linked table of your ADRs (ADR, title, version, status) whenever an ADR's status changes.
+
+### Can I disable plugins?
+
+Yes. Set `disableplugins` to `true` in `adrplus.json` to stop all plugin dispatch for a repository, or remove individual entries from `activeplugins` to disable one plugin at a time.
 
 ## Troubleshooting and Best Practices
 

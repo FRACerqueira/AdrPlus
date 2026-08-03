@@ -3,8 +3,12 @@
     <Platform Name="Any CPU" />
     <Platform Name="x64" />
     <Platform Name="x86" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="ReleaseDoc" />
   </Configurations>
   <Folder Name="/docs/">
+    <File Path="AbstractionsREADME.md" />
     <File Path="CHANGELOG.md" />
     <File Path="CODE_OF_CONDUCT.md" />
     <File Path="CONTRIBUTING.md" />
@@ -12,6 +16,7 @@
     <File Path="LICENSE" />
     <File Path="MigrationGuide.md" />
     <File Path="NugetREADME.md" />
+    <File Path="PluginDevelopmentGuide.md" />
     <File Path="README.md" />
     <File Path="SECURITY.md" />
     <File Path="StepByStepGuide.md" />
