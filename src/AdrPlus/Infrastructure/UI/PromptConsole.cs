@@ -361,7 +361,7 @@ namespace AdrPlus.Infrastructure.UI
         {
             PromptPlus.Console.WriteLine("");
             PromptPlus.Controls.KeyPress(message)
-                .Options(opt => opt.ShowTooltip(false))
+                .Options(opt => opt.ShowTooltip(false).SufixAfterPrompt(""))
                 .Run(cancellationToken);
             return cancellationToken.IsCancellationRequested;
         }
@@ -1153,6 +1153,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
+            bool IsReadyToMigrate(AdrFileNameComponents x) => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated;
             var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
                 .ViewOnly()
@@ -1195,8 +1196,8 @@ namespace AdrPlus.Infrastructure.UI
                          return Resources.AdrPlus.MsgUnknownStructure;
                      }
                  })
-                .PredicateChecked(x => false)
-                .Default(adrs.Where(x => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated), false)
+                .PredicateChecked(IsReadyToMigrate)
+                .Default(adrs.Where(IsReadyToMigrate), false)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? 0 : result.Content!.Length);
         }
