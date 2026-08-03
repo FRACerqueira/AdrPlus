@@ -130,7 +130,7 @@
     <value>'content' file path format is not supported: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' must be a relative path. Absolute paths are not allowed: '{0}'</value>
+    <value>'folderRepo' must be a relative path: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Usage</value>
@@ -331,7 +331,7 @@
     <value>Plugin '{0}': allowlist 'hash' is set but not enforced in this version; it provides no security guarantee yet</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>Plugin '{0}' in '{1}': duplicate name shared with another plugin folder; neither will be loaded</value>
+    <value>Plugin '{0}' in '{1}': duplicate name; neither will be loaded</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>Plugin '{0}': entryType '{1}' does not implement IAdrPlugin, or its Name/Version do not match the manifest</value>
@@ -358,7 +358,7 @@
     <value>Plugin '{0}': backfill retries exhausted for ADR '{1}', not queued — rerun 'adrplus sync --backfill' to retry</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>Inspect plugins under ./plugins: list loaded plugins or validate their structural load</value>
+    <value>Manage installed plugins: list, validate, activate, install, or uninstall</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>List loaded plugins: name, version, subscribed events, allowlist status, and pending-item count</value>
@@ -373,13 +373,13 @@
     <value>Plugin name to remove from this repository's active-plugin list</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install into ./plugins/&lt;name&gt;/</value>
+    <value>Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install for this machine</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>Plugin name to uninstall — deletes ./plugins/&lt;name&gt;/ and removes it from activeplugins</value>
+    <value>Plugin name to uninstall from this machine</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>With --install, overwrite an existing ./plugins/&lt;name&gt;/ folder entirely, including plugin.json and state/</value>
+    <value>With --install, overwrite an already-installed plugin entirely</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>Specify a subcommand: 'adrplus plugins --list', '--validate', '--activate &lt;name&gt;', '--deactivate &lt;name&gt;', '--install &lt;path&gt;', or '--uninstall &lt;name&gt;'</value>
@@ -430,7 +430,7 @@
     <value>REJECTED {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>No plugin candidates found under ./plugins</value>
+    <value>No plugin candidates found</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validate complete: {0} valid, {1} rejected</value>
@@ -439,7 +439,7 @@
     <value>Wizard to choose sync mode and repository path (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>Wizard to choose list/validate mode and repository path (suppress all other arguments)</value>
+    <value>Wizard to choose a plugin action and repository path when needed (suppress all other arguments)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>Choose sync mode</value>
@@ -460,7 +460,7 @@
     <value>Choose action</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List shows loaded plugins; Validate reports structural load results; Install/Uninstall manage plugin files under ./plugins</value>
+    <value>List shows loaded plugins; Validate checks structural load; Install/Uninstall manage plugins for this machine</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>List loaded plugins</value>
@@ -490,7 +490,7 @@
     <value>Select the plugin(s) to uninstall</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>No plugins installed under ./plugins</value>
+    <value>No plugins installed</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Select active plugins</value>
@@ -538,7 +538,7 @@
     <value>REJECTED</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Missing plugin(s): {0} — check ./plugins or run 'adrplus plugins --wizard'</value>
+    <value>Missing plugin(s): {0} — see 'adrplus plugins --list' or '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Active</value>
@@ -637,7 +637,7 @@
     <value>Prefix for ADR file names</value>
   </data>
   <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>List of valid scopes for ADRs (separated by semicolon. '*' at the end of each scope to avoid using the domain)</value>
+    <value>List of valid scopes for ADRs (separated by semicolon; '*' at the end of each scope to avoid using the domain)</value>
   </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Character used to separate file name parts</value>
@@ -778,10 +778,10 @@
     <value>Welcome to AdrPlus ({0})</value>
   </data>
   <data name="HelpUsageWizardNew" xml:space="preserve">
-    <value>Wizard to create new ADR (supress all other arguments)</value>
+    <value>Wizard to create new ADR (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardInit" xml:space="preserve">
-    <value>Wizard to configure the file repository (supress all other arguments)</value>
+    <value>Wizard to configure the file repository (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageTargetRepoPath" xml:space="preserve">
     <value>Path to the repository's root folder</value>
@@ -808,13 +808,13 @@
     <value>Overwrite the configuration file repository</value>
   </data>
   <data name="HelpUsageHelp" xml:space="preserve">
-    <value>Display help information (supress all other arguments)</value>
+    <value>Display help information (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageBackfill" xml:space="preserve">
     <value>Full repository sweep — re-emits every settled ADR. Manual/occasional use only, never automate via cron/CI</value>
   </data>
   <data name="HelpUsageWizardNewVer" xml:space="preserve">
-    <value>Wizard to create a new version of an ADR (supress all other arguments)</value>
+    <value>Wizard to create a new version of an ADR (suppress all other arguments)</value>
   </data>
   <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
     <value>ADR sequence {0} not found in {1}</value>
@@ -889,16 +889,16 @@
     <value>Re-attempt pending plugin events (adrplus sync)</value>
   </data>
   <data name="HelpUsageWizardNewRev" xml:space="preserve">
-    <value>Wizard to create a new revision of an ADR (supress all other arguments)</value>
+    <value>Wizard to create a new revision of an ADR (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardSupersede" xml:space="preserve">
-    <value>Wizard for supersede an ADR (supress all other arguments)</value>
+    <value>Wizard for supersede an ADR (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardApprove" xml:space="preserve">
-    <value>Wizard for approve of ADR (supress all other arguments)</value>
+    <value>Wizard for approve of ADR (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardReject" xml:space="preserve">
-    <value>Wizard to reject an ADR (supress all other arguments)</value>
+    <value>Wizard to reject an ADR (suppress all other arguments)</value>
   </data>
   <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
     <value>Wizard to undo the status (accepted/rejected) of an ADR (suppress all other arguments)</value>
@@ -937,7 +937,7 @@
     <value>The specified ADR file does not have a valid status({0}) for update or superseded</value>
   </data>
   <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
-    <value>The specified ADR file not has a valid status ({0}) for updating</value>
+    <value>The specified ADR file does not have a valid status ({0}) for updating</value>
   </data>
   <data name="NotValidStatusForUndo" xml:space="preserve">
     <value>The specified ADR file does not have a valid status ({0}) for undo</value>
@@ -1168,7 +1168,7 @@
     <value>File path name (md file) for the explorer report</value>
   </data>
   <data name="HelpUsageWizardExplore" xml:space="preserve">
-    <value>Wizard to explorer ADR files (supress all other arguments)</value>
+    <value>Wizard to explorer ADR files (suppress all other arguments)</value>
   </data>
   <data name="PromptConfirmExplore" xml:space="preserve">
     <value>Confirm the explorer with this parameters?</value>

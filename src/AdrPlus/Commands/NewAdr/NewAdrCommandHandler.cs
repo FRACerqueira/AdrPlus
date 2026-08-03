@@ -131,7 +131,7 @@ namespace AdrPlus.Commands.NewAdr
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 ValidateScopeAndDomain(repoconfig, parsedArgs);
@@ -188,7 +188,7 @@ namespace AdrPlus.Commands.NewAdr
                 LogMessages.LogCommandSuccessful(_logger, filePath);
                 _prompt.PromptWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
-                await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), Path.Combine(targetPath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
                 // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);

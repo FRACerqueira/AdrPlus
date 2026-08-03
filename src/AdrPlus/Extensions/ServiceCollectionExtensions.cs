@@ -20,6 +20,7 @@ using AdrPlus.Commands.UndoStatus;
 using AdrPlus.Commands.Version;
 using AdrPlus.Commands.Wizard;
 using AdrPlus.Core;
+using AdrPlus.Domain;
 using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
@@ -27,6 +28,7 @@ using AdrPlus.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AdrPlus.Extensions
 {
@@ -46,7 +48,13 @@ namespace AdrPlus.Extensions
             services.AddSingleton<IConfigurationMigrator, ConfigVersionManager>();
             services.AddSingleton<IFileSystemService, FileSystemService>();
             services.AddSingleton<IValidateConfig, ValidateConfig>();
-            services.AddSingleton<IPluginManager, PluginManager>();
+            services.AddSingleton<IPluginManager>(sp => new PluginManager(
+                sp.GetRequiredService<IFileSystemService>(),
+                sp.GetRequiredService<IOptions<AdrPlusConfig>>(),
+                sp.GetRequiredService<ILogger<PluginManager>>(),
+                sp.GetRequiredService<IConsoleWriter>(),
+                Path.Combine(AppContext.BaseDirectory, "plugins-builtin"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AdrPlus.Plugins")));
             services.AddSingleton<PromptConsole>();
             services.AddSingleton<IConsoleWriter>(sp => sp.GetRequiredService<PromptConsole>());
             services.AddSingleton<IConfigPrompts>(sp => sp.GetRequiredService<PromptConsole>());
@@ -64,8 +72,7 @@ namespace AdrPlus.Extensions
                 sp.GetRequiredService<IValidateConfig>(),
                 sp.GetRequiredService<IConsoleWriter>(),
                 sp.GetRequiredService<IAdrServices>(),
-                sp.GetRequiredService<IPluginManager>(),
-                Path.Combine(AppContext.BaseDirectory, "plugins-builtin")));
+                sp.GetRequiredService<IPluginManager>()));
             services.AddSingleton<MigrateCommandHandler>();
             services.AddSingleton(sp => new WizardCommandHandler(
                 sp.GetRequiredService<CommandRouter>(),

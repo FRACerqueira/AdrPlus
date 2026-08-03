@@ -96,7 +96,7 @@ public class PluginManagerRetryTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => written = JsonSerializer.Deserialize<List<PendingEntry>>(j, PluginManifest.SerializerOptions)), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(1);
         written.Should().BeEmpty();
@@ -117,7 +117,7 @@ public class PluginManagerRetryTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => written = JsonSerializer.Deserialize<List<PendingEntry>>(j, PluginManifest.SerializerOptions)), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.StillPending.Should().Be(1);
         await plugin.Received(3).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -137,7 +137,7 @@ public class PluginManagerRetryTests
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", maxAttempts: 3)));
         SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 3 });
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.Received(1).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
         summary.Succeeded.Should().Be(1);
@@ -156,7 +156,7 @@ public class PluginManagerRetryTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => written = JsonSerializer.Deserialize<List<PendingEntry>>(j, PluginManifest.SerializerOptions)), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Skipped.Should().Be(1);
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -174,7 +174,7 @@ public class PluginManagerRetryTests
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
         SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0 });
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Skipped.Should().Be(1);
     }
@@ -194,7 +194,7 @@ public class PluginManagerRetryTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => written = JsonSerializer.Deserialize<List<PendingEntry>>(j, PluginManifest.SerializerOptions)), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.PermanentlyFailed.Should().Be(1);
         written.Should().BeEmpty();
@@ -209,7 +209,7 @@ public class PluginManagerRetryTests
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
         SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0 });
 
-        var summary = await manager.RetryPendingAsync(_ => null, CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(_ => null, CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Dropped.Should().Be(1);
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -225,7 +225,7 @@ public class PluginManagerRetryTests
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
         SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 1, LastError = "prior error" });
 
-        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(0);
         summary.StillPending.Should().Be(0);
@@ -266,6 +266,7 @@ public class PluginManagerRetryTests
                 _ => null
             },
             CreateRepoSnapshot(),
+            "/repo/plugins-state",
             isActive: null,
             cancellationToken: TestContext.Current.CancellationToken);
 

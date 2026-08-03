@@ -17,7 +17,7 @@ namespace AdrPlus.Tests.Plugins;
 /// </summary>
 public class PendingStateStoreTests
 {
-    private const string PluginFolderPath = "/repo/plugins/test-plugin";
+    private const string PluginFolderPath = "/repo/plugins-state/test-plugin";
     private readonly IFileSystemService _fileSystem = Substitute.For<IFileSystemService>();
 
     [Fact]
@@ -51,7 +51,7 @@ public class PendingStateStoreTests
 
         await PendingStateStore.WriteAllAsync(_fileSystem, PluginFolderPath, [new PendingEntry { AdrKey = "0002-v1-r0", EventType = "Rejected" }], TestContext.Current.CancellationToken);
 
-        _fileSystem.Received(1).CreateDirectory(Arg.Is<string>(p => p.Contains("state")));
+        _fileSystem.Received(1).CreateDirectory(PluginFolderPath);
         writtenJson.Should().NotBeNull();
         var entries = JsonSerializer.Deserialize<List<PendingEntry>>(writtenJson!, PluginManifest.SerializerOptions);
         entries.Should().ContainSingle(e => e.AdrKey == "0002-v1-r0");

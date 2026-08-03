@@ -131,7 +131,7 @@
     <value>'content' — bestandspadformaat wordt niet ondersteund: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' moet een relatief pad zijn. Absolute paden zijn niet toegestaan: '{0}'</value>
+    <value>'folderRepo' moet een relatief pad zijn: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Gebruik</value>
@@ -332,7 +332,7 @@
     <value>Plugin '{0}': het veld 'hash' van de allowlist is ingesteld maar wordt in deze versie nog niet afgedwongen; biedt momenteel geen enkele beveiligingsgarantie</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>Plugin '{0}' in '{1}': dubbele naam, gedeeld met een andere pluginmap; geen van beide wordt geladen</value>
+    <value>Plugin '{0}' in '{1}': dubbele naam; geen van beide wordt geladen</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>Plugin '{0}': entryType '{1}' implementeert IAdrPlugin niet, of Name/Version komen niet overeen met het manifest</value>
@@ -359,7 +359,7 @@
     <value>Plugin '{0}': permanente fout, wordt niet in de wachtrij geplaatst voor een nieuwe poging — corrigeer de configuratie en voer 'adrplus sync --backfill' uit</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>Inspecteert plugins onder ./plugins: geeft geladen plugins weer of valideert hun structurele laadproces</value>
+    <value>Beheert geïnstalleerde plugins: weergeven, valideren, activeren, installeren of verwijderen</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>Geeft geladen plugins weer: naam, versie, geabonneerde events, allowlist-status en aantal openstaande items</value>
@@ -374,13 +374,13 @@
     <value>Naam van de plugin om te verwijderen uit de actieve-pluginlijst van deze repository</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>Pad naar een plugin-zip met de naam &lt;naam&gt;-&lt;versie&gt;.zip om te installeren in ./plugins/&lt;naam&gt;/</value>
+    <value>Pad naar een plugin-zip met de naam &lt;naam&gt;-&lt;versie&gt;.zip om op deze computer te installeren</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>Naam van de plugin om te verwijderen — verwijdert ./plugins/&lt;naam&gt;/ en haalt het uit activeplugins</value>
+    <value>Naam van de plugin om van deze computer te verwijderen</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>Met --install wordt een bestaande map ./plugins/&lt;naam&gt;/ volledig overschreven, inclusief plugin.json en state/</value>
+    <value>Met --install wordt een reeds geïnstalleerde plugin volledig overschreven</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>Geef een subopdracht op: 'adrplus plugins --list', '--validate', '--activate &lt;naam&gt;', '--deactivate &lt;naam&gt;', '--install &lt;pad&gt;' of '--uninstall &lt;naam&gt;'</value>
@@ -431,7 +431,7 @@
     <value>GEWEIGERD {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>Geen kandidaat-plugins gevonden onder ./plugins</value>
+    <value>Geen kandidaat-plugins gevonden</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validatie voltooid: {0} geldig, {1} geweigerd</value>
@@ -440,7 +440,7 @@
     <value>Wizard om de sync-modus en het repositorypad te kiezen (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>Wizard om de list/validate-modus en het repositorypad te kiezen (onderdrukt alle andere argumenten)</value>
+    <value>Wizard om een pluginactie te kiezen en, indien nodig, het repositorypad (onderdrukt alle andere argumenten)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>Kies de sync-modus</value>
@@ -461,7 +461,7 @@
     <value>Kies de actie</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List toont geladen plugins; Validate rapporteert het resultaat van de structurele validatie; Install/Uninstall beheren de pluginbestanden onder ./plugins</value>
+    <value>List toont geladen plugins; Validate controleert de structurele lading; Install/Uninstall beheren de plugins op deze computer</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Geladen plugins weergeven</value>
@@ -491,7 +491,7 @@
     <value>Selecteer de plugin(s) om te verwijderen</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>Geen plugins geïnstalleerd onder ./plugins</value>
+    <value>Geen plugins geïnstalleerd</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Selecteer actieve plugins</value>
@@ -539,7 +539,7 @@
     <value>GEWEIGERD</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Ontbrekende plugin(s): {0} — controleer ./plugins of voer 'adrplus plugins --wizard' uit</value>
+    <value>Ontbrekende plugin(s): {0} — zie 'adrplus plugins --list' of '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Actief</value>

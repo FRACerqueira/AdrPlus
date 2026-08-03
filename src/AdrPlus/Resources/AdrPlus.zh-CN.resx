@@ -131,7 +131,7 @@
     <value>'content' 文件路径格式不受支持：'{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' 必须是相对路径，不允许使用绝对路径：'{0}'</value>
+    <value>'folderRepo' 必须是相对路径：'{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>用法</value>
@@ -332,7 +332,7 @@
     <value>插件 '{0}'：允许列表中的 'hash' 字段已设置，但此版本尚未强制执行；目前不提供任何安全保证</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>'{1}' 中的插件 '{0}'：名称与另一个插件文件夹重复；两者都不会被加载</value>
+    <value>'{1}' 中的插件 '{0}'：名称重复；两者都不会被加载</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>插件 '{0}'：entryType '{1}' 未实现 IAdrPlugin，或者 Name/Version 与清单不匹配</value>
@@ -359,7 +359,7 @@
     <value>插件 '{0}'：永久性失败，不会加入重试队列 — 请修正配置后运行 'adrplus sync --backfill'</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>检查 ./plugins 下的插件：列出已加载的插件或验证其结构化加载</value>
+    <value>管理已安装的插件：列出、验证、激活、安装或卸载</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>列出已加载的插件：名称、版本、订阅的事件、allowlist 状态以及待处理项数量</value>
@@ -374,13 +374,13 @@
     <value>要从此仓库活动插件列表中移除的插件名称</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>要安装到 ./plugins/&lt;name&gt;/ 的插件 zip 路径，文件名须为 &lt;name&gt;-&lt;version&gt;.zip</value>
+    <value>要安装到此计算机的插件 zip 路径，文件名须为 &lt;name&gt;-&lt;version&gt;.zip</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>要卸载的插件名称 — 删除 ./plugins/&lt;name&gt;/ 并将其从 activeplugins 中移除</value>
+    <value>要从此计算机卸载的插件名称</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>与 --install 一起使用时，完全覆盖已存在的 ./plugins/&lt;name&gt;/ 文件夹，包括 plugin.json 和 state/</value>
+    <value>与 --install 一起使用时，完全覆盖已安装的插件</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>请指定一个子命令："adrplus plugins --list"、"--validate"、"--activate &lt;name&gt;"、"--deactivate &lt;name&gt;"、"--install &lt;path&gt;" 或 "--uninstall &lt;name&gt;"</value>
@@ -431,7 +431,7 @@
     <value>已拒绝 {0} — {1}：{2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>在 ./plugins 下未找到候选插件</value>
+    <value>未找到候选插件</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>验证完成：有效 {0} 个，已拒绝 {1} 个</value>
@@ -440,7 +440,7 @@
     <value>选择同步模式和仓库路径的向导(会忽略其他所有参数)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>选择 list/validate 模式和仓库路径的向导(会忽略其他所有参数)</value>
+    <value>选择插件操作以及必要时的仓库路径的向导(会忽略其他所有参数)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>选择同步模式</value>
@@ -461,7 +461,7 @@
     <value>选择操作</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List 显示已加载的插件；Validate 报告结构验证结果；Install/Uninstall 管理 ./plugins 下的插件文件</value>
+    <value>List 显示已加载的插件；Validate 检查结构化加载；Install/Uninstall 管理此计算机上的插件</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>列出已加载的插件</value>
@@ -491,7 +491,7 @@
     <value>选择要卸载的插件（可多选）</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>./plugins 下没有已安装的插件</value>
+    <value>未安装任何插件</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>选择活动插件</value>
@@ -539,7 +539,7 @@
     <value>已拒绝</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>缺失的插件：{0} — 请检查 ./plugins 或运行 'adrplus plugins --wizard'</value>
+    <value>缺失的插件：{0} — 请参阅 'adrplus plugins --list' 或 '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>已启用</value>

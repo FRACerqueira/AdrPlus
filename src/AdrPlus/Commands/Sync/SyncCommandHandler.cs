@@ -20,7 +20,7 @@ namespace AdrPlus.Commands.Sync
 {
     /// <summary>
     /// Handles the <c>sync</c> command. Default mode re-attempts every plugin's pending lifecycle events queued
-    /// in <c>./plugins/&lt;name&gt;/state/pending.json</c> (spec §6/§7, Fase 5). <c>--backfill</c> instead sweeps
+    /// in <c>./plugins-state/&lt;name&gt;/pending.json</c> (spec §6/§7, Fase 5; relocated by D36). <c>--backfill</c> instead sweeps
     /// every ADR in the repo and re-emits the event matching its current settled status (Fase 6) — scriptable/
     /// cron-friendly for the default mode, manual-only for <c>--backfill</c> (never self-limiting).
     /// </summary>
@@ -97,7 +97,7 @@ namespace AdrPlus.Commands.Sync
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 if (parsedArgs.ContainsKey(Arguments.Backfill))
@@ -140,7 +140,7 @@ namespace AdrPlus.Commands.Sync
                 return (record.ToSnapshot(), file.FileName, file.ContentAdr ?? string.Empty);
             }
 
-            var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), isActive: isActive, cancellationToken: cancellationToken);
+            var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), Path.Combine(targetPath, "plugins-state"), isActive: isActive, cancellationToken: cancellationToken);
 
             var message = string.Format(null, FormatMessages.SyncSummaryReport, summary.Succeeded, summary.Skipped, summary.StillPending, summary.PermanentlyFailed, summary.Dropped);
             _prompt.PromptWarnMissingActivePlugins(missingNames);

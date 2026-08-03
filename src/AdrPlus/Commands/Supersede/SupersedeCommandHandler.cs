@@ -150,7 +150,7 @@ namespace AdrPlus.Commands.Supersede
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
@@ -221,7 +221,7 @@ namespace AdrPlus.Commands.Supersede
                 _prompt.PromptWarnMissingActivePlugins(missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
-                await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);

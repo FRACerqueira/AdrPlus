@@ -103,7 +103,7 @@ namespace AdrPlus.Commands.Migrate
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var hasChanges = false;
@@ -133,7 +133,7 @@ namespace AdrPlus.Commands.Migrate
                     }
                 }
 
-                var result = await MigrateRepositoryAsync(foundfiles, repoconfig, isActive, cancellationToken);
+                var result = await MigrateRepositoryAsync(foundfiles, repoconfig, isActive, Path.Combine(targetPath, "plugins-state"), cancellationToken);
                 _prompt.PromptWarnMissingActivePlugins(missingNames);
                 foreach (var item in result)
                 {
@@ -155,7 +155,7 @@ namespace AdrPlus.Commands.Migrate
             }
         }
 
-        private async Task<IEnumerable<string>> MigrateRepositoryAsync(AdrFileNameComponents[] adrfiles, AdrPlusRepoConfig repoConfig, Func<LoadedPlugin, bool> isActive, CancellationToken cancellationToken)
+        private async Task<IEnumerable<string>> MigrateRepositoryAsync(AdrFileNameComponents[] adrfiles, AdrPlusRepoConfig repoConfig, Func<LoadedPlugin, bool> isActive, string pendingStateRoot, CancellationToken cancellationToken)
         {
             var result = new List<string>();    
             foreach (var file in adrfiles)
@@ -189,7 +189,7 @@ namespace AdrPlus.Commands.Migrate
                     await _fileSystem.WriteAllTextAsync(file.FileName, newcontent, cancellationToken);
                     result.Add($"{Resources.AdrPlus.Migrated} : {file.FileName}");
 
-                    await _pluginManager.DispatchAsync(AdrEventType.Migrated, adrRecord.ToSnapshot(), file.FileName, () => newcontent, repoConfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                    await _pluginManager.DispatchAsync(AdrEventType.Migrated, adrRecord.ToSnapshot(), file.FileName, () => newcontent, repoConfig.ToSnapshot(), pendingStateRoot, isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
                 }
             }
             return result;

@@ -77,7 +77,7 @@ public class PluginManagerDispatchTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
 
-        await manager.DispatchAsync(AdrEventType.Rejected, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Rejected, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
     }
@@ -90,7 +90,7 @@ public class PluginManagerDispatchTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
     }
@@ -106,8 +106,8 @@ public class PluginManagerDispatchTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Migrated"])));
 
-        await manager.DispatchAsync(AdrEventType.Migrated, CreateAdrSnapshot(1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
-        await manager.DispatchAsync(AdrEventType.Migrated, CreateAdrSnapshot(2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Migrated, CreateAdrSnapshot(1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Migrated, CreateAdrSnapshot(2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.Received(1).InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>());
         await plugin.Received(2).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -123,8 +123,8 @@ public class PluginManagerDispatchTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.Received(1).InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>());
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -146,7 +146,7 @@ public class PluginManagerDispatchTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => writtenJson = j), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         writtenJson.Should().NotBeNull();
         var entries = JsonSerializer.Deserialize<List<PendingEntry>>(writtenJson!, PluginManifest.SerializerOptions);
@@ -167,7 +167,7 @@ public class PluginManagerDispatchTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => writtenJson = j), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         var entries = JsonSerializer.Deserialize<List<PendingEntry>>(writtenJson!, PluginManifest.SerializerOptions);
         entries.Should().ContainSingle(e => e.Attempts == 1 && e.LastError == "boom");
@@ -183,7 +183,7 @@ public class PluginManagerDispatchTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
         _console.Received(1).PromptWriteError(Arg.Is<string>(s => s.Contains("p1")));
@@ -205,12 +205,43 @@ public class PluginManagerDispatchTests
         _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => storedJson = j), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(number: 1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
-        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(number: 2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(number: 1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(number: 2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         var entries = JsonSerializer.Deserialize<List<PendingEntry>>(storedJson!, PluginManifest.SerializerOptions);
         entries.Should().HaveCount(2);
         entries!.Select(e => e.AdrKey).Should().Contain(["0001-v1-r0", "0002-v1-r0"]);
+    }
+
+    [Fact]
+    public async Task DispatchAsync_TwoReposWithSamePluginName_WritePendingToIndependentStateFolders()
+    {
+        // Regression for D36: plugin binaries are host-global and shared across repos, but pending.json must
+        // stay per-repo. If pendingStateRoot were ever ignored (e.g. a future refactor derived the state path
+        // from the shared plugin.FolderPath again), this test would start seeing writes collide on one path
+        // instead of two.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Failed, Message = "boom", IsRetryable = true });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
+
+        var writtenPaths = new List<string>();
+        _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                writtenPaths.Add(callInfo.ArgAt<string>(0));
+                return Task.CompletedTask;
+            });
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(1), "/repoA/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repoA/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(1), "/repoB/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repoB/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        writtenPaths.Should().HaveCount(2);
+        writtenPaths.Should().OnlyHaveUniqueItems();
+        writtenPaths.Should().Contain(p => p.Contains("repoA") && p.Contains("p1"));
+        writtenPaths.Should().Contain(p => p.Contains("repoB") && p.Contains("p1"));
     }
 
     [Fact]
@@ -230,7 +261,7 @@ public class PluginManagerDispatchTests
         manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"], foregroundTimeoutMs: 30_000)));
 
         using var cts = new CancellationTokenSource();
-        var dispatchTask = manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), isReplay: false, isActive: null, cancellationToken: cts.Token);
+        var dispatchTask = manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: cts.Token);
         cts.Cancel();
 
         await FluentActions.Awaiting(() => dispatchTask).Should().ThrowAsync<OperationCanceledException>();

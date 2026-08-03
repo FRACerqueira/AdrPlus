@@ -16,10 +16,11 @@ using Microsoft.Extensions.Options;
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Default <see cref="IPluginManager"/> implementation. Discovers plugin subfolders via
-    /// <see cref="IFileSystemService.GetDirectories"/>, validates each with a <see cref="PluginLoader"/>, and
-    /// reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>. Never throws for a
-    /// rejected plugin — fail-soft, consistent with D30.
+    /// Default <see cref="IPluginManager"/> implementation. Discovers plugin subfolders under
+    /// <see cref="BuiltinPluginsRoot"/> and <see cref="UserPluginsRoot"/> (spec D2/D36, merged into one
+    /// candidate set) via <see cref="IFileSystemService.GetDirectories"/>, validates each with a
+    /// <see cref="PluginLoader"/>, and reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>.
+    /// Never throws for a rejected plugin — fail-soft, consistent with D30.
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="PluginManager"/> class.
@@ -28,11 +29,22 @@ namespace AdrPlus.Plugins
     /// <param name="config">The application configuration, providing the optional plugin allowlist.</param>
     /// <param name="logger">The logger for recording plugin rejections and warnings.</param>
     /// <param name="prompt">The console writer for surfacing plugin rejections and warnings to the user.</param>
+    /// <param name="builtinPluginsRoot">
+    /// The folder containing plugins bundled with the AdrPlus install itself (e.g. <c>plugins-builtin</c> next
+    /// to the tool's own assembly), or empty to disable it. Left empty by default so tests constructing this
+    /// class directly never touch the real file system for this root.
+    /// </param>
+    /// <param name="userPluginsRoot">
+    /// The stable, host-global folder holding plugins installed via <c>adrplus plugins --install</c> (spec
+    /// D35/D36), or empty to disable it. Left empty by default for the same reason as <paramref name="builtinPluginsRoot"/>.
+    /// </param>
     internal sealed class PluginManager(
         IFileSystemService fileSystem,
         IOptions<AdrPlusConfig> config,
         ILogger<PluginManager> logger,
-        IConsoleWriter prompt) : IPluginManager
+        IConsoleWriter prompt,
+        string builtinPluginsRoot = "",
+        string userPluginsRoot = "") : IPluginManager
     {
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly AdrPlusConfig _config = config.Value;
@@ -49,29 +61,35 @@ namespace AdrPlus.Plugins
         private readonly HashSet<string> _initFailedPlugins = new(StringComparer.OrdinalIgnoreCase);
 
         /// <inheritdoc/>
+        public string BuiltinPluginsRoot { get; } = builtinPluginsRoot;
+
+        /// <inheritdoc/>
+        public string UserPluginsRoot { get; } = userPluginsRoot;
+
+        /// <inheritdoc/>
         public IReadOnlyList<LoadedPlugin> LoadedPlugins => _loadedPlugins;
 
         /// <inheritdoc/>
         public IReadOnlyList<PluginRejection> Rejections => _rejections;
 
         /// <inheritdoc/>
-        public async Task LoadPluginsAsync(string pluginsRootPath, CancellationToken cancellationToken = default)
+        public async Task LoadPluginsAsync(CancellationToken cancellationToken = default)
         {
             _loadedPlugins.Clear();
             _rejections.Clear();
 
-            if (!_fileSystem.DirectoryExists(pluginsRootPath))
-            {
-                return;
-            }
-
             var loader = new PluginLoader(_fileSystem);
 
             // Stage 1: validate every candidate's manifest in isolation (schema, path-traversal guard, allowlist).
-            // Duplicate names can only be known once every candidate has reached this point.
+            // Duplicate names can only be known once every candidate has reached this point. Candidates are
+            // gathered from both host-global roots (D36) before validation — either root missing/empty is a
+            // no-op for that root, not an error.
             var candidates = new List<(string FolderPath, PluginManifest Manifest)>();
 
-            foreach (var folderPath in _fileSystem.GetDirectories(pluginsRootPath).OrderBy(path => path, StringComparer.Ordinal))
+            var folderPaths = EnumerateRoot(BuiltinPluginsRoot).Concat(EnumerateRoot(UserPluginsRoot))
+                .OrderBy(path => path, StringComparer.Ordinal);
+
+            foreach (var folderPath in folderPaths)
             {
                 var outcome = await loader.ValidateManifestAsync(
                     folderPath,
@@ -127,6 +145,7 @@ namespace AdrPlus.Plugins
             string adrFilePath,
             Func<string> getAdrRenderedContent,
             RepoInfoSnapshot repo,
+            string pendingStateRoot,
             bool isReplay,
             Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default)
@@ -178,13 +197,14 @@ namespace AdrPlus.Plugins
                 return;
             }
 
-            await Task.WhenAll(filtered.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, cancellationToken)));
+            await Task.WhenAll(filtered.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, pendingStateRoot, cancellationToken)));
         }
 
         /// <inheritdoc/>
         public async Task<SyncSummary> RetryPendingAsync(
             Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
             RepoInfoSnapshot repo,
+            string pendingStateRoot,
             Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default)
         {
@@ -197,7 +217,8 @@ namespace AdrPlus.Plugins
                     continue;
                 }
 
-                var entries = await PendingStateStore.ReadAllAsync(_fileSystem, plugin.FolderPath, cancellationToken);
+                var pluginStateFolder = Path.Combine(pendingStateRoot, plugin.Manifest.Name!);
+                var entries = await PendingStateStore.ReadAllAsync(_fileSystem, pluginStateFolder, cancellationToken);
                 if (entries.Count == 0)
                 {
                     continue;
@@ -267,7 +288,7 @@ namespace AdrPlus.Plugins
                     }
                 }
 
-                await PendingStateStore.WriteAllAsync(_fileSystem, plugin.FolderPath, remaining, cancellationToken);
+                await PendingStateStore.WriteAllAsync(_fileSystem, pluginStateFolder, remaining, cancellationToken);
             }
 
             return summary;
@@ -539,7 +560,7 @@ namespace AdrPlus.Plugins
             return (int)delay;
         }
 
-        private async Task DispatchToPluginAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, CancellationToken cancellationToken)
+        private async Task DispatchToPluginAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, string pendingStateRoot, CancellationToken cancellationToken)
         {
             var name = plugin.Manifest.Name!;
 
@@ -562,7 +583,7 @@ namespace AdrPlus.Plugins
                     return;
                 default:
                     var attempts = outcome.WasTimeout ? 0 : 1;
-                    await HandleFailureAsync(plugin, context, correlationId, outcome.ErrorMessage ?? string.Empty, outcome.IsRetryable, attempts, cancellationToken);
+                    await HandleFailureAsync(plugin, context, correlationId, outcome.ErrorMessage ?? string.Empty, outcome.IsRetryable, attempts, pendingStateRoot, cancellationToken);
                     return;
             }
         }
@@ -676,7 +697,7 @@ namespace AdrPlus.Plugins
             };
         }
 
-        private async Task HandleFailureAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, string lastError, bool isRetryable, int attempts, CancellationToken cancellationToken)
+        private async Task HandleFailureAsync(LoadedPlugin plugin, AdrEventContext context, string correlationId, string lastError, bool isRetryable, int attempts, string pendingStateRoot, CancellationToken cancellationToken)
         {
             var name = plugin.Manifest.Name!;
 
@@ -695,9 +716,18 @@ namespace AdrPlus.Plugins
                 Attempts = attempts,
                 Timestamp = DateTime.UtcNow
             };
-            await PendingStateStore.UpsertAsync(_fileSystem, plugin.FolderPath, entry, cancellationToken);
+            await PendingStateStore.UpsertAsync(_fileSystem, Path.Combine(pendingStateRoot, name), entry, cancellationToken);
             WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name));
         }
+
+        /// <summary>
+        /// Every immediate subfolder of <paramref name="root"/>, or empty when <paramref name="root"/> is blank
+        /// or doesn't exist (spec D36 — either host-global root is optional).
+        /// </summary>
+        private string[] EnumerateRoot(string root) =>
+            string.IsNullOrEmpty(root) || !_fileSystem.DirectoryExists(root)
+                ? []
+                : _fileSystem.GetDirectories(root);
 
         private static string BuildAdrKey(AdrRecordSnapshot adr) => AdrKeyFormatter.Format(adr.Number, adr.Version, adr.Revision);
 

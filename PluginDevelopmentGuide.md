@@ -3,7 +3,7 @@
 
 This guide is for developers writing a **plugin** for AdrPlus — code that reacts to ADR lifecycle events (created, approved, rejected, superseded, ...) to sync decisions into an external system (Confluence, Jira, Teams, a search index, whatever you need).
 
-If you just want to *use* AdrPlus to manage ADRs, see the [Step-by-Step Guide](StepByStepGuide.md) instead. If you want a working example to read alongside this guide, every new repository already ships with one: `AdrPlus.Plugins.AdrIndexer` (bundled with the tool, auto-installed by `adrplus init` into `./plugins/adr-indexer/`) — its source lives at `src/AdrPlus.Plugins.AdrIndexer/AdrIndexerPlugin.cs` in the AdrPlus repository.
+If you just want to *use* AdrPlus to manage ADRs, see the [Step-by-Step Guide](StepByStepGuide.md) instead. If you want a working example to read alongside this guide, every machine with AdrPlus installed already has one available: `AdrPlus.Plugins.AdrIndexer` (bundled with the tool, discovered automatically — no install step) — its source lives at `src/AdrPlus.Plugins.AdrIndexer/AdrIndexerPlugin.cs` in the AdrPlus repository.
 
 ---
 
@@ -24,7 +24,7 @@ If you just want to *use* AdrPlus to manage ADRs, see the [Step-by-Step Guide](S
 
 ## How the plugin system works
 
-- AdrPlus discovers plugins under `./plugins/<name>/` in the repository — one subfolder per plugin, each loaded into its own isolated `AssemblyLoadContext`.
+- AdrPlus discovers plugins **host-globally**, not per repository: one subfolder per plugin under `%UserProfile%/AdrPlus.Plugins/<name>/` (installed via `adrplus plugins --install`), merged with whatever ships bundled with the AdrPlus install itself — each loaded into its own isolated `AssemblyLoadContext`. A repository only ever holds `activeplugins`/`disableplugins` (see `adr-config.adrplus`), the on/off switch for plugins already present on the machine — never plugin code itself.
 - Whenever a command settles an ADR's status (`approve`, `reject`, `undo`, `supersede`, `migrate`, and the metadata-only `new`/`version`/`revise`), the host dispatches **one event** to every loaded plugin that subscribes to it.
 - Dispatch in the foreground is a **single, non-retried attempt**, bounded by a short timeout (`foregroundTimeoutMs`, default 5000ms) — this is what keeps `adrplus approve` fast even if your external system is slow or down. If that attempt doesn't succeed, the host queues the event in a per-plugin pending file and returns control to the user immediately.
 - `adrplus sync` (no flags) re-drives whatever is sitting in that pending file, retrying with backoff — safe to run on a schedule (cron/CI), since it's a no-op once everything has synced.
@@ -52,7 +52,7 @@ Create a class library targeting `net10.0` (or anything `>= net10.0`) and refere
 
 `Private="false"` matters: it stops the build from copying `AdrPlus.Abstractions.dll` into your plugin's own output folder — see the warning below about why that copy breaks loading. If you're working inside a clone of the AdrPlus repository itself (e.g. contributing the plugin back), a `ProjectReference` to `src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj` works the same way, as the bundled `AdrIndexer` example does.
 
-Your build output — the plugin's `.dll`, its own dependencies (resolved from its `.deps.json`), and `plugin.json` — goes into its own folder under the target repository's `./plugins/<name>/`. **Do not** copy `AdrPlus.Abstractions.dll` itself into that folder: the host resolves that assembly once and expects your plugin to share the exact same type identity. A second copy alongside your plugin gives it a *different* `IAdrPlugin` type as far as the CLR is concerned, and the host will reject your plugin as not implementing the contract.
+Your build output — the plugin's `.dll`, its own dependencies (resolved from its `.deps.json`), and `plugin.json` — goes into its own folder under the host-global `%UserProfile%/AdrPlus.Plugins/<name>/` (not a repository — see below). **Do not** copy `AdrPlus.Abstractions.dll` itself into that folder: the host resolves that assembly once and expects your plugin to share the exact same type identity. A second copy alongside your plugin gives it a *different* `IAdrPlugin` type as far as the CLR is concerned, and the host will reject your plugin as not implementing the contract.
 
 ---
 
@@ -273,7 +273,7 @@ return Fail("Invalid API key.", isRetryable: false);   // permanent — host wil
 return Fail(ex.Message);                                // transient — retryable by default, queued and retried
 ```
 
-- **Retryable failures** (the default) get written to the plugin's `./plugins/<name>/state/pending.json` and retried with backoff by `adrplus sync`.
+- **Retryable failures** (the default) get written to that repository's `./plugins-state/<name>/pending.json` and retried with backoff by `adrplus sync`. This is per-repository state, kept separate from the plugin's own (host-global) code — a failure in repo A never shows up in repo B's pending file, even though both repos are dispatching to the same installed plugin.
 - **`IsRetryable: false`** (and `InitializeAsync` throwing, treated the same way) is **never** written to pending state — there's nothing productive to retry automatically. Instead, the host emits one distinct, prominent warning telling the developer to fix configuration and then run `adrplus sync --backfill` once fixed, rather than silently retrying a failure that can't self-heal.
 
 This split is entirely **protocol-agnostic**, by design: the host only ever sees your `PluginResult` — never an HTTP status code, a socket exception, or any other transport detail. Whether you're talking HTTP, gRPC, a message queue, or something else, classifying "this specific failure is permanent" is your plugin's job, the same way resolving credentials is (see the next two sections). Nothing about `AdrPlus.Abstractions` assumes HTTP.
@@ -287,7 +287,7 @@ There's no server-side component here. Dispatch happens on whichever developer's
 Practically, this means:
 
 - Your plugin needs a way to resolve its own credentials per-machine (environment variable, local secret store, whatever fits your team) — the host provides no credentials API at all (see the next section).
-- Coverage of your external system is only as consistent as credential provisioning across the team. A developer without valid credentials configured locally simply won't sync — loudly, thanks to `IsRetryable: false`, but they won't sync — until someone with working credentials runs `adrplus sync --backfill`.
+- Coverage of your external system is only as consistent as credential provisioning **and plugin installation** across the team — plugins are installed per machine (`adrplus plugins --install`, host-global), not delivered via `git clone`, so a developer also needs the plugin actually installed locally, not just credentialed. A developer without valid credentials configured locally simply won't sync — loudly, thanks to `IsRetryable: false`, but they won't sync — until someone with working credentials runs `adrplus sync --backfill`.
 - If your team needs more centralized coverage, a CI job running `adrplus sync` (no flags, on a schedule, with one shared credential) re-drives whatever is already pending — safe to automate, since it's self-limiting. `--backfill` itself must stay a manual, occasional operation regardless of who runs it (see the previous section) — never wire it into a cron/CI trigger.
 - The process exit code never reflects plugin outcomes (only the local ADR file write does) — scripts that need to know whether sync actually succeeded should check `adrplus plugins --list`'s pending counts or the file log, not the exit code.
 
@@ -295,11 +295,11 @@ Practically, this means:
 
 ## Secrets: never put them in `plugin.json`
 
-`plugin.json` (and your plugin's compiled `.dll`) is meant to be **committed to the repository**, so the whole team gets the same plugin installed on clone — that's exactly what `adrplus init` does for the bundled `AdrIndexer` example. That also means anything you put in its `settings` object is checked into git, in plain text, for anyone with repo access to read.
+`plugin.json` (and your plugin's compiled `.dll`) live host-globally under `%UserProfile%/AdrPlus.Plugins/<name>/` — outside any repository, so there's nothing to commit or `.gitignore` for the plugin's own code. That still means anything you put in its `settings` object is plain text on whatever machine the plugin is installed on, so treat it the same as you would a committed file.
 
 - Put non-secret configuration in `settings` — base URLs, space keys, output filenames, anything that isn't a credential.
 - Resolve actual credentials (API keys, tokens, passwords) yourself, from an environment variable or a local secret store — never from `settings`.
-- `./plugins/<name>/state/pending.json` is local, per-machine runtime state, not something to commit — make sure your repo's `.gitignore` excludes `plugins/*/state/`.
+- Each repository's `./plugins-state/<name>/pending.json` is local, per-machine, per-repository runtime state, not something to commit — make sure your repo's `.gitignore` excludes `plugins-state/`.
 
 An optional allowlist can restrict which plugin names are permitted to load at all, configured under `pluginallowlist` in the repo's `adrplus.json` (each entry has a `name`, matched case-insensitively, and an as-yet-unenforced `hash` field reserved for future use). This guards against an unexpected plugin folder being loaded — it does not replace the credential discipline above.
 
@@ -307,7 +307,7 @@ An optional allowlist can restrict which plugin names are permitted to load at a
 
 ## Installing and testing your plugin
 
-1. Build your plugin project and copy its output — DLL, dependencies, `plugin.json` — into `<repo>/plugins/<name>/`. If you're distributing a built plugin rather than developing it in place, `adrplus plugins --install <path-to-name-version.zip> --path <repo>` does this step for you: the zip must be named `<name>-<version>.zip`, matching `plugin.json`'s own `name`/`version`.
+1. Build your plugin project and copy its output — DLL, dependencies, `plugin.json` — into `%UserProfile%/AdrPlus.Plugins/<name>/` (host-global, not per repository). If you're distributing a built plugin rather than developing it in place, `adrplus plugins --install <path-to-name-version.zip>` does this step for you (no `--path` needed — installing is a machine-wide operation): the zip must be named `<name>-<version>.zip`, matching `plugin.json`'s own `name`/`version`.
 2. `adrplus plugins --validate --path <repo>` — re-runs structural load validation (manifest schema, `entryType` implements `IAdrPlugin`, `Name`/`Version` match, `abstractionsVersion` compatible) without dispatching any real event. Fix whatever it reports before moving on.
 3. `adrplus plugins --list --path <repo>` — confirms your plugin is loaded, shows its subscribed events, allowlist status, and current pending-item count. If it shows as `Inactive`, it's structurally fine but not yet trusted for dispatch (D31) — run `adrplus plugins --activate <name> --path <repo>` (installing via `--install` never activates automatically, on purpose).
 4. Trigger a real event (e.g. `adrplus approve` against a `Proposed` ADR) and check your plugin's side effect happened, or that `adrplus plugins --list` now shows a pending item if it didn't.

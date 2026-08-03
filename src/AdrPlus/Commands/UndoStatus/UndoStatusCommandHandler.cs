@@ -138,7 +138,7 @@ namespace AdrPlus.Commands.UndoStatus
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
@@ -175,7 +175,7 @@ namespace AdrPlus.Commands.UndoStatus
                 _prompt.PromptWarnMissingActivePlugins(missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {infoadr.FileName}");
 
-                await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {

@@ -88,9 +88,11 @@ Not every ADR-related need belongs in the core CLI. Teams often want to react to
 
 Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus.Abstractions` package — see the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract and event lifecycle.
 
-You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is auto-installed by `adrplus init` into `./plugins/adr-indexer/`. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
+You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is discovered automatically — no install step needed. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
 
-Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` straight into `./plugins/<name>/`, and `--uninstall <name>` removes it again. A newly installed plugin never dispatches on its own — activate it explicitly with `adrplus plugins --activate <name>` (or deactivate one with `--deactivate <name>`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+Plugins are installed **once per machine, host-wide** — not per repository. Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` into `%UserProfile%/AdrPlus.Plugins/<name>/`, making it available to every repository on that machine; `--uninstall <name>` removes it from the machine entirely. A newly installed plugin never dispatches on its own for any given repository — activate it explicitly per repo with `adrplus plugins --activate <name> --path "path/to/repository"` (or deactivate one with `--deactivate <name> --path "path/to/repository"`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+
+> Removing AdrPlus completely? `dotnet tool uninstall -g adrplus` doesn't clean up `%UserProfile%/AdrPlus.Plugins/` (installed plugins) or `%UserProfile%/AdrPlus.History/` (settings carried across upgrades) — dotnet global tools have no uninstall hook, so both are left behind by design. Delete them by hand if you want a fully clean removal.
 
 ---
 
@@ -317,11 +319,12 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus plugins --activate "PluginName" --path "path/to/repository"
     adrplus plugins --deactivate "PluginName" --path "path/to/repository"
 
-# Install or remove a plugin — the zip must be named <name>-<version>.zip, matching its plugin.json;
-# --force overwrites an existing install entirely (including plugin.json); neither touches activeplugins
+# Install or remove a plugin — host-wide, no --path: the zip must be named <name>-<version>.zip,
+# matching its plugin.json; --force overwrites an existing install entirely (including plugin.json);
+# neither touches any repository's activeplugins
 
-    adrplus plugins --install "./PluginName-1.0.0.zip" --path "path/to/repository"
-    adrplus plugins --uninstall "PluginName" --path "path/to/repository"
+    adrplus plugins --install "./PluginName-1.0.0.zip"
+    adrplus plugins --uninstall "PluginName"
 
 ```
 
@@ -516,7 +519,7 @@ adrplus config --repository
 | `headertablefields` | Table header label for displaying field names in the ADR. |
 | `headertablevalues` | Table header label for displaying field values in the ADR. |
 | `headermigrated` | Header label for the "Migrated" indicator (used for ADRs migrated via the `migrate` command). |
-| `activeplugins` | Names of the plugins (under `./plugins/`) expected to be active for this repository. Written automatically by `init` from whatever's installed at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. A plugin installed but left off this list is treated as deliberately inactive (silently skipped); a name listed here with no matching installed plugin is reported as missing the next time a command dispatches. |
+| `activeplugins` | Names of the host-installed plugins (see [Plugins](#plugins)) expected to be active for this repository. Written automatically by `init` from whatever's installed on the machine at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. A plugin installed but left off this list is treated as deliberately inactive (silently skipped); a name listed here with no matching installed plugin is reported as missing the next time a command dispatches. |
 | `disableplugins` | Repository-wide kill switch. When `true`, no plugin ever dispatches for this repo, regardless of `activeplugins` — the ADR operation itself still completes normally. |
 
 ### Suggested settings per team profile

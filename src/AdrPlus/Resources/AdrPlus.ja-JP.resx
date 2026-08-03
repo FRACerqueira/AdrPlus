@@ -131,7 +131,7 @@
     <value>'content' のファイルパス形式はサポートされていません: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' は相対パスである必要があります。絶対パスは使用できません: '{0}'</value>
+    <value>'folderRepo' は相対パスである必要があります: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>使用方法</value>
@@ -332,7 +332,7 @@
     <value>プラグイン '{0}': 許可リストの 'hash' フィールドが設定されていますが、このバージョンではまだ適用されません。現時点ではセキュリティ保証にはなりません</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>'{1}' 内のプラグイン '{0}': 名前が別のプラグインフォルダーと重複しています。どちらも読み込まれません</value>
+    <value>'{1}' 内のプラグイン '{0}': 名前が重複しています。どちらも読み込まれません</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>プラグイン '{0}': entryType '{1}' が IAdrPlugin を実装していないか、Name/Version がマニフェストと一致しません</value>
@@ -359,7 +359,7 @@
     <value>プラグイン '{0}': 永続的な失敗のため再試行キューに入れません — 設定を修正して 'adrplus sync --backfill' を実行してください</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>./plugins 配下のプラグインを検査します。読み込まれたプラグインの一覧表示、または構造的な読み込みの検証を行います</value>
+    <value>インストール済みのプラグインを管理します: 一覧表示、検証、有効化、インストール、またはアンインストール</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>読み込まれたプラグインを一覧表示します: 名前、バージョン、購読イベント、allowlist の状態、保留中の項目数</value>
@@ -374,13 +374,13 @@
     <value>このリポジトリのアクティブプラグインリストから削除するプラグイン名</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>./plugins/&lt;name&gt;/ にインストールする &lt;name&gt;-&lt;version&gt;.zip という名前のプラグインzipへのパス</value>
+    <value>このマシンにインストールする &lt;name&gt;-&lt;version&gt;.zip という名前のプラグインzipへのパス</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>アンインストールするプラグイン名 — ./plugins/&lt;name&gt;/ を削除し、activeplugins から除外します</value>
+    <value>このマシンからアンインストールするプラグイン名</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>--install と併用すると、既存の ./plugins/&lt;name&gt;/ フォルダを plugin.json や state/ を含めて完全に上書きします</value>
+    <value>--install と併用すると、インストール済みのプラグインを完全に上書きします</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>サブコマンドを指定してください: 'adrplus plugins --list'、'--validate'、'--activate &lt;name&gt;'、'--deactivate &lt;name&gt;'、'--install &lt;path&gt;'、または '--uninstall &lt;name&gt;'</value>
@@ -431,7 +431,7 @@
     <value>REJECTED {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>./plugins 配下に候補となるプラグインが見つかりません</value>
+    <value>候補となるプラグインが見つかりません</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>検証完了: 有効 {0} 件、拒否 {1} 件</value>
@@ -440,7 +440,7 @@
     <value>同期モードとリポジトリのパスを選ぶウィザード(他の引数はすべて無視されます)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>list/validateモードとリポジトリのパスを選ぶウィザード(他の引数はすべて無視されます)</value>
+    <value>プラグイン操作と、必要な場合はリポジトリのパスを選ぶウィザード(他の引数はすべて無視されます)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>同期モードを選択</value>
@@ -461,7 +461,7 @@
     <value>操作を選択</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List は読み込まれたプラグインを表示し、Validate は構造検証の結果を報告し、Install/Uninstall は ./plugins 配下のプラグインファイルを管理します</value>
+    <value>List は読み込まれたプラグインを表示し、Validate は構造的な読み込みを確認し、Install/Uninstall はこのマシンのプラグインを管理します</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>読み込まれたプラグインを一覧表示</value>
@@ -491,7 +491,7 @@
     <value>アンインストールするプラグインを選択してください（複数選択可）</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>./plugins にインストールされたプラグインはありません</value>
+    <value>インストールされたプラグインはありません</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>アクティブにするプラグインを選択してください</value>
@@ -539,7 +539,7 @@
     <value>REJECTED</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>プラグインが見つかりません: {0} — ./plugins を確認するか 'adrplus plugins --wizard' を実行してください</value>
+    <value>プラグインが見つかりません: {0} — 'adrplus plugins --list' または '--wizard' を参照してください</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>有効</value>

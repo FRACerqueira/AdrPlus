@@ -25,8 +25,9 @@ namespace AdrPlus.Commands.Plugins
     /// status, pending-item count); <c>validate</c> re-runs the Fase 3 structural load validation and reports
     /// loaded vs. rejected plugins, without dispatching any event; <c>--activate</c>/<c>--deactivate</c> (spec
     /// D34, Fase 12) are the non-interactive counterpart to the wizard's manage mode, adding or removing a
-    /// single plugin name from <c>ActivePlugins</c>; <c>--install</c>/<c>--uninstall</c> (spec D35, Fase 13)
-    /// replace manual copying into <c>./plugins/&lt;name&gt;/</c> with a zip-based flow.
+    /// single plugin name from <c>ActivePlugins</c>; <c>--install</c>/<c>--uninstall</c> (spec D35/D36, Fase
+    /// 13/14) are host-global, zip-based operations against <see cref="IPluginManager.UserPluginsRoot"/> — no
+    /// repository is in scope for either.
     /// </summary>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
@@ -84,8 +85,8 @@ namespace AdrPlus.Commands.Plugins
                             "adrplus plugins --validate --path \"path/to/repository/\"",
                             "adrplus plugins --activate \"PluginName\" --path \"path/to/repository/\"",
                             "adrplus plugins --deactivate \"PluginName\" --path \"path/to/repository/\"",
-                            "adrplus plugins --install \"./PluginName-1.0.0.zip\" --path \"path/to/repository/\"",
-                            "adrplus plugins --uninstall \"PluginName\" --path \"path/to/repository/\"",
+                            "adrplus plugins --install \"./PluginName-1.0.0.zip\"",
+                            "adrplus plugins --uninstall \"PluginName\"",
                         ]));
                     return;
                 }
@@ -117,6 +118,20 @@ namespace AdrPlus.Commands.Plugins
                     throw new ArgumentException(string.Format(null, FormatMessages.PluginsModeRequired));
                 }
 
+                // --install/--uninstall are host-global (spec D35/D36) — no repository is in scope, so neither
+                // reads Arguments.TargetRepo nor requires --path. Handled before the --path check below, which
+                // only applies to the remaining, repo-scoped modes.
+                if (hasInstall)
+                {
+                    await InstallPluginAsync(parsedArgs[Arguments.PluginsInstall], parsedArgs.ContainsKey(Arguments.PluginsForce), cancellationToken);
+                    return;
+                }
+                if (hasUninstall)
+                {
+                    UninstallPlugin(parsedArgs[Arguments.PluginsUninstall]);
+                    return;
+                }
+
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
                 targetPath ??= string.Empty;
 
@@ -135,23 +150,13 @@ namespace AdrPlus.Commands.Plugins
                     await SetActivePluginAsync(targetPath, parsedArgs[Arguments.PluginsDeactivate], activate: false, cancellationToken);
                     return;
                 }
-                if (hasInstall)
-                {
-                    await InstallPluginAsync(targetPath, parsedArgs[Arguments.PluginsInstall], parsedArgs.ContainsKey(Arguments.PluginsForce), cancellationToken);
-                    return;
-                }
-                if (hasUninstall)
-                {
-                    await UninstallPluginAsync(targetPath, parsedArgs[Arguments.PluginsUninstall], cancellationToken);
-                    return;
-                }
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
 
                 if (hasList)
                 {
                     var (repoconfig, _) = await ReadRepoConfigAsync(targetPath, cancellationToken);
-                    await ReportListAsync(hasWizard, repoconfig, cancellationToken);
+                    await ReportListAsync(hasWizard, targetPath, repoconfig, cancellationToken);
                 }
                 else
                 {
@@ -171,12 +176,12 @@ namespace AdrPlus.Commands.Plugins
         /// <see cref="IConsoleWriter.PromptShowPluginsListTable"/> instead of one line per plugin — the
         /// non-interactive <c>--list</c> flag always uses plain text and stays scriptable.
         /// </summary>
-        private async Task ReportListAsync(bool useTable, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
+        private async Task ReportListAsync(bool useTable, string targetPath, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
         {
             var allowlistStatus = _config.PluginAllowlist is null
                 ? string.Format(null, FormatMessages.PluginsNoAllowlistConfigured)
                 : string.Format(null, FormatMessages.PluginsAllowlisted);
-            var rows = await BuildListRowsAsync(repoconfig, allowlistStatus, cancellationToken);
+            var rows = await BuildListRowsAsync(targetPath, repoconfig, allowlistStatus, cancellationToken);
 
             if (rows.Count == 0)
             {
@@ -210,17 +215,18 @@ namespace AdrPlus.Commands.Plugins
         /// repo's plugins are off) — the only way the leading status column surfaces a plugin that vanished,
         /// since it has no <see cref="LoadedPlugin"/> row otherwise.
         /// </summary>
-        private async Task<List<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>> BuildListRowsAsync(AdrPlusRepoConfig repoconfig, string allowlistStatus, CancellationToken cancellationToken)
+        private async Task<List<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>> BuildListRowsAsync(string targetPath, AdrPlusRepoConfig repoconfig, string allowlistStatus, CancellationToken cancellationToken)
         {
             var rows = new List<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>();
             var activeNames = new HashSet<string>(repoconfig.ActivePlugins, StringComparer.OrdinalIgnoreCase);
             var loadedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var disabledLabel = string.Format(null, FormatMessages.PluginsStatusDisabled);
+            var pendingStateRoot = Path.Combine(targetPath, "plugins-state");
 
             foreach (var plugin in _pluginManager.LoadedPlugins)
             {
                 loadedNames.Add(plugin.Manifest.Name!);
-                var pending = await PendingStateStore.ReadAllAsync(_fileSystem, plugin.FolderPath, cancellationToken);
+                var pending = await PendingStateStore.ReadAllAsync(_fileSystem, Path.Combine(pendingStateRoot, plugin.Manifest.Name!), cancellationToken);
                 var events = string.Join(", ", plugin.Manifest.SubscribedEvents ?? []);
                 var status = repoconfig.DisablePlugins
                     ? disabledLabel
@@ -282,7 +288,7 @@ namespace AdrPlus.Commands.Plugins
         private async Task RunManageActivePluginsAsync(string targetPath, CancellationToken cancellationToken)
         {
             var (repoconfig, configPath) = await ReadRepoConfigAsync(targetPath, cancellationToken);
-            await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+            await _pluginManager.LoadPluginsAsync(cancellationToken);
 
             var loadedNames = _pluginManager.LoadedPlugins.Select(plugin => plugin.Manifest.Name!).ToArray();
             var currentlyActive = new HashSet<string>(repoconfig.ActivePlugins, StringComparer.OrdinalIgnoreCase);
@@ -336,22 +342,23 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Non-interactive plugin distribution (spec D35, Fase 13): replaces manual copying into
-        /// <c>./plugins/&lt;name&gt;/</c> with a zip-based flow. <paramref name="zipPath"/> must be named
-        /// <c>&lt;name&gt;-&lt;version&gt;.zip</c>; the destination folder name comes from that file name, not
-        /// from the manifest's <c>Name</c> (which may legitimately differ, as with the bundled
-        /// <c>AdrIndexer</c>/<c>adr-indexer</c> pair). Extracts to a staging folder under the repo's own
-        /// <c>./plugins/</c> first (same volume as the destination, so the final <see cref="Directory.Move"/>
-        /// is a cheap rename, not a cross-volume copy) so a failed/mismatched zip never touches the real
-        /// destination. Every entry is rejected if it contains <c>/</c>, <c>\</c>, <c>..</c>, or <c>:</c> —
-        /// mirrors <c>PluginLoader</c>'s <c>entryAssembly</c> path-traversal guard (Fase 3) and, as a side
-        /// effect, enforces the flat archive layout every plugin folder already uses. Never touches
-        /// <c>activeplugins</c> — D31's trust checkpoint means a downloaded zip must never start dispatching on
-        /// its own; activating it is a separate step via <c>--activate</c> (D34). With <paramref name="force"/>,
-        /// an existing destination is deleted and replaced entirely, including its <c>plugin.json</c> and
-        /// <c>state/</c> — an accepted trade-off (no surgical merge of local customization), not a bug.
+        /// Non-interactive plugin distribution (spec D35/D36, Fase 13/14): a host-global, zip-based flow — no
+        /// repository is in scope. <paramref name="zipPath"/> must be named <c>&lt;name&gt;-&lt;version&gt;.zip</c>;
+        /// the destination folder name comes from that file name, not from the manifest's <c>Name</c> (which may
+        /// legitimately differ, as with the bundled <c>AdrIndexer</c>/<c>adr-indexer</c> pair). Extracts to a
+        /// staging folder under <see cref="IPluginManager.UserPluginsRoot"/> first (same volume as the
+        /// destination, so the final <see cref="Directory.Move"/> is a cheap rename, not a cross-volume copy) so
+        /// a failed/mismatched zip never touches the real destination. Every entry is rejected if it contains
+        /// <c>/</c>, <c>\</c>, <c>..</c>, or <c>:</c> — mirrors <c>PluginLoader</c>'s <c>entryAssembly</c>
+        /// path-traversal guard (Fase 3) and, as a side effect, enforces the flat archive layout every plugin
+        /// folder already uses. Never touches any repo's <c>activeplugins</c> — D31's trust checkpoint means a
+        /// downloaded zip must never start dispatching on its own; activating it is a separate step via
+        /// <c>--activate</c> (D34). With <paramref name="force"/>, an existing destination is deleted and
+        /// replaced entirely, including its <c>plugin.json</c> — an accepted trade-off (no surgical merge of
+        /// local customization), not a bug. One installed version per name per host (D2/D36) — "exists" means
+        /// "this name has any version installed," since there is nowhere for a second version to coexist.
         /// </summary>
-        private async Task InstallPluginAsync(string targetPath, string zipPath, bool force, CancellationToken cancellationToken)
+        private async Task InstallPluginAsync(string zipPath, bool force, CancellationToken cancellationToken)
         {
             if (!_fileSystem.FileExists(zipPath))
             {
@@ -367,7 +374,7 @@ namespace AdrPlus.Commands.Plugins
             var name = match.Groups["name"].Value;
             var version = match.Groups["version"].Value;
 
-            var pluginsRoot = Path.Combine(targetPath, "plugins");
+            var pluginsRoot = _pluginManager.UserPluginsRoot;
             var destDir = Path.Combine(pluginsRoot, name);
             if (Directory.Exists(destDir) && !force)
             {
@@ -430,7 +437,7 @@ namespace AdrPlus.Commands.Plugins
             LogMessages.LogCommandSuccessful(_logger, installedMessage);
             _prompt.PromptWriteSuccess(installedMessage);
 
-            await _pluginManager.LoadPluginsAsync(pluginsRoot, cancellationToken);
+            await _pluginManager.LoadPluginsAsync(cancellationToken);
             var loaded = _pluginManager.LoadedPlugins.FirstOrDefault(plugin => string.Equals(plugin.FolderPath, destDir, StringComparison.OrdinalIgnoreCase));
             if (loaded is not null)
             {
@@ -445,16 +452,17 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Non-interactive plugin removal (spec D35, Fase 13): deletes <c>./plugins/&lt;name&gt;/</c> if present
-        /// (a no-op, not an error, if it's already gone — uninstall is safe to re-run) and then removes
-        /// <paramref name="name"/> from <c>activeplugins</c> by reusing <see cref="SetActivePluginAsync"/>'s
-        /// deactivate path. Unlike install's activation checkpoint, cleanup here has no trust question — an
-        /// orphaned <c>activeplugins</c> entry for a deleted plugin would only produce a permanent, useless
-        /// <c>Missing</c> warning on every future command.
+        /// Non-interactive plugin removal (spec D35/D36, Fase 13/14): deletes
+        /// <see cref="IPluginManager.UserPluginsRoot"/>'s <c>&lt;name&gt;/</c> folder if present (a no-op, not
+        /// an error, if it's already gone — uninstall is safe to re-run). Unlike the pre-pivot design,
+        /// <c>--uninstall</c> is host-global and no longer touches any repo's <c>activeplugins</c> — with no
+        /// repository in scope, and no registry of which repos on the machine might still reference this name,
+        /// there is nothing safe to edit here. Drift resolves itself as a <c>Missing</c> warning (D31/D32) the
+        /// next time an affected repo runs a dispatching command — this is intentional, not a gap.
         /// </summary>
-        private async Task UninstallPluginAsync(string targetPath, string name, CancellationToken cancellationToken)
+        private void UninstallPlugin(string name)
         {
-            var destDir = Path.Combine(targetPath, "plugins", name);
+            var destDir = Path.Combine(_pluginManager.UserPluginsRoot, name);
             if (Directory.Exists(destDir))
             {
                 Directory.Delete(destDir, recursive: true);
@@ -462,8 +470,6 @@ namespace AdrPlus.Commands.Plugins
                 LogMessages.LogCommandSuccessful(_logger, message);
                 _prompt.PromptWriteSuccess(message);
             }
-
-            await SetActivePluginAsync(targetPath, name, activate: false, cancellationToken);
         }
 
         private static bool ContainsUnsafeZipEntryPath(string entryFullName) =>
@@ -540,17 +546,68 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Interactive <c>adrplus plugins --wizard</c>: resolves the repository path and picks <c>list</c>,
-        /// <c>validate</c>, or <c>manage</c> mode via prompts. For <c>list</c>/<c>validate</c>, returns the same
-        /// <see cref="Dictionary{Arguments, String}"/> shape <c>ParseArgs</c> would have produced for the
-        /// equivalent non-interactive flags — the rest of <see cref="ExecuteAsync"/> runs unchanged from there
-        /// (only its final rendering step is aware of <c>--wizard</c>, to show a table instead of plain text).
-        /// <c>manage</c> instead runs <see cref="RunManageActivePluginsAsync"/> to completion here and returns
-        /// <see langword="null"/>, signalling <see cref="ExecuteAsync"/> that there's nothing left to do.
+        /// Interactive <c>adrplus plugins --wizard</c>: picks a mode first, then — only for the repo-scoped
+        /// modes (<c>list</c>/<c>validate</c>/<c>manage</c>) — resolves a repository path via prompts. Install
+        /// and uninstall are host-global (spec D35/D36) and never prompt for a repository at all. For
+        /// <c>list</c>/<c>validate</c>, returns the same <see cref="Dictionary{Arguments, String}"/> shape
+        /// <c>ParseArgs</c> would have produced for the equivalent non-interactive flags — the rest of
+        /// <see cref="ExecuteAsync"/> runs unchanged from there (only its final rendering step is aware of
+        /// <c>--wizard</c>, to show a table instead of plain text). <c>manage</c>/<c>install</c>/<c>uninstall</c>
+        /// instead run to completion here and return <see langword="null"/>, signalling <see cref="ExecuteAsync"/>
+        /// that there's nothing left to do.
         /// </summary>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any prompt.</exception>
         private async Task<Dictionary<Arguments, string>?> PluginsWizard(CancellationToken cancellationToken)
         {
+            var modePrompt = _prompt.PromptSelectPluginsMode(cancellationToken);
+            if (modePrompt.IsAborted)
+            {
+                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+            }
+
+            if (modePrompt.Mode == PluginsWizardMode.Install)
+            {
+                var zipPrompt = _prompt.PromptInputPluginZipPath(_fileSystem, cancellationToken);
+                if (zipPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                var forcePrompt = _prompt.PromptConfirm(Resources.AdrPlus.PromptPluginInstallForce, cancellationToken);
+                if (forcePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                var installArgs = new Dictionary<Arguments, string>
+                {
+                    [Arguments.PluginsInstall] = zipPrompt.ZipPath
+                };
+                if (forcePrompt.ConfirmYes)
+                {
+                    installArgs[Arguments.PluginsForce] = string.Empty;
+                }
+                return installArgs;
+            }
+
+            if (modePrompt.Mode == PluginsWizardMode.Uninstall)
+            {
+                var installedNames = GetInstalledPluginFolderNames();
+                if (installedNames.Length == 0)
+                {
+                    _prompt.PromptWriteInfo(string.Format(null, FormatMessages.PluginsNoInstalledPlugins));
+                    return null;
+                }
+                var uninstallPrompt = _prompt.PromptSelectPluginsToUninstall(installedNames, cancellationToken);
+                if (uninstallPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                foreach (var name in uninstallPrompt.SelectedNames)
+                {
+                    UninstallPlugin(name);
+                }
+                return null;
+            }
+
             string[] drives = _fileSystem.GetDrives();
             var rootPath = drives[0];
             if (drives.Length > 1)
@@ -569,59 +626,9 @@ namespace AdrPlus.Commands.Plugins
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
             }
 
-            var modePrompt = _prompt.PromptSelectPluginsMode(cancellationToken);
-            if (modePrompt.IsAborted)
-            {
-                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-            }
-
             if (modePrompt.Mode == PluginsWizardMode.Manage)
             {
                 await RunManageActivePluginsAsync(folderPrompt.Content, cancellationToken);
-                return null;
-            }
-
-            if (modePrompt.Mode == PluginsWizardMode.Install)
-            {
-                var zipPrompt = _prompt.PromptInputPluginZipPath(_fileSystem, cancellationToken);
-                if (zipPrompt.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                var forcePrompt = _prompt.PromptConfirm(Resources.AdrPlus.PromptPluginInstallForce, cancellationToken);
-                if (forcePrompt.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                var installArgs = new Dictionary<Arguments, string>
-                {
-                    [Arguments.TargetRepo] = folderPrompt.Content,
-                    [Arguments.PluginsInstall] = zipPrompt.ZipPath
-                };
-                if (forcePrompt.ConfirmYes)
-                {
-                    installArgs[Arguments.PluginsForce] = string.Empty;
-                }
-                return installArgs;
-            }
-
-            if (modePrompt.Mode == PluginsWizardMode.Uninstall)
-            {
-                var installedNames = GetInstalledPluginFolderNames(folderPrompt.Content);
-                if (installedNames.Length == 0)
-                {
-                    _prompt.PromptWriteInfo(string.Format(null, FormatMessages.PluginsNoInstalledPlugins));
-                    return null;
-                }
-                var uninstallPrompt = _prompt.PromptSelectPluginsToUninstall(installedNames, cancellationToken);
-                if (uninstallPrompt.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                foreach (var name in uninstallPrompt.SelectedNames)
-                {
-                    await UninstallPluginAsync(folderPrompt.Content, name, cancellationToken);
-                }
                 return null;
             }
 
@@ -634,16 +641,16 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Every folder name currently under <paramref name="targetPath"/>'s <c>./plugins/</c> — used by the
+        /// Every folder name currently under <see cref="IPluginManager.UserPluginsRoot"/> — used by the
         /// wizard's uninstall mode to offer a selection instead of requiring the name be typed. Deliberately
         /// scans the real folder tree (not <see cref="IPluginManager.LoadedPlugins"/>) so a rejected/broken
         /// plugin can still be found and removed. Staging folders left over from a crashed install (which
         /// should already self-clean, see <see cref="InstallPluginAsync"/>) are filtered out defensively.
         /// </summary>
-        private static string[] GetInstalledPluginFolderNames(string targetPath)
+        private string[] GetInstalledPluginFolderNames()
         {
-            var pluginsRoot = Path.Combine(targetPath, "plugins");
-            if (!Directory.Exists(pluginsRoot))
+            var pluginsRoot = _pluginManager.UserPluginsRoot;
+            if (string.IsNullOrEmpty(pluginsRoot) || !Directory.Exists(pluginsRoot))
             {
                 return [];
             }

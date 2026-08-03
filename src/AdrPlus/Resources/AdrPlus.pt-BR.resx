@@ -130,7 +130,7 @@
     <value>'content' — formato de caminho de arquivo não suportado: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' deve ser um caminho relativo. Caminhos absolutos não são permitidos: '{0}'</value>
+    <value>'folderRepo' deve ser um caminho relativo: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Uso</value>
@@ -331,7 +331,7 @@
     <value>Plugin '{0}': o campo 'hash' da allowlist está preenchido, mas ainda não é aplicado nesta versão; não oferece nenhuma garantia de segurança por enquanto</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>Plugin '{0}' em '{1}': nome duplicado compartilhado com outra pasta de plugin; nenhum dos dois será carregado</value>
+    <value>Plugin '{0}' em '{1}': nome duplicado; nenhum dos dois será carregado</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>Plugin '{0}': entryType '{1}' não implementa IAdrPlugin, ou Name/Version não correspondem ao manifesto</value>
@@ -358,7 +358,7 @@
     <value>Plugin '{0}': falha permanente, não entrará na fila de novas tentativas — corrija a configuração e execute 'adrplus sync --backfill'</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>Inspeciona plugins em ./plugins: lista os plugins carregados ou valida seu carregamento estrutural</value>
+    <value>Gerencia os plugins instalados: liste, valide, ative, instale ou desinstale</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>Lista os plugins carregados: nome, versão, eventos inscritos, status da allowlist e contagem de itens pendentes</value>
@@ -373,13 +373,13 @@
     <value>Nome do plugin a remover da lista de plugins ativos deste repositório</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>Caminho para um zip de plugin chamado &lt;nome&gt;-&lt;versão&gt;.zip para instalar em ./plugins/&lt;nome&gt;/</value>
+    <value>Caminho para um zip de plugin chamado &lt;nome&gt;-&lt;versão&gt;.zip para instalar neste computador</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>Nome do plugin a desinstalar — apaga ./plugins/&lt;nome&gt;/ e remove de activeplugins</value>
+    <value>Nome do plugin a desinstalar deste computador</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>Com --install, sobrescreve totalmente uma pasta ./plugins/&lt;nome&gt;/ existente, incluindo plugin.json e state/</value>
+    <value>Com --install, sobrescreve totalmente um plugin já instalado</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>Especifique um subcomando: 'adrplus plugins --list', '--validate', '--activate &lt;nome&gt;', '--deactivate &lt;nome&gt;', '--install &lt;caminho&gt;' ou '--uninstall &lt;nome&gt;'</value>
@@ -430,7 +430,7 @@
     <value>REJEITADO {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>Nenhum candidato a plugin encontrado em ./plugins</value>
+    <value>Nenhum candidato a plugin encontrado</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validação completa: {0} válido(s), {1} rejeitado(s)</value>
@@ -439,7 +439,7 @@
     <value>Assistente pra escolher o modo de sincronização e o caminho do repositório (suprime os outros argumentos)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>Assistente pra escolher o modo list/validate e o caminho do repositório (suprime os outros argumentos)</value>
+    <value>Assistente pra escolher uma ação de plugin e o caminho do repositório quando necessário (suprime os outros argumentos)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>Escolha o modo do sync</value>
@@ -460,7 +460,7 @@
     <value>Escolha a ação</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List mostra os plugins carregados; Validate reporta o resultado da validação estrutural; Install/Uninstall gerenciam os arquivos do plugin em ./plugins</value>
+    <value>List mostra os plugins carregados; Validate verifica o carregamento estrutural; Install/Uninstall gerenciam os plugins deste computador</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Listar plugins carregados</value>
@@ -490,7 +490,7 @@
     <value>Selecione o(s) plugin(s) a desinstalar</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>Nenhum plugin instalado em ./plugins</value>
+    <value>Nenhum plugin instalado</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Selecione os plugins ativos</value>
@@ -538,7 +538,7 @@
     <value>REJEITADO</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Plugin(s) ausente(s): {0} — verifique ./plugins ou execute 'adrplus plugins --wizard'</value>
+    <value>Plugin(s) ausente(s): {0} — veja 'adrplus plugins --list' ou '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Ativo</value>

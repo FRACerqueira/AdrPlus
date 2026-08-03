@@ -9,12 +9,24 @@ using AdrPlus.Abstractions.Domain;
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Orchestrates discovery, structural load validation, and foreground dispatch of plugins under
-    /// <c>./plugins/&lt;name&gt;/</c> (spec §4.2). Background re-drive and full backfill are out of scope — see
-    /// Fase 5/6.
+    /// Orchestrates discovery, structural load validation, and foreground dispatch of plugins from two
+    /// host-global roots — <see cref="BuiltinPluginsRoot"/> and <see cref="UserPluginsRoot"/> (spec §4.2, D2/D36).
+    /// Background re-drive and full backfill are out of scope — see Fase 5/6.
     /// </summary>
     internal interface IPluginManager
     {
+        /// <summary>
+        /// The folder containing plugins bundled with the AdrPlus install itself (e.g. <c>plugins-builtin</c>
+        /// next to the tool's own assembly), or empty to disable it. Never repo-scoped (D36).
+        /// </summary>
+        string BuiltinPluginsRoot { get; }
+
+        /// <summary>
+        /// The stable, host-global folder holding plugins installed via <c>adrplus plugins --install</c>
+        /// (spec D35/D36 — e.g. <c>%UserProfile%/AdrPlus.Plugins</c>), or empty to disable it. Never repo-scoped.
+        /// </summary>
+        string UserPluginsRoot { get; }
+
         /// <summary>
         /// Plugins that passed structural load validation, in discovery order (folders sharing a duplicate name
         /// with another candidate are excluded — D22).
@@ -30,13 +42,13 @@ namespace AdrPlus.Plugins
         IReadOnlyList<PluginRejection> Rejections { get; }
 
         /// <summary>
-        /// Discovers and validates every immediate subfolder of <paramref name="pluginsRootPath"/>, populating
-        /// <see cref="LoadedPlugins"/> and <see cref="Rejections"/>. A missing <paramref name="pluginsRootPath"/>
-        /// is a no-op (empty repo without a <c>./plugins</c> folder is not an error).
+        /// Discovers and validates every immediate subfolder of <see cref="BuiltinPluginsRoot"/> and
+        /// <see cref="UserPluginsRoot"/> (merged into one candidate set before validation/dedup), populating
+        /// <see cref="LoadedPlugins"/> and <see cref="Rejections"/> (spec D36). A missing or empty root is a
+        /// no-op for that root — nothing installed on either is not an error.
         /// </summary>
-        /// <param name="pluginsRootPath">The full path to the repository's <c>./plugins</c> folder.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        Task LoadPluginsAsync(string pluginsRootPath, CancellationToken cancellationToken = default);
+        Task LoadPluginsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Dispatches a single lifecycle event to every loaded plugin whose manifest subscribes to
@@ -54,6 +66,12 @@ namespace AdrPlus.Plugins
         /// <param name="adrFilePath">The absolute path of the ADR's <c>.md</c> file.</param>
         /// <param name="getAdrRenderedContent">Lazily renders the ADR's full Markdown content — only invoked if a plugin's filter accepts the event.</param>
         /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="pendingStateRoot">
+        /// The repo-scoped root under which each plugin's <c>pending.json</c> is read/written (spec D36 — e.g.
+        /// <c>&lt;repo&gt;/plugins-state</c>). Required, and deliberately repo-scoped rather than derived from a
+        /// loaded plugin's own (now host-global, shared) folder — sharing pending state across repos would let
+        /// one repo's failed dispatch get re-driven against another repo's ADRs.
+        /// </param>
         /// <param name="isReplay">Whether this dispatch is a replay (e.g. from <c>adrplus sync --backfill</c>, Fase 6) rather than a live event.</param>
         /// <param name="isActive">
         /// Optional filter over <see cref="LoadedPlugins"/> for this call only — a plugin for which this returns
@@ -67,6 +85,7 @@ namespace AdrPlus.Plugins
             string adrFilePath,
             Func<string> getAdrRenderedContent,
             RepoInfoSnapshot repo,
+            string pendingStateRoot,
             bool isReplay,
             Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default);
@@ -86,6 +105,7 @@ namespace AdrPlus.Plugins
         /// owns ADR resolution.
         /// </param>
         /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="pendingStateRoot">The repo-scoped root under which each plugin's <c>pending.json</c> is read/written (spec D36) — see <see cref="DispatchAsync"/>'s remarks.</param>
         /// <param name="isActive">
         /// Optional filter over <see cref="LoadedPlugins"/> for this call only — a plugin for which this returns
         /// <see langword="false"/> has its <c>pending.json</c> left completely untouched this run (not retried,
@@ -96,6 +116,7 @@ namespace AdrPlus.Plugins
         Task<SyncSummary> RetryPendingAsync(
             Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
             RepoInfoSnapshot repo,
+            string pendingStateRoot,
             Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default);
 
@@ -123,6 +144,7 @@ namespace AdrPlus.Plugins
         /// langword="null"/> (the default) sweeps every loaded plugin, unfiltered.
         /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <remarks>No <c>pendingStateRoot</c> parameter (unlike <see cref="DispatchAsync"/>/<see cref="RetryPendingAsync"/>, spec D36): backfill never reads or writes <c>pending.json</c> — an exhausted retry during backfill is logged only (§6), so there is nothing here that touches per-repo state.</remarks>
         Task<SyncSummary> BackfillAsync(
             IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
             RepoInfoSnapshot repo,

@@ -37,7 +37,7 @@ public class PluginManagerTests
         """;
 
     private PluginManager CreateManager(AdrPlusConfig? config = null) =>
-        new(_fileSystem, Options.Create(config ?? new AdrPlusConfig()), _logger, _console);
+        new(_fileSystem, Options.Create(config ?? new AdrPlusConfig()), _logger, _console, userPluginsRoot: PluginsRoot);
 
     [Fact]
     public async Task LoadPluginsAsync_WithMissingPluginsFolder_ProducesNoResults()
@@ -45,7 +45,7 @@ public class PluginManagerTests
         _fileSystem.DirectoryExists(PluginsRoot).Returns(false);
 
         var manager = CreateManager();
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.LoadedPlugins.Should().BeEmpty();
         manager.Rejections.Should().BeEmpty();
@@ -58,7 +58,7 @@ public class PluginManagerTests
         _fileSystem.GetDirectories(PluginsRoot, SearchOption.TopDirectoryOnly).Returns([]);
 
         var manager = CreateManager();
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.LoadedPlugins.Should().BeEmpty();
         manager.Rejections.Should().BeEmpty();
@@ -73,7 +73,7 @@ public class PluginManagerTests
         _fileSystem.ReadAllTextAsync(Path.Combine(folder, "plugin.json"), Arg.Any<CancellationToken>()).Returns(ValidManifestJson());
 
         var manager = CreateManager(new AdrPlusConfig { PluginAllowlist = null });
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.Rejections.Should().NotContain(r => r.Reason == PluginRejectionReason.NotInAllowlist);
     }
@@ -87,7 +87,7 @@ public class PluginManagerTests
         _fileSystem.ReadAllTextAsync(Path.Combine(folder, "plugin.json"), Arg.Any<CancellationToken>()).Returns(ValidManifestJson());
 
         var manager = CreateManager(new AdrPlusConfig { PluginAllowlist = [] });
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.LoadedPlugins.Should().BeEmpty();
         manager.Rejections.Should().ContainSingle(r => r.Reason == PluginRejectionReason.NotInAllowlist);
@@ -102,7 +102,7 @@ public class PluginManagerTests
         _fileSystem.ReadAllTextAsync(Path.Combine(folder, "plugin.json"), Arg.Any<CancellationToken>()).Returns(ValidManifestJson());
 
         var manager = CreateManager(new AdrPlusConfig { PluginAllowlist = [new PluginAllowlistEntry { Name = "confluence" }] });
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.Rejections.Should().NotContain(r => r.Reason == PluginRejectionReason.NotInAllowlist);
     }
@@ -120,7 +120,7 @@ public class PluginManagerTests
         _fileSystem.ReadAllTextAsync(Path.Combine(secondFolder, "plugin.json"), Arg.Any<CancellationToken>()).Returns(ValidManifestJson(name: "jira"));
 
         var manager = CreateManager();
-        await manager.LoadPluginsAsync(PluginsRoot, TestContext.Current.CancellationToken);
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
 
         manager.LoadedPlugins.Should().BeEmpty();
         manager.Rejections.Should().HaveCount(2);

@@ -131,7 +131,7 @@
     <value>'content' – Dateipfadformat wird nicht unterstützt: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' muss ein relativer Pfad sein. Absolute Pfade sind nicht erlaubt: '{0}'</value>
+    <value>'folderRepo' muss ein relativer Pfad sein: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Verwendung</value>
@@ -332,7 +332,7 @@
     <value>Plugin '{0}': das Allowlist-Feld 'hash' ist gesetzt, wird in dieser Version aber noch nicht durchgesetzt; bietet derzeit keine Sicherheitsgarantie</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>Plugin '{0}' in '{1}': doppelter Name, geteilt mit einem anderen Plugin-Ordner; keines der beiden wird geladen</value>
+    <value>Plugin '{0}' in '{1}': doppelter Name; keines der beiden wird geladen</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>Plugin '{0}': entryType '{1}' implementiert IAdrPlugin nicht, oder Name/Version stimmen nicht mit dem Manifest überein</value>
@@ -359,7 +359,7 @@
     <value>Plugin '{0}': dauerhafter Fehler, wird nicht zur Wiederholung eingereiht — Konfiguration korrigieren und 'adrplus sync --backfill' ausführen</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>Prüft Plugins unter ./plugins: listet geladene Plugins auf oder validiert deren strukturelles Laden</value>
+    <value>Verwaltet installierte Plugins: auflisten, validieren, aktivieren, installieren oder deinstallieren</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>Listet geladene Plugins auf: Name, Version, abonnierte Ereignisse, Allowlist-Status und Anzahl ausstehender Elemente</value>
@@ -374,13 +374,13 @@
     <value>Name des Plugins, das aus der aktiven Plugin-Liste dieses Repositorys entfernt werden soll</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>Pfad zu einem Plugin-Zip mit dem Namen &lt;name&gt;-&lt;version&gt;.zip zur Installation in ./plugins/&lt;name&gt;/</value>
+    <value>Pfad zu einem Plugin-Zip mit dem Namen &lt;name&gt;-&lt;version&gt;.zip zur Installation auf diesem Computer</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>Name des zu deinstallierenden Plugins — löscht ./plugins/&lt;name&gt;/ und entfernt es aus activeplugins</value>
+    <value>Name des zu deinstallierenden Plugins auf diesem Computer</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>Mit --install wird ein vorhandener ./plugins/&lt;name&gt;/-Ordner vollständig überschrieben, einschließlich plugin.json und state/</value>
+    <value>Mit --install wird ein bereits installiertes Plugin vollständig überschrieben</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>Geben Sie einen Unterbefehl an: 'adrplus plugins --list', '--validate', '--activate &lt;name&gt;', '--deactivate &lt;name&gt;', '--install &lt;pfad&gt;' oder '--uninstall &lt;name&gt;'</value>
@@ -431,7 +431,7 @@
     <value>ABGELEHNT {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>Keine Plugin-Kandidaten unter ./plugins gefunden</value>
+    <value>Keine Plugin-Kandidaten gefunden</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Validierung abgeschlossen: {0} gültig, {1} abgelehnt</value>
@@ -440,7 +440,7 @@
     <value>Assistent zur Auswahl des Sync-Modus und des Repository-Pfads (unterdrückt alle anderen Argumente)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>Assistent zur Auswahl des Listen-/Validierungsmodus und des Repository-Pfads (unterdrückt alle anderen Argumente)</value>
+    <value>Assistent zur Auswahl einer Plugin-Aktion und, falls nötig, des Repository-Pfads (unterdrückt alle anderen Argumente)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>Sync-Modus wählen</value>
@@ -461,7 +461,7 @@
     <value>Aktion wählen</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List zeigt geladene Plugins; Validate meldet das Ergebnis der strukturellen Ladevalidierung; Install/Uninstall verwalten die Plugin-Dateien unter ./plugins</value>
+    <value>List zeigt geladene Plugins; Validate prüft das strukturelle Laden; Install/Uninstall verwalten Plugins auf diesem Computer</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Geladene Plugins auflisten</value>
@@ -491,7 +491,7 @@
     <value>Wählen Sie die zu deinstallierenden Plugins aus</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>Keine Plugins unter ./plugins installiert</value>
+    <value>Keine Plugins installiert</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Aktive Plugins auswählen</value>
@@ -539,7 +539,7 @@
     <value>ABGELEHNT</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Fehlende Plugin(s): {0} — prüfen Sie ./plugins oder führen Sie 'adrplus plugins --wizard' aus</value>
+    <value>Fehlende Plugin(s): {0} — siehe 'adrplus plugins --list' oder '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Aktiv</value>

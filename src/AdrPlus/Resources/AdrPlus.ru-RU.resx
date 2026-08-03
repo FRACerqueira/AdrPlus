@@ -131,7 +131,7 @@
     <value>'content' — неподдерживаемый формат пути к файлу: '{0}'</value>
   </data>
   <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
-    <value>'folderRepo' должен быть относительным путём. Абсолютные пути не допускаются: '{0}'</value>
+    <value>'folderRepo' должен быть относительным путём: '{0}'</value>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Использование</value>
@@ -332,7 +332,7 @@
     <value>Плагин '{0}': поле 'hash' в allowlist задано, но в этой версии пока не применяется; на данный момент не даёт никаких гарантий безопасности</value>
   </data>
   <data name="PluginRejectedDuplicateName" xml:space="preserve">
-    <value>Плагин '{0}' в '{1}': имя дублируется с другой папкой плагина; ни один из них не будет загружен</value>
+    <value>Плагин '{0}' в '{1}': повторяющееся имя; ни один из них не будет загружен</value>
   </data>
   <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
     <value>Плагин '{0}': entryType '{1}' не реализует IAdrPlugin, либо Name/Version не совпадают с манифестом</value>
@@ -359,7 +359,7 @@
     <value>Плагин '{0}': необратимый сбой, не будет поставлен в очередь на повтор — исправьте конфигурацию и выполните 'adrplus sync --backfill'</value>
   </data>
   <data name="CmdDescPlugins" xml:space="preserve">
-    <value>Проверяет плагины в ./plugins: выводит список загруженных плагинов или проверяет их структурную загрузку</value>
+    <value>Управляет установленными плагинами: список, проверка, активация, установка или удаление</value>
   </data>
   <data name="HelpUsagePluginsList" xml:space="preserve">
     <value>Выводит список загруженных плагинов: имя, версия, подписанные события, статус allowlist и количество ожидающих элементов</value>
@@ -374,13 +374,13 @@
     <value>Имя плагина для удаления из списка активных плагинов этого репозитория</value>
   </data>
   <data name="HelpUsagePluginsInstall" xml:space="preserve">
-    <value>Путь к zip-архиву плагина с именем &lt;name&gt;-&lt;version&gt;.zip для установки в ./plugins/&lt;name&gt;/</value>
+    <value>Путь к zip-архиву плагина с именем &lt;name&gt;-&lt;version&gt;.zip для установки на этом компьютере</value>
   </data>
   <data name="HelpUsagePluginsUninstall" xml:space="preserve">
-    <value>Имя плагина для удаления — удаляет ./plugins/&lt;name&gt;/ и убирает его из activeplugins</value>
+    <value>Имя плагина для удаления с этого компьютера</value>
   </data>
   <data name="HelpUsagePluginsForce" xml:space="preserve">
-    <value>С --install полностью перезаписывает существующую папку ./plugins/&lt;name&gt;/, включая plugin.json и state/</value>
+    <value>С --install полностью перезаписывает уже установленный плагин</value>
   </data>
   <data name="PluginsModeRequired" xml:space="preserve">
     <value>Укажите подкоманду: 'adrplus plugins --list', '--validate', '--activate &lt;name&gt;', '--deactivate &lt;name&gt;', '--install &lt;path&gt;' или '--uninstall &lt;name&gt;'</value>
@@ -431,7 +431,7 @@
     <value>ОТКЛОНЕНО {0} — {1}: {2}</value>
   </data>
   <data name="PluginsValidateEmpty" xml:space="preserve">
-    <value>Кандидаты плагинов в ./plugins не найдены</value>
+    <value>Кандидаты плагинов не найдены</value>
   </data>
   <data name="PluginsValidateSummary" xml:space="preserve">
     <value>Проверка завершена: корректных {0}, отклонённых {1}</value>
@@ -440,7 +440,7 @@
     <value>Мастер для выбора режима синхронизации и пути к репозиторию (подавляет остальные аргументы)</value>
   </data>
   <data name="HelpUsageWizardPlugins" xml:space="preserve">
-    <value>Мастер для выбора режима list/validate и пути к репозиторию (подавляет остальные аргументы)</value>
+    <value>Мастер для выбора действия с плагином и, при необходимости, пути к репозиторию (подавляет остальные аргументы)</value>
   </data>
   <data name="WizardSyncModePrompt" xml:space="preserve">
     <value>Выберите режим синхронизации</value>
@@ -461,7 +461,7 @@
     <value>Выберите действие</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List показывает загруженные плагины; Validate сообщает результат структурной проверки; Install/Uninstall управляют файлами плагина в ./plugins</value>
+    <value>List показывает загруженные плагины; Validate проверяет структурную загрузку; Install/Uninstall управляют плагинами на этом компьютере</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Показать загруженные плагины</value>
@@ -491,7 +491,7 @@
     <value>Выберите плагин(ы) для удаления</value>
   </data>
   <data name="PluginsNoInstalledPlugins" xml:space="preserve">
-    <value>Нет установленных плагинов в ./plugins</value>
+    <value>Нет установленных плагинов</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Выберите активные плагины</value>
@@ -539,7 +539,7 @@
     <value>ОТКЛОНЕНО</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Отсутствующий(е) плагин(ы): {0} — проверьте ./plugins или выполните 'adrplus plugins --wizard'</value>
+    <value>Отсутствующий(е) плагин(ы): {0} — см. 'adrplus plugins --list' или '--wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Активен</value>

@@ -166,7 +166,7 @@ namespace AdrPlus.Commands.Version
 
                 var rootPath = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(rootPath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig,_filesystem);
@@ -302,7 +302,7 @@ namespace AdrPlus.Commands.Version
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 
-                await _pluginManager.DispatchAsync(AdrEventType.Versioned, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Versioned, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), Path.Combine(rootPath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
                 // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);

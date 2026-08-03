@@ -146,7 +146,7 @@ namespace AdrPlus.Commands.Reject
 
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(rootpath, "plugins"), cancellationToken);
+                await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
@@ -181,7 +181,7 @@ namespace AdrPlus.Commands.Reject
                 _prompt.PromptWarnMissingActivePlugins(missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusRej} : {infoadr.FileName}");
 
-                await _pluginManager.DispatchAsync(AdrEventType.Rejected, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Rejected, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), Path.Combine(rootpath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
                 if (infoadr.SupersededValue.HasValue)
                 {
@@ -193,7 +193,7 @@ namespace AdrPlus.Commands.Reject
                     }
                     LogAndWriteSuccess($"{Resources.AdrPlus.Undone} {Helper.GetResourceStatus(AdrStatus.Superseded)} : {infoundo.FileName}");
 
-                    await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, undorecord.ToSnapshot(), infoundo.FileName, () => undocontent, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
+                    await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, undorecord.ToSnapshot(), infoundo.FileName, () => undocontent, repoconfig.ToSnapshot(), Path.Combine(rootpath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
                 }
             }
             catch (Exception ex)

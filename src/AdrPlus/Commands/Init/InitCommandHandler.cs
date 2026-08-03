@@ -28,20 +28,14 @@ namespace AdrPlus.Commands.Init
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
-    /// <param name="pluginManager">The plugin manager used to load whatever plugins end up under the new repo's <c>./plugins</c>, to record the <c>activeplugins</c> baseline.</param>
-    /// <param name="builtinPluginsRoot">
-    /// The folder containing plugins bundled with the adrplus package itself (e.g. <c>plugins-builtin</c> next
-    /// to the tool's own assembly), or empty to disable installing any of them. Left empty by default so tests
-    /// that construct this handler directly never touch the real file system for this step.
-    /// </param>
+    /// <param name="pluginManager">The plugin manager used to discover whatever is available on the host (spec D2/D36) to record the new repo's <c>activeplugins</c> baseline.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
         IAdrServices adrServices,
-        IPluginManager pluginManager,
-        string builtinPluginsRoot = "") : ICommandHandler
+        IPluginManager pluginManager) : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
@@ -49,7 +43,6 @@ namespace AdrPlus.Commands.Init
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IPluginManager _pluginManager = pluginManager;
-        private readonly string _builtinPluginsRoot = builtinPluginsRoot;
         private static readonly Arguments[] ValidCommandArgs = [
             Arguments.WizardInit, 
             Arguments.TargetRepo,
@@ -283,16 +276,15 @@ namespace AdrPlus.Commands.Init
                 result.Add(folderadr);
             }
             CreateScopeDirectories(config, folderadr, result);
-            InstallBuiltinPlugins(rootrepoPath, result);
-            await WriteActivePluginsBaselineAsync(rootrepoPath, filepath, cancellationToken);
+            await WriteActivePluginsBaselineAsync(filepath, cancellationToken);
         }
 
         /// <summary>
-        /// Loads whatever plugins ended up under <paramref name="rootrepoPath"/>'s <c>./plugins</c> (including
-        /// any just installed by <see cref="InstallBuiltinPlugins"/>) and records their names as the repo's
+        /// Discovers whatever plugins are available host-globally (spec D2/D36 — <c>plugins-builtin</c> plus
+        /// any user-installed via <c>adrplus plugins --install</c>) and records their names as the new repo's
         /// <c>activeplugins</c> baseline — the set <see cref="Plugins.PluginActivationGate"/> treats as expected
-        /// going forward. A no-op when nothing is loaded (fresh repos with no plugins keep <c>activeplugins: []</c>,
-        /// their default from <see cref="AdrPlusRepoConfig"/>).
+        /// going forward. A no-op when nothing is discovered (a fresh repo keeps <c>activeplugins: []</c>, its
+        /// default from <see cref="AdrPlusRepoConfig"/>).
         /// </summary>
         /// <remarks>
         /// Patches the already-written config file's <c>activeplugins</c> key via <see cref="ActivePluginsWriter"/>
@@ -301,12 +293,11 @@ namespace AdrPlus.Commands.Init
         /// string as its template argument, and round-tripping that object back to JSON would silently blank the
         /// repo's real ADR template content.
         /// </remarks>
-        /// <param name="rootrepoPath">The root directory of the repository being initialized.</param>
         /// <param name="configFilePath">The full path of the config file already written by <see cref="CreateNewConfigAsync"/>.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        private async Task WriteActivePluginsBaselineAsync(string rootrepoPath, string configFilePath, CancellationToken cancellationToken)
+        private async Task WriteActivePluginsBaselineAsync(string configFilePath, CancellationToken cancellationToken)
         {
-            await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepoPath, "plugins"), cancellationToken);
+            await _pluginManager.LoadPluginsAsync(cancellationToken);
             if (_pluginManager.LoadedPlugins.Count == 0)
             {
                 return;
@@ -314,48 +305,6 @@ namespace AdrPlus.Commands.Init
 
             var names = _pluginManager.LoadedPlugins.Select(plugin => plugin.Manifest.Name!).ToArray();
             await ActivePluginsWriter.WriteAsync(_fileSystem, configFilePath, names, cancellationToken);
-        }
-
-        /// <summary>
-        /// Copies the AdrIndexer reference plugin bundled with the adrplus package itself into the new
-        /// repository's <c>plugins/adr-indexer</c> folder, so every repo gets it out of the box.
-        /// </summary>
-        /// <remarks>
-        /// Uses raw <see cref="System.IO"/> calls rather than <see cref="IFileSystemService"/>: like the plugin
-        /// assembly load itself (see <c>PluginLoader.LoadAssembly</c>), copying a binary plugin DLL is outside
-        /// that abstraction's text/config-file scope. Does nothing when <see cref="_builtinPluginsRoot"/> is
-        /// empty (the default for handlers built directly in tests) or its <c>adr-indexer</c> subfolder is absent.
-        /// Never overwrites a file that already exists at the destination — <c>init</c> can run again against an
-        /// existing repo, and a plugin's own <c>settings</c> (e.g. <c>outputFileName</c>) may have been hand-edited.
-        /// </remarks>
-        /// <param name="rootrepoPath">The root directory of the repository being initialized.</param>
-        /// <param name="result">The list to which the copied file paths are appended.</param>
-        private void InstallBuiltinPlugins(string rootrepoPath, List<string> result)
-        {
-            if (string.IsNullOrEmpty(_builtinPluginsRoot))
-            {
-                return;
-            }
-
-            var sourceDir = Path.Combine(_builtinPluginsRoot, "adr-indexer");
-            if (!Directory.Exists(sourceDir))
-            {
-                return;
-            }
-
-            var destDir = Path.Combine(rootrepoPath, "plugins", "adr-indexer");
-            Directory.CreateDirectory(destDir);
-            foreach (var sourceFile in Directory.EnumerateFiles(sourceDir))
-            {
-                var destFile = Path.Combine(destDir, Path.GetFileName(sourceFile));
-                if (File.Exists(destFile))
-                {
-                    continue;
-                }
-
-                File.Copy(sourceFile, destFile, overwrite: false);
-                result.Add(destFile);
-            }
         }
     }
 }

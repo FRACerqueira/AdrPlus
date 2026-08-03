@@ -122,7 +122,7 @@ public class PluginsCommandHandlerTests
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         _mockConsole.Received(1).PromptWriteHelp("Help text");
-        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class PluginsCommandHandlerTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_List_LoadsPluginsFromPluginsSubfolder()
+    public async Task ExecuteAsync_List_LoadsPluginsFromMergedHostGlobalRoots()
     {
         SetupParsedArgs(RepositoryPath, Arguments.PluginsList);
         _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
@@ -173,7 +173,7 @@ public class PluginsCommandHandlerTests
 
         await _handler.ExecuteAsync(["--list", "--path", RepositoryPath], TestContext.Current.CancellationToken);
 
-        await _mockPluginManager.Received(1).LoadPluginsAsync(Path.Combine(RepositoryPath, "plugins"), Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).LoadPluginsAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -255,8 +255,8 @@ public class PluginsCommandHandlerTests
 
         await _mockPluginManager.DidNotReceive().DispatchAsync(
             Arg.Any<AdrEventType>(), Arg.Any<AdrPlus.Abstractions.Domain.AdrRecordSnapshot>(), Arg.Any<string>(),
-            Arg.Any<Func<string>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<bool>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
-        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, string)?>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+            Arg.Any<Func<string>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, string)?>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
     }
 
@@ -322,8 +322,8 @@ public class PluginsCommandHandlerTests
 
         await _mockPluginManager.DidNotReceive().DispatchAsync(
             Arg.Any<AdrEventType>(), Arg.Any<AdrPlus.Abstractions.Domain.AdrRecordSnapshot>(), Arg.Any<string>(),
-            Arg.Any<Func<string>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<bool>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
-        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, string)?>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+            Arg.Any<Func<string>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, string)?>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
     }
 
@@ -407,7 +407,10 @@ public class PluginsCommandHandlerTests
     [Fact]
     public async Task ExecuteAsync_WithWizardMode_FolderAborted_ThrowsOperationCanceledException()
     {
+        // Mode is resolved before the folder prompt (D35/D36 — Install/Uninstall never reach it); List is a
+        // repo-scoped mode so this test can still exercise the folder-abort path.
         SetupWizardParsedArgs();
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.List));
         _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -539,7 +542,7 @@ public class PluginsCommandHandlerTests
         doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
             .Should().BeEquivalentTo(["ExistingPlugin", "NewPlugin"]);
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Is<string>(s => s.Contains("NewPlugin") && s.Contains("ExistingPlugin")));
-        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -576,7 +579,7 @@ public class PluginsCommandHandlerTests
         using var doc = JsonDocument.Parse(written!);
         doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
             .Should().BeEquivalentTo(["OtherPlugin"]);
-        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -600,16 +603,15 @@ public class PluginsCommandHandlerTests
     [Fact]
     public async Task ExecuteAsync_WithWizardMode_UninstallSelected_NoInstalledPlugins_ShowsInfoAndReturns()
     {
+        // Uninstall is host-global (D35/D36) — mode is resolved before any folder prompt, so the wizard never
+        // calls PromptSelectFolderPath for this branch (deliberately not stubbed here).
         SetupWizardParsedArgs();
-        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
-        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
-        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
-            .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Uninstall));
 
         await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
 
-        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("./plugins")));
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Any<string>());
         _mockConsole.DidNotReceive().PromptSelectPluginsToUninstall(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>());
+        _mockConsole.DidNotReceive().PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<IValidateConfig>(), Arg.Any<CancellationToken>());
     }
 }
