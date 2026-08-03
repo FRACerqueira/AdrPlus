@@ -11,6 +11,8 @@ namespace AdrPlus.Plugins.AdrIndexer
     /// <summary>
     /// Reference/example <see cref="IAdrPlugin"/> (Phase 11): regenerates a repo-wide ADR index file
     /// (<c>settings.outputFileName</c>, default <c>indexadrs.md</c>) from a bundled template on every ADR event.
+    /// <c>settings.outputFolder</c> (optional, relative to the ADR root; absent/empty keeps today's default of
+    /// writing directly into the ADR root) lets the index land somewhere else, e.g. a docs site's input folder.
     /// </summary>
     /// <remarks>
     /// A host dispatch only carries one ADR (<see cref="AdrEventContext.Adr"/>), so this plugin re-scans the
@@ -25,6 +27,7 @@ namespace AdrPlus.Plugins.AdrIndexer
 
         private string _outputFileName = DefaultOutputFileName;
         private string _templateFile = DefaultTemplateFile;
+        private string _outputFolder = string.Empty;
 
         /// <inheritdoc />
         public override string Name => "AdrIndexer";
@@ -37,6 +40,7 @@ namespace AdrPlus.Plugins.AdrIndexer
         {
             _outputFileName = config.GetValue<string>("outputFileName") is { Length: > 0 } outputFileName ? outputFileName : DefaultOutputFileName;
             _templateFile = config.GetValue<string>("templateFile") is { Length: > 0 } templateFile ? templateFile : DefaultTemplateFile;
+            _outputFolder = config.GetValue<string>("outputFolder") ?? string.Empty;
             return Task.CompletedTask;
         }
 
@@ -57,7 +61,9 @@ namespace AdrPlus.Plugins.AdrIndexer
                 var template = await File.ReadAllTextAsync(templatePath, ct).ConfigureAwait(false);
                 var content = template.Replace(ContentTag, table, StringComparison.Ordinal);
 
-                var outputPath = Path.Combine(adrRoot, _outputFileName);
+                var outputDir = Path.GetFullPath(Path.Combine(adrRoot, _outputFolder));
+                Directory.CreateDirectory(outputDir);
+                var outputPath = Path.Combine(outputDir, _outputFileName);
                 await File.WriteAllTextAsync(outputPath, content, ct).ConfigureAwait(false);
 
                 return Success();

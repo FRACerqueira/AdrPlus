@@ -148,13 +148,13 @@ public class SyncCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
-        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>())
             .Returns(new SyncSummary());
 
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         await _mockPluginManager.Received(1).LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
-        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
@@ -189,13 +189,13 @@ public class SyncCommandHandlerTests
             }
         };
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([testFile]);
-        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>())
             .Returns(new SyncSummary { Succeeded = 2, StillPending = 1 });
 
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         await _mockPluginManager.Received(1).LoadPluginsAsync(Path.Combine(RepositoryPath, "plugins"), Arg.Any<CancellationToken>());
-        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
@@ -231,7 +231,7 @@ public class SyncCommandHandlerTests
         await _mockPluginManager.Received(1).LoadPluginsAsync(Path.Combine(RepositoryPath, "plugins"), Arg.Any<CancellationToken>());
         await _mockAdrServices.DidNotReceive().ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>());
         await _mockPluginManager.DidNotReceive().BackfillAsync(
-            Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+            Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
     }
 
@@ -265,6 +265,7 @@ public class SyncCommandHandlerTests
         _mockPluginManager.BackfillAsync(
             Arg.Do<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(items => captured = items),
             Arg.Any<RepoInfoSnapshot>(),
+            Arg.Any<Func<LoadedPlugin, bool>>(),
             Arg.Any<CancellationToken>())
             .Returns(new SyncSummary { Succeeded = 4 });
 
@@ -299,13 +300,13 @@ public class SyncCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
-        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>())
             .Returns(new SyncSummary());
 
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
-        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
-        await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
         _mockConsole.DidNotReceive().PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
@@ -335,7 +336,7 @@ public class SyncCommandHandlerTests
         // LoadedPlugins is empty, so ExecuteBackfillAsync short-circuits before reading ADRs (Fase 6) —
         // this alone proves the backfill branch (not the default RetryPendingAsync branch) ran.
         await _mockAdrServices.DidNotReceive().ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>());
-        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -357,14 +358,14 @@ public class SyncCommandHandlerTests
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
-        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>())
+        _mockPluginManager.RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>())
             .Returns(new SyncSummary());
 
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         _mockConsole.Received(1).PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
         _mockConsole.Received(2).PromptSelectSyncMode(Arg.Any<CancellationToken>());
-        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<CancellationToken>());
+        await _mockPluginManager.Received(1).RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

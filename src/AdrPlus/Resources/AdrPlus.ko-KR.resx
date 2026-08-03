@@ -380,7 +380,7 @@
     <value>allowlist가 구성되지 않음(모든 플러그인 허용)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | 이벤트: {2} | allowlist: {3} | 대기 중: {4}</value>
+    <value>{0} | {1} v{2} | 이벤트: {3} | allowlist: {4} | 대기 중: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>로드된 플러그인이 없습니다</value>
@@ -433,6 +433,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>플러그인 구조 검증</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>활성 플러그인 관리</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>활성화할 플러그인을 선택하세요</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>활성 플러그인이 업데이트되었습니다: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>활성 플러그인: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>사용 가능한 내장 플러그인: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>로드된 플러그인</value>
   </data>
@@ -468,6 +483,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>REJECTED</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>예상되는 활성 플러그인이 현재 로드되지 않았습니다: {0} — ./plugins를 확인하거나 'adrplus plugins --wizard'를 통해 활성 목록을 업데이트하세요</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>활성</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>비활성</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>누락</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>사용 안 함</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>플러그인</value>

@@ -3,6 +3,7 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using AdrPlus.Abstractions;
 using AdrPlus.Commands;
 using AdrPlus.Commands.Approve;
 using AdrPlus.Core;
@@ -147,6 +148,42 @@ public class ApproveCommandHandlerTests
             _mockFileSystem,
             Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithActivePlugin_PrintsActivePluginsSummaryBeforeTheAdrWriteResult()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "activeplugins": ["SlackNotifier"]}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        var loadedPlugin = new LoadedPlugin(
+            Substitute.For<IAdrPlugin>(),
+            new PluginManifest { Name = "SlackNotifier", Version = "1.2.0", EntryAssembly = "x.dll", EntryType = "x", AbstractionsVersion = "1.0.0" },
+            "/repo/plugins/slack-notifier");
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { loadedPlugin });
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Unknown);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert — the summary is printed right before the ADR write result, not right after loading
+        // plugins, so it lands in a position that stays visible in wizard mode too.
+        _mockConsole.Received(1).PromptShowActivePlugins(
+            Arg.Is<IReadOnlyList<string>>(list => list.Any(s => s.Contains("SlackNotifier") && s.Contains("1.2.0"))),
+            Arg.Any<IReadOnlyList<string>>());
+        Received.InOrder(() =>
+        {
+            _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>());
+            _mockConsole.PromptShowActivePlugins(Arg.Any<IReadOnlyList<string>>(), Arg.Any<IReadOnlyList<string>>());
+        });
     }
 
     [Fact]

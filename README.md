@@ -443,7 +443,9 @@ adrplus config --repository
   "headertitlestatussuperseded": "Superseded",
   "headertablefields": "Fields",
   "headertablevalues": "Values",
-  "headermigrated": "Migrated"
+  "headermigrated": "Migrated",
+  "activeplugins": [],
+  "disableplugins": false
 }
 ```
 
@@ -478,6 +480,8 @@ adrplus config --repository
 | `headertablefields` | Table header label for displaying field names in the ADR. |
 | `headertablevalues` | Table header label for displaying field values in the ADR. |
 | `headermigrated` | Header label for the "Migrated" indicator (used for ADRs migrated via the `migrate` command). |
+| `activeplugins` | Names of the plugins (under `./plugins/`) expected to be active for this repository. Written automatically by `init` from whatever's installed at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. A plugin installed but left off this list is treated as deliberately inactive (silently skipped); a name listed here with no matching installed plugin is reported as missing the next time a command dispatches. |
+| `disableplugins` | Repository-wide kill switch. When `true`, no plugin ever dispatches for this repo, regardless of `activeplugins` — the ADR operation itself still completes normally. |
 
 ### Suggested settings per team profile
 

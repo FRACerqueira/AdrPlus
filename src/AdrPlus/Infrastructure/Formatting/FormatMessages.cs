@@ -116,5 +116,13 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginsValidateSummary => Get(() => Resources.AdrPlus.PluginsValidateSummary);
         public static CompositeFormat PluginsValidateStatusValid => Get(() => Resources.AdrPlus.PluginsValidateStatusValid);
         public static CompositeFormat PluginsValidateStatusRejected => Get(() => Resources.AdrPlus.PluginsValidateStatusRejected);
+        public static CompositeFormat PluginsActiveMissing => Get(() => Resources.AdrPlus.PluginsActiveMissing);
+        public static CompositeFormat PluginsStatusActive => Get(() => Resources.AdrPlus.PluginsStatusActive);
+        public static CompositeFormat PluginsStatusInactive => Get(() => Resources.AdrPlus.PluginsStatusInactive);
+        public static CompositeFormat PluginsStatusMissing => Get(() => Resources.AdrPlus.PluginsStatusMissing);
+        public static CompositeFormat PluginsStatusDisabled => Get(() => Resources.AdrPlus.PluginsStatusDisabled);
+        public static CompositeFormat PluginsActiveUpdated => Get(() => Resources.AdrPlus.PluginsActiveUpdated);
+        public static CompositeFormat PluginsActiveSummary => Get(() => Resources.AdrPlus.PluginsActiveSummary);
+        public static CompositeFormat WizardBuiltinPluginsAvailable => Get(() => Resources.AdrPlus.WizardBuiltinPluginsAvailable);
     }
 }

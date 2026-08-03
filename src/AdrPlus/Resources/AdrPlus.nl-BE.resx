@@ -380,7 +380,7 @@
     <value>Geen allowlist geconfigureerd (alle plugins toegestaan)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | events: {2} | allowlist: {3} | openstaand: {4}</value>
+    <value>{0} | {1} v{2} | events: {3} | allowlist: {4} | openstaand: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Geen plugins geladen</value>
@@ -433,6 +433,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Pluginstructuur valideren</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>Actieve plugins beheren</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>Selecteer actieve plugins</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>Actieve plugins bijgewerkt: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>Actieve plugins: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>Ingebouwde plugins beschikbaar: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Geladen plugins</value>
   </data>
@@ -468,6 +483,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>GEWEIGERD</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>Verwachte actieve plugin(s) momenteel niet geladen: {0} — controleer ./plugins of werk de actieve lijst bij via 'adrplus plugins --wizard'</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>Inactief</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>Ontbrekend</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>Uitgeschakeld</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>Plugins</value>

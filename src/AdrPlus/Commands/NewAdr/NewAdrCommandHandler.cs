@@ -131,6 +131,9 @@ namespace AdrPlus.Commands.NewAdr
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
+                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+
                 ValidateScopeAndDomain(repoconfig, parsedArgs);
 
                 var title = parsedArgs[Arguments.TitleAdr];
@@ -181,11 +184,11 @@ namespace AdrPlus.Commands.NewAdr
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
+                _prompt.PromptShowActivePlugins(activeSummary, missingNames);
                 LogMessages.LogCommandSuccessful(_logger, filePath);
                 _prompt.PromptWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
-                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-                await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), isReplay: false, cancellationToken);
+                await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
                 // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);

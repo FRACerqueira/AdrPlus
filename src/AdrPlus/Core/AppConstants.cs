@@ -255,9 +255,19 @@ namespace AdrPlus.Core
         public const string FieldHeaderTableValues = "headertablevalues";
 
         /// <summary>
-        /// The configuration key for the migrated text that can be included in the header of generated ADR files, allowing users to specify custom migrated information that will be included in the header section of each generated ADR file. 
+        /// The configuration key for the migrated text that can be included in the header of generated ADR files, allowing users to specify custom migrated information that will be included in the header section of each generated ADR file.
         /// </summary>
         public const string FieldHeaderMigrated = "headermigrated";
+
+        /// <summary>
+        /// The configuration key for the list of plugin names expected to be active for this repository.
+        /// </summary>
+        public const string FieldActivePlugins = "activeplugins";
+
+        /// <summary>
+        /// The configuration key for the repository-wide plugin dispatch kill switch.
+        /// </summary>
+        public const string FieldDisablePlugins = "disableplugins";
 
         /// <summary>
         /// JSON serializer options configured for repository data with lowercase property naming, indented formatting,

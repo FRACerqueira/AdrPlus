@@ -380,7 +380,7 @@
     <value>Allowlist не настроен (разрешены все плагины)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | события: {2} | allowlist: {3} | ожидает: {4}</value>
+    <value>{0} | {1} v{2} | события: {3} | allowlist: {4} | ожидает: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Нет загруженных плагинов</value>
@@ -433,6 +433,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Проверить структуру плагинов</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>Управление активными плагинами</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>Выберите активные плагины</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>Активные плагины обновлены: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>Активные плагины: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>Доступные встроенные плагины: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Загруженные плагины</value>
   </data>
@@ -468,6 +483,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>ОТКЛОНЕНО</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>Ожидаемый активный плагин(ы) не загружен(ы): {0} — проверьте ./plugins или обновите список активных через 'adrplus plugins --wizard'</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>Активен</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>Неактивен</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>Отсутствует</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>Отключен</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>Плагины</value>

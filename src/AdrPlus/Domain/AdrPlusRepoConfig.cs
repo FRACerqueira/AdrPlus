@@ -181,6 +181,20 @@ namespace AdrPlus.Domain
         public string HeaderMigrated { get; set; } = Resources.AdrPlus.Migrated;
 
         /// <summary>
+        /// Gets or sets the names of the plugins (matched against each plugin's manifest <c>name</c>) that are
+        /// expected to be active for this repository. Written as a baseline by <c>adrplus init</c> and editable
+        /// via <c>adrplus plugins --wizard</c>. A loaded plugin not listed here is treated as deliberately
+        /// inactive; a listed name with no matching loaded plugin is reported as missing.
+        /// </summary>
+        public List<string> ActivePlugins { get; set; } = [];
+
+        /// <summary>
+        /// Gets or sets a value indicating whether all plugin dispatch is disabled for this repository,
+        /// regardless of <see cref="ActivePlugins"/>.
+        /// </summary>
+        public bool DisablePlugins { get; set; }
+
+        /// <summary>
         /// Gets the mapping between ADR status enum values and their configured string representations.
         /// </summary>
         [JsonIgnore]

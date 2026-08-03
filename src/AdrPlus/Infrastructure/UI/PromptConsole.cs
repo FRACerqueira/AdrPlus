@@ -96,7 +96,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, string Content) PromptEditFieldBehaviorWithoutArgs(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var enumlist = Enum.GetNames<BehaviorWithoutArg>();
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
@@ -109,7 +109,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int Value) PromptSelectTitlePosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptTitlePosition}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptTitlePosition}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[(int)item..];
@@ -131,7 +131,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int Value) PromptSelectRevisionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionPosition}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionPosition}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[(int)item..];
@@ -153,7 +153,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int Value) PromptSelectRevisionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionLength}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptRevisionLength}")
                .ChangeDescription((item) =>
                {
                    var result = filename[position..][..(int)item];
@@ -171,7 +171,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int Value) PromptSelectVersionPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionPosition}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionPosition}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[(int)item..];
@@ -193,7 +193,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int Value) PromptSelectVersionLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionLength}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptVersionLength}")
                .ChangeDescription((item) =>
                {
                    var result = filename[position..][..(int)item];
@@ -213,7 +213,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Value) PromptSelectNumberPosition(string filename, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberPosition}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberPosition}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[(int)item..];
@@ -237,7 +237,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Value) PromptSelectNumberLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberLength}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptNumberLength}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[position..][..(int)item];
@@ -257,7 +257,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string[] FieldsFromFileAdr) PromptFieldsFromFileAdr(CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsMigrationTitle}: ")
+            var result = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptFieldsMigrationTitle}")
                 .AddItem(Resources.AdrPlus.Prefix)
                 .AddItem(Resources.AdrPlus.Number, true, true)
                 .AddItem(Resources.AdrPlus.Version)
@@ -273,7 +273,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, int Value,string PrefixValue) PromptSelectPrefixLength(string filename, int position, int maxValue, int defaultValue, CancellationToken cancellationToken)
         {
            var prefixValue = string.Empty;
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixLength}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixLength}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[position..][..(int)item];
@@ -293,7 +293,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Value) PromptSelectPrefixPosition(string filename, int maxValue,int defaultValue, CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixPosition}: ")
+            var result = PromptPlus.Controls.Slider($"{Resources.AdrPlus.PromptPrefixPosition}")
                 .ChangeDescription((item) =>
                 {
                     var result = filename[(int)item..];
@@ -317,7 +317,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string SampleFileMigration) PromptSampleFileMigration(CancellationToken cancellationToken)
         {
-            var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileSampleMigration}: ")
+            var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptFileSampleMigration}")
                 .MaxLength(100)
                 .EnableHistory("AdrPlusMigrationSampleFile")
                 .Default("", true)
@@ -500,9 +500,22 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
+        public void PromptShowActivePlugins(IReadOnlyList<string> activePluginSummaries, IReadOnlyList<string> missingPluginNames)
+        {
+            if (missingPluginNames.Count > 0)
+            {
+                PromptWriteInfo(string.Format(null, FormatMessages.PluginsActiveMissing, string.Join(", ", missingPluginNames)));
+            }
+            if (activePluginSummaries.Count > 0)
+            {
+                PromptWriteInfo(string.Format(null, FormatMessages.PluginsActiveSummary, string.Join(", ", activePluginSummaries)));
+            }
+        }
+
+        /// <inheritdoc/>
         public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, CancellationToken cancellationToken = default)
         {
-            message =$"{message}: ";
+            message =$"{message}";
             var result = PromptPlus.Controls
                 .Calendar(message)
                 .Culture(config.Language)
@@ -523,7 +536,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, FieldsJson? Content) PromptConfigJsonAppSelect(FieldsJson defaultvalue, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptSelectField}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptSelectField}";
             var result = PromptPlus.Controls
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
@@ -590,7 +603,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, FieldsJson? Content) PromptConfigJsonRepoSelect(FieldsJson defaultvalue, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptSelectField}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptSelectField}";
             var result = PromptPlus.Controls
                 .Select<FieldsJson>(message, "")
                 .Default(defaultvalue)
@@ -612,7 +625,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldLanguage(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -647,7 +660,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldFolderRepo(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -681,7 +694,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFielOpenAdr(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -706,7 +719,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldPrefix(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -721,7 +734,7 @@ namespace AdrPlus.Infrastructure.UI
          /// <inheritdoc/>
         public (bool IsAborted, int Content) PromptEditFieldLenSeq(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var result = PromptPlus.Controls
                 .Slider(message, ShowDescField(fieldsJson))
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 3)
@@ -736,7 +749,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Content) PromptEditFieldRevision(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var result = PromptPlus.Controls
                 .Slider(message, ShowDescField(fieldsJson))
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 0)
@@ -751,7 +764,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Content) PromptEditFieldVersion(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var result = PromptPlus.Controls
                 .Slider(message, ShowDescField(fieldsJson))
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 2)
@@ -766,7 +779,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldScopes(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -792,7 +805,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldskipdomain(FieldsJson fieldsJson, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptSelectNewValues}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptSelectNewValues}";
             var result = PromptPlus.Controls
                 .MultiSelect<string>(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
@@ -817,7 +830,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, int Content) PromptEditFieldLenScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var result = PromptPlus.Controls
                 .Slider(message, ShowDescField(fieldsJson))
                 .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 1)
@@ -832,7 +845,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, bool Content) PromptEditFieldFolderByScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var result = PromptPlus.Controls
                 .Switch(message, ShowDescField(fieldsJson))
                 .Default(bool.TryParse(fieldsJson.Value, out bool boolValue) && boolValue)
@@ -843,7 +856,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, bool Content) PromptEmptyTemplate(CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptEmptyTemplate}: ";
+            var message = $"{Resources.AdrPlus.PromptEmptyTemplate}";
             var result = PromptPlus.Controls
                 .Switch(message, Resources.AdrPlus.HelpUsageEmptyAdr)
                 .Run(cancellationToken);
@@ -853,7 +866,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.WizardSyncModePrompt}: ";
+            var message = $"{Resources.AdrPlus.WizardSyncModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardSyncModeDescription)
                 .AddItems([Resources.AdrPlus.WizardSyncModeDefault, Resources.AdrPlus.WizardSyncModeBackfill])
@@ -863,22 +876,30 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, bool UseValidate) PromptSelectPluginsMode(CancellationToken cancellationToken = default)
+        public (bool IsAborted, PluginsWizardMode Mode) PromptSelectPluginsMode(CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}: ";
+            var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardPluginsModeDescription)
-                .AddItems([Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate])
+                .AddItems([Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage])
                 .Default(Resources.AdrPlus.WizardPluginsModeList)
                 .Run(cancellationToken);
-            return (result.IsAborted, !result.IsAborted && result.Content == Resources.AdrPlus.WizardPluginsModeValidate);
+            if (result.IsAborted)
+            {
+                return (true, PluginsWizardMode.List);
+            }
+            var mode = result.Content == Resources.AdrPlus.WizardPluginsModeValidate ? PluginsWizardMode.Validate
+                : result.Content == Resources.AdrPlus.WizardPluginsModeManage ? PluginsWizardMode.Manage
+                : PluginsWizardMode.List;
+            return (false, mode);
         }
 
         /// <inheritdoc/>
-        public bool PromptShowPluginsListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default)
+        public bool PromptShowPluginsListTable(IReadOnlyList<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default)
         {
             var result = PromptPlus.Controls
-                .Table<(string Name, string Version, string Events, string Allowlist, int Pending)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
+                .Table<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
+                .AddColumn(Resources.AdrPlus.TableColumnStatus, r => r.Status)
                 .AddColumn(Resources.AdrPlus.TableColumnName, r => r.Name)
                 .AddColumn(Resources.AdrPlus.TableColumnVersion, r => r.Version)
                 .AddColumn(Resources.AdrPlus.TableColumnEvents, r => r.Events)
@@ -888,6 +909,20 @@ namespace AdrPlus.Infrastructure.UI
                 .ViewOnly(true)
                 .Run(cancellationToken);
             return result.IsAborted;
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string[] SelectedNames) PromptSelectActivePlugins(IReadOnlyList<string> pluginNames, IReadOnlySet<string> currentlyActive, CancellationToken cancellationToken = default)
+        {
+            var message = $"{Resources.AdrPlus.WizardPluginsManagePrompt}";
+            bool IsPreChecked(string name) => currentlyActive.Contains(name);
+            var result = PromptPlus.Controls.MultiSelect<string>(message)
+                .TextSelector(name => name)
+                .Filter(FilterMode.Contains)
+                .AddItems(pluginNames)
+                .Default(pluginNames.Where(IsPreChecked), false)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? [] : [.. result.Content!]);
         }
 
         /// <inheritdoc/>
@@ -908,7 +943,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldCaseTransform(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var enumlist = Enum.GetNames<CaseFormat>();
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
@@ -920,7 +955,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, string FilePathAdrTemplate) PromptConfigTemplateAdrSelect(string root, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptSelectAdrTemplatePath}: ";
+            var message = $"{Resources.AdrPlus.PromptSelectAdrTemplatePath}";
             var result = PromptPlus.Controls
                 .File(message)
                 .SearchPattern("*.md")
@@ -934,7 +969,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, AdrFileNameComponents? info) PromptSelecAdrs(AdrFileNameComponents[] adrFiles,AdrPlusRepoConfig adrPlusRepoConfig, Func<AdrFileNameComponents, (bool, string?)> validselect, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.NewVerChooseAdr}: ";
+            var message = $"{Resources.AdrPlus.NewVerChooseAdr}";
             var result = PromptPlus.Controls
                 .Select<AdrFileNameComponents>(message, "")
                 .TextSelector(info => $"{Path.GetFileName(info.FileName)} ")
@@ -1027,7 +1062,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, string FileSelectd) PromptTableExplore(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
             var onstart = true;
-            var table = PromptPlus.Controls.Table<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}: ")
+            var table = PromptPlus.Controls.Table<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}")
                 .Interaction(foundfiles, (item, ctx) =>
                 {
                     ctx.AddItem(item);
@@ -1098,7 +1133,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, ItemMenuWizard? Content) PromptSelectMenu(bool IsHasconfig, ItemMenuWizard[] itemMenus,ItemMenuWizard defaultvalue,  CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.SelectAnOption}: ";
+            var message = $"{Resources.AdrPlus.SelectAnOption}";
             var result = PromptPlus.Controls
                 .Select<ItemMenuWizard>(message,"")
                 .Default(defaultvalue)
@@ -1126,7 +1161,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldSeparator(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
             var opcsep = new[] { "-", "_", "." };
             var result = PromptPlus.Controls
                 .Select<string>(message, ShowDescField(fieldsJson))
@@ -1139,7 +1174,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditFieldHeaderText(FieldsJson fieldsJson,int maxlength,string sugestion, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}: ";
+            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
             var result = PromptPlus.Controls
                 .Input(message, ShowDescField(fieldsJson))
                 .Default(fieldsJson.Value)
@@ -1152,7 +1187,7 @@ namespace AdrPlus.Infrastructure.UI
 
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptAdrToMigrate}: ";
+            var message = $"{Resources.AdrPlus.PromptAdrToMigrate}";
             bool IsReadyToMigrate(AdrFileNameComponents x) => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated;
             var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
@@ -1205,7 +1240,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptSelectLogicalDrive(string message, IFileSystemService fileSystemService, CancellationToken cancellationToken = default)
         {
-            message = $"{message}: ";
+            message = $"{message}";
             string[] drives = fileSystemService.GetDrives();
             var result = PromptPlus.Controls
                 .Select<string>(message)
@@ -1219,7 +1254,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditTitleAdr(string defaultTitle, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptEnterAdrTitle}: ";
+            var message = $"{Resources.AdrPlus.PromptEnterAdrTitle}";
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultTitle)
@@ -1231,7 +1266,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditScopeAdr(string defaultScope, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptSelectAdrScope}: ";
+            var message = $"{Resources.AdrPlus.PromptSelectAdrScope}";
             var result = PromptPlus.Controls
                 .Select<string>(message)
                 .Default(defaultScope)
@@ -1243,7 +1278,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptEditDomainAdr(string defaultdomain, string[] sugestdomains, CancellationToken cancellationToken = default)
         {
-            var message = $"{Resources.AdrPlus.PromptEnterAdrDomain}: ";
+            var message = $"{Resources.AdrPlus.PromptEnterAdrDomain}";
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultdomain)
@@ -1260,7 +1295,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
             var defarrdomain = Array.Empty<string>();
-            var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}: ";
+            var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}";
             var resuldefarrdomain = PromptPlus.Controls
                 .Task(message)
                 .Action(_ => defarrdomain = _adrServices.GetDomains(fileSystemService, path, adrPlusRepo).Result)
@@ -1272,7 +1307,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public (bool IsAborted, string Content) PromptSelectFolderPath(string message, bool checknitCmd, string root, IFileSystemService fileSystemService, IValidateConfig validateJsonConfig, CancellationToken cancellationToken = default)
         {
-            var pronptmessage = $"{message}: ";
+            var pronptmessage = $"{message}";
             while (true)
             {
                 var result = PromptPlus.Controls
@@ -1393,18 +1428,6 @@ namespace AdrPlus.Infrastructure.UI
                 AppConstants.FieldHeaderTableValues => Resources.AdrPlus.FieldTitleHeaderTableValues,
                 AppConstants.FieldHeaderMigrated => Resources.AdrPlus.FieldTitleHeaderMigrated,
                 _ => string.Empty,
-            };
-        }
-
-        private static string TextForRepoActions(RepoActions actions)
-        {
-            return actions switch
-            {
-                RepoActions.Template => Resources.AdrPlus.Template,
-                RepoActions.Version => Resources.AdrPlus.Version,
-                RepoActions.Revision => Resources.AdrPlus.Revision,
-                RepoActions.Scope => Resources.AdrPlus.Scope,
-                _ => actions.ToString(),
             };
         }
     }

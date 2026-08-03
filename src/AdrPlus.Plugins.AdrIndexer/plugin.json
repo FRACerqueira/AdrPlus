@@ -14,9 +14,8 @@
     "StatusUndone",
     "Migrated"
   ],
-  "maxConcurrency": 1,
   "foregroundTimeoutMs": 5000,
-  "timeoutMs": 30000,
+  "backgroundTimeoutMs": 30000,
   "settings": {
     "outputFileName": "indexadrs.md",
     "templateFile": "indexadrs-template.md"

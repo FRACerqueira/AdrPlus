@@ -34,7 +34,7 @@ public class PluginManagerBackfillTests
         EntryType = "Plugin.Type",
         AbstractionsVersion = "1.0.0",
         SubscribedEvents = ["Approved"],
-        TimeoutMs = timeoutMs,
+        BackgroundTimeoutMs = timeoutMs,
         RetryPolicy = new PluginRetryPolicy { MaxAttempts = maxAttempts, DelayMs = delayMs, Jitter = false, Backoff = "Fixed" }
     };
 
@@ -75,7 +75,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1"), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(1);
         capturedContext.Should().NotBeNull();
@@ -92,7 +92,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1", maxAttempts: 2), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Exhausted.Should().Be(1);
         await plugin.Received(2).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -109,7 +109,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1"), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.PermanentlyFailed.Should().Be(1);
         _console.Received(1).PromptWriteError(Arg.Is<string>(s => s.Contains("p1")));
@@ -123,7 +123,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1"), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Skipped.Should().Be(1);
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -138,7 +138,7 @@ public class PluginManagerBackfillTests
         manifest.SubscribedEvents = ["Rejected"];
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, manifest, "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
         summary.Succeeded.Should().Be(0);
@@ -163,7 +163,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1"), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(1);
         await plugin.Received(1).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
@@ -187,7 +187,7 @@ public class PluginManagerBackfillTests
             manager._loadedPlugins.Add(loaded);
         }
 
-        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(5);
         foreach (var (instance, _) in plugins)
@@ -215,7 +215,7 @@ public class PluginManagerBackfillTests
         var manager = CreateManager();
         manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1"), "/repo/plugins/p1"));
 
-        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), TestContext.Current.CancellationToken);
+        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(2);
         maxObservedConcurrency.Should().Be(1);
@@ -243,7 +243,7 @@ public class PluginManagerBackfillTests
         using var cts = new CancellationTokenSource();
         cts.CancelAfter(50);
 
-        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), cts.Token);
+        var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), isActive: null, cancellationToken: cts.Token);
 
         summary.Succeeded.Should().Be(1);
         summary.Exhausted.Should().Be(0);

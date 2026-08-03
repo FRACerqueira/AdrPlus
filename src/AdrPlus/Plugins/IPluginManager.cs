@@ -55,6 +55,11 @@ namespace AdrPlus.Plugins
         /// <param name="getAdrRenderedContent">Lazily renders the ADR's full Markdown content — only invoked if a plugin's filter accepts the event.</param>
         /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
         /// <param name="isReplay">Whether this dispatch is a replay (e.g. from <c>adrplus sync --backfill</c>, Fase 6) rather than a live event.</param>
+        /// <param name="isActive">
+        /// Optional filter over <see cref="LoadedPlugins"/> for this call only — a plugin for which this returns
+        /// <see langword="false"/> is skipped entirely (no dispatch, no warning). <see langword="null"/> (the
+        /// default) dispatches to every loaded plugin, unfiltered.
+        /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         Task DispatchAsync(
             AdrEventType eventType,
@@ -63,13 +68,14 @@ namespace AdrPlus.Plugins
             Func<string> getAdrRenderedContent,
             RepoInfoSnapshot repo,
             bool isReplay,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Re-attempts every pending entry across every loaded plugin's <c>state/pending.json</c>, using each
         /// plugin's <see cref="PluginManifest.RetryPolicy"/> (spec §4.4) — <c>adrplus sync</c>'s default mode
         /// (Fase 5). Unlike <see cref="DispatchAsync"/>, this runs a real in-process retry loop (with backoff
-        /// delays) per entry, bounded by <see cref="PluginManifest.TimeoutMs"/> per attempt rather than
+        /// delays) per entry, bounded by <see cref="PluginManifest.BackgroundTimeoutMs"/> per attempt rather than
         /// <see cref="PluginManifest.ForegroundTimeoutMs"/>.
         /// </summary>
         /// <param name="resolveAdr">
@@ -80,10 +86,17 @@ namespace AdrPlus.Plugins
         /// owns ADR resolution.
         /// </param>
         /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="isActive">
+        /// Optional filter over <see cref="LoadedPlugins"/> for this call only — a plugin for which this returns
+        /// <see langword="false"/> has its <c>pending.json</c> left completely untouched this run (not retried,
+        /// not dropped), so re-activating it later picks up cleanly. <see langword="null"/> (the default)
+        /// processes every loaded plugin's pending state, unfiltered.
+        /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         Task<SyncSummary> RetryPendingAsync(
             Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
             RepoInfoSnapshot repo,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -93,7 +106,8 @@ namespace AdrPlus.Plugins
         /// state to continue), and an item whose retries exhaust <see cref="PluginRetryPolicy.MaxAttempts"/> is
         /// only logged — never written to <c>state/pending.json</c> (§6: re-running <c>--backfill</c> is itself
         /// the recovery path). Different plugins are swept in parallel; a single plugin processes its own list of
-        /// ADRs sequentially (D18's <c>maxConcurrency</c>, fixed at 1). If cancelled mid-sweep, the partial
+        /// ADRs sequentially (D18: per-plugin concurrency is fixed at 1, not a manifest-configurable value). If
+        /// cancelled mid-sweep, the partial
         /// <see cref="SyncSummary"/> accumulated so far is returned rather than lost.
         /// </summary>
         /// <param name="settledAdrs">
@@ -103,10 +117,16 @@ namespace AdrPlus.Plugins
         /// reason <see cref="RetryPendingAsync"/>'s resolver callback is.
         /// </param>
         /// <param name="repo">The snapshot of the repository configuration relevant to plugins.</param>
+        /// <param name="isActive">
+        /// Optional filter over <see cref="LoadedPlugins"/> for this call only — a plugin for which this returns
+        /// <see langword="false"/> is skipped entirely for this sweep (not initialized, not counted). <see
+        /// langword="null"/> (the default) sweeps every loaded plugin, unfiltered.
+        /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         Task<SyncSummary> BackfillAsync(
             IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
             RepoInfoSnapshot repo,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>

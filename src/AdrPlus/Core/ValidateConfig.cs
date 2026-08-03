@@ -545,6 +545,8 @@ namespace AdrPlus.Core
                     { AppConstants.FieldHeaderTableFields, JsonValueKind.String },
                     { AppConstants.FieldHeaderTableValues, JsonValueKind.String },
                     { AppConstants.FieldHeaderMigrated, JsonValueKind.String },
+                    { AppConstants.FieldActivePlugins, JsonValueKind.Array },
+                    { AppConstants.FieldDisablePlugins, JsonValueKind.True | JsonValueKind.False },
              };
 
                 // Check for missing required fields
@@ -570,11 +572,20 @@ namespace AdrPlus.Core
                     }
 
                     // Validate type - special handling for boolean
-                    if (field.Key.Equals(AppConstants.FieldFolderByScope, StringComparison.OrdinalIgnoreCase))
+                    if (field.Key.Equals(AppConstants.FieldFolderByScope, StringComparison.OrdinalIgnoreCase) ||
+                        field.Key.Equals(AppConstants.FieldDisablePlugins, StringComparison.OrdinalIgnoreCase))
                     {
                         if (property.ValueKind != JsonValueKind.True && property.ValueKind != JsonValueKind.False)
                         {
                             errors.Add(string.Format(null, FormatMessages.ErrConfigInvalidBoolean, field.Key));
+                        }
+                    }
+                    // Validate type - special handling for the string array of active plugin names
+                    else if (field.Key.Equals(AppConstants.FieldActivePlugins, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (property.ValueKind != JsonValueKind.Array || property.EnumerateArray().Any(item => item.ValueKind != JsonValueKind.String))
+                        {
+                            errors.Add(string.Format(null, FormatMessages.ValidationFieldWrongType, field.Key, JsonValueKind.Array, property.ValueKind));
                         }
                     }
                     else if (property.ValueKind != field.Value)

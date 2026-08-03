@@ -380,7 +380,7 @@
     <value>未配置 allowlist（允许所有插件）</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | 事件：{2} | allowlist：{3} | 待处理：{4}</value>
+    <value>{0} | {1} v{2} | 事件：{3} | allowlist：{4} | 待处理：{5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>未加载任何插件</value>
@@ -433,6 +433,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>验证插件结构</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>管理活动插件</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>选择活动插件</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>活动插件已更新：{0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>活动插件：{0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>可用的内置插件：{0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>已加载的插件</value>
   </data>
@@ -468,6 +483,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>已拒绝</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>预期的活动插件当前未加载：{0} — 请检查 ./plugins 或通过 'adrplus plugins --wizard' 更新活动列表</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>未启用</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>缺失</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>已禁用</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>插件</value>

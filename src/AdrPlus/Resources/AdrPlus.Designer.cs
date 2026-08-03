@@ -2590,7 +2590,7 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to {0} v{1} | events: {2} | allowlist: {3} | pending: {4}.
+        ///   Looks up a localized string similar to {0} | {1} v{2} | events: {3} | allowlist: {4} | pending: {5}.
         /// </summary>
         internal static string PluginsListEntry {
             get {
@@ -2752,6 +2752,51 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Manage active plugins.
+        /// </summary>
+        internal static string WizardPluginsModeManage {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeManage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Select active plugins.
+        /// </summary>
+        internal static string WizardPluginsManagePrompt {
+            get {
+                return ResourceManager.GetString("WizardPluginsManagePrompt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Active plugins updated: {0}.
+        /// </summary>
+        internal static string PluginsActiveUpdated {
+            get {
+                return ResourceManager.GetString("PluginsActiveUpdated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugins active: {0}.
+        /// </summary>
+        internal static string PluginsActiveSummary {
+            get {
+                return ResourceManager.GetString("PluginsActiveSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Builtin plugins available: {0}.
+        /// </summary>
+        internal static string WizardBuiltinPluginsAvailable {
+            get {
+                return ResourceManager.GetString("WizardBuiltinPluginsAvailable", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Loaded plugins.
         /// </summary>
         internal static string WizardPluginsListTableTitle {
@@ -2856,6 +2901,51 @@ namespace AdrPlus.Resources {
         internal static string PluginsValidateStatusRejected {
             get {
                 return ResourceManager.GetString("PluginsValidateStatusRejected", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Expected active plugin(s) not currently loaded: {0} — check ./plugins or update the active list via 'adrplus plugins --wizard'.
+        /// </summary>
+        internal static string PluginsActiveMissing {
+            get {
+                return ResourceManager.GetString("PluginsActiveMissing", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        internal static string PluginsStatusActive {
+            get {
+                return ResourceManager.GetString("PluginsStatusActive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        internal static string PluginsStatusInactive {
+            get {
+                return ResourceManager.GetString("PluginsStatusInactive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Missing.
+        /// </summary>
+        internal static string PluginsStatusMissing {
+            get {
+                return ResourceManager.GetString("PluginsStatusMissing", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        internal static string PluginsStatusDisabled {
+            get {
+                return ResourceManager.GetString("PluginsStatusDisabled", resourceCulture);
             }
         }
 

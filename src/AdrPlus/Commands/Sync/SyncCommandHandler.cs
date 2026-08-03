@@ -97,13 +97,16 @@ namespace AdrPlus.Commands.Sync
                 }
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
+                await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
+                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+
                 if (parsedArgs.ContainsKey(Arguments.Backfill))
                 {
-                    await ExecuteBackfillAsync(targetPath, repoconfig, cancellationToken);
+                    await ExecuteBackfillAsync(targetPath, repoconfig, isActive, activeSummary, missingNames, cancellationToken);
                     return;
                 }
 
-                await ExecuteDefaultSyncAsync(targetPath, repoconfig, cancellationToken);
+                await ExecuteDefaultSyncAsync(targetPath, repoconfig, isActive, activeSummary, missingNames, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -112,7 +115,7 @@ namespace AdrPlus.Commands.Sync
             }
         }
 
-        private async Task ExecuteDefaultSyncAsync(string targetPath, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
+        private async Task ExecuteDefaultSyncAsync(string targetPath, AdrPlusRepoConfig repoconfig, Func<LoadedPlugin, bool> isActive, IReadOnlyList<string> activeSummary, IReadOnlyList<string> missingNames, CancellationToken cancellationToken)
         {
             // Every valid ADR in the repo, keyed by the same adrKey format pending.json entries use — a
             // pending entry may reference an ADR that's since been deleted/renamed, which resolveAdr below
@@ -137,20 +140,18 @@ namespace AdrPlus.Commands.Sync
                 return (record.ToSnapshot(), file.FileName, file.ContentAdr ?? string.Empty);
             }
 
-            await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-            var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), cancellationToken);
+            var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), isActive: isActive, cancellationToken: cancellationToken);
 
             var message = string.Format(null, FormatMessages.SyncSummaryReport, summary.Succeeded, summary.Skipped, summary.StillPending, summary.PermanentlyFailed, summary.Dropped);
+            _prompt.PromptShowActivePlugins(activeSummary, missingNames);
             LogMessages.LogCommandSuccessful(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }
 
-        private async Task ExecuteBackfillAsync(string targetPath, AdrPlusRepoConfig repoconfig, CancellationToken cancellationToken)
+        private async Task ExecuteBackfillAsync(string targetPath, AdrPlusRepoConfig repoconfig, Func<LoadedPlugin, bool> isActive, IReadOnlyList<string> activeSummary, IReadOnlyList<string> missingNames, CancellationToken cancellationToken)
         {
-            // Backfill is the expensive path (full retryPolicy per settled ADR) — load plugins first and skip
-            // reading the whole repo's ADRs entirely when nothing is loaded to receive them.
-            await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-
+            // Backfill is the expensive path (full retryPolicy per settled ADR) — skip reading the whole repo's
+            // ADRs entirely when nothing is loaded to receive them (plugins are already loaded by ExecuteAsync).
             var summary = new SyncSummary();
             if (_pluginManager.LoadedPlugins.Count > 0)
             {
@@ -174,10 +175,11 @@ namespace AdrPlus.Commands.Sync
                     settledItems.Add((eventType.Value, record.ToSnapshot(), file.FileName, () => file.ContentAdr ?? string.Empty));
                 }
 
-                summary = await _pluginManager.BackfillAsync(settledItems, repoconfig.ToSnapshot(), cancellationToken);
+                summary = await _pluginManager.BackfillAsync(settledItems, repoconfig.ToSnapshot(), isActive: isActive, cancellationToken: cancellationToken);
             }
 
             var message = string.Format(null, FormatMessages.BackfillSummaryReport, summary.Succeeded, summary.Skipped, summary.PermanentlyFailed, summary.Exhausted);
+            _prompt.PromptShowActivePlugins(activeSummary, missingNames);
             LogMessages.LogCommandSuccessful(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }

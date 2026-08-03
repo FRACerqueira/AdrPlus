@@ -380,7 +380,7 @@
     <value>allowlist は未設定です(すべてのプラグインが許可されます)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | イベント: {2} | allowlist: {3} | 保留中: {4}</value>
+    <value>{0} | {1} v{2} | イベント: {3} | allowlist: {4} | 保留中: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>読み込まれたプラグインはありません</value>
@@ -433,6 +433,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>プラグインの構造を検証</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>アクティブなプラグインを管理</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>アクティブにするプラグインを選択してください</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>アクティブなプラグインを更新しました: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>アクティブなプラグイン: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>利用可能な組み込みプラグイン: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>読み込まれたプラグイン</value>
   </data>
@@ -468,6 +483,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>REJECTED</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>想定されているアクティブなプラグインが現在ロードされていません: {0} — ./plugins を確認するか、'adrplus plugins --wizard' でアクティブリストを更新してください</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>有効</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>見つかりません</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>無効化</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>プラグイン</value>

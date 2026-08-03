@@ -8,8 +8,10 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 
 namespace AdrPlus.Commands.Wizard
@@ -29,6 +31,12 @@ namespace AdrPlus.Commands.Wizard
     /// <param name="validateconfig">The service for checking whether the repository template is configured.</param>
     /// <param name="prompt">The console writer for displaying menus, banners, and prompts.</param>
     /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
+    /// <param name="builtinPluginsRoot">
+    /// The folder containing plugins bundled with the adrplus package itself (e.g. <c>plugins-builtin</c> next
+    /// to the tool's own assembly), or empty to skip showing them. Unlike the per-repo <c>ActivePlugins</c>
+    /// summary shown by the ADR lifecycle commands, this is install-level and available before any repository
+    /// is chosen, so it's shown on every wizard menu screen.
+    /// </param>
     internal sealed partial class WizardCommandHandler(
         CommandRouter commandRouter,
         IConfiguration configuration,
@@ -37,7 +45,8 @@ namespace AdrPlus.Commands.Wizard
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
         IWizardMenuPrompts wizardMenuPrompts,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        string builtinPluginsRoot = "") : ICommandHandler
     {
         private readonly ILogger<WizardCommandHandler> _logger = logger;
         private readonly IFileSystemService _filesystem = fileSystem;
@@ -47,6 +56,7 @@ namespace AdrPlus.Commands.Wizard
         private readonly IConfiguration _configuration = configuration;
         private readonly CommandRouter _commandRouter = commandRouter;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly string _builtinPluginsRoot = builtinPluginsRoot;
         private readonly (CommandsAdr Command, string Alias, Type ConfigCommandHandler, string Description)[] _commandsMap = adrServices.GetCommands();
 
         private static readonly Arguments[] ValidCommandArgs = [Arguments.Help];
@@ -86,11 +96,20 @@ namespace AdrPlus.Commands.Wizard
                 {
                     currentMenu = new ItemMenuWizard();
                 }
+                var builtinPluginsSummary = GetBuiltinPluginsSummary();
                 while (true)
                 {
                     _prompt.PromptEnabledEscToAbort(false);
                     _prompt.PromptShowBanner(AppConstants.BannerText);
-                    _prompt.PromptShowWellcome(_configuration[AppConstants.CfgNameVersionApp] ?? string.Empty);
+                    // Reconstructs PromptShowWellcome's version line without its built-in trailing blank line,
+                    // so the blank line can be moved below the builtin-plugins line instead (kept together
+                    // with the banner/version at the top of every menu screen).
+                    _prompt.PromptWriteInfo(string.Format(null, FormatMessages.MsgWelcome, _configuration[AppConstants.CfgNameVersionApp] ?? string.Empty));
+                    if (builtinPluginsSummary.Count > 0)
+                    {
+                        _prompt.PromptWriteInfo(string.Format(null, FormatMessages.WizardBuiltinPluginsAvailable, string.Join(", ", builtinPluginsSummary)));
+                    }
+                    _prompt.PromptWriteInfo("");
                     _prompt.PromptWriteStartCommand(string.Format(null, FormatMessages.MsgCommandStarted, "wizard"));
 
                     var isRepoConfigured = _validateconfig.HasTemplateRepoFile();
@@ -528,6 +547,37 @@ namespace AdrPlus.Commands.Wizard
         /// <returns>The string alias (e.g. <c>"new"</c>, <c>"approve"</c>).</returns>
         private string GetCommandAlias(CommandsAdr command) =>
             _commandsMap.First(x => x.Command == command).Alias;
+
+        /// <summary>
+        /// Reads the name and version of every plugin bundled under <see cref="_builtinPluginsRoot"/>
+        /// (e.g. <c>plugins-builtin/adr-indexer/plugin.json</c>), for display only — no manifest validation,
+        /// assembly loading, or allowlist checks, since this is just informing the user what ships with this
+        /// adrplus install, independent of any repository's <c>ActivePlugins</c>.
+        /// </summary>
+        /// <returns>A list of <c>"Name vVersion"</c> strings, one per bundled plugin found; empty when <see cref="_builtinPluginsRoot"/> is unset or absent.</returns>
+        internal List<string> GetBuiltinPluginsSummary()
+        {
+            var result = new List<string>();
+            if (string.IsNullOrEmpty(_builtinPluginsRoot) || !Directory.Exists(_builtinPluginsRoot))
+            {
+                return result;
+            }
+
+            foreach (var folderPath in Directory.EnumerateDirectories(_builtinPluginsRoot).OrderBy(path => path, StringComparer.Ordinal))
+            {
+                var manifestPath = Path.Combine(folderPath, "plugin.json");
+                if (!File.Exists(manifestPath))
+                {
+                    continue;
+                }
+                var manifest = JsonSerializer.Deserialize<PluginManifest>(File.ReadAllText(manifestPath), PluginManifest.SerializerOptions);
+                if (manifest?.Name is { Length: > 0 })
+                {
+                    result.Add($"{manifest.Name} v{manifest.Version}");
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Clears the menu history for <paramref name="historyKey"/> and returns a

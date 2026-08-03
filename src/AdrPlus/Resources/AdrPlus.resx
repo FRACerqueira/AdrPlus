@@ -379,7 +379,7 @@
     <value>No allowlist configured (all plugins allowed)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | events: {2} | allowlist: {3} | pending: {4}</value>
+    <value>{0} | {1} v{2} | events: {3} | allowlist: {4} | pending: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>No plugins loaded</value>
@@ -432,6 +432,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Validate plugin structure</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>Manage active plugins</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>Select active plugins</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>Active plugins updated: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>Plugins active: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>Builtin plugins available: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Loaded plugins</value>
   </data>
@@ -467,6 +482,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>REJECTED</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>Expected active plugin(s) not currently loaded: {0} — check ./plugins or update the active list via 'adrplus plugins --wizard'</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>Missing</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>Disabled</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>Plugins</value>

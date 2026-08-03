@@ -128,6 +128,7 @@ namespace AdrPlus.Plugins
             Func<string> getAdrRenderedContent,
             RepoInfoSnapshot repo,
             bool isReplay,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default)
         {
             if (_loadedPlugins.Count == 0)
@@ -148,6 +149,7 @@ namespace AdrPlus.Plugins
             };
 
             var candidates = _loadedPlugins.Where(plugin =>
+                (isActive is null || isActive(plugin)) &&
                 !_initFailedPlugins.Contains(plugin.Manifest.Name!) &&
                 (plugin.Manifest.SubscribedEvents?.Contains(eventType.ToString(), StringComparer.OrdinalIgnoreCase) ?? false));
 
@@ -183,12 +185,18 @@ namespace AdrPlus.Plugins
         public async Task<SyncSummary> RetryPendingAsync(
             Func<string, (AdrRecordSnapshot Adr, string FilePath, string Content)?> resolveAdr,
             RepoInfoSnapshot repo,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default)
         {
             var summary = new SyncSummary();
 
             foreach (var plugin in _loadedPlugins)
             {
+                if (isActive is not null && !isActive(plugin))
+                {
+                    continue;
+                }
+
                 var entries = await PendingStateStore.ReadAllAsync(_fileSystem, plugin.FolderPath, cancellationToken);
                 if (entries.Count == 0)
                 {
@@ -300,6 +308,7 @@ namespace AdrPlus.Plugins
         public async Task<SyncSummary> BackfillAsync(
             IEnumerable<(AdrEventType EventType, AdrRecordSnapshot Adr, string FilePath, Func<string> GetContent)> settledAdrs,
             RepoInfoSnapshot repo,
+            Func<LoadedPlugin, bool>? isActive = null,
             CancellationToken cancellationToken = default)
         {
             var total = new SyncSummary();
@@ -316,10 +325,16 @@ namespace AdrPlus.Plugins
             // means those sets are only ever read, never mutated, once concurrency starts.
             foreach (var plugin in _loadedPlugins)
             {
+                if (isActive is not null && !isActive(plugin))
+                {
+                    continue;
+                }
                 await EnsureInitializedAsync(plugin, cancellationToken);
             }
 
-            var readyPlugins = _loadedPlugins.Where(plugin => !_initFailedPlugins.Contains(plugin.Manifest.Name!));
+            var readyPlugins = _loadedPlugins.Where(plugin =>
+                (isActive is null || isActive(plugin)) &&
+                !_initFailedPlugins.Contains(plugin.Manifest.Name!));
             var perPluginSummaries = await Task.WhenAll(readyPlugins.Select(plugin => BackfillPluginAsync(plugin, items, repo, cancellationToken)));
 
             foreach (var summary in perPluginSummaries)
@@ -476,7 +491,7 @@ namespace AdrPlus.Plugins
                     }
                 }
 
-                var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.TimeoutMs, cancellationToken);
+                var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.BackgroundTimeoutMs, cancellationToken);
 
                 switch (outcome.Status)
                 {
@@ -598,7 +613,7 @@ namespace AdrPlus.Plugins
         /// Invokes <see cref="IAdrPlugin.OnAdrEventAsync"/> exactly once, racing it against
         /// <paramref name="timeoutMs"/>. Shared by the foreground dispatch path (<paramref name="timeoutMs"/> =
         /// <see cref="PluginManifest.ForegroundTimeoutMs"/>) and the background retry engine
-        /// (<paramref name="timeoutMs"/> = <see cref="PluginManifest.TimeoutMs"/>) — the only difference between
+        /// (<paramref name="timeoutMs"/> = <see cref="PluginManifest.BackgroundTimeoutMs"/>) — the only difference between
         /// the two callers is which timeout they race against and how they interpret a non-success outcome.
         /// </summary>
         private async Task<PluginInvokeOutcome> InvokeOnceAsync(LoadedPlugin plugin, AdrEventContext context, int timeoutMs, CancellationToken cancellationToken)

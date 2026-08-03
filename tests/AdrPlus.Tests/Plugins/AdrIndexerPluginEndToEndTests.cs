@@ -64,20 +64,20 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
         File.WriteAllText(path, content);
     }
 
-    [Fact]
-    public async Task RealPlugin_LoadedViaPluginLoader_GeneratesIndexFromAllAdrFilesInRepo()
+    /// <summary>
+    /// Copies the actually-compiled plugin DLL (plus its non-Abstractions dependencies) into
+    /// <paramref name="pluginFolder"/> and loads it via the real <see cref="PluginLoader"/> path, mirroring
+    /// what the host does at runtime.
+    /// </summary>
+    /// <remarks>
+    /// <c>AdrPlus.Abstractions</c> is deliberately NOT copied: per <c>PluginAssemblyLoadContext</c>'s contract,
+    /// its types are resolved by the host's default context, so the plugin must share the host's copy — copying
+    /// a second one here would give the plugin ALC a distinct <c>IAdrPlugin</c> type identity and fail the
+    /// Name/Version/entryType compatibility check in <see cref="PluginLoader.LoadAssembly"/>.
+    /// </remarks>
+    private async Task<IAdrPlugin> LoadRealPluginAsync(string pluginFolder, CancellationToken cancellationToken)
     {
-        var adrFolder = Path.Combine(_root, "doc", "adr");
-        Directory.CreateDirectory(adrFolder);
-        WriteAdrFile(Path.Combine(adrFolder, "ADR001V01-first-decision.md"), "First decision", "01", "", "Proposed (2026-07-29)", "Accepted (2026-07-29)");
-        WriteAdrFile(Path.Combine(adrFolder, "ADR002V01-second-decision.md"), "Second decision", "01", "02", "Proposed (2026-07-30)", "");
-
-        var pluginFolder = Path.Combine(_root, "plugins", "adr-indexer");
         Directory.CreateDirectory(pluginFolder);
-        // AdrPlus.Abstractions is deliberately NOT copied: per PluginAssemblyLoadContext's contract, its types
-        // are resolved by the host's default context, so the plugin must share the host's copy — copying a
-        // second one here would give the plugin ALC a distinct IAdrPlugin type identity and fail the
-        // Name/Version/entryType compatibility check in PluginLoader.LoadAssembly.
         var compiledDllPath = typeof(AdrIndexerPlugin).Assembly.Location;
         foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(compiledDllPath)!))
         {
@@ -91,7 +91,7 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
 
         var fileSystem = new FileSystemService();
         var loader = new PluginLoader(fileSystem);
-        var manifestOutcome = await loader.ValidateManifestAsync(pluginFolder, allowlist: null, _ => { }, TestContext.Current.CancellationToken);
+        var manifestOutcome = await loader.ValidateManifestAsync(pluginFolder, allowlist: null, _ => { }, cancellationToken);
         manifestOutcome.Rejection.Should().BeNull();
         manifestOutcome.Manifest.Should().NotBeNull();
 
@@ -99,8 +99,21 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
         loadOutcome.Rejection.Should().BeNull();
         loadOutcome.Loaded.Should().NotBeNull();
 
-        var plugin = loadOutcome.Loaded!.Instance;
-        _loadContext = loadOutcome.Loaded.LoadContext;
+        _loadContext = loadOutcome.Loaded!.LoadContext;
+        return loadOutcome.Loaded.Instance;
+    }
+
+    [Fact]
+    public async Task RealPlugin_LoadedViaPluginLoader_GeneratesIndexFromAllAdrFilesInRepo()
+    {
+        var adrFolder = Path.Combine(_root, "doc", "adr");
+        Directory.CreateDirectory(adrFolder);
+        WriteAdrFile(Path.Combine(adrFolder, "ADR001V01-first-decision.md"), "First decision", "01", "", "Proposed (2026-07-29)", "Accepted (2026-07-29)");
+        WriteAdrFile(Path.Combine(adrFolder, "ADR002V01-second-decision.md"), "Second decision", "01", "02", "Proposed (2026-07-30)", "");
+
+        var pluginFolder = Path.Combine(_root, "plugins", "adr-indexer");
+        var plugin = await LoadRealPluginAsync(pluginFolder, TestContext.Current.CancellationToken);
+
         var config = Substitute.For<IPluginConfiguration>();
         var context = Substitute.For<IPluginContext>();
         context.Logger.Returns(Substitute.For<IPluginLogger>());
@@ -147,6 +160,68 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
         indexContent.Should().NotContain("[content]");
         indexContent.Should().Contain("| [ADR001V01-first-decision](ADR001V01-first-decision.md) | First decision | V01 | Accepted (2026-07-29) |");
         indexContent.Should().Contain("| [ADR002V01-second-decision](ADR002V01-second-decision.md) | Second decision | V01 (R02) | Proposed (2026-07-30) |");
+
+        await plugin.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Unlike <see cref="RealPlugin_LoadedViaPluginLoader_GeneratesIndexFromAllAdrFilesInRepo"/>, this doesn't need
+    /// the real <see cref="PluginLoader"/>/<see cref="System.Runtime.Loader.AssemblyLoadContext"/> path — <c>outputFolder</c> is a
+    /// file-writing behavior internal to the plugin, not something the loading mechanism affects — so it
+    /// instantiates <see cref="AdrIndexerPlugin"/> directly (the test project already references it) and avoids
+    /// the ALC-unload dance entirely.
+    /// </summary>
+    [Fact]
+    public async Task RealPlugin_WithOutputFolderSetting_WritesIndexToConfiguredSubfolderInsteadOfAdrRoot()
+    {
+        var adrFolder = Path.Combine(_root, "doc", "adr");
+        Directory.CreateDirectory(adrFolder);
+        WriteAdrFile(Path.Combine(adrFolder, "ADR001V01-first-decision.md"), "First decision", "01", "", "Proposed (2026-07-29)", "Accepted (2026-07-29)");
+
+        var plugin = new AdrIndexerPlugin();
+        var config = Substitute.For<IPluginConfiguration>();
+        config.GetValue<string>("outputFolder").Returns("reports");
+        var context = Substitute.For<IPluginContext>();
+        context.Logger.Returns(Substitute.For<IPluginLogger>());
+        await plugin.InitializeAsync(context, config, TestContext.Current.CancellationToken);
+
+        var eventContext = new AdrEventContext
+        {
+            EventType = AdrEventType.Approved,
+            IsReplay = false,
+            Adr = new AdrRecordSnapshot
+            {
+                Number = 1,
+                Version = 1,
+                Title = "First decision",
+                Domain = string.Empty,
+                Scope = string.Empty,
+                StatusCreate = AdrStatus.Proposed,
+                StatusUpdate = AdrStatus.Accepted,
+                StatusChange = AdrStatus.Accepted
+            },
+            AdrFilePath = Path.Combine(adrFolder, "ADR001V01-first-decision.md"),
+            GetAdrRenderedContent = () => string.Empty,
+            Repo = new RepoInfoSnapshot
+            {
+                FolderAdr = "doc/adr",
+                Scopes = [],
+                StatusMapping = new Dictionary<AdrStatus, string>
+                {
+                    [AdrStatus.Proposed] = "Proposed",
+                    [AdrStatus.Accepted] = "Accepted",
+                    [AdrStatus.Rejected] = "Rejected",
+                    [AdrStatus.Superseded] = "Superseded"
+                }
+            },
+            CorrelationId = Guid.NewGuid().ToString()
+        };
+
+        var result = await plugin.OnAdrEventAsync(eventContext, TestContext.Current.CancellationToken);
+
+        result.Status.Should().Be(PluginResultStatus.Success);
+        File.Exists(Path.Combine(adrFolder, "reports", "indexadrs.md")).Should().BeTrue();
+        File.Exists(Path.Combine(adrFolder, "indexadrs.md")).Should().BeFalse();
 
         await plugin.DisposeAsync();
     }

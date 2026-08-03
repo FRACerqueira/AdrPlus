@@ -24,6 +24,7 @@ using AdrPlus.Infrastructure.Configuration;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Plugins;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -63,9 +64,19 @@ namespace AdrPlus.Extensions
                 sp.GetRequiredService<IValidateConfig>(),
                 sp.GetRequiredService<IConsoleWriter>(),
                 sp.GetRequiredService<IAdrServices>(),
+                sp.GetRequiredService<IPluginManager>(),
                 Path.Combine(AppContext.BaseDirectory, "plugins-builtin")));
             services.AddSingleton<MigrateCommandHandler>();
-            services.AddSingleton<WizardCommandHandler>();
+            services.AddSingleton(sp => new WizardCommandHandler(
+                sp.GetRequiredService<CommandRouter>(),
+                sp.GetRequiredService<IConfiguration>(),
+                sp.GetRequiredService<ILogger<WizardCommandHandler>>(),
+                sp.GetRequiredService<IFileSystemService>(),
+                sp.GetRequiredService<IValidateConfig>(),
+                sp.GetRequiredService<IConsoleWriter>(),
+                sp.GetRequiredService<IWizardMenuPrompts>(),
+                sp.GetRequiredService<IAdrServices>(),
+                Path.Combine(AppContext.BaseDirectory, "plugins-builtin")));
             services.AddSingleton<ConfigCommandHandler>();
             services.AddSingleton<NewAdrCommandHandler>();
             services.AddSingleton<VersionCommandHandler>();

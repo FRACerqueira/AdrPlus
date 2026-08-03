@@ -379,7 +379,7 @@
     <value>Nenhuma allowlist configurada (todos os plugins permitidos)</value>
   </data>
   <data name="PluginsListEntry" xml:space="preserve">
-    <value>{0} v{1} | eventos: {2} | allowlist: {3} | pendentes: {4}</value>
+    <value>{0} | {1} v{2} | eventos: {3} | allowlist: {4} | pendentes: {5}</value>
   </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Nenhum plugin carregado</value>
@@ -432,6 +432,21 @@
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Validar estrutura dos plugins</value>
   </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>Gerenciar plugins ativos</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>Selecione os plugins ativos</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>Plugins ativos atualizados: {0}</value>
+  </data>
+  <data name="PluginsActiveSummary" xml:space="preserve">
+    <value>Plugins ativos: {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>Plugins embutidos disponíveis: {0}</value>
+  </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Plugins carregados</value>
   </data>
@@ -467,6 +482,21 @@
   </data>
   <data name="PluginsValidateStatusRejected" xml:space="preserve">
     <value>REJEITADO</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>Plugin(s) ativo(s) esperado(s) não carregado(s) atualmente: {0} — verifique ./plugins ou atualize a lista de ativos via 'adrplus plugins --wizard'</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>Ativo</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>Inativo</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>Ausente</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>Desabilitado</value>
   </data>
   <data name="WizardGroupPluginsTitle" xml:space="preserve">
     <value>Plugins</value>

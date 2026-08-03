@@ -10,6 +10,16 @@ using AdrPlus.Infrastructure.FileSystem;
 namespace AdrPlus.Infrastructure.UI
 {
     /// <summary>
+    /// The mode chosen from <c>adrplus plugins --wizard</c>'s mode-selection prompt.
+    /// </summary>
+    internal enum PluginsWizardMode
+    {
+        List,
+        Validate,
+        Manage
+    }
+
+    /// <summary>
     /// Core console I/O shared by every command: generic output, confirmation, cursor
     /// control, and the file/folder browsing primitives used across wizard flows.
     /// </summary>
@@ -121,6 +131,19 @@ namespace AdrPlus.Infrastructure.UI
         void PromptShowBanner(string bannerText);
 
         /// <summary>
+        /// The repo-scoped companion to <see cref="PromptShowWellcome"/>/<see cref="PromptShowBanner"/>: shows
+        /// which plugins are active for this run and warns about any expected-but-missing plugin. Called once a
+        /// command's own repository/plugin state is known — unlike the banner/welcome methods, which run before
+        /// that's ever resolved. Callers should invoke this right before their own result message (not
+        /// immediately after resolving the repo path) — writing any earlier can land on a cursor position a
+        /// wizard flow has already repositioned (e.g. via <see cref="PromptMovePosition"/> after a confirm step),
+        /// making the output invisible even though it was technically written.
+        /// </summary>
+        /// <param name="activePluginSummaries">One "Name vVersion" entry per plugin currently active for this run; empty prints nothing.</param>
+        /// <param name="missingPluginNames">Names listed as active but not currently loaded; empty prints nothing.</param>
+        void PromptShowActivePlugins(IReadOnlyList<string> activePluginSummaries, IReadOnlyList<string> missingPluginNames);
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="message">The message to display to the user.</param>
@@ -200,24 +223,34 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to choose between <c>plugins</c>' <c>list</c> and <c>validate</c> modes
-        /// (<c>adrplus plugins --wizard</c>).
+        /// Prompts the user to choose between <c>plugins</c>' <c>list</c>, <c>validate</c>, and <c>manage</c>
+        /// (active-plugins selection) modes (<c>adrplus plugins --wizard</c>).
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple indicating whether the operation was aborted and whether validate mode was chosen.</returns>
-        (bool IsAborted, bool UseValidate) PromptSelectPluginsMode(CancellationToken cancellationToken = default);
+        /// <returns>A tuple indicating whether the operation was aborted and which mode was chosen.</returns>
+        (bool IsAborted, PluginsWizardMode Mode) PromptSelectPluginsMode(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Displays every loaded plugin as a read-only, navigable table (<c>adrplus plugins --list --wizard</c>).
         /// </summary>
         /// <param name="rows">
-        /// One row per loaded plugin (name, version, subscribed events, allowlist status, pending-item count).
-        /// Must contain at least one row — the caller is responsible for falling back to plain text when there
-        /// is nothing to show.
+        /// One row per loaded plugin, plus a synthetic row for each name listed as active but not currently
+        /// loaded (status, name, version, subscribed events, allowlist status, pending-item count). Must contain
+        /// at least one row — the caller is responsible for falling back to plain text when there is nothing to show.
         /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns><see langword="true"/> if the user aborted (Esc) instead of dismissing the table (Enter).</returns>
-        bool PromptShowPluginsListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default);
+        bool PromptShowPluginsListTable(IReadOnlyList<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Shows a <c>MultiSelect</c> over <paramref name="pluginNames"/>, pre-checked per <paramref name="currentlyActive"/>,
+        /// so the user can choose the new <c>activeplugins</c> baseline (<c>adrplus plugins --wizard</c>'s manage mode).
+        /// </summary>
+        /// <param name="pluginNames">Every currently loaded plugin's name.</param>
+        /// <param name="currentlyActive">The repo's current <c>ActivePlugins</c> set, used to pre-check matching items.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple indicating whether the operation was aborted and, if not, the selected plugin names.</returns>
+        (bool IsAborted, string[] SelectedNames) PromptSelectActivePlugins(IReadOnlyList<string> pluginNames, IReadOnlySet<string> currentlyActive, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Displays every loaded and rejected plugin candidate as a read-only, navigable table

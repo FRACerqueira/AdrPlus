@@ -27,11 +27,9 @@ namespace AdrPlus.Plugins
 
         public List<string>? SubscribedEvents { get; set; }
 
-        public int MaxConcurrency { get; set; } = 1;
-
         public int ForegroundTimeoutMs { get; set; } = 5000;
 
-        public int TimeoutMs { get; set; } = 30000;
+        public int BackgroundTimeoutMs { get; set; } = 30000;
 
         public PluginRetryPolicy? RetryPolicy { get; set; }
 

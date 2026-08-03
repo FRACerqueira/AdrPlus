@@ -156,9 +156,8 @@ Every plugin folder needs one, alongside the compiled assembly:
   "entryType": "MyCompany.AdrPlus.Confluence.ConfluencePlugin",
   "abstractionsVersion": "1.0.0",
   "subscribedEvents": [ "Approved", "Rejected", "Superseded", "StatusUndone", "Migrated" ],
-  "maxConcurrency": 1,
   "foregroundTimeoutMs": 5000,
-  "timeoutMs": 30000,
+  "backgroundTimeoutMs": 30000,
   "retryPolicy": {
     "maxAttempts": 3,
     "delayMs": 2000,
@@ -178,9 +177,8 @@ Every plugin folder needs one, alongside the compiled assembly:
 | `entryAssembly` / `entryType` | The DLL filename and fully-qualified class implementing `IAdrPlugin`. |
 | `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against. The host checks the SemVer **major** matches its own; a mismatch rejects the plugin with a warning rather than risking a binary-incompatible load. |
 | `subscribedEvents` | Cheap, declarative filter — the host skips dispatch entirely for events not listed here, before your code runs at all. |
-| `maxConcurrency` | Fixed at `1` in this version (not yet user-tunable) — dispatch to your plugin across a `--backfill` sweep is always serialized, so it never bursts requests at your external system. |
 | `foregroundTimeoutMs` | How long the single, non-retried foreground attempt gets before the host abandons it and queues a retry. Keep this short — it adds directly to how long `adrplus approve`/etc. takes to return. |
-| `timeoutMs` / `retryPolicy` | Apply **only** to background re-drive (`adrplus sync`), never to the foreground path — see [How the plugin system works](#how-the-plugin-system-works). `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |
+| `backgroundTimeoutMs` / `retryPolicy` | Apply **only** to background re-drive (`adrplus sync`), never to the foreground path — see [How the plugin system works](#how-the-plugin-system-works). `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |
 | `settings` | Your own typed configuration, read via `IPluginConfiguration.GetValue<T>(key)` in `InitializeAsync`. **Non-secret only** — see [Secrets](#secrets-never-put-them-in-pluginjson). |
 
 ---

@@ -1,7 +1,10 @@
 # AdrPlus Plugin System — Implementation Plan
 
-> **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D30).
-> **Scope**: Builds every decision tagged **Essential** in §3 of the spec. Decisions tagged **Deferred (v1.1+)** — D23 (dedup), D24 (aggregate dispatch timeout), D18's `maxConcurrency` user-tunability — are explicitly **not** built here; see "Out of scope" below.
+> **Based on**: `adrplus-plugin-architecture.md` (final spec, decisions D1–D31).
+> **Post-v1 addendum (2026-08-03)**: D31 (active-plugin baseline + `DisablePlugins` kill switch, spec §3) shipped
+> after all 11 phases below were already done — see spec §3's D31 row for the design. Not one of the original
+> phases; noted here so this plan's own history stays accurate.
+> **Scope**: Builds every decision tagged **Essential** in §3 of the spec. D23 (dedup) and D24 (aggregate dispatch timeout) were tagged "Deferred (v1.1+)" originally but are now **Rejected outright** (2026-08-03); D18's `maxConcurrency` is no longer a manifest field at all, having been removed rather than left as a future user-tunable knob. See "Out of scope" below.
 > **Status**: All phases (1–11) implemented. Phase 10 shipped as `PluginDevelopmentGuide.md` (repo root), linked from `README.md`'s Table of Contents. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by `SyncCommandHandler`'s default mode. Phase 6 added `--backfill` (full repo sweep, `IPluginManager.BackfillAsync`), reusing the same attempt-loop mechanics via a further-extracted `RunAttemptLoopAsync` shared with Phase 5's retry engine. `PluginManager` now has three layers of shared helpers: `EnsureInitializedAsync`/`InvokeOnceAsync` (Phase 4/5, per-attempt mechanics) and `RunAttemptLoopAsync` (Phase 5/6, the backoff loop around them). **Phase 11 deviated from plan**: instead of a `tests\`-only fixture, `AdrIndexer` shipped as a real bundled plugin project (`AdrPlus.Plugins.AdrIndexer`) staged into the adrplus package under `plugins-builtin\` and auto-installed into every new repo's `./plugins/adr-indexer/` by `adrplus init` (never overwriting an existing install) — verified end-to-end via `dotnet pack` contents and a real `init` + `plugins --list` run, in addition to the plan's fixture-based tests.
 
 ---
@@ -164,9 +167,9 @@ Phase 10 (last — documents the finished behavior)
 
 ## Out of scope for this plan (do not build)
 
-- D23 — dedup engine (`adrKey + eventType` before dispatch).
-- D24 — aggregate dispatch timeout across plugins.
-- D18 — `maxConcurrency` as a user-configurable value (stays fixed at 1).
+- D23 — dedup engine (`adrKey + eventType` before dispatch). **Rejected 2026-08-03**, not deferred — see spec §3.
+- D24 — aggregate dispatch timeout across plugins. **Rejected 2026-08-03**, not deferred — see spec §3.
+- D18 — `maxConcurrency` no longer exists as a concept to defer: the manifest field was removed entirely 2026-08-03 (it was never read by the host). Per-plugin concurrency stays fixed at 1.
 - Everything in the spec's §14 Roadmap: host secrets API, sandboxing beyond timeout, hot-reload, plugin-to-plugin communication, Plugin SDK/template + test harness, `adrplus plugin install <package>` distribution flow.
 
 ---

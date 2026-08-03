@@ -63,7 +63,9 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
             { AppConstants.FieldHeaderTableFields, "## Fields" },
             { AppConstants.FieldHeaderTableValues, "## Values" },
-            { AppConstants.FieldHeaderMigrated, "## Migrated" }
+            { AppConstants.FieldHeaderMigrated, "## Migrated" },
+            { AppConstants.FieldActivePlugins, Array.Empty<string>() },
+            { AppConstants.FieldDisablePlugins, false }
         }, AppConstants.RepoSerializerOptions);
     }
 
@@ -110,7 +112,9 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
             { AppConstants.FieldHeaderTableFields, "## Fields" },
             { AppConstants.FieldHeaderTableValues, "## Values" },
-            { AppConstants.FieldHeaderMigrated, "## Migrated" }
+            { AppConstants.FieldHeaderMigrated, "## Migrated" },
+            { AppConstants.FieldActivePlugins, Array.Empty<string>() },
+            { AppConstants.FieldDisablePlugins, false }
         };
     }
 

@@ -9,6 +9,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
 using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 using System.Text.Json;
@@ -27,6 +28,7 @@ namespace AdrPlus.Commands.Init
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
+    /// <param name="pluginManager">The plugin manager used to load whatever plugins end up under the new repo's <c>./plugins</c>, to record the <c>activeplugins</c> baseline.</param>
     /// <param name="builtinPluginsRoot">
     /// The folder containing plugins bundled with the adrplus package itself (e.g. <c>plugins-builtin</c> next
     /// to the tool's own assembly), or empty to disable installing any of them. Left empty by default so tests
@@ -38,6 +40,7 @@ namespace AdrPlus.Commands.Init
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
         IAdrServices adrServices,
+        IPluginManager pluginManager,
         string builtinPluginsRoot = "") : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
@@ -45,6 +48,7 @@ namespace AdrPlus.Commands.Init
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly IPluginManager _pluginManager = pluginManager;
         private readonly string _builtinPluginsRoot = builtinPluginsRoot;
         private static readonly Arguments[] ValidCommandArgs = [
             Arguments.WizardInit, 
@@ -280,6 +284,36 @@ namespace AdrPlus.Commands.Init
             }
             CreateScopeDirectories(config, folderadr, result);
             InstallBuiltinPlugins(rootrepoPath, result);
+            await WriteActivePluginsBaselineAsync(rootrepoPath, filepath, cancellationToken);
+        }
+
+        /// <summary>
+        /// Loads whatever plugins ended up under <paramref name="rootrepoPath"/>'s <c>./plugins</c> (including
+        /// any just installed by <see cref="InstallBuiltinPlugins"/>) and records their names as the repo's
+        /// <c>activeplugins</c> baseline — the set <see cref="Plugins.PluginActivationGate"/> treats as expected
+        /// going forward. A no-op when nothing is loaded (fresh repos with no plugins keep <c>activeplugins: []</c>,
+        /// their default from <see cref="AdrPlusRepoConfig"/>).
+        /// </summary>
+        /// <remarks>
+        /// Patches the already-written config file's <c>activeplugins</c> key via <see cref="ActivePluginsWriter"/>
+        /// rather than re-serializing a deserialized <see cref="AdrPlusRepoConfig"/> — the object built from
+        /// <c>jsonrepoconfig</c> further up (<c>_adrServices.FromJson(jsonrepoconfig, "")</c>) passes an empty
+        /// string as its template argument, and round-tripping that object back to JSON would silently blank the
+        /// repo's real ADR template content.
+        /// </remarks>
+        /// <param name="rootrepoPath">The root directory of the repository being initialized.</param>
+        /// <param name="configFilePath">The full path of the config file already written by <see cref="CreateNewConfigAsync"/>.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        private async Task WriteActivePluginsBaselineAsync(string rootrepoPath, string configFilePath, CancellationToken cancellationToken)
+        {
+            await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepoPath, "plugins"), cancellationToken);
+            if (_pluginManager.LoadedPlugins.Count == 0)
+            {
+                return;
+            }
+
+            var names = _pluginManager.LoadedPlugins.Select(plugin => plugin.Manifest.Name!).ToArray();
+            await ActivePluginsWriter.WriteAsync(_fileSystem, configFilePath, names, cancellationToken);
         }
 
         /// <summary>
