@@ -18,13 +18,13 @@ namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
 /// Unit tests for <see cref="PluginManager.DispatchAsync"/>: event filtering, lazy once-per-process
-/// <c>InitializeAsync</c> (D30), the per-plugin foreground timeout race (D27), and outcome handling
+/// <c>InitializeAsync</c>, the per-plugin foreground timeout race, and outcome handling
 /// (success/skip, retryable failure -> pending.json, permanent failure -> no pending.json).
 /// </summary>
 /// <remarks>
 /// Plugins are seeded directly into <see cref="PluginManager._loadedPlugins"/> (internal, test-visible) rather
 /// than through <see cref="PluginManager.LoadPluginsAsync"/>, which requires a real compiled assembly
-/// (deferred to Fase 11's fixture plugin) — dispatch logic itself doesn't depend on how a plugin got loaded.
+/// (deferred to the reference fixture plugin) — dispatch logic itself doesn't depend on how a plugin got loaded.
 /// </remarks>
 public class PluginManagerDispatchTests
 {
@@ -216,7 +216,7 @@ public class PluginManagerDispatchTests
     [Fact]
     public async Task DispatchAsync_TwoReposWithSamePluginName_WritePendingToIndependentStateFolders()
     {
-        // Regression for D36: plugin binaries are host-global and shared across repos, but pending.json must
+        // Regression: plugin binaries are host-global and shared across repos, but pending.json must
         // stay per-repo. If pendingStateRoot were ever ignored (e.g. a future refactor derived the state path
         // from the shared plugin.FolderPath again), this test would start seeing writes collide on one path
         // instead of two.

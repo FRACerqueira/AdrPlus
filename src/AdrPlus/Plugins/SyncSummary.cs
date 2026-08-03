@@ -10,7 +10,7 @@ namespace AdrPlus.Plugins
     /// modes: <see cref="IPluginManager.RetryPendingAsync"/> (default mode, populates every field except
     /// <see cref="Exhausted"/>) and <see cref="IPluginManager.BackfillAsync"/> (<c>--backfill</c>, populates
     /// <see cref="Succeeded"/>/<see cref="Skipped"/>/<see cref="PermanentlyFailed"/>/<see cref="Exhausted"/> only
-    /// — <see cref="StillPending"/> and <see cref="Dropped"/> never apply to a backfill sweep). Per D28, the exit
+    /// — <see cref="StillPending"/> and <see cref="Dropped"/> never apply to a backfill sweep). The process exit
     /// code never carries plugin-level signal; this summary is informational only.
     /// </summary>
     internal sealed class SyncSummary
@@ -32,7 +32,7 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Backfill-mode only: items whose retries exhausted <c>maxAttempts</c> during the sweep — logged only,
-        /// never written to <c>pending.json</c> (§6 — a re-run of <c>--backfill</c> is the recovery path, not
+        /// never written to <c>pending.json</c> (a re-run of <c>--backfill</c> is the recovery path, not
         /// accumulating pending entries from one bad sweep).
         /// </summary>
         public int Exhausted { get; set; }

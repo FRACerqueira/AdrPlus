@@ -18,8 +18,8 @@ namespace AdrPlus.Tests.Commands.Init;
 
 /// <summary>
 /// Unit tests for <see cref="InitCommandHandler"/>'s <c>activeplugins</c> baseline seeding: <c>adrplus init</c>
-/// discovers whatever is available host-globally (spec D2/D36) and records the loaded names as a fresh repo's
-/// baseline. Phase 11's per-repo copy-into-repo mechanism (<c>InstallBuiltinPlugins</c>) was removed by D36 —
+/// discovers whatever is available host-globally and records the loaded names as a fresh repo's
+/// baseline. The per-repo copy-into-repo mechanism (<c>InstallBuiltinPlugins</c>) was removed —
 /// bundled plugins are discovered host-globally without any copy step, so this file no longer tests a copy.
 /// </summary>
 public class InitCommandHandlerBuiltinPluginsTests : IDisposable

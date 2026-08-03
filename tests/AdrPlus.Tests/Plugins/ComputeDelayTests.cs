@@ -8,7 +8,7 @@ using AdrPlus.Plugins;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// Unit tests for <see cref="PluginManager.ComputeDelay"/> — the §4.4 backoff formula (Fixed/Exponential,
+/// Unit tests for <see cref="PluginManager.ComputeDelay"/> — the backoff formula (Fixed/Exponential,
 /// jitter, overflow clamp) — exercised in isolation, without any <c>Task.Delay</c> actually elapsing.
 /// </summary>
 public class ComputeDelayTests

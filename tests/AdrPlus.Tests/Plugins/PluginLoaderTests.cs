@@ -12,7 +12,8 @@ namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
 /// Unit tests for <see cref="PluginLoader"/>. Fixture-based, JSON-only — cases that require a real compiled
-/// plugin assembly (entryType/Name/Version/abstractionsVersion compatibility) are deferred to Fase 11; the
+/// plugin assembly (entryType/Name/Version/abstractionsVersion compatibility) are deferred to
+/// <c>AdrIndexerPluginEndToEndTests</c>; the
 /// exception is <see cref="LoadAssembly_WithNoAssemblyOnDisk_IsRejectedAsEntryTypeIncompatible"/>, which only
 /// needs to confirm the missing-file path, not a real plugin.
 /// </summary>

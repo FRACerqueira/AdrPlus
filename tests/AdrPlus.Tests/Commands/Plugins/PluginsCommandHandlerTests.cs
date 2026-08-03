@@ -20,9 +20,9 @@ namespace AdrPlus.Tests.Commands.Plugins;
 
 /// <summary>
 /// Unit tests for <see cref="PluginsCommandHandler"/> — the <c>adrplus plugins --list</c>/<c>--validate</c>
-/// diagnostic subcommands (spec §8, Fase 7). <see cref="IPluginManager"/> is mocked directly (not the concrete
+/// diagnostic subcommands. <see cref="IPluginManager"/> is mocked directly (not the concrete
 /// <c>PluginManager</c>): the deeper "does a rejection get classified correctly" behavior is already covered by
-/// <c>PluginLoaderTests</c>/<c>PluginManagerTests</c> (Fase 3) — this suite only verifies the handler reports
+/// <c>PluginLoaderTests</c>/<c>PluginManagerTests</c> — this suite only verifies the handler reports
 /// whatever <see cref="IPluginManager.LoadedPlugins"/>/<see cref="IPluginManager.Rejections"/> say, and never
 /// triggers dispatch/retry/backfill as a side effect.
 /// </summary>
@@ -407,7 +407,7 @@ public class PluginsCommandHandlerTests
     [Fact]
     public async Task ExecuteAsync_WithWizardMode_FolderAborted_ThrowsOperationCanceledException()
     {
-        // Mode is resolved before the folder prompt (D35/D36 — Install/Uninstall never reach it); List is a
+        // Mode is resolved before the folder prompt (Install/Uninstall never reach it); List is a
         // repo-scoped mode so this test can still exercise the folder-abort path.
         SetupWizardParsedArgs();
         _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.List));
@@ -603,7 +603,7 @@ public class PluginsCommandHandlerTests
     [Fact]
     public async Task ExecuteAsync_WithWizardMode_UninstallSelected_NoInstalledPlugins_ShowsInfoAndReturns()
     {
-        // Uninstall is host-global (D35/D36) — mode is resolved before any folder prompt, so the wizard never
+        // Uninstall is host-global — mode is resolved before any folder prompt, so the wizard never
         // calls PromptSelectFolderPath for this branch (deliberately not stubbed here).
         SetupWizardParsedArgs();
         _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Uninstall));

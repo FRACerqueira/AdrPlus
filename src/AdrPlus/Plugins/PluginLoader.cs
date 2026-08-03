@@ -14,7 +14,7 @@ using System.Text.Json;
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Reason a candidate plugin subfolder was rejected during structural load validation (spec §4.2).
+    /// Reason a candidate plugin subfolder was rejected during structural load validation.
     /// </summary>
     internal enum PluginRejectionReason
     {
@@ -26,7 +26,7 @@ namespace AdrPlus.Plugins
     }
 
     /// <summary>
-    /// A candidate plugin subfolder that failed structural validation; never derails the host (fail-soft, D30).
+    /// A candidate plugin subfolder that failed structural validation; never derails the host (fail-soft by design).
     /// </summary>
     /// <param name="FolderPath">The plugin's subfolder under <c>./plugins</c>.</param>
     /// <param name="Reason">The category of rejection.</param>
@@ -34,13 +34,13 @@ namespace AdrPlus.Plugins
     internal sealed record PluginRejection(string FolderPath, PluginRejectionReason Reason, string Message);
 
     /// <summary>
-    /// A plugin that passed structural load validation, ready for dispatch (Fase 4).
+    /// A plugin that passed structural load validation, ready for dispatch.
     /// </summary>
     /// <param name="Instance">The loaded plugin instance.</param>
     /// <param name="Manifest">The plugin's parsed <c>plugin.json</c> manifest.</param>
     /// <param name="FolderPath">The plugin's subfolder under <c>./plugins</c>.</param>
     /// <param name="LoadContext">
-    /// The isolated <see cref="AssemblyLoadContext"/> this plugin's assembly was loaded into (Fase 9), so it can
+    /// The isolated <see cref="AssemblyLoadContext"/> this plugin's assembly was loaded into, so it can
     /// be unloaded on graceful shutdown. <see langword="null"/> for plugins seeded directly in tests rather than
     /// loaded via <see cref="PluginLoader.LoadAssembly"/> — there is no real ALC to unload in that case.
     /// </param>
@@ -69,7 +69,7 @@ namespace AdrPlus.Plugins
     /// <summary>
     /// Outcome of validating a candidate plugin's <c>plugin.json</c> manifest (schema, path-traversal guard,
     /// allowlist) — the checks that can be decided for one candidate in isolation, before duplicate names across
-    /// candidates are known (spec §4.2, D22).
+    /// candidates are known.
     /// </summary>
     internal sealed class ManifestValidationOutcome
     {
@@ -88,10 +88,10 @@ namespace AdrPlus.Plugins
     }
 
     /// <summary>
-    /// Validates and loads a single plugin subfolder under <c>./plugins/&lt;name&gt;/</c>, applying the
-    /// structural checks from spec §4.2 in two stages: <see cref="ValidateManifestAsync"/> covers manifest schema,
-    /// <c>entryAssembly</c> path-traversal guard, and allowlist — everything decidable for one candidate alone.
-    /// Duplicate-name detection across candidates (D22: "both rejected") is the caller's responsibility, run
+    /// Validates and loads a single plugin subfolder, applying structural checks in two stages:
+    /// <see cref="ValidateManifestAsync"/> covers manifest schema, <c>entryAssembly</c> path-traversal guard,
+    /// and allowlist — everything decidable for one candidate alone. Duplicate-name detection across candidates
+    /// (both are rejected, never just the second one found) is the caller's responsibility, run
     /// after every candidate has been through <see cref="ValidateManifestAsync"/>; only names that turn out unique
     /// should proceed to <see cref="LoadAssembly"/>, which validates <c>entryType</c>/<c>Name</c>/<c>Version</c>/
     /// <c>abstractionsVersion</c> (requiring the actual assembly to be loaded).
@@ -167,7 +167,7 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Rejects the plugin in <paramref name="folderPath"/> as a duplicate: another candidate declared the
-        /// same <see cref="PluginManifest.Name"/> (case-insensitive). Per D22, every plugin sharing a duplicated
+        /// same <see cref="PluginManifest.Name"/> (case-insensitive). Every plugin sharing a duplicated
         /// name is rejected — never just the second one found.
         /// </summary>
         public static PluginRejection RejectDuplicateName(string folderPath, string pluginName)
@@ -260,7 +260,7 @@ namespace AdrPlus.Plugins
     }
 
     /// <summary>
-    /// One isolated <see cref="AssemblyLoadContext"/> per plugin subfolder (D2/D6), with private dependencies
+    /// One isolated <see cref="AssemblyLoadContext"/> per plugin subfolder, with private dependencies
     /// resolved via <see cref="AssemblyDependencyResolver"/> over the plugin's <c>.deps.json</c>.
     /// <see cref="AdrPlus.Abstractions"/> types are resolved by the host's default context.
     /// </summary>

@@ -12,10 +12,10 @@ using AdrPlus.Plugins.AdrIndexer;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// End-to-end test for the Phase 11 reference plugin (<see cref="AdrIndexerPlugin"/>): exercises the real
+/// End-to-end test for the reference plugin (<see cref="AdrIndexerPlugin"/>): exercises the real
 /// <see cref="PluginLoader.ValidateManifestAsync"/>/<see cref="PluginLoader.LoadAssembly"/> path against the
 /// actually-compiled plugin DLL on disk (via the test project's own <c>ProjectReference</c>), closing the
-/// entryType/Name/Version/abstractionsVersion coverage gap that Fase 3/9's fixture-only tests deferred here.
+/// entryType/Name/Version/abstractionsVersion coverage gap that the other suites' fixture-only tests deferred here.
 /// </summary>
 public class AdrIndexerPluginEndToEndTests : IDisposable
 {

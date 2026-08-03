@@ -9,7 +9,7 @@ using System.Text;
 namespace AdrPlus.Plugins.AdrIndexer
 {
     /// <summary>
-    /// Reference/example <see cref="IAdrPlugin"/> (Phase 11): regenerates a repo-wide ADR index file
+    /// Reference/example <see cref="IAdrPlugin"/>: regenerates a repo-wide ADR index file
     /// (<c>settings.outputFileName</c>, default <c>indexadrs.md</c>) from a bundled template on every ADR event.
     /// <c>settings.outputFolder</c> (optional, relative to the ADR root; absent/empty keeps today's default of
     /// writing directly into the ADR root) lets the index land somewhere else, e.g. a docs site's input folder.

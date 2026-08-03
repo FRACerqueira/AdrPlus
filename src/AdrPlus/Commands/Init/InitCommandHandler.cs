@@ -28,7 +28,7 @@ namespace AdrPlus.Commands.Init
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
-    /// <param name="pluginManager">The plugin manager used to discover whatever is available on the host (spec D2/D36) to record the new repo's <c>activeplugins</c> baseline.</param>
+    /// <param name="pluginManager">The plugin manager used to discover whatever is available on the host to record the new repo's <c>activeplugins</c> baseline.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -280,7 +280,7 @@ namespace AdrPlus.Commands.Init
         }
 
         /// <summary>
-        /// Discovers whatever plugins are available host-globally (spec D2/D36 — <c>plugins-builtin</c> plus
+        /// Discovers whatever plugins are available host-globally (<c>plugins-builtin</c> plus
         /// any user-installed via <c>adrplus plugins --install</c>) and records their names as the new repo's
         /// <c>activeplugins</c> baseline — the set <see cref="Plugins.PluginActivationGate"/> treats as expected
         /// going forward. A no-op when nothing is discovered (a fresh repo keeps <c>activeplugins: []</c>, its

@@ -21,13 +21,12 @@ namespace AdrPlus.Commands.Plugins
 {
     /// <summary>
     /// Handles the <c>plugins</c> command's diagnostic, activation-management, and distribution subcommands:
-    /// <c>list</c> (spec §8, Fase 7) reports every loaded plugin (name, version, subscribed events, allowlist
-    /// status, pending-item count); <c>validate</c> re-runs the Fase 3 structural load validation and reports
-    /// loaded vs. rejected plugins, without dispatching any event; <c>--activate</c>/<c>--deactivate</c> (spec
-    /// D34, Fase 12) are the non-interactive counterpart to the wizard's manage mode, adding or removing a
-    /// single plugin name from <c>ActivePlugins</c>; <c>--install</c>/<c>--uninstall</c> (spec D35/D36, Fase
-    /// 13/14) are host-global, zip-based operations against <see cref="IPluginManager.UserPluginsRoot"/> — no
-    /// repository is in scope for either.
+    /// <c>list</c> reports every loaded plugin (name, version, subscribed events, allowlist status,
+    /// pending-item count); <c>validate</c> re-runs structural load validation and reports loaded vs.
+    /// rejected plugins, without dispatching any event; <c>--activate</c>/<c>--deactivate</c> are the
+    /// non-interactive counterpart to the wizard's manage mode, adding or removing a single plugin name from
+    /// <c>ActivePlugins</c>; <c>--install</c>/<c>--uninstall</c> are host-global, zip-based operations against
+    /// <see cref="IPluginManager.UserPluginsRoot"/> — no repository is in scope for either.
     /// </summary>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
@@ -118,7 +117,7 @@ namespace AdrPlus.Commands.Plugins
                     throw new ArgumentException(string.Format(null, FormatMessages.PluginsModeRequired));
                 }
 
-                // --install/--uninstall are host-global (spec D35/D36) — no repository is in scope, so neither
+                // --install/--uninstall are host-global — no repository is in scope, so neither
                 // reads Arguments.TargetRepo nor requires --path. Handled before the --path check below, which
                 // only applies to the remaining, repo-scoped modes.
                 if (hasInstall)
@@ -303,13 +302,13 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// The non-interactive <c>--activate</c>/<c>--deactivate</c> counterpart to the wizard's manage mode
-        /// (spec D34): adds or removes a single <paramref name="name"/> from <c>ActivePlugins</c> instead of
+        /// The non-interactive <c>--activate</c>/<c>--deactivate</c> counterpart to the wizard's manage mode:
+        /// adds or removes a single <paramref name="name"/> from <c>ActivePlugins</c> instead of
         /// replacing the whole baseline. Idempotent by construction — <see cref="HashSet{T}"/> with
         /// <see cref="StringComparer.OrdinalIgnoreCase"/> makes activating an already-active name or
         /// deactivating an already-inactive one a no-op. Deliberately does not require <paramref name="name"/>
         /// to match a currently loaded plugin — a typo surfaces later as <c>Missing</c> via the existing
-        /// D31/D32 warning, so this stays free of plugin-loading here.
+        /// active-plugin warning, so this stays free of plugin-loading here.
         /// </summary>
         private async Task SetActivePluginAsync(string targetPath, string name, bool activate, CancellationToken cancellationToken)
         {
@@ -342,7 +341,7 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Non-interactive plugin distribution (spec D35/D36, Fase 13/14): a host-global, zip-based flow — no
+        /// Non-interactive plugin distribution: a host-global, zip-based flow — no
         /// repository is in scope. <paramref name="zipPath"/> must be named <c>&lt;name&gt;-&lt;version&gt;.zip</c>;
         /// the destination folder name comes from that file name, not from the manifest's <c>Name</c> (which may
         /// legitimately differ, as with the bundled <c>AdrIndexer</c>/<c>adr-indexer</c> pair). Extracts to a
@@ -350,13 +349,13 @@ namespace AdrPlus.Commands.Plugins
         /// destination, so the final <see cref="Directory.Move"/> is a cheap rename, not a cross-volume copy) so
         /// a failed/mismatched zip never touches the real destination. Every entry is rejected if it contains
         /// <c>/</c>, <c>\</c>, <c>..</c>, or <c>:</c> — mirrors <c>PluginLoader</c>'s <c>entryAssembly</c>
-        /// path-traversal guard (Fase 3) and, as a side effect, enforces the flat archive layout every plugin
-        /// folder already uses. Never touches any repo's <c>activeplugins</c> — D31's trust checkpoint means a
-        /// downloaded zip must never start dispatching on its own; activating it is a separate step via
-        /// <c>--activate</c> (D34). With <paramref name="force"/>, an existing destination is deleted and
-        /// replaced entirely, including its <c>plugin.json</c> — an accepted trade-off (no surgical merge of
-        /// local customization), not a bug. One installed version per name per host (D2/D36) — "exists" means
-        /// "this name has any version installed," since there is nowhere for a second version to coexist.
+        /// path-traversal guard, and as a side effect enforces the flat archive layout every plugin
+        /// folder already uses. Never touches any repo's <c>activeplugins</c> — a downloaded zip must never
+        /// start dispatching on its own; activating it is a separate step via <c>--activate</c>. With
+        /// <paramref name="force"/>, an existing destination is deleted and replaced entirely, including its
+        /// <c>plugin.json</c> — an accepted trade-off (no surgical merge of local customization), not a bug.
+        /// One installed version per name per host — "exists" means "this name has any version installed,"
+        /// since there is nowhere for a second version to coexist.
         /// </summary>
         private async Task InstallPluginAsync(string zipPath, bool force, CancellationToken cancellationToken)
         {
@@ -452,12 +451,11 @@ namespace AdrPlus.Commands.Plugins
         }
 
         /// <summary>
-        /// Non-interactive plugin removal (spec D35/D36, Fase 13/14): deletes
-        /// <see cref="IPluginManager.UserPluginsRoot"/>'s <c>&lt;name&gt;/</c> folder if present (a no-op, not
-        /// an error, if it's already gone — uninstall is safe to re-run). Unlike the pre-pivot design,
-        /// <c>--uninstall</c> is host-global and no longer touches any repo's <c>activeplugins</c> — with no
-        /// repository in scope, and no registry of which repos on the machine might still reference this name,
-        /// there is nothing safe to edit here. Drift resolves itself as a <c>Missing</c> warning (D31/D32) the
+        /// Non-interactive plugin removal: deletes <see cref="IPluginManager.UserPluginsRoot"/>'s
+        /// <c>&lt;name&gt;/</c> folder if present (a no-op, not an error, if it's already gone — uninstall is
+        /// safe to re-run). <c>--uninstall</c> is host-global and never touches any repo's <c>activeplugins</c>
+        /// — with no repository in scope, and no registry of which repos on the machine might still reference
+        /// this name, there is nothing safe to edit here. Drift resolves itself as a <c>Missing</c> warning the
         /// next time an affected repo runs a dispatching command — this is intentional, not a gap.
         /// </summary>
         private void UninstallPlugin(string name)
@@ -548,7 +546,7 @@ namespace AdrPlus.Commands.Plugins
         /// <summary>
         /// Interactive <c>adrplus plugins --wizard</c>: picks a mode first, then — only for the repo-scoped
         /// modes (<c>list</c>/<c>validate</c>/<c>manage</c>) — resolves a repository path via prompts. Install
-        /// and uninstall are host-global (spec D35/D36) and never prompt for a repository at all. For
+        /// and uninstall are host-global and never prompt for a repository at all. For
         /// <c>list</c>/<c>validate</c>, returns the same <see cref="Dictionary{Arguments, String}"/> shape
         /// <c>ParseArgs</c> would have produced for the equivalent non-interactive flags — the rest of
         /// <see cref="ExecuteAsync"/> runs unchanged from there (only its final rendering step is aware of

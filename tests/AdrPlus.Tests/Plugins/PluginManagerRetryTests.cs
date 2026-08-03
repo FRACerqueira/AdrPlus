@@ -17,7 +17,7 @@ using AbstractionsDomain = AdrPlus.Abstractions.Domain;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// Unit tests for <see cref="PluginManager.RetryPendingAsync"/> — the Fase 5 background re-drive engine
+/// Unit tests for <see cref="PluginManager.RetryPendingAsync"/> — the background re-drive engine
 /// (<c>adrplus sync</c>'s default mode): per-entry retry loop, minimum-one-attempt-per-run guarantee,
 /// <c>ShouldHandle</c> re-evaluation, dropped/skipped/permanently-failed bookkeeping.
 /// </summary>

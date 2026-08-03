@@ -8,7 +8,7 @@ using AdrPlus.Plugins;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// Unit tests for <see cref="AdrKeyFormatter.Format"/> — the stable <c>adrKey</c> identity (spec §7) shared
+/// Unit tests for <see cref="AdrKeyFormatter.Format"/> — the stable <c>adrKey</c> identity shared
 /// between <see cref="PluginManager"/> and <c>SyncCommandHandler</c>.
 /// </summary>
 public class AdrKeyFormatterTests

@@ -18,12 +18,12 @@ using System.Text.Json;
 namespace AdrPlus.Tests.Commands.Plugins;
 
 /// <summary>
-/// Tests for <see cref="PluginsCommandHandler"/>'s <c>--install</c>/<c>--uninstall</c> flags (spec D35/D36,
-/// Fase 13/14). Host-global, zip-based: neither takes <c>--path</c>, and both target the mocked
+/// Tests for <see cref="PluginsCommandHandler"/>'s <c>--install</c>/<c>--uninstall</c> flags.
+/// Host-global, zip-based: neither takes <c>--path</c>, and both target the mocked
 /// <see cref="IPluginManager.UserPluginsRoot"/> — a real temp folder distinct from any repo. Unlike
 /// <see cref="PluginsCommandHandlerTests"/>, these exercise real disk I/O — zip extraction and folder copy/delete
 /// go through raw <see cref="System.IO"/>/<see cref="ZipFile"/>, not <see cref="IFileSystemService"/> (same
-/// precedent as the Fase 11 <c>AdrIndexerPluginEndToEndTests</c>) — so only the repo-config read/write side
+/// precedent as <c>AdrIndexerPluginEndToEndTests</c>) — so only the repo-config read/write side
 /// (still exercised by <c>--activate</c>/<c>--deactivate</c>, unaffected by this pivot) is mocked.
 /// </summary>
 public class PluginsCommandHandlerInstallTests : IDisposable
@@ -191,7 +191,7 @@ public class PluginsCommandHandlerInstallTests : IDisposable
 
         Directory.Exists(destDir).Should().BeFalse();
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Is<string>(s => s.Contains("TestPlugin")));
-        // Host-global uninstall (D35/D36): no repository is in scope, so activeplugins is never read or written.
+        // Host-global uninstall: no repository is in scope, so activeplugins is never read or written.
         await _mockFileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 

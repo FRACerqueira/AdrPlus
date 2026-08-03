@@ -11,8 +11,8 @@ namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
 /// Unit tests for <see cref="PendingStateStore.ReadAllAsync"/> and <see cref="PendingStateStore.WriteAllAsync"/>
-/// — the bulk read/write primitives the Fase 5 retry engine uses (one read, one write, per plugin per
-/// <c>sync</c> run). <see cref="PendingStateStore.UpsertAsync"/> (Fase 4, unchanged) already has coverage via
+/// — the bulk read/write primitives the retry engine uses (one read, one write, per plugin per
+/// <c>sync</c> run). <see cref="PendingStateStore.UpsertAsync"/> (unchanged) already has coverage via
 /// <c>PluginManagerDispatchTests</c>.
 /// </summary>
 public class PendingStateStoreTests

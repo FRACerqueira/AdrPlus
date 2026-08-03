@@ -15,15 +15,15 @@ using NSubstitute.ExceptionExtensions;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// Unit tests for <see cref="PluginManager.DisposeLoadedPluginsAsync"/> — the CLI's graceful-shutdown hook
-/// (Fase 9): disposes every loaded plugin instance (fail-soft per plugin), unloads any retained
+/// Unit tests for <see cref="PluginManager.DisposeLoadedPluginsAsync"/> — the CLI's graceful-shutdown hook:
+/// disposes every loaded plugin instance (fail-soft per plugin), unloads any retained
 /// <c>AssemblyLoadContext</c> best-effort, and clears <see cref="IPluginManager.LoadedPlugins"/>/
 /// <see cref="IPluginManager.Rejections"/> so the method is idempotent.
 /// </summary>
 /// <remarks>
 /// Same seeding approach as <see cref="PluginManagerDispatchTests"/>: plugins are added directly to
 /// <see cref="PluginManager._loadedPlugins"/>. Fixtures never carry a real <c>AssemblyLoadContext</c> — a real
-/// one requires a compiled plugin assembly (deferred to Fase 11's fixture plugin, same limitation already
+/// one requires a compiled plugin assembly (deferred to the reference fixture plugin, same limitation already
 /// accepted in <c>PluginLoaderTests</c>/<c>PluginManagerTests</c>).
 /// </remarks>
 public class PluginManagerDisposalTests

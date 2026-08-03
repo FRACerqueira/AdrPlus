@@ -20,9 +20,9 @@ namespace AdrPlus.Commands.Sync
 {
     /// <summary>
     /// Handles the <c>sync</c> command. Default mode re-attempts every plugin's pending lifecycle events queued
-    /// in <c>./plugins-state/&lt;name&gt;/pending.json</c> (spec §6/§7, Fase 5; relocated by D36). <c>--backfill</c> instead sweeps
-    /// every ADR in the repo and re-emits the event matching its current settled status (Fase 6) — scriptable/
-    /// cron-friendly for the default mode, manual-only for <c>--backfill</c> (never self-limiting).
+    /// in <c>./plugins-state/&lt;name&gt;/pending.json</c>. <c>--backfill</c> instead sweeps every ADR in the
+    /// repo and re-emits the event matching its current settled status — scriptable/cron-friendly for the
+    /// default mode, manual-only for <c>--backfill</c> (never self-limiting).
     /// </summary>
     /// <param name="logger">The logger for recording command execution and errors.</param>
     /// <param name="fileSystem">The file system service for I/O operations.</param>
@@ -185,7 +185,7 @@ namespace AdrPlus.Commands.Sync
         }
 
         /// <summary>
-        /// Determines the <see cref="AdrEventType"/> matching an ADR's current settled status (spec §6):
+        /// Determines the <see cref="AdrEventType"/> matching an ADR's current settled status:
         /// <see cref="AdrEventType.Superseded"/> &gt; <see cref="AdrEventType.Rejected"/> &gt;
         /// <see cref="AdrEventType.Approved"/> &gt; <see cref="AdrEventType.Migrated"/>, in that priority order —
         /// or <see langword="null"/> when the ADR is still <c>Proposed</c> (nothing settled to replay).
@@ -254,9 +254,9 @@ namespace AdrPlus.Commands.Sync
 
                 if (modePrompt.UseBackfill)
                 {
-                    // Extra safety gate that only the wizard can add: --backfill is documented as "never
-                    // automate" (spec §6), and automation is exactly what a TTY-only wizard can't do — this is
-                    // the one place in the whole flow where the wizard is stricter than the direct flag path.
+                    // Extra safety gate that only the wizard can add: --backfill must never be automated, and
+                    // automation is exactly what a TTY-only wizard can't do — this is the one place in the
+                    // whole flow where the wizard is stricter than the direct flag path.
                     _prompt.PromptWriteInfo(Resources.AdrPlus.HelpUsageBackfill);
                     var confirmBackfill = _prompt.PromptConfirm(Resources.AdrPlus.WizardConfirmBackfill, cancellationToken);
                     if (confirmBackfill.IsAborted)

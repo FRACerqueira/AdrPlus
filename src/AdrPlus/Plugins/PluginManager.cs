@@ -17,10 +17,10 @@ namespace AdrPlus.Plugins
 {
     /// <summary>
     /// Default <see cref="IPluginManager"/> implementation. Discovers plugin subfolders under
-    /// <see cref="BuiltinPluginsRoot"/> and <see cref="UserPluginsRoot"/> (spec D2/D36, merged into one
-    /// candidate set) via <see cref="IFileSystemService.GetDirectories"/>, validates each with a
-    /// <see cref="PluginLoader"/>, and reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>.
-    /// Never throws for a rejected plugin — fail-soft, consistent with D30.
+    /// <see cref="BuiltinPluginsRoot"/> and <see cref="UserPluginsRoot"/> (merged into one candidate set)
+    /// via <see cref="IFileSystemService.GetDirectories"/>, validates each with a <see cref="PluginLoader"/>,
+    /// and reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>.
+    /// Never throws for a rejected plugin — fail-soft by design.
     /// </summary>
     /// <remarks>
     /// Initializes a new instance of the <see cref="PluginManager"/> class.
@@ -35,8 +35,8 @@ namespace AdrPlus.Plugins
     /// class directly never touch the real file system for this root.
     /// </param>
     /// <param name="userPluginsRoot">
-    /// The stable, host-global folder holding plugins installed via <c>adrplus plugins --install</c> (spec
-    /// D35/D36), or empty to disable it. Left empty by default for the same reason as <paramref name="builtinPluginsRoot"/>.
+    /// The stable, host-global folder holding plugins installed via <c>adrplus plugins --install</c>, or empty
+    /// to disable it. Left empty by default for the same reason as <paramref name="builtinPluginsRoot"/>.
     /// </param>
     internal sealed class PluginManager(
         IFileSystemService fileSystem,
@@ -51,11 +51,11 @@ namespace AdrPlus.Plugins
         private readonly ILogger<PluginManager> _logger = logger;
         private readonly IConsoleWriter _prompt = prompt;
         // internal (not private): lets unit tests seed loaded plugins directly, bypassing the real
-        // AssemblyLoadContext load that LoadPluginsAsync requires (deferred to Fase 11's fixture plugin).
+        // AssemblyLoadContext load that LoadPluginsAsync requires.
         internal readonly List<LoadedPlugin> _loadedPlugins = [];
         private readonly List<PluginRejection> _rejections = [];
 
-        // Per-plugin InitializeAsync state (D30). Deliberately NOT cleared by LoadPluginsAsync: "already tried to
+        // Per-plugin InitializeAsync state. Deliberately NOT cleared by LoadPluginsAsync: "already tried to
         // initialize this run" must survive any reload, unlike the discovery-scoped _loadedPlugins/_rejections.
         private readonly HashSet<string> _initializedPlugins = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _initFailedPlugins = new(StringComparer.OrdinalIgnoreCase);
@@ -82,7 +82,7 @@ namespace AdrPlus.Plugins
 
             // Stage 1: validate every candidate's manifest in isolation (schema, path-traversal guard, allowlist).
             // Duplicate names can only be known once every candidate has reached this point. Candidates are
-            // gathered from both host-global roots (D36) before validation — either root missing/empty is a
+            // gathered from both host-global roots before validation — either root missing/empty is a
             // no-op for that root, not an error.
             var candidates = new List<(string FolderPath, PluginManifest Manifest)>();
 
@@ -108,7 +108,7 @@ namespace AdrPlus.Plugins
                 }
             }
 
-            // Stage 2: group by name (D22, case-insensitive) — every candidate in a group with more than one
+            // Stage 2: group by name, case-insensitively — every candidate in a group with more than one
             // member is rejected as a duplicate; only a uniquely-named candidate proceeds to load its assembly.
             foreach (var group in candidates.GroupBy(candidate => candidate.Manifest.Name!, StringComparer.OrdinalIgnoreCase))
             {
@@ -227,7 +227,7 @@ namespace AdrPlus.Plugins
                 if (!await EnsureInitializedAsync(plugin, cancellationToken))
                 {
                     // Config is broken, not the entries themselves — leave them untouched; the user fixes the
-                    // plugin and reruns sync (D30).
+                    // plugin and reruns sync.
                     continue;
                 }
 
@@ -421,8 +421,8 @@ namespace AdrPlus.Plugins
                 catch (OperationCanceledException)
                 {
                     // Return whatever this plugin already accomplished rather than losing it — a backfill sweep
-                    // can run for a long time (D18 serializes per plugin, full retryPolicy per item) and a
-                    // cancelled item shouldn't erase every prior item's outcome.
+                    // can run for a long time (each plugin's ADRs are processed sequentially, with the full
+                    // retryPolicy per item) and a cancelled item shouldn't erase every prior item's outcome.
                     return summary;
                 }
 
@@ -486,8 +486,8 @@ namespace AdrPlus.Plugins
         /// <summary>
         /// Runs the attempt loop for one (plugin, event) pair against <paramref name="retryPolicy"/>, guaranteeing
         /// at least one attempt even if <paramref name="startAttempts"/> already reached
-        /// <see cref="PluginRetryPolicy.MaxAttempts"/> — shared by Fase 5's pending re-drive (<c>startAttempts</c>
-        /// = the entry's prior attempt count) and Fase 6's backfill sweep (<c>startAttempts</c> = <c>0</c>,
+        /// <see cref="PluginRetryPolicy.MaxAttempts"/> — shared by pending re-drive (<c>startAttempts</c>
+        /// = the entry's prior attempt count) and backfill sweeps (<c>startAttempts</c> = <c>0</c>,
         /// always a fresh sweep). The delay before attempt N uses N's absolute, cumulative number — it grows
         /// even across separate <c>sync</c> runs for the same logical item — but the very first attempt made in
         /// this call never sleeps first (the caller's own state already reflects real elapsed time).
@@ -535,7 +535,7 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Computes the backoff delay (ms) for <paramref name="attempt"/> (1-based, absolute across every
-        /// <c>sync</c> run an entry has ever survived) per spec §4.4. <c>Fixed</c> is a flat <see cref="PluginRetryPolicy.DelayMs"/>;
+        /// <c>sync</c> run an entry has ever survived). <c>Fixed</c> is a flat <see cref="PluginRetryPolicy.DelayMs"/>;
         /// <c>Exponential</c> doubles per attempt. The exponent and the result are both clamped — <paramref name="attempt"/>
         /// is cumulative and unbounded (the user's chosen "keep pending across runs" policy), so an unclamped
         /// <c>2^(attempt-1)</c> overflows and goes negative around attempt≈32, which would make <c>Task.Delay</c> throw.
@@ -589,7 +589,7 @@ namespace AdrPlus.Plugins
         }
 
         /// <summary>
-        /// Lazily runs <see cref="IAdrPlugin.InitializeAsync"/> once per plugin per process (D30). Shared by
+        /// Lazily runs <see cref="IAdrPlugin.InitializeAsync"/> once per plugin per process. Shared by
         /// the foreground dispatch path and the background retry engine so "already tried to initialize this
         /// run" state (<see cref="_initializedPlugins"/>/<see cref="_initFailedPlugins"/>) is consistent
         /// between both callers.
@@ -722,7 +722,7 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Every immediate subfolder of <paramref name="root"/>, or empty when <paramref name="root"/> is blank
-        /// or doesn't exist (spec D36 — either host-global root is optional).
+        /// or doesn't exist — either host-global root is optional.
         /// </summary>
         private string[] EnumerateRoot(string root) =>
             string.IsNullOrEmpty(root) || !_fileSystem.DirectoryExists(root)

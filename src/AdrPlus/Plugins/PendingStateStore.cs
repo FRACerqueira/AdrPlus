@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Reads and writes a plugin's <c>pending.json</c> (spec §7, D36). The file is a JSON array — a
+    /// Reads and writes a plugin's <c>pending.json</c>. The file is a JSON array — a
     /// plugin can have pending entries for more than one ADR at once. Callers pass a repo-scoped,
     /// per-plugin state folder (e.g. <c>&lt;repo&gt;/plugins-state/&lt;name&gt;</c>) — not the plugin's own
     /// (now host-global, shared-across-repos) folder, since pending state must never be shared between repos.

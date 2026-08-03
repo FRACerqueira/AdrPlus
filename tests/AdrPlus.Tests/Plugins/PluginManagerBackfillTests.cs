@@ -16,9 +16,9 @@ using AbstractionsDomain = AdrPlus.Abstractions.Domain;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
-/// Unit tests for <see cref="PluginManager.BackfillAsync"/> — the Fase 6 full-repo sweep (<c>adrplus sync
+/// Unit tests for <see cref="PluginManager.BackfillAsync"/> — the full-repo sweep (<c>adrplus sync
 /// --backfill</c>): per-item retry loop (always starting at attempt 1, exhaustion logged not persisted),
-/// sequential-per-plugin dispatch (D18), and safe concurrent init across plugins.
+/// sequential-per-plugin dispatch, and safe concurrent init across plugins.
 /// </summary>
 public class PluginManagerBackfillTests
 {

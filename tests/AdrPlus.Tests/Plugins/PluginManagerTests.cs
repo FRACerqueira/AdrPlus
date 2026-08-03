@@ -14,7 +14,7 @@ namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
 /// Unit tests for <see cref="PluginManager"/>: discovery, and orchestration of the allowlist and
-/// duplicate-name checks across multiple candidate plugin subfolders (D22: duplicates are rejected in full,
+/// duplicate-name checks across multiple candidate plugin subfolders (duplicates are rejected in full,
 /// not just the second one found). Fixture-based, JSON-only.
 /// </summary>
 public class PluginManagerTests
@@ -110,7 +110,7 @@ public class PluginManagerTests
     [Fact]
     public async Task LoadPluginsAsync_WithDuplicateNamesAcrossCase_RejectsBothAsDuplicate()
     {
-        // D22: "duplicate name (both rejected)" — neither candidate sharing a name should load, regardless
+        // Duplicate name (both rejected) — neither candidate sharing a name should load, regardless
         // of discovery order.
         var firstFolder = Path.Combine(PluginsRoot, "jira-1");
         var secondFolder = Path.Combine(PluginsRoot, "jira-2");

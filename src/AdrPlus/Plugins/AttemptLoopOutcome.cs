@@ -6,8 +6,8 @@
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Result of <see cref="PluginManager.RunAttemptLoopAsync"/> — shared between the Fase 5 pending re-drive
-    /// (<c>RetryEntryAsync</c>) and the Fase 6 backfill sweep (<c>BackfillPluginAsync</c>). Only the bookkeeping
+    /// Result of <see cref="PluginManager.RunAttemptLoopAsync"/> — shared between the pending re-drive
+    /// (<c>RetryEntryAsync</c>) and the backfill sweep (<c>BackfillPluginAsync</c>). Only the bookkeeping
     /// around the loop differs between the two callers, not the loop itself.
     /// </summary>
     internal enum AttemptLoopResult
@@ -16,7 +16,7 @@ namespace AdrPlus.Plugins
         Skipped,
         PermanentlyFailed,
         /// <summary>Every allowed attempt this run was made and none succeeded — the caller decides what to do
-        /// with that (Fase 5: keep the pending entry; Fase 6: log only, never persist).</summary>
+        /// with that (pending re-drive: keep the pending entry; backfill: log only, never persist).</summary>
         Exhausted
     }
 

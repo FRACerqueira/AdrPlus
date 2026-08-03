@@ -12,7 +12,7 @@ namespace AdrPlus.Plugins
 {
     /// <summary>
     /// Adapts the host's <see cref="ILogger"/> to <see cref="IPluginLogger"/>, unifying plugin log entries with
-    /// the host's own file log (D20).
+    /// the host's own file log.
     /// </summary>
     internal sealed class HostPluginLogger(ILogger logger) : IPluginLogger
     {
@@ -26,7 +26,7 @@ namespace AdrPlus.Plugins
     }
 
     /// <summary>
-    /// Host-provided services passed to a plugin's <see cref="IAdrPlugin.InitializeAsync"/> (D20). Provides no
+    /// Host-provided services passed to a plugin's <see cref="IAdrPlugin.InitializeAsync"/>. Provides no
     /// secrets — credential resolution is entirely the plugin's own responsibility.
     /// </summary>
     internal sealed class HostPluginContext(IPluginLogger logger) : IPluginContext

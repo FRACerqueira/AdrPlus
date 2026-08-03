@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// Deserialization DTO for a plugin's <c>plugin.json</c> manifest (spec §4.3). Uses camelCase property
+    /// Deserialization DTO for a plugin's <c>plugin.json</c> manifest. Uses camelCase property
     /// naming, distinct from the host's own config files (<c>adrplus.json</c>/<c>adr-config.adrplus</c>),
     /// which use an all-lowercase naming policy.
     /// </summary>
@@ -48,8 +48,8 @@ namespace AdrPlus.Plugins
     }
 
     /// <summary>
-    /// Background re-drive retry policy declared in a plugin's manifest (D15). Scoped to <c>adrplus sync</c>
-    /// only — the foreground dispatch path (Fase 4) is a single non-retried attempt bounded by
+    /// Background re-drive retry policy declared in a plugin's manifest. Scoped to <c>adrplus sync</c>
+    /// only — the foreground dispatch path is a single non-retried attempt bounded by
     /// <see cref="PluginManifest.ForegroundTimeoutMs"/>.
     /// </summary>
     internal sealed class PluginRetryPolicy

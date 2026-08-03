@@ -333,7 +333,7 @@ public class SyncCommandHandlerTests
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
         _mockConsole.Received(1).PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
-        // LoadedPlugins is empty, so ExecuteBackfillAsync short-circuits before reading ADRs (Fase 6) —
+        // LoadedPlugins is empty, so ExecuteBackfillAsync short-circuits before reading ADRs —
         // this alone proves the backfill branch (not the default RetryPendingAsync branch) ran.
         await _mockAdrServices.DidNotReceive().ReadAllAdr(Arg.Any<IFileSystemService>(), Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>());
         await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());

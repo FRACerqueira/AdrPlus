@@ -6,16 +6,15 @@
 namespace AdrPlus.Plugins
 {
     /// <summary>
-    /// A single pending re-drive entry in a plugin's <c>state/pending.json</c> (spec §7). Written by the host
-    /// after the single foreground attempt fails or times out (D27); read and retried by <c>adrplus sync</c>
-    /// (Fase 5, not yet implemented — this phase only writes the file).
+    /// A single pending re-drive entry in a plugin's <c>pending.json</c>. Written by the host after the
+    /// single foreground attempt fails or times out; read and retried by <c>adrplus sync</c>.
     /// </summary>
     internal sealed class PendingEntry
     {
         /// <summary>
         /// Stable per-version-and-revision identity of the ADR this entry concerns, in the form
-        /// <c>"{Number:D4}-v{Version}-r{Revision}"</c> (e.g. <c>"0007-v1-r0"</c>). Established by this phase —
-        /// later phases must match this exact format.
+        /// <c>"{Number:D4}-v{Version}-r{Revision}"</c> (e.g. <c>"0007-v1-r0"</c>) — see <see cref="AdrKeyFormatter"/>,
+        /// the single source of this format.
         /// </summary>
         public string AdrKey { get; set; } = string.Empty;
 
