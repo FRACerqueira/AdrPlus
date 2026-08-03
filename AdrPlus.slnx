@@ -28,11 +28,19 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj" />
-    <Project Path="src/AdrPlus.Plugins.AdrIndexer/AdrPlus.Plugins.AdrIndexer.csproj" />
-    <Project Path="src/AdrPlus/AdrPlus.csproj" />
+    <Project Path="src/AdrPlus.Plugins.AdrIndexer/AdrPlus.Plugins.AdrIndexer.csproj">
+      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+    </Project>
+    <Project Path="src/AdrPlus/AdrPlus.csproj">
+      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj" />
-    <Project Path="tests/AdrPlus.Tests/AdrPlus.Tests.csproj" />
+    <Project Path="tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj">
+      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+    </Project>
+    <Project Path="tests/AdrPlus.Tests/AdrPlus.Tests.csproj">
+      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+    </Project>
   </Folder>
 </Solution>
