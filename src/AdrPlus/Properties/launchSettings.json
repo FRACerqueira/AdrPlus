@@ -1,7 +1,12 @@
 {
   "profiles": {
     "AdrPlus": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "wizard"
+    },
+    "AdrPlus - Init (builtin plugin check)": {
+      "commandName": "Project",
+      "commandLineArgs": "init --path \"C:\\temp\\adrplus-debug-init-check\""
     },
     "WSL": {
       "commandName": "WSL2",

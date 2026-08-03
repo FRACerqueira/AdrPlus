@@ -27,18 +27,25 @@ namespace AdrPlus.Commands.Init
     /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
     /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
     /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
+    /// <param name="builtinPluginsRoot">
+    /// The folder containing plugins bundled with the adrplus package itself (e.g. <c>plugins-builtin</c> next
+    /// to the tool's own assembly), or empty to disable installing any of them. Left empty by default so tests
+    /// that construct this handler directly never touch the real file system for this step.
+    /// </param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
-        IAdrServices adrServices) : ICommandHandler
+        IAdrServices adrServices,
+        string builtinPluginsRoot = "") : ICommandHandler
     {
         private readonly ILogger<InitCommandHandler> _logger = logger;
         private readonly IFileSystemService _fileSystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
+        private readonly string _builtinPluginsRoot = builtinPluginsRoot;
         private static readonly Arguments[] ValidCommandArgs = [
             Arguments.WizardInit, 
             Arguments.TargetRepo,
@@ -272,6 +279,49 @@ namespace AdrPlus.Commands.Init
                 result.Add(folderadr);
             }
             CreateScopeDirectories(config, folderadr, result);
+            InstallBuiltinPlugins(rootrepoPath, result);
+        }
+
+        /// <summary>
+        /// Copies the AdrIndexer reference plugin bundled with the adrplus package itself into the new
+        /// repository's <c>plugins/adr-indexer</c> folder, so every repo gets it out of the box.
+        /// </summary>
+        /// <remarks>
+        /// Uses raw <see cref="System.IO"/> calls rather than <see cref="IFileSystemService"/>: like the plugin
+        /// assembly load itself (see <c>PluginLoader.LoadAssembly</c>), copying a binary plugin DLL is outside
+        /// that abstraction's text/config-file scope. Does nothing when <see cref="_builtinPluginsRoot"/> is
+        /// empty (the default for handlers built directly in tests) or its <c>adr-indexer</c> subfolder is absent.
+        /// Never overwrites a file that already exists at the destination — <c>init</c> can run again against an
+        /// existing repo, and a plugin's own <c>settings</c> (e.g. <c>outputFileName</c>) may have been hand-edited.
+        /// </remarks>
+        /// <param name="rootrepoPath">The root directory of the repository being initialized.</param>
+        /// <param name="result">The list to which the copied file paths are appended.</param>
+        private void InstallBuiltinPlugins(string rootrepoPath, List<string> result)
+        {
+            if (string.IsNullOrEmpty(_builtinPluginsRoot))
+            {
+                return;
+            }
+
+            var sourceDir = Path.Combine(_builtinPluginsRoot, "adr-indexer");
+            if (!Directory.Exists(sourceDir))
+            {
+                return;
+            }
+
+            var destDir = Path.Combine(rootrepoPath, "plugins", "adr-indexer");
+            Directory.CreateDirectory(destDir);
+            foreach (var sourceFile in Directory.EnumerateFiles(sourceDir))
+            {
+                var destFile = Path.Combine(destDir, Path.GetFileName(sourceFile));
+                if (File.Exists(destFile))
+                {
+                    continue;
+                }
+
+                File.Copy(sourceFile, destFile, overwrite: false);
+                result.Add(destFile);
+            }
         }
     }
 }

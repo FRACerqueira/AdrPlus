@@ -24,6 +24,7 @@
   <Folder Name="/src/">
     <Project Path="src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj" />
     <Project Path="src/AdrPlus/AdrPlus.csproj" />
+    <Project Path="src/AdrPlus.Plugins.AdrIndexer/AdrPlus.Plugins.AdrIndexer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj" />

@@ -25,6 +25,7 @@ using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
 using AdrPlus.Plugins;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AdrPlus.Extensions
 {
@@ -56,7 +57,13 @@ namespace AdrPlus.Extensions
             services.AddSingleton<CommandRouter>();
             services.AddSingleton<ExploreCommandHandler>();
             services.AddSingleton<HelpCommandHandler>();
-            services.AddSingleton<InitCommandHandler>();
+            services.AddSingleton(sp => new InitCommandHandler(
+                sp.GetRequiredService<ILogger<InitCommandHandler>>(),
+                sp.GetRequiredService<IFileSystemService>(),
+                sp.GetRequiredService<IValidateConfig>(),
+                sp.GetRequiredService<IConsoleWriter>(),
+                sp.GetRequiredService<IAdrServices>(),
+                Path.Combine(AppContext.BaseDirectory, "plugins-builtin")));
             services.AddSingleton<MigrateCommandHandler>();
             services.AddSingleton<WizardCommandHandler>();
             services.AddSingleton<ConfigCommandHandler>();
