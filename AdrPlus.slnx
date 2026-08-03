@@ -23,7 +23,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj" />
-    <Project Path="src/AdrPlus.Plugins.AdrIndexer/o publgin.csproj" />
+    <Project Path="src/AdrPlus.Plugins.AdrIndexer/AdrPlus.Plugins.AdrIndexer.csproj" />
     <Project Path="src/AdrPlus/AdrPlus.csproj" />
   </Folder>
   <Folder Name="/tests/">

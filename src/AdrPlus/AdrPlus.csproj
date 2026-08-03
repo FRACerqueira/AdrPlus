@@ -53,7 +53,7 @@
 		     files under plugins-builtin\, staged explicitly below, not as a normal referenced assembly of
 		     adrplus.dll itself (it must not end up bundled with AdrPlus.Abstractions.dll a second time — see
 		     the None items below and AdrIndexerPluginEndToEndTests for why that breaks plugin type identity). -->
-		<ProjectReference Include="..\AdrPlus.Plugins.AdrIndexer\o publgin.csproj" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\AdrPlus.Plugins.AdrIndexer\AdrPlus.Plugins.AdrIndexer.csproj" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 	<!-- Bundle the AdrIndexer reference plugin with the adrplus package itself; `adrplus init` copies these

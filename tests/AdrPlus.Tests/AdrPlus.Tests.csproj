@@ -27,7 +27,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\AdrPlus\AdrPlus.csproj" />
-		<ProjectReference Include="..\..\src\AdrPlus.Plugins.AdrIndexer\o publgin.csproj" />
+		<ProjectReference Include="..\..\src\AdrPlus.Plugins.AdrIndexer\AdrPlus.Plugins.AdrIndexer.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
