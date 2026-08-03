@@ -151,7 +151,7 @@ namespace AdrPlus.Commands.Supersede
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 await _pluginManager.LoadPluginsAsync(Path.Combine(rootrepo, "plugins"), cancellationToken);
-                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+                var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig, _filesystem);
                 if (!infoadr.IsValid)
@@ -218,7 +218,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new InvalidDataException(upderror);
                 }
-                _prompt.PromptShowActivePlugins(activeSummary, missingNames);
+                _prompt.PromptWarnMissingActivePlugins(missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
                 await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);

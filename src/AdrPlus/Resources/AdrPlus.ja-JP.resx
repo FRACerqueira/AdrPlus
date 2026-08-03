@@ -440,13 +440,10 @@
     <value>アクティブにするプラグインを選択してください</value>
   </data>
   <data name="PluginsActiveUpdated" xml:space="preserve">
-    <value>アクティブなプラグインを更新しました: {0}</value>
-  </data>
-  <data name="PluginsActiveSummary" xml:space="preserve">
-    <value>アクティブなプラグイン: {0}</value>
+    <value>リポジトリのアクティブプラグイン一覧を更新しました: {0}</value>
   </data>
   <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
-    <value>利用可能な組み込みプラグイン: {0}</value>
+    <value>この AdrPlus インストールに含まれています: {0}</value>
   </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>読み込まれたプラグイン</value>
@@ -485,7 +482,7 @@
     <value>REJECTED</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>想定されているアクティブなプラグインが現在ロードされていません: {0} — ./plugins を確認するか、'adrplus plugins --wizard' でアクティブリストを更新してください</value>
+    <value>プラグインが見つかりません: {0} — ./plugins を確認するか 'adrplus plugins --wizard' を実行してください</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>有効</value>

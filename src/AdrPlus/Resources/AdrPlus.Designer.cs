@@ -2770,7 +2770,7 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Active plugins updated: {0}.
+        ///   Looks up a localized string similar to Repository active-plugin list updated: {0}.
         /// </summary>
         internal static string PluginsActiveUpdated {
             get {
@@ -2779,16 +2779,7 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Plugins active: {0}.
-        /// </summary>
-        internal static string PluginsActiveSummary {
-            get {
-                return ResourceManager.GetString("PluginsActiveSummary", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Builtin plugins available: {0}.
+        ///   Looks up a localized string similar to Bundled with this AdrPlus install: {0}.
         /// </summary>
         internal static string WizardBuiltinPluginsAvailable {
             get {
@@ -2905,7 +2896,7 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Expected active plugin(s) not currently loaded: {0} — check ./plugins or update the active list via 'adrplus plugins --wizard'.
+        ///   Looks up a localized string similar to Missing plugin(s): {0} — check ./plugins or run 'adrplus plugins --wizard'.
         /// </summary>
         internal static string PluginsActiveMissing {
             get {

@@ -439,13 +439,10 @@
     <value>Selecione os plugins ativos</value>
   </data>
   <data name="PluginsActiveUpdated" xml:space="preserve">
-    <value>Plugins ativos atualizados: {0}</value>
-  </data>
-  <data name="PluginsActiveSummary" xml:space="preserve">
-    <value>Plugins ativos: {0}</value>
+    <value>Lista de plugins ativos do repositório atualizada: {0}</value>
   </data>
   <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
-    <value>Plugins embutidos disponíveis: {0}</value>
+    <value>Incluído nesta instalação do AdrPlus: {0}</value>
   </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Plugins carregados</value>
@@ -484,7 +481,7 @@
     <value>REJEITADO</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Plugin(s) ativo(s) esperado(s) não carregado(s) atualmente: {0} — verifique ./plugins ou atualize a lista de ativos via 'adrplus plugins --wizard'</value>
+    <value>Plugin(s) ausente(s): {0} — verifique ./plugins ou execute 'adrplus plugins --wizard'</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Ativo</value>

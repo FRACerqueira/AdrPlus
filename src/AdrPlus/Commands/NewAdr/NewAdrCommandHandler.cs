@@ -132,7 +132,7 @@ namespace AdrPlus.Commands.NewAdr
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+                var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 ValidateScopeAndDomain(repoconfig, parsedArgs);
 
@@ -184,7 +184,7 @@ namespace AdrPlus.Commands.NewAdr
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptShowActivePlugins(activeSummary, missingNames);
+                _prompt.PromptWarnMissingActivePlugins(missingNames);
                 LogMessages.LogCommandSuccessful(_logger, filePath);
                 _prompt.PromptWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 

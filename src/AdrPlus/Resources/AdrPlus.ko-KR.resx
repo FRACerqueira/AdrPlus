@@ -440,13 +440,10 @@
     <value>활성화할 플러그인을 선택하세요</value>
   </data>
   <data name="PluginsActiveUpdated" xml:space="preserve">
-    <value>활성 플러그인이 업데이트되었습니다: {0}</value>
-  </data>
-  <data name="PluginsActiveSummary" xml:space="preserve">
-    <value>활성 플러그인: {0}</value>
+    <value>저장소 활성 플러그인 목록이 업데이트되었습니다: {0}</value>
   </data>
   <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
-    <value>사용 가능한 내장 플러그인: {0}</value>
+    <value>이 AdrPlus 설치에 포함됨: {0}</value>
   </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>로드된 플러그인</value>
@@ -485,7 +482,7 @@
     <value>REJECTED</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>예상되는 활성 플러그인이 현재 로드되지 않았습니다: {0} — ./plugins를 확인하거나 'adrplus plugins --wizard'를 통해 활성 목록을 업데이트하세요</value>
+    <value>누락된 플러그인: {0} — ./plugins를 확인하거나 'adrplus plugins --wizard'를 실행하세요</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>활성</value>

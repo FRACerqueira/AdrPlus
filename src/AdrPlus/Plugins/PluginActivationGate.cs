@@ -18,17 +18,19 @@ namespace AdrPlus.Plugins
     /// <c>adrplus plugins --wizard</c> — silently skipped, no warning), or, when <see cref="AdrPlusRepoConfig.DisablePlugins"/>
     /// is set, every plugin is off regardless of the list. A name listed in <see cref="AdrPlusRepoConfig.ActivePlugins"/>
     /// with no matching loaded plugin is <c>Missing</c> — the one case that warns, since it's the only state that
-    /// wasn't deliberately chosen.
+    /// wasn't deliberately chosen. <c>Active</c>/<c>Inactive</c> status for every loaded plugin is available in
+    /// detail via <c>adrplus plugins --list</c>; this gate only surfaces the actionable <c>Missing</c> case inline
+    /// on the dispatching commands themselves, to avoid repeating that detail on every single command run.
     /// </remarks>
     internal static class PluginActivationGate
     {
         /// <summary>
-        /// Computes the active-plugin filter for this call, alongside the display data for
-        /// <c>IConsoleWriter.PromptShowActivePlugins</c>. Deliberately does not print anything itself — callers
-        /// should call <c>Resolve</c> as early as the repository config is available (right after
+        /// Computes the active-plugin filter for this call, alongside the <c>Missing</c> names for
+        /// <c>IConsoleWriter.PromptWarnMissingActivePlugins</c>. Deliberately does not print anything itself —
+        /// callers should call <c>Resolve</c> as early as the repository config is available (right after
         /// <c>IPluginManager.LoadPluginsAsync</c>), to compute <c>IsActive</c> for the dispatch-family calls, but
-        /// defer the actual <c>PromptShowActivePlugins</c> call to right before their own result message. Printing
-        /// any earlier can land on a cursor position a wizard flow has already repositioned (e.g. via
+        /// defer the actual <c>PromptWarnMissingActivePlugins</c> call to right before their own result message.
+        /// Printing any earlier can land on a cursor position a wizard flow has already repositioned (e.g. via
         /// <c>IConsoleWriter.PromptMovePosition</c> after a confirm step), making the output invisible even
         /// though it was technically written.
         /// </summary>
@@ -36,26 +38,21 @@ namespace AdrPlus.Plugins
         /// <param name="repoconfig">The repository configuration providing <see cref="AdrPlusRepoConfig.ActivePlugins"/>/<see cref="AdrPlusRepoConfig.DisablePlugins"/>.</param>
         /// <returns>
         /// <c>IsActive</c>: the predicate to pass as the dispatch-family methods' <c>isActive</c> parameter.
-        /// <c>ActiveSummary</c>/<c>MissingNames</c>: pass directly into <c>IConsoleWriter.PromptShowActivePlugins</c>.
+        /// <c>MissingNames</c>: pass directly into <c>IConsoleWriter.PromptWarnMissingActivePlugins</c>.
         /// </returns>
-        public static (Func<LoadedPlugin, bool> IsActive, IReadOnlyList<string> ActiveSummary, IReadOnlyList<string> MissingNames) Resolve(
+        public static (Func<LoadedPlugin, bool> IsActive, IReadOnlyList<string> MissingNames) Resolve(
             IPluginManager pluginManager, AdrPlusRepoConfig repoconfig)
         {
             if (repoconfig.DisablePlugins)
             {
-                return (_ => false, [], []);
+                return (_ => false, []);
             }
 
             var active = new HashSet<string>(repoconfig.ActivePlugins, StringComparer.OrdinalIgnoreCase);
             var loadedNames = pluginManager.LoadedPlugins.Select(p => p.Manifest.Name!).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var missing = active.Except(loadedNames).ToList();
 
-            var activeSummary = pluginManager.LoadedPlugins
-                .Where(plugin => active.Contains(plugin.Manifest.Name!))
-                .Select(plugin => $"{plugin.Manifest.Name} v{plugin.Manifest.Version}")
-                .ToList();
-
-            return (plugin => active.Contains(plugin.Manifest.Name!), activeSummary, missing);
+            return (plugin => active.Contains(plugin.Manifest.Name!), missing);
         }
     }
 }

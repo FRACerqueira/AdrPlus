@@ -564,7 +564,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptWriteSuccess(filepath);
             PromptEnabledEscToAbort(false);
             var anykey = PromptPlus.Controls.KeyPress(Resources.AdrPlus.PressAnyKey)
-                .Options(x => x.ShowTooltip(false))
+                .Options(x => x.ShowTooltip(false).SufixAfterPrompt(""))
                 .Run(cancellationToken);
             if (anykey.IsAborted)
             {

@@ -104,7 +104,7 @@ namespace AdrPlus.Commands.Migrate
                 var repoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonString, AppConstants.RepoSerializerOptions)!;
 
                 await _pluginManager.LoadPluginsAsync(Path.Combine(targetPath, "plugins"), cancellationToken);
-                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+                var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var hasChanges = false;
                 if (repoconfig.MigrationPattern.Length == 0)
@@ -134,7 +134,7 @@ namespace AdrPlus.Commands.Migrate
                 }
 
                 var result = await MigrateRepositoryAsync(foundfiles, repoconfig, isActive, cancellationToken);
-                _prompt.PromptShowActivePlugins(activeSummary, missingNames);
+                _prompt.PromptWarnMissingActivePlugins(missingNames);
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);

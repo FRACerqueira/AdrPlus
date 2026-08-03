@@ -151,9 +151,10 @@ public class ApproveCommandHandlerTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithActivePlugin_PrintsActivePluginsSummaryBeforeTheAdrWriteResult()
+    public async Task ExecuteAsync_WithActivePluginLoaded_PrintsNoPluginWarning()
     {
-        // Arrange
+        // Arrange — an active plugin that IS loaded is a silent, expected state (see PluginActivationGate);
+        // only a Missing plugin is worth interrupting the happy path for.
         var args = new[] { "--file", ValidAdrFilePath };
         var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
         var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "activeplugins": ["SlackNotifier"]}""";
@@ -174,15 +175,37 @@ public class ApproveCommandHandlerTests
         // Act
         await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
 
-        // Assert — the summary is printed right before the ADR write result, not right after loading
-        // plugins, so it lands in a position that stays visible in wizard mode too.
-        _mockConsole.Received(1).PromptShowActivePlugins(
-            Arg.Is<IReadOnlyList<string>>(list => list.Any(s => s.Contains("SlackNotifier") && s.Contains("1.2.0"))),
-            Arg.Any<IReadOnlyList<string>>());
+        // Assert
+        _mockConsole.Received(1).PromptWarnMissingActivePlugins(Arg.Is<IReadOnlyList<string>>(list => list.Count == 0));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithActivePluginNotLoaded_WarnsBeforeTheAdrWriteResult()
+    {
+        // Arrange — a plugin listed as active but not currently loaded (Missing) is the one drift case that
+        // warns; the warning should print right before the result message, not right after loading plugins.
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted", "activeplugins": ["SlackNotifier"]}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin>());
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Unknown);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert
+        _mockConsole.Received(1).PromptWarnMissingActivePlugins(Arg.Is<IReadOnlyList<string>>(list => list.Contains("SlackNotifier")));
         Received.InOrder(() =>
         {
             _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>());
-            _mockConsole.PromptShowActivePlugins(Arg.Any<IReadOnlyList<string>>(), Arg.Any<IReadOnlyList<string>>());
+            _mockConsole.PromptWarnMissingActivePlugins(Arg.Any<IReadOnlyList<string>>());
         });
     }
 

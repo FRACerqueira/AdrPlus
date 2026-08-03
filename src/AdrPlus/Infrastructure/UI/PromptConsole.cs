@@ -500,15 +500,11 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public void PromptShowActivePlugins(IReadOnlyList<string> activePluginSummaries, IReadOnlyList<string> missingPluginNames)
+        public void PromptWarnMissingActivePlugins(IReadOnlyList<string> missingPluginNames)
         {
             if (missingPluginNames.Count > 0)
             {
                 PromptWriteInfo(string.Format(null, FormatMessages.PluginsActiveMissing, string.Join(", ", missingPluginNames)));
-            }
-            if (activePluginSummaries.Count > 0)
-            {
-                PromptWriteInfo(string.Format(null, FormatMessages.PluginsActiveSummary, string.Join(", ", activePluginSummaries)));
             }
         }
 

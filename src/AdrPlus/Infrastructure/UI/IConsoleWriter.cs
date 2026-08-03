@@ -131,17 +131,17 @@ namespace AdrPlus.Infrastructure.UI
         void PromptShowBanner(string bannerText);
 
         /// <summary>
-        /// The repo-scoped companion to <see cref="PromptShowWellcome"/>/<see cref="PromptShowBanner"/>: shows
-        /// which plugins are active for this run and warns about any expected-but-missing plugin. Called once a
-        /// command's own repository/plugin state is known — unlike the banner/welcome methods, which run before
-        /// that's ever resolved. Callers should invoke this right before their own result message (not
-        /// immediately after resolving the repo path) — writing any earlier can land on a cursor position a
-        /// wizard flow has already repositioned (e.g. via <see cref="PromptMovePosition"/> after a confirm step),
-        /// making the output invisible even though it was technically written.
+        /// Warns when a plugin listed in the repo's <c>ActivePlugins</c> baseline isn't currently loaded —
+        /// the one drift case that wasn't deliberately chosen (see <c>PluginActivationGate</c>). Deliberately
+        /// prints nothing on the happy path (no missing plugins) to avoid repeating status that's already
+        /// available in full via <c>adrplus plugins --list</c>. Called once a command's own repository/plugin
+        /// state is known. Callers should invoke this right before their own result message (not immediately
+        /// after resolving the repo path) — writing any earlier can land on a cursor position a wizard flow has
+        /// already repositioned (e.g. via <see cref="PromptMovePosition"/> after a confirm step), making the
+        /// output invisible even though it was technically written.
         /// </summary>
-        /// <param name="activePluginSummaries">One "Name vVersion" entry per plugin currently active for this run; empty prints nothing.</param>
         /// <param name="missingPluginNames">Names listed as active but not currently loaded; empty prints nothing.</param>
-        void PromptShowActivePlugins(IReadOnlyList<string> activePluginSummaries, IReadOnlyList<string> missingPluginNames);
+        void PromptWarnMissingActivePlugins(IReadOnlyList<string> missingPluginNames);
 
         /// <summary>
         ///

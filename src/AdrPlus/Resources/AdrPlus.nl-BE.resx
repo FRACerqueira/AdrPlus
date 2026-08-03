@@ -440,13 +440,10 @@
     <value>Selecteer actieve plugins</value>
   </data>
   <data name="PluginsActiveUpdated" xml:space="preserve">
-    <value>Actieve plugins bijgewerkt: {0}</value>
-  </data>
-  <data name="PluginsActiveSummary" xml:space="preserve">
-    <value>Actieve plugins: {0}</value>
+    <value>Lijst met actieve plugins van de repository bijgewerkt: {0}</value>
   </data>
   <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
-    <value>Ingebouwde plugins beschikbaar: {0}</value>
+    <value>Meegeleverd met deze AdrPlus-installatie: {0}</value>
   </data>
   <data name="WizardPluginsListTableTitle" xml:space="preserve">
     <value>Geladen plugins</value>
@@ -485,7 +482,7 @@
     <value>GEWEIGERD</value>
   </data>
   <data name="PluginsActiveMissing" xml:space="preserve">
-    <value>Verwachte actieve plugin(s) momenteel niet geladen: {0} — controleer ./plugins of werk de actieve lijst bij via 'adrplus plugins --wizard'</value>
+    <value>Ontbrekende plugin(s): {0} — controleer ./plugins of voer 'adrplus plugins --wizard' uit</value>
   </data>
   <data name="PluginsStatusActive" xml:space="preserve">
     <value>Actief</value>

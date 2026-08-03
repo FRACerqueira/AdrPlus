@@ -167,7 +167,7 @@ namespace AdrPlus.Commands.Version
                 var rootPath = _filesystem.GetFullNameDirectoryByFile(configrootPath);
 
                 await _pluginManager.LoadPluginsAsync(Path.Combine(rootPath, "plugins"), cancellationToken);
-                var (isActive, activeSummary, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
+                var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var infoadr = await _adrServices.ParseFileName(fileadr, repoconfig,_filesystem);
                 if (!infoadr.IsValid)
@@ -298,7 +298,7 @@ namespace AdrPlus.Commands.Version
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptShowActivePlugins(activeSummary, missingNames);
+                _prompt.PromptWarnMissingActivePlugins(missingNames);
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 
