@@ -105,7 +105,7 @@ Not as separate integrated template files, however the tool uses the template in
 
 ### How do I install a plugin?
 
-Drop the compiled plugin (its `.dll` plus a `plugin.json` manifest) into `./plugins/<name>/` and list it in `activeplugins` in `adrplus.json` — or use `adrplus plugins --wizard` to manage this interactively. See the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract.
+Run `adrplus plugins --install "./PluginName-1.0.0.zip"` — the zip must be named `<name>-<version>.zip`, matching its own `plugin.json`. Prefer doing it by hand instead? Drop the compiled plugin (its `.dll` plus a `plugin.json` manifest) into `./plugins/<name>/` directly — both end up the same place. Either way, the plugin starts `Inactive`: run `adrplus plugins --activate <name>` to let it actually dispatch. `adrplus plugins --wizard` walks through install and activation interactively too, if you'd rather not type flags. See the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract.
 
 ### What does the bundled `AdrIndexer` plugin do?
 
@@ -113,7 +113,7 @@ Drop the compiled plugin (its `.dll` plus a `plugin.json` manifest) into `./plug
 
 ### Can I disable plugins?
 
-Yes. Set `disableplugins` to `true` in `adrplus.json` to stop all plugin dispatch for a repository, or remove individual entries from `activeplugins` to disable one plugin at a time.
+Yes. Set `disableplugins` to `true` in `adr-config.adrplus` to stop all plugin dispatch for a repository, or run `adrplus plugins --deactivate <name>` (or remove it from `activeplugins` by hand) to disable one plugin at a time. To remove a plugin entirely, `adrplus plugins --uninstall <name>` deletes its folder and deactivates it in one step.
 
 ## Troubleshooting and Best Practices
 

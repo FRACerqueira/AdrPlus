@@ -367,11 +367,47 @@
   <data name="HelpUsagePluginsValidate" xml:space="preserve">
     <value>Voert de structurele laadvalidatie opnieuw uit en rapporteert geladen versus geweigerde plugins, zonder een event te versturen</value>
   </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>Naam van de plugin om toe te voegen aan de actieve-pluginlijst van deze repository</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>Naam van de plugin om te verwijderen uit de actieve-pluginlijst van deze repository</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>Pad naar een plugin-zip met de naam &lt;naam&gt;-&lt;versie&gt;.zip om te installeren in ./plugins/&lt;naam&gt;/</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>Naam van de plugin om te verwijderen — verwijdert ./plugins/&lt;naam&gt;/ en haalt het uit activeplugins</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>Met --install wordt een bestaande map ./plugins/&lt;naam&gt;/ volledig overschreven, inclusief plugin.json en state/</value>
+  </data>
   <data name="PluginsModeRequired" xml:space="preserve">
-    <value>Geef een subopdracht op: 'adrplus plugins --list' of 'adrplus plugins --validate'</value>
+    <value>Geef een subopdracht op: 'adrplus plugins --list', '--validate', '--activate &lt;naam&gt;', '--deactivate &lt;naam&gt;', '--install &lt;pad&gt;' of '--uninstall &lt;naam&gt;'</value>
   </data>
   <data name="PluginsModeAmbiguous" xml:space="preserve">
-    <value>Geef ofwel --list of --validate op, niet beide</value>
+    <value>Geef precies één optie op: --list, --validate, --activate, --deactivate, --install of --uninstall</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>De naam van het zip-bestand moet het formaat &lt;naam&gt;-&lt;versie&gt;.zip volgen (bijvoorbeeld AdrIndexer-1.0.0.zip): {0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>Zip-item '{0}' heeft een onveilig pad en is afgewezen</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>Het zip-bestand bevat geen plugin.json in de root</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>Het plugin.json in de zip vermeldt '{0}' v{1}, maar de bestandsnaam geeft '{2}' v{3} aan</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>De pluginmap bestaat al: {0} — gebruik --force om te overschrijven</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>Plugin geïnstalleerd: {0} v{1} — SHA256: {2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>Plugin verwijderd: {0}</value>
   </data>
   <data name="PluginsAllowlisted" xml:space="preserve">
     <value>In de allowlist</value>
@@ -425,7 +461,7 @@
     <value>Kies de actie</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List toont geladen plugins; Validate rapporteert het resultaat van de structurele validatie</value>
+    <value>List toont geladen plugins; Validate rapporteert het resultaat van de structurele validatie; Install/Uninstall beheren de pluginbestanden onder ./plugins</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Geladen plugins weergeven</value>
@@ -435,6 +471,27 @@
   </data>
   <data name="WizardPluginsModeManage" xml:space="preserve">
     <value>Actieve plugins beheren</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>Een plugin installeren vanuit een zip</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>Een plugin verwijderen</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>Pad naar het plugin-zipbestand</value>
+  </data>
+  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
+    <value>Geef het pad naar een bestaand zipbestand op</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>Overschrijven als er al een plugin met dezelfde naam is geïnstalleerd?</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>Selecteer de plugin(s) om te verwijderen</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>Geen plugins geïnstalleerd onder ./plugins</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Selecteer actieve plugins</value>

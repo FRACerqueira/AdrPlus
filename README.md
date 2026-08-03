@@ -90,6 +90,8 @@ Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus
 
 You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is auto-installed by `adrplus init` into `./plugins/adr-indexer/`. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
 
+Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` straight into `./plugins/<name>/`, and `--uninstall <name>` removes it again. A newly installed plugin never dispatches on its own — activate it explicitly with `adrplus plugins --activate <name>` (or deactivate one with `--deactivate <name>`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+
 ---
 
 ## Requirements
@@ -312,6 +314,14 @@ You can also execute commands directly, one by one, without the wizard and witho
 
     adrplus plugins --list --path "path/to/repository"
     adrplus plugins --validate --path "path/to/repository"
+    adrplus plugins --activate "PluginName" --path "path/to/repository"
+    adrplus plugins --deactivate "PluginName" --path "path/to/repository"
+
+# Install or remove a plugin — the zip must be named <name>-<version>.zip, matching its plugin.json;
+# --force overwrites an existing install entirely (including plugin.json); neither touches activeplugins
+
+    adrplus plugins --install "./PluginName-1.0.0.zip" --path "path/to/repository"
+    adrplus plugins --uninstall "PluginName" --path "path/to/repository"
 
 ```
 
@@ -337,7 +347,7 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `reject`    | Set an ADR status to *Rejected* |
 | `undo`      | Revert the last status change of an ADR |
 | `sync`      | Re-drive pending plugin dispatches (`--backfill` sweeps every existing ADR and re-emits its current settled event) |
-| `plugins`   | Diagnostics for installed plugins (`--list`/`--validate`) and, via `--wizard`, manage which plugins are active for this repository |
+| `plugins`   | Diagnostics for installed plugins (`--list`/`--validate`); activate/deactivate a plugin (`--activate`/`--deactivate <name>`); install/remove one from a zip (`--install <path>`/`--uninstall <name>`) — every mode also available interactively via `--wizard` |
 
 Run `adrplus help <command>` for detailed usage of any command.
 

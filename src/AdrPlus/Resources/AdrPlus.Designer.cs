@@ -2554,6 +2554,114 @@ namespace AdrPlus.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Plugin name to add to this repository's active-plugin list.
+        /// </summary>
+        internal static string HelpUsagePluginsActivate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsActivate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin name to remove from this repository's active-plugin list.
+        /// </summary>
+        internal static string HelpUsagePluginsDeactivate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsDeactivate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install into ./plugins/&lt;name&gt;/.
+        /// </summary>
+        internal static string HelpUsagePluginsInstall {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsInstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin name to uninstall — deletes ./plugins/&lt;name&gt;/ and removes it from activeplugins.
+        /// </summary>
+        internal static string HelpUsagePluginsUninstall {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsUninstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to With --install, overwrite an existing ./plugins/&lt;name&gt;/ folder entirely, including plugin.json and state/.
+        /// </summary>
+        internal static string HelpUsagePluginsForce {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsForce", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Zip file name must match &lt;name&gt;-&lt;version&gt;.zip (for example AdrIndexer-1.0.0.zip): {0}.
+        /// </summary>
+        internal static string ErrPluginZipNameInvalid {
+            get {
+                return ResourceManager.GetString("ErrPluginZipNameInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Zip entry '{0}' has an unsafe path and was rejected.
+        /// </summary>
+        internal static string ErrPluginZipTraversal {
+            get {
+                return ResourceManager.GetString("ErrPluginZipTraversal", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Zip file does not contain a plugin.json at its root.
+        /// </summary>
+        internal static string ErrPluginZipMissingManifest {
+            get {
+                return ResourceManager.GetString("ErrPluginZipMissingManifest", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to plugin.json inside the zip declares '{0}' v{1}, but the file name says '{2}' v{3}.
+        /// </summary>
+        internal static string ErrPluginZipManifestMismatch {
+            get {
+                return ResourceManager.GetString("ErrPluginZipManifestMismatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin folder already exists: {0} — use --force to overwrite.
+        /// </summary>
+        internal static string ErrPluginAlreadyInstalled {
+            get {
+                return ResourceManager.GetString("ErrPluginAlreadyInstalled", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin installed: {0} v{1} — SHA256: {2}.
+        /// </summary>
+        internal static string PluginInstalled {
+            get {
+                return ResourceManager.GetString("PluginInstalled", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin uninstalled: {0}.
+        /// </summary>
+        internal static string PluginUninstalled {
+            get {
+                return ResourceManager.GetString("PluginUninstalled", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Specify a subcommand: &apos;adrplus plugins --list&apos; or &apos;adrplus plugins --validate&apos;.
         /// </summary>
         internal static string PluginsModeRequired {
@@ -2757,6 +2865,69 @@ namespace AdrPlus.Resources {
         internal static string WizardPluginsModeManage {
             get {
                 return ResourceManager.GetString("WizardPluginsModeManage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Install a plugin from a zip.
+        /// </summary>
+        internal static string WizardPluginsModeInstall {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeInstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall a plugin.
+        /// </summary>
+        internal static string WizardPluginsModeUninstall {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeUninstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin zip file path.
+        /// </summary>
+        internal static string PromptPluginZipPath {
+            get {
+                return ResourceManager.GetString("PromptPluginZipPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the path to an existing zip file.
+        /// </summary>
+        internal static string PromptPluginZipPathInvalid {
+            get {
+                return ResourceManager.GetString("PromptPluginZipPathInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite if a plugin with the same name is already installed?.
+        /// </summary>
+        internal static string PromptPluginInstallForce {
+            get {
+                return ResourceManager.GetString("PromptPluginInstallForce", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Select the plugin(s) to uninstall.
+        /// </summary>
+        internal static string PromptSelectPluginToUninstall {
+            get {
+                return ResourceManager.GetString("PromptSelectPluginToUninstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No plugins installed under ./plugins.
+        /// </summary>
+        internal static string PluginsNoInstalledPlugins {
+            get {
+                return ResourceManager.GetString("PluginsNoInstalledPlugins", resourceCulture);
             }
         }
 

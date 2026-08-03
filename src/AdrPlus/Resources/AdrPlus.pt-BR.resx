@@ -366,11 +366,47 @@
   <data name="HelpUsagePluginsValidate" xml:space="preserve">
     <value>Reexecuta a validação estrutural de carregamento e reporta plugins carregados vs. rejeitados, sem despachar nenhum evento</value>
   </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>Nome do plugin a adicionar à lista de plugins ativos deste repositório</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>Nome do plugin a remover da lista de plugins ativos deste repositório</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>Caminho para um zip de plugin chamado &lt;nome&gt;-&lt;versão&gt;.zip para instalar em ./plugins/&lt;nome&gt;/</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>Nome do plugin a desinstalar — apaga ./plugins/&lt;nome&gt;/ e remove de activeplugins</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>Com --install, sobrescreve totalmente uma pasta ./plugins/&lt;nome&gt;/ existente, incluindo plugin.json e state/</value>
+  </data>
   <data name="PluginsModeRequired" xml:space="preserve">
-    <value>Especifique um subcomando: 'adrplus plugins --list' ou 'adrplus plugins --validate'</value>
+    <value>Especifique um subcomando: 'adrplus plugins --list', '--validate', '--activate &lt;nome&gt;', '--deactivate &lt;nome&gt;', '--install &lt;caminho&gt;' ou '--uninstall &lt;nome&gt;'</value>
   </data>
   <data name="PluginsModeAmbiguous" xml:space="preserve">
-    <value>Especifique --list ou --validate, não os dois</value>
+    <value>Especifique exatamente um: --list, --validate, --activate, --deactivate, --install ou --uninstall</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>O nome do arquivo zip deve seguir &lt;nome&gt;-&lt;versão&gt;.zip (por exemplo, AdrIndexer-1.0.0.zip): {0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>A entrada do zip '{0}' tem um caminho inseguro e foi rejeitada</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>O arquivo zip não contém um plugin.json na raiz</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>O plugin.json dentro do zip declara '{0}' v{1}, mas o nome do arquivo indica '{2}' v{3}</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>A pasta do plugin já existe: {0} — use --force para sobrescrever</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>Plugin instalado: {0} v{1} — SHA256: {2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>Plugin desinstalado: {0}</value>
   </data>
   <data name="PluginsAllowlisted" xml:space="preserve">
     <value>Na allowlist</value>
@@ -424,7 +460,7 @@
     <value>Escolha a ação</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List mostra os plugins carregados; Validate reporta o resultado da validação estrutural</value>
+    <value>List mostra os plugins carregados; Validate reporta o resultado da validação estrutural; Install/Uninstall gerenciam os arquivos do plugin em ./plugins</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Listar plugins carregados</value>
@@ -434,6 +470,27 @@
   </data>
   <data name="WizardPluginsModeManage" xml:space="preserve">
     <value>Gerenciar plugins ativos</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>Instalar um plugin a partir de um zip</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>Desinstalar um plugin</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>Caminho do arquivo zip do plugin</value>
+  </data>
+  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
+    <value>Informe o caminho de um arquivo zip existente</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>Sobrescrever se já houver um plugin com o mesmo nome instalado?</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>Selecione o(s) plugin(s) a desinstalar</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>Nenhum plugin instalado em ./plugins</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Selecione os plugins ativos</value>

@@ -367,11 +367,47 @@
   <data name="HelpUsagePluginsValidate" xml:space="preserve">
     <value>構造的な読み込み検証を再実行し、読み込まれたプラグインと拒否されたプラグインを報告します(実際のイベントは発行しません)</value>
   </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>このリポジトリのアクティブプラグインリストに追加するプラグイン名</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>このリポジトリのアクティブプラグインリストから削除するプラグイン名</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>./plugins/&lt;name&gt;/ にインストールする &lt;name&gt;-&lt;version&gt;.zip という名前のプラグインzipへのパス</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>アンインストールするプラグイン名 — ./plugins/&lt;name&gt;/ を削除し、activeplugins から除外します</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>--install と併用すると、既存の ./plugins/&lt;name&gt;/ フォルダを plugin.json や state/ を含めて完全に上書きします</value>
+  </data>
   <data name="PluginsModeRequired" xml:space="preserve">
-    <value>サブコマンドを指定してください: 'adrplus plugins --list' または 'adrplus plugins --validate'</value>
+    <value>サブコマンドを指定してください: 'adrplus plugins --list'、'--validate'、'--activate &lt;name&gt;'、'--deactivate &lt;name&gt;'、'--install &lt;path&gt;'、または '--uninstall &lt;name&gt;'</value>
   </data>
   <data name="PluginsModeAmbiguous" xml:space="preserve">
-    <value>--list か --validate のどちらか一方だけを指定してください</value>
+    <value>--list、--validate、--activate、--deactivate、--install、--uninstall のうち1つだけを指定してください</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>zipファイル名は &lt;name&gt;-&lt;version&gt;.zip の形式である必要があります（例: AdrIndexer-1.0.0.zip）: {0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>zipエントリ '{0}' は安全でないパスのため拒否されました</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>zipファイルのルートに plugin.json が見つかりません</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>zip内のplugin.jsonは '{0}' v{1} を宣言していますが、ファイル名は '{2}' v{3} を示しています</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>プラグインフォルダは既に存在します: {0} — 上書きするには --force を使用してください</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>プラグインをインストールしました: {0} v{1} — SHA256: {2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>プラグインをアンインストールしました: {0}</value>
   </data>
   <data name="PluginsAllowlisted" xml:space="preserve">
     <value>allowlist に登録済み</value>
@@ -425,7 +461,7 @@
     <value>操作を選択</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List は読み込まれたプラグインを表示し、Validate は構造検証の結果を報告します</value>
+    <value>List は読み込まれたプラグインを表示し、Validate は構造検証の結果を報告し、Install/Uninstall は ./plugins 配下のプラグインファイルを管理します</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>読み込まれたプラグインを一覧表示</value>
@@ -435,6 +471,27 @@
   </data>
   <data name="WizardPluginsModeManage" xml:space="preserve">
     <value>アクティブなプラグインを管理</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>zipからプラグインをインストール</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>プラグインをアンインストール</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>プラグインzipファイルのパス</value>
+  </data>
+  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
+    <value>既存のzipファイルのパスを入力してください</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>同名のプラグインが既にインストールされている場合、上書きしますか？</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>アンインストールするプラグインを選択してください（複数選択可）</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>./plugins にインストールされたプラグインはありません</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>アクティブにするプラグインを選択してください</value>

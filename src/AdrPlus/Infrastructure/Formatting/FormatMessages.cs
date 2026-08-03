@@ -123,5 +123,13 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginsStatusDisabled => Get(() => Resources.AdrPlus.PluginsStatusDisabled);
         public static CompositeFormat PluginsActiveUpdated => Get(() => Resources.AdrPlus.PluginsActiveUpdated);
         public static CompositeFormat WizardBuiltinPluginsAvailable => Get(() => Resources.AdrPlus.WizardBuiltinPluginsAvailable);
+        public static CompositeFormat ErrPluginZipNameInvalid => Get(() => Resources.AdrPlus.ErrPluginZipNameInvalid);
+        public static CompositeFormat ErrPluginZipTraversal => Get(() => Resources.AdrPlus.ErrPluginZipTraversal);
+        public static CompositeFormat ErrPluginZipMissingManifest => Get(() => Resources.AdrPlus.ErrPluginZipMissingManifest);
+        public static CompositeFormat ErrPluginZipManifestMismatch => Get(() => Resources.AdrPlus.ErrPluginZipManifestMismatch);
+        public static CompositeFormat ErrPluginAlreadyInstalled => Get(() => Resources.AdrPlus.ErrPluginAlreadyInstalled);
+        public static CompositeFormat PluginInstalled => Get(() => Resources.AdrPlus.PluginInstalled);
+        public static CompositeFormat PluginUninstalled => Get(() => Resources.AdrPlus.PluginUninstalled);
+        public static CompositeFormat PluginsNoInstalledPlugins => Get(() => Resources.AdrPlus.PluginsNoInstalledPlugins);
     }
 }

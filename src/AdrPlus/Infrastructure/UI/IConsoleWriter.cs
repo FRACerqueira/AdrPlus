@@ -14,9 +14,11 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal enum PluginsWizardMode
     {
+        Install,
         List,
         Validate,
-        Manage
+        Manage,
+        Uninstall
     }
 
     /// <summary>
@@ -251,6 +253,25 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple indicating whether the operation was aborted and, if not, the selected plugin names.</returns>
         (bool IsAborted, string[] SelectedNames) PromptSelectActivePlugins(IReadOnlyList<string> pluginNames, IReadOnlySet<string> currentlyActive, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Prompts for the path to a plugin zip file to install (<c>adrplus plugins --wizard</c>'s install
+        /// mode), re-prompting until an existing file is given.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service used to validate the entered path exists.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple indicating whether the operation was aborted and the entered zip file path.</returns>
+        (bool IsAborted, string ZipPath) PromptInputPluginZipPath(IFileSystemService fileSystemService, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Shows a <c>MultiSelect</c> over every folder name currently under <c>./plugins/</c> so the user can
+        /// choose one or more to uninstall in the same run (<c>adrplus plugins --wizard</c>'s uninstall mode) —
+        /// each selected name is then uninstalled one at a time.
+        /// </summary>
+        /// <param name="installedNames">Every plugin folder name currently under <c>./plugins/</c>.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A tuple indicating whether the operation was aborted and the selected folder names.</returns>
+        (bool IsAborted, string[] SelectedNames) PromptSelectPluginsToUninstall(IReadOnlyList<string> installedNames, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Displays every loaded and rejected plugin candidate as a read-only, navigable table

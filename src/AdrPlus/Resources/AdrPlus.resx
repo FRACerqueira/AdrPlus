@@ -366,11 +366,47 @@
   <data name="HelpUsagePluginsValidate" xml:space="preserve">
     <value>Re-run structural load validation and report loaded vs. rejected plugins, without dispatching any event</value>
   </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>Plugin name to add to this repository's active-plugin list</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>Plugin name to remove from this repository's active-plugin list</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install into ./plugins/&lt;name&gt;/</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>Plugin name to uninstall — deletes ./plugins/&lt;name&gt;/ and removes it from activeplugins</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>With --install, overwrite an existing ./plugins/&lt;name&gt;/ folder entirely, including plugin.json and state/</value>
+  </data>
   <data name="PluginsModeRequired" xml:space="preserve">
-    <value>Specify a subcommand: 'adrplus plugins --list' or 'adrplus plugins --validate'</value>
+    <value>Specify a subcommand: 'adrplus plugins --list', '--validate', '--activate &lt;name&gt;', '--deactivate &lt;name&gt;', '--install &lt;path&gt;', or '--uninstall &lt;name&gt;'</value>
   </data>
   <data name="PluginsModeAmbiguous" xml:space="preserve">
-    <value>Specify either --list or --validate, not both</value>
+    <value>Specify exactly one of --list, --validate, --activate, --deactivate, --install, or --uninstall</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>Zip file name must match &lt;name&gt;-&lt;version&gt;.zip (for example AdrIndexer-1.0.0.zip): {0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>Zip entry '{0}' has an unsafe path and was rejected</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>Zip file does not contain a plugin.json at its root</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>plugin.json inside the zip declares '{0}' v{1}, but the file name says '{2}' v{3}</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>Plugin folder already exists: {0} — use --force to overwrite</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>Plugin installed: {0} v{1} — SHA256: {2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>Plugin uninstalled: {0}</value>
   </data>
   <data name="PluginsAllowlisted" xml:space="preserve">
     <value>Allowlisted</value>
@@ -424,7 +460,7 @@
     <value>Choose action</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List shows loaded plugins; Validate reports structural load results</value>
+    <value>List shows loaded plugins; Validate reports structural load results; Install/Uninstall manage plugin files under ./plugins</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>List loaded plugins</value>
@@ -434,6 +470,27 @@
   </data>
   <data name="WizardPluginsModeManage" xml:space="preserve">
     <value>Manage active plugins</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>Install a plugin from a zip</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>Uninstall a plugin</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>Plugin zip file path</value>
+  </data>
+  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
+    <value>Enter the path to an existing zip file</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>Overwrite if a plugin with the same name is already installed?</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>Select the plugin(s) to uninstall</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>No plugins installed under ./plugins</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>Select active plugins</value>

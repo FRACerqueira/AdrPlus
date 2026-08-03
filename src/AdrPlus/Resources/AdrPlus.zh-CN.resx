@@ -367,11 +367,47 @@
   <data name="HelpUsagePluginsValidate" xml:space="preserve">
     <value>重新执行结构化加载验证，报告已加载与被拒绝的插件，不派发任何事件</value>
   </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>要添加到此仓库活动插件列表的插件名称</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>要从此仓库活动插件列表中移除的插件名称</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>要安装到 ./plugins/&lt;name&gt;/ 的插件 zip 路径，文件名须为 &lt;name&gt;-&lt;version&gt;.zip</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>要卸载的插件名称 — 删除 ./plugins/&lt;name&gt;/ 并将其从 activeplugins 中移除</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>与 --install 一起使用时，完全覆盖已存在的 ./plugins/&lt;name&gt;/ 文件夹，包括 plugin.json 和 state/</value>
+  </data>
   <data name="PluginsModeRequired" xml:space="preserve">
-    <value>请指定一个子命令："adrplus plugins --list" 或 "adrplus plugins --validate"</value>
+    <value>请指定一个子命令："adrplus plugins --list"、"--validate"、"--activate &lt;name&gt;"、"--deactivate &lt;name&gt;"、"--install &lt;path&gt;" 或 "--uninstall &lt;name&gt;"</value>
   </data>
   <data name="PluginsModeAmbiguous" xml:space="preserve">
-    <value>请指定 --list 或 --validate 其中之一，不能同时指定</value>
+    <value>请只指定一个：--list、--validate、--activate、--deactivate、--install 或 --uninstall</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>zip 文件名必须符合 &lt;name&gt;-&lt;version&gt;.zip 格式（例如 AdrIndexer-1.0.0.zip）：{0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>zip 条目 "{0}" 路径不安全，已被拒绝</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>zip 文件的根目录中不包含 plugin.json</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>zip 内的 plugin.json 声明为 "{0}" v{1}，但文件名表示为 "{2}" v{3}</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>插件文件夹已存在：{0} — 使用 --force 覆盖</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>插件已安装：{0} v{1} — SHA256：{2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>插件已卸载：{0}</value>
   </data>
   <data name="PluginsAllowlisted" xml:space="preserve">
     <value>已在 allowlist 中</value>
@@ -425,7 +461,7 @@
     <value>选择操作</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List 显示已加载的插件；Validate 报告结构验证结果</value>
+    <value>List 显示已加载的插件；Validate 报告结构验证结果；Install/Uninstall 管理 ./plugins 下的插件文件</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>列出已加载的插件</value>
@@ -435,6 +471,27 @@
   </data>
   <data name="WizardPluginsModeManage" xml:space="preserve">
     <value>管理活动插件</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>从 zip 安装插件</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>卸载插件</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>插件 zip 文件路径</value>
+  </data>
+  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
+    <value>请输入一个已存在的 zip 文件路径</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>如果已安装同名插件，是否覆盖？</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>选择要卸载的插件（可多选）</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>./plugins 下没有已安装的插件</value>
   </data>
   <data name="WizardPluginsManagePrompt" xml:space="preserve">
     <value>选择活动插件</value>

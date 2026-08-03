@@ -333,6 +333,14 @@ public class PluginsCommandHandlerTests
             .Returns(new Dictionary<Arguments, string> { { Arguments.WizardPlugins, string.Empty } });
     }
 
+    private void SetupActivateArgs(string name, string targetRepo) =>
+        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
+            .Returns(new Dictionary<Arguments, string> { [Arguments.PluginsActivate] = name, [Arguments.TargetRepo] = targetRepo });
+
+    private void SetupDeactivateArgs(string name, string targetRepo) =>
+        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
+            .Returns(new Dictionary<Arguments, string> { [Arguments.PluginsDeactivate] = name, [Arguments.TargetRepo] = targetRepo });
+
     [Fact]
     public async Task ExecuteAsync_WithWizardMode_ListSelected_ShowsTableInsteadOfPlainText()
     {
@@ -501,5 +509,107 @@ public class PluginsCommandHandlerTests
         using var doc = JsonDocument.Parse(written!);
         doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString()).Should().BeEquivalentTo(["NewPlugin"]);
         _mockConsole.Received(1).PromptWriteSuccess(Arg.Is<string>(s => s.Contains("NewPlugin")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithListAndActivate_ThrowsArgumentException()
+    {
+        _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
+            .Returns(new Dictionary<Arguments, string> { [Arguments.PluginsList] = string.Empty, [Arguments.PluginsActivate] = "Plugin1", [Arguments.TargetRepo] = RepositoryPath });
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
+
+        await _handler.Invoking(h => h.ExecuteAsync(["--list", "--activate", "Plugin1", "--path", RepositoryPath], TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Activate_AddsNameAndNeverLoadsPlugins()
+    {
+        SetupActivateArgs("NewPlugin", RepositoryPath);
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
+        ArrangeValidRepoConfig(["ExistingPlugin"]);
+        string? written = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Do<string>(c => written = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await _handler.ExecuteAsync(["--activate", "NewPlugin", "--path", RepositoryPath], TestContext.Current.CancellationToken);
+
+        written.Should().NotBeNull();
+        using var doc = JsonDocument.Parse(written!);
+        doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
+            .Should().BeEquivalentTo(["ExistingPlugin", "NewPlugin"]);
+        _mockConsole.Received(1).PromptWriteSuccess(Arg.Is<string>(s => s.Contains("NewPlugin") && s.Contains("ExistingPlugin")));
+        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Activate_AlreadyActive_IsIdempotent()
+    {
+        SetupActivateArgs("ExistingPlugin", RepositoryPath);
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
+        ArrangeValidRepoConfig(["ExistingPlugin"]);
+        string? written = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Do<string>(c => written = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await _handler.ExecuteAsync(["--activate", "ExistingPlugin", "--path", RepositoryPath], TestContext.Current.CancellationToken);
+
+        written.Should().NotBeNull();
+        using var doc = JsonDocument.Parse(written!);
+        doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
+            .Should().BeEquivalentTo(["ExistingPlugin"]);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Deactivate_RemovesNameAndNeverLoadsPlugins()
+    {
+        SetupDeactivateArgs("ExistingPlugin", RepositoryPath);
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
+        ArrangeValidRepoConfig(["ExistingPlugin", "OtherPlugin"]);
+        string? written = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Do<string>(c => written = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await _handler.ExecuteAsync(["--deactivate", "ExistingPlugin", "--path", RepositoryPath], TestContext.Current.CancellationToken);
+
+        written.Should().NotBeNull();
+        using var doc = JsonDocument.Parse(written!);
+        doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
+            .Should().BeEquivalentTo(["OtherPlugin"]);
+        await _mockPluginManager.DidNotReceive().LoadPluginsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Deactivate_NotPresent_IsNoOp()
+    {
+        SetupDeactivateArgs("GhostPlugin", RepositoryPath);
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(true);
+        ArrangeValidRepoConfig(["ExistingPlugin"]);
+        string? written = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Do<string>(c => written = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await _handler.ExecuteAsync(["--deactivate", "GhostPlugin", "--path", RepositoryPath], TestContext.Current.CancellationToken);
+
+        written.Should().NotBeNull();
+        using var doc = JsonDocument.Parse(written!);
+        doc.RootElement.GetProperty("activeplugins").EnumerateArray().Select(e => e.GetString())
+            .Should().BeEquivalentTo(["ExistingPlugin"]);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_UninstallSelected_NoInstalledPlugins_ShowsInfoAndReturns()
+    {
+        SetupWizardParsedArgs();
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
+        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+            .Returns((false, RepositoryPath));
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Uninstall));
+
+        await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("./plugins")));
+        _mockConsole.DidNotReceive().PromptSelectPluginsToUninstall(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>());
     }
 }

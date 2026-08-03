@@ -307,9 +307,9 @@ An optional allowlist can restrict which plugin names are permitted to load at a
 
 ## Installing and testing your plugin
 
-1. Build your plugin project and copy its output — DLL, dependencies, `plugin.json` — into `<repo>/plugins/<name>/`.
+1. Build your plugin project and copy its output — DLL, dependencies, `plugin.json` — into `<repo>/plugins/<name>/`. If you're distributing a built plugin rather than developing it in place, `adrplus plugins --install <path-to-name-version.zip> --path <repo>` does this step for you: the zip must be named `<name>-<version>.zip`, matching `plugin.json`'s own `name`/`version`.
 2. `adrplus plugins --validate --path <repo>` — re-runs structural load validation (manifest schema, `entryType` implements `IAdrPlugin`, `Name`/`Version` match, `abstractionsVersion` compatible) without dispatching any real event. Fix whatever it reports before moving on.
-3. `adrplus plugins --list --path <repo>` — confirms your plugin is loaded, shows its subscribed events, allowlist status, and current pending-item count.
+3. `adrplus plugins --list --path <repo>` — confirms your plugin is loaded, shows its subscribed events, allowlist status, and current pending-item count. If it shows as `Inactive`, it's structurally fine but not yet trusted for dispatch (D31) — run `adrplus plugins --activate <name> --path <repo>` (installing via `--install` never activates automatically, on purpose).
 4. Trigger a real event (e.g. `adrplus approve` against a `Proposed` ADR) and check your plugin's side effect happened, or that `adrplus plugins --list` now shows a pending item if it didn't.
 5. If you're onboarding the plugin onto a repo that already has ADRs, run `adrplus sync --backfill --path <repo>` once, by hand, to receive the existing history. Don't automate this call.
 6. For ongoing background re-drive of anything that failed on its first foreground attempt, schedule `adrplus sync --path <repo>` (no flags) via cron/CI — it's self-limiting and safe to run repeatedly.

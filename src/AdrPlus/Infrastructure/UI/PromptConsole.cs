@@ -877,7 +877,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardPluginsModeDescription)
-                .AddItems([Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage])
+                .AddItems([Resources.AdrPlus.WizardPluginsModeInstall, Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage, Resources.AdrPlus.WizardPluginsModeUninstall])
                 .Default(Resources.AdrPlus.WizardPluginsModeList)
                 .Run(cancellationToken);
             if (result.IsAborted)
@@ -886,8 +886,33 @@ namespace AdrPlus.Infrastructure.UI
             }
             var mode = result.Content == Resources.AdrPlus.WizardPluginsModeValidate ? PluginsWizardMode.Validate
                 : result.Content == Resources.AdrPlus.WizardPluginsModeManage ? PluginsWizardMode.Manage
+                : result.Content == Resources.AdrPlus.WizardPluginsModeInstall ? PluginsWizardMode.Install
+                : result.Content == Resources.AdrPlus.WizardPluginsModeUninstall ? PluginsWizardMode.Uninstall
                 : PluginsWizardMode.List;
             return (false, mode);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string ZipPath) PromptInputPluginZipPath(IFileSystemService fileSystemService, CancellationToken cancellationToken = default)
+        {
+            var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptPluginZipPath}: ")
+                .PredicateValid((value) => string.IsNullOrWhiteSpace(value) || !fileSystemService.FileExists(value)
+                    ? (false, Resources.AdrPlus.PromptPluginZipPathInvalid)
+                    : (true, string.Empty))
+                .EnableHistory("AdrPlusPluginsInstallZipPath")
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string[] SelectedNames) PromptSelectPluginsToUninstall(IReadOnlyList<string> installedNames, CancellationToken cancellationToken = default)
+        {
+            var result = PromptPlus.Controls.MultiSelect<string>($"{Resources.AdrPlus.PromptSelectPluginToUninstall}: ")
+                .TextSelector(name => name)
+                .Filter(FilterMode.Contains)
+                .AddItems(installedNames)
+                .Run(cancellationToken);
+            return (result.IsAborted, result.IsAborted ? [] : [.. result.Content!]);
         }
 
         /// <inheritdoc/>

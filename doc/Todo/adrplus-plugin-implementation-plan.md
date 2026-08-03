@@ -7,7 +7,7 @@
 > `adrplus wizard`'s menu) followed shortly after, refining D31's display down to its final shape. None of D31–D33
 > are original phases; noted here so this plan's own history stays accurate.
 > **Scope**: Builds every decision tagged **Essential** in §3 of the spec. D23 (dedup) and D24 (aggregate dispatch timeout) were tagged "Deferred (v1.1+)" originally but are now **Rejected outright** (2026-08-03); D18's `maxConcurrency` is no longer a manifest field at all, having been removed rather than left as a future user-tunable knob. See "Out of scope" below.
-> **Status**: All phases (1–11) implemented. Phase 10 shipped as `PluginDevelopmentGuide.md` (repo root), linked from `README.md`'s Table of Contents. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by `SyncCommandHandler`'s default mode. Phase 6 added `--backfill` (full repo sweep, `IPluginManager.BackfillAsync`), reusing the same attempt-loop mechanics via a further-extracted `RunAttemptLoopAsync` shared with Phase 5's retry engine. `PluginManager` now has three layers of shared helpers: `EnsureInitializedAsync`/`InvokeOnceAsync` (Phase 4/5, per-attempt mechanics) and `RunAttemptLoopAsync` (Phase 5/6, the backoff loop around them). **Phase 11 deviated from plan**: instead of a `tests\`-only fixture, `AdrIndexer` shipped as a real bundled plugin project (`AdrPlus.Plugins.AdrIndexer`) staged into the adrplus package under `plugins-builtin\` and auto-installed into every new repo's `./plugins/adr-indexer/` by `adrplus init` (never overwriting an existing install) — verified end-to-end via `dotnet pack` contents and a real `init` + `plugins --list` run, in addition to the plan's fixture-based tests. **Bug found and fixed 2026-08-03**: the plugin's own `.csproj` file was on disk under a mistyped name, silently breaking the `ReferenceOutputAssembly="false"` build-order dependency in `AdrPlus.csproj` (MSB9008, swallowed by a stale `bin/` output during regular solution builds) — fixed by renaming the file back to `AdrPlus.Plugins.AdrIndexer.csproj` to match the `.slnx`/`AdrPlus.csproj`/`AdrPlus.Tests.csproj` references, which were always correct.
+> **Status**: All phases (1–13) implemented. Phase 12 (D34, activation flags): `PluginsCommandHandler.SetActivePluginAsync`/`WriteActivePluginsAndReportAsync`, 5 new tests. Phase 13 (D35, install/uninstall): `InstallPluginAsync`/`UninstallPluginAsync`, zip extracted to a same-volume staging folder under the repo's own `./plugins/` then `Directory.Move`d into place, 8 new tests exercising real disk I/O (`PluginsCommandHandlerInstallTests.cs`). Both phases done 2026-08-03; `PluginsWizardMode` gained `Install`/`Uninstall` (with `PromptInputPluginZipPath`/`PromptSelectPluginsToUninstall`, the latter a `MultiSelect` — uninstall can remove several plugins in one wizard run, each processed one at a time via `UninstallPluginAsync`) so `adrplus plugins --wizard` covers both new flags too — full suite at 1323 tests green. Phase 10 shipped as `PluginDevelopmentGuide.md` (repo root), linked from `README.md`'s Table of Contents. Phase 5 built a real in-process retry loop against each plugin's `pending.json` (not a 1-attempt-per-invocation model) — `IPluginManager.RetryPendingAsync`, invoked by `SyncCommandHandler`'s default mode. Phase 6 added `--backfill` (full repo sweep, `IPluginManager.BackfillAsync`), reusing the same attempt-loop mechanics via a further-extracted `RunAttemptLoopAsync` shared with Phase 5's retry engine. `PluginManager` now has three layers of shared helpers: `EnsureInitializedAsync`/`InvokeOnceAsync` (Phase 4/5, per-attempt mechanics) and `RunAttemptLoopAsync` (Phase 5/6, the backoff loop around them). **Phase 11 deviated from plan**: instead of a `tests\`-only fixture, `AdrIndexer` shipped as a real bundled plugin project (`AdrPlus.Plugins.AdrIndexer`) staged into the adrplus package under `plugins-builtin\` and auto-installed into every new repo's `./plugins/adr-indexer/` by `adrplus init` (never overwriting an existing install) — verified end-to-end via `dotnet pack` contents and a real `init` + `plugins --list` run, in addition to the plan's fixture-based tests. **Bug found and fixed 2026-08-03**: the plugin's own `.csproj` file was on disk under a mistyped name, silently breaking the `ReferenceOutputAssembly="false"` build-order dependency in `AdrPlus.csproj` (MSB9008, swallowed by a stale `bin/` output during regular solution builds) — fixed by renaming the file back to `AdrPlus.Plugins.AdrIndexer.csproj` to match the `.slnx`/`AdrPlus.csproj`/`AdrPlus.Tests.csproj` references, which were always correct.
 
 ---
 
@@ -145,6 +145,28 @@
 
 ---
 
+## Phase 12 — Non-interactive activation management (D34)
+
+- `Arguments.PluginsActivate`/`PluginsDeactivate` on `adrplus plugins` (mutually exclusive with `--list`/`--validate`/`--wizard`, same style as the existing flags).
+- Extract `RunManageActivePluginsAsync`'s read-config → compute-new-set → `ActivePluginsWriter.WriteAsync` → report sequence into a shared private helper that takes the already-computed target set; the wizard path builds that set from its multi-select (full replace, unchanged), `--activate`/`--deactivate` build it via union/except of the current `ActivePlugins` with the one given name.
+- Neither flag validates that the name matches a loaded plugin — a typo is caught later by D31/D32's existing `Missing` warning, not duplicated here.
+- One name per invocation; no comma-separated list (symmetry with Phase 13's `--install`/`--uninstall <name>`).
+
+**Verify:** unit tests mirroring `PluginsCommandHandlerTests.cs`'s existing wizard-manage coverage — activating a name adds it (idempotent if already present), deactivating removes it (no-op if absent), and the wizard's own multi-select path stays green against the shared helper (behavior-preserving refactor, same bar as Phase 5/6's extractions).
+
+---
+
+## Phase 13 — Plugin distribution via zip: `--install`/`--uninstall` (D35)
+
+- `Arguments.PluginsInstall <path>`/`PluginsUninstall <name>` on `adrplus plugins`.
+- **Install**: validate the zip filename matches `<name>-<version>.zip`; extract to a temp location guarding every entry against path traversal (mirrors Phase 3's `entryAssembly` guard); read the `plugin.json` inside and fail fast if its `Name`/`Version` don't match the filename; if `./plugins/<name>/` doesn't exist, copy everything in; if it does exist, refuse unless `--force`, in which case overwrite unconditionally (including `plugin.json`/`state/` — accepted trade-off, no surgical merge). Never writes to `activeplugins`. On success, runs the same validation `PluginLoader.ValidateManifestAsync`/`LoadAssembly` uses for `--validate` against the new folder and prints the result; prints the zip's SHA256 for optional allowlist use.
+- **Uninstall**: delete `./plugins/<name>/` recursively, then reuse Phase 12's deactivate helper to remove `name` from `activeplugins` (cleanup, not a trust decision — leaving it would only produce a permanent `Missing` warning).
+- Local file path only for `--install`'s `<path>` — no URL/registry fetch.
+
+**Verify:** end-to-end tests building an in-memory `ZipArchive` fixture (valid manifest, mismatched filename, path-traversal entry, missing manifest) and asserting install success/failure per case; a round-trip install-then-uninstall test confirming both the folder and the `activeplugins` entry are gone; an upgrade-with-`--force` test confirming a customized `plugin.json` is NOT preserved (documents the accepted trade-off, not a bug).
+
+---
+
 ## Suggested sequencing
 
 ```
@@ -154,6 +176,8 @@ Phase 8 (cross-cutting, start once Phase 3/4 land)
 Phase 9 (needs Phase 3/4)
 Phase 11 (validates everything — do last, but stub early to unblock testing Phase 4 onward)
 Phase 10 (last — documents the finished behavior)
+Phase 12 (needs Phase 3/7 — reuses loaded-plugin listing and manifest validation)
+                                   ↘ Phase 13 (needs Phase 12 — install/uninstall reuse its activate/deactivate helper)
 ```
 
 ---

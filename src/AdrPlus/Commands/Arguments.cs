@@ -94,6 +94,21 @@ namespace AdrPlus.Commands
         [CommandArgument("-v", "--validate")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsagePluginsValidate")]
         PluginsValidate,
+        [CommandArgument("-a", "--activate")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsagePluginsActivate")]
+        PluginsActivate,
+        [CommandArgument("-d", "--deactivate")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsagePluginsDeactivate")]
+        PluginsDeactivate,
+        [CommandArgument("-i", "--install")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsagePluginsInstall")]
+        PluginsInstall,
+        [CommandArgument("-u", "--uninstall")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsagePluginsUninstall")]
+        PluginsUninstall,
+        [CommandArgument("-f", "--force")]
+        [HelpUsage(UsageArgumments.Optional, "HelpUsagePluginsForce")]
+        PluginsForce,
         [CommandArgument("-w", "--wizard")]
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardSync")]
         WizardSync,
