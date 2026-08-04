@@ -17,6 +17,7 @@ namespace AdrPlus.Infrastructure.UI
         Back,
         Install,
         List,
+        ListHost,
         Validate,
         Manage,
         Uninstall
@@ -234,7 +235,8 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, SyncWizardMode Mode) PromptSelectSyncMode(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to choose between <c>plugins</c>' <c>list</c>, <c>validate</c>, and <c>manage</c>
+        /// Prompts the user to choose between <c>plugins</c>' <c>list</c> (repository-scoped), <c>list</c>
+        /// (host-only, <see cref="PluginsWizardMode.ListHost"/>), <c>validate</c>, and <c>manage</c>
         /// (active-plugins selection) modes, or <c>Back</c> to return to the previous wizard menu
         /// (<c>adrplus plugins --wizard</c>).
         /// </summary>
@@ -243,7 +245,8 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, PluginsWizardMode Mode) PromptSelectPluginsMode(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Displays every loaded plugin as a read-only, navigable table (<c>adrplus plugins --list --wizard</c>).
+        /// Displays every loaded plugin as a read-only, navigable table, cross-referenced against a repository's
+        /// <c>activeplugins</c> (<c>adrplus plugins --list --path ... --wizard</c>).
         /// </summary>
         /// <param name="rows">
         /// One row per loaded plugin, plus a synthetic row for each name listed as active but not currently
@@ -253,6 +256,20 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns><see langword="true"/> if the user aborted (Esc) instead of dismissing the table (Enter).</returns>
         bool PromptShowPluginsListTable(IReadOnlyList<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Displays every loaded plugin as a read-only, navigable table, with no repository in scope
+        /// (<c>adrplus plugins --list --wizard</c>, host-only). Unlike <see cref="PromptShowPluginsListTable"/>,
+        /// rows carry no Active/Inactive/Missing status and no pending-item count — there's no repository's
+        /// <c>activeplugins</c> or <c>plugins-state</c> folder to cross-reference against.
+        /// </summary>
+        /// <param name="rows">
+        /// One row per loaded plugin (name, version, subscribed events, allowlist status). Must contain at
+        /// least one row — the caller is responsible for falling back to plain text when there is nothing to show.
+        /// </param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns><see langword="true"/> if the user aborted (Esc) instead of dismissing the table (Enter).</returns>
+        bool PromptShowPluginsHostListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist)> rows, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Shows a <c>MultiSelect</c> over <paramref name="pluginNames"/>, pre-checked per <paramref name="currentlyActive"/>,

@@ -299,10 +299,13 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus sync --path "path/to/repository"
     adrplus sync --path "path/to/repository" --backfill
 
-# Check installed plugins, or manage which ones are active for this repository
+# Check installed plugins, or manage which ones are active for this repository; --list with no
+# --path reports only what this host discovered, without any repository's active/inactive status.
+# --validate never needs --path either: it only checks structural load, host-wide
 
+    adrplus plugins --list
     adrplus plugins --list --path "path/to/repository"
-    adrplus plugins --validate --path "path/to/repository"
+    adrplus plugins --validate
     adrplus plugins --activate "PluginName" --path "path/to/repository"
     adrplus plugins --deactivate "PluginName" --path "path/to/repository"
 

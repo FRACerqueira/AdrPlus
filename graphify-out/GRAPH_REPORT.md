@@ -1,16 +1,16 @@
 # Graph Report - AdrPlus  (2026-08-04)
 
 ## Corpus Check
-- 288 files · ~211,173 words
+- 288 files · ~212,075 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3038 nodes · 10782 edges · 180 communities (90 shown, 90 thin omitted)
-- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 3086 edges (avg confidence: 0.8)
+- 3047 nodes · 10832 edges · 185 communities (89 shown, 96 thin omitted)
+- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 3091 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cdbbef11`
+- Built from commit: `241c7362`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,98 +18,104 @@
 - IAdrServices
 - ValidateJsonConfigTests
 - HelperTests
-- IValidateConfig
+- ConfigCommandHandlerTests
 - FileSystemServiceEnhancedTests
 - PatternParserTests
 - PluginManifest
-- .ReadAllTextAsync
-- .PromptSelectLogicalDrive
+- .ValidateRepoStructure
+- .ParseArgs
 - AdrServiceTests
-- .HasTemplateRepoFile
-- .ParseFileName
+- .GetFileNameRepoConfig
 - .ReadAllAdrByNumber
+- VersionCommandHandlerTests
 - CancellationToken
 - FieldsJson
 - AdrFileNameComponentsTests
-- PluginsCommandHandlerTests
-- PluginManagerRetryTests
+- .DirectoryExists
+- .WriteAllTextAsync
 - PromptConsole
 - AdrPlusRepoConfigTests
 - AdrEventContext record
 - ValidateConfig
-- .StatusUpdateAdrAsync
+- .ParseFileName
 - AdrPlus.Domain
 - CaseFormat & StringCaseExtensions
 - HelpCommandHandlerTests
 - UndoStatusCommandHandlerTests
 - AdrPlus.Abstractions README (plain text)
 - PluginManager
-- IFileSystemService
-- ApproveCommandHandlerTests
+- .StatusChangeAdrAsync
+- IValidateConfig
 - AdrPlus.Commands
 - WizardCommandHandler
-- IConsoleWriter
+- .PromptShowPluginsListTable
 - ServiceCollectionExtensions.cs
 - HelpUsageAttributeTests
 - AdrPlus.Infrastructure.FileSystem
 - AdrRecordTests
-- PluginsCommandHandler
-- .ParseArgs
-- CommandArgumentAttribute Tests
+- IsAborted
+- .ExecuteAsync
+- RejectCommandHandlerTests
 - AdrPlus Csproj/NuGet Package Metadata
 - LogMessages
 - ConfigCommandHandler
-- CommandRouter
+- .StatusUpdateAdrAsync
+- IConsoleWriter
 - AdrHeaderTests
 - PluginManagerBackfillTests
 - TemplateResourcesTests
 - CommandAttribute Tests
 - IPluginManager
 - .RouteAsync
-- PluginManagerDispatchTests
-- AdrPlusConfig
+- PluginsCommandHandlerInstallTests
+- .ExploreWizardAsync
 - VersionCommandHandler
 - AdrPlus.Infrastructure.UI
 - AdrIndexerPlugin
-- AdrFileNameComponents
+- PluginManagerTests
 - Alexandrian & Business Case ADR Templates
 - Program Entry Point (+Tests)
-- MigrateCommandHandler
-- PromptConsole Plugin/Event Fields
-- .ExploreWizardAsync
+- AdrFileNameComponents
+- .PromptShowPluginsListTable
+- .BuildListRowsAsync
 - .Create
-- .CreateHandler
 - LowercaseNamingPolicyTests
 - .OnAdrEventAsync
 - AdrPluginBaseTests
-- .ExecuteAsync
-- .ParseAdrHeaderAndContentAsync
-- IMainProgram
+- SyncCommandHandler
+- IFileSystemService
+- ApproveCommandHandler
 - IAdrPlugin & IPluginConfiguration Contracts
 - .GetCommands
 - Test Architecture Guide
-- .LogError
+- .Resolve
 - Tyree-Ackerman ADR Template (English)
 - PluginManagerDisposalTests
-- ReviseCommandHandler
 - .ExecuteAsync
-- .PromptShowPluginsListTable
-- .Resolve
+- PluginsCommandHandler
+- InitCommandHandlerBuiltinPluginsTests.cs
+- AppConstants
 - IPromptConsole (shared UI abstraction, #1 god node)
-- .PromptEditTitleAdr
+- IMainProgram
+- AdrPlusRepoConfig
 - IPluginLogger
 - .ComputeDelay
 - AdrStatusTests
-- .InvokeOnceAsync
+- PluginInvokeOutcome
 - PluginAssemblyLoadContext
+- Task
+- .PromptClearWaitText
 - .BuildAdrKey
 - ItemMenuWizardTests
 - SatelliteResourcesTests
 - FormatMessages
+- .PromptSelectPluginsMode
 - AdrPlus
 - .ExecuteAsync
 - .PromptGetArrayDomainsAdr
-- .WriteAllTextAsync
+- .PromptConfigJsonAppSelect
+- .PromptCalendar
+- .PromptInputFileReport
 - .PromptSelecAdrs
 - AttemptLoopOutcome.cs
 - graphify Skill Trigger Reference
@@ -191,14 +197,15 @@
 - Planguage Requirement Template (Portuguese-Brazil)
 - Planguage Requirement Template (Russian)
 - Planguage Requirement Template (Chinese)
+- .PromptShowAdrsMigrations
 
 ## God Nodes (most connected - your core abstractions)
 1. `IFileSystemService` - 101 edges
 2. `ValidateJsonConfigTests` - 99 edges
-3. `PromptConsole` - 92 edges
+3. `PromptConsole` - 93 edges
 4. `AdrPlus.Domain` - 84 edges
 5. `AdrServiceTests` - 80 edges
-6. `IConsoleWriter` - 77 edges
+6. `IConsoleWriter` - 78 edges
 7. `AdrPlus.Core` - 70 edges
 8. `HelperTests` - 68 edges
 9. `AdrPlusRepoConfig` - 67 edges
@@ -231,11 +238,11 @@
 - **Mock Helper Selection Strategy (Generic vs Domain-Specific vs Fixture)** — tests_test_architecture_commandhandlermockhelper, tests_test_architecture_supersedecommandhandlermockhelper, tests_test_architecture_explorecommandhandlerfixture [EXTRACTED 1.00]
 - **ADR Structural Conceptual Framework (Template, REMAP, Ontology)** — src_adrplus_resources_tyree_ackerman_template, src_adrplus_resources_tyree_ackerman_template_remap_metamodel, src_adrplus_resources_tyree_ackerman_template_kyaruzi_van_katwijk_ontology [EXTRACTED 1.00]
 
-## Communities (180 total, 90 thin omitted)
+## Communities (185 total, 96 thin omitted)
 
 ### Community 0 - "IAdrServices"
 Cohesion: 0.06
-Nodes (30): Arguments, NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task (+22 more)
+Nodes (33): Arguments, NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task (+25 more)
 
 ### Community 1 - "ValidateJsonConfigTests"
 Cohesion: 0.07
@@ -245,9 +252,9 @@ Nodes (4): ValidateJsonConfigTests, Dictionary, Fact, Task
 Cohesion: 0.05
 Nodes (16): bool, date, Helper, DateTime, error, GeneratedRegex, int, JsonElement (+8 more)
 
-### Community 3 - "IValidateConfig"
-Cohesion: 0.07
-Nodes (21): IValidateConfig, CancellationToken, ErrorReport, Task, ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration (+13 more)
+### Community 3 - "ConfigCommandHandlerTests"
+Cohesion: 0.14
+Nodes (5): FilePathAdrTemplate, ConfigCommandHandlerTests, Fact, ILogger, Task
 
 ### Community 4 - "FileSystemServiceEnhancedTests"
 Cohesion: 0.06
@@ -259,51 +266,47 @@ Nodes (20): editorcmd, hasRider, hasVisualStudio, hasVSCode, Length, Position, P
 
 ### Community 6 - "PluginManifest"
 Cohesion: 0.06
-Nodes (32): IDisposable, PluginAllowlistEntry, ManifestValidationOutcome, PluginLoader, PluginLoadOutcome, PluginRejection, Action, CancellationToken (+24 more)
+Nodes (33): IDisposable, ManifestValidationOutcome, PluginLoader, PluginLoadOutcome, PluginRejection, Action, CancellationToken, List (+25 more)
 
-### Community 7 - ".ReadAllTextAsync"
-Cohesion: 0.20
-Nodes (9): CancellationToken, ConfirmYes, Content, DateTime, Func, info, IsAborted, left (+1 more)
+### Community 7 - ".ValidateRepoStructure"
+Cohesion: 0.16
+Nodes (10): Dictionary, CancellationToken, ConfirmYes, Content, DateTime, Func, info, IsAborted (+2 more)
 
-### Community 8 - ".PromptSelectLogicalDrive"
+### Community 8 - ".ParseArgs"
 Cohesion: 0.14
-Nodes (13): Adrfiles, ArgsWizard, CancellationToken, Dictionary, Task, IMigratePrompts, CancellationToken, CountSelected (+5 more)
+Nodes (10): Adrfiles, ArgsWizard, CancellationToken, Dictionary, Task, MigrateCommandHandlerTests, Fact, ILogger (+2 more)
 
 ### Community 9 - "AdrServiceTests"
-Cohesion: 0.08
-Nodes (4): AdrServiceTests, Fact, IConfiguration, Task
+Cohesion: 0.12
+Nodes (3): AdrServiceTests, Fact, IConfiguration
 
-### Community 10 - ".HasTemplateRepoFile"
-Cohesion: 0.17
-Nodes (16): InitCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, List, Task, MaxNumber (+8 more)
-
-### Community 11 - ".ParseFileName"
+### Community 10 - ".GetFileNameRepoConfig"
 Cohesion: 0.15
-Nodes (8): CancellationToken, Task, ReviseCommandHandlerTests, Dictionary, Fact, ILogger, string, Task
+Nodes (17): InitCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, List, Task, MaxNumber (+9 more)
 
-### Community 12 - ".ReadAllAdrByNumber"
+### Community 11 - ".ReadAllAdrByNumber"
+Cohesion: 0.17
+Nodes (6): ReviseCommandHandlerTests, Dictionary, Fact, ILogger, string, Task
+
+### Community 12 - "VersionCommandHandlerTests"
 Cohesion: 0.14
 Nodes (8): CancellationToken, Task, VersionCommandHandlerTests, Dictionary, Fact, ILogger, string, Task
-
-### Community 13 - "CancellationToken"
-Cohesion: 0.12
-Nodes (9): CancellationToken, Content, DateTime, FieldsFromFileAdr, Filename, IEnumerable, IsAborted, PrefixValue (+1 more)
 
 ### Community 14 - "FieldsJson"
 Cohesion: 0.17
 Nodes (13): JsonConfig, PrefixValue, FieldsJson, JsonValueKind, IConfigPrompts, CancellationToken, Content, FieldsFromFileAdr (+5 more)
 
-### Community 16 - "PluginsCommandHandlerTests"
-Cohesion: 0.10
-Nodes (15): PluginsWizardMode, PluginRejectionReason, PluginsCommandHandlerInstallTests, Dictionary, Fact, ILogger, string, Task (+7 more)
+### Community 16 - ".DirectoryExists"
+Cohesion: 0.16
+Nodes (7): PluginRejectionReason, PluginsCommandHandlerTests, Fact, IEnumerable, ILogger, string, Task
 
-### Community 17 - "PluginManagerRetryTests"
-Cohesion: 0.14
-Nodes (20): PendingEntry, DateTime, PendingStateStore, CancellationToken, List, string, Task, PendingStateStoreTests (+12 more)
+### Community 17 - ".WriteAllTextAsync"
+Cohesion: 0.11
+Nodes (26): PendingEntry, DateTime, PendingStateStore, CancellationToken, List, string, Task, PendingStateStoreTests (+18 more)
 
 ### Community 18 - "PromptConsole"
-Cohesion: 0.05
-Nodes (15): Color, FrozenDictionary, PromptConsole, ConfirmYes, CountSelected, FieldsExplore, FilePathAdrTemplate, IConfiguration (+7 more)
+Cohesion: 0.08
+Nodes (7): Color, FrozenDictionary, PromptConsole, FilePathAdrTemplate, IConfiguration, SampleFileMigration, string
 
 ### Community 19 - "AdrPlusRepoConfigTests"
 Cohesion: 0.10
@@ -317,24 +320,24 @@ Nodes (42): CHANGELOG - 1.0.0-beta4 (11-language localization), CHANGELOG - Unre
 Cohesion: 0.11
 Nodes (13): JsonNode, ValidateConfig, CancellationToken, Dictionary, ErrorReport, IConfiguration, IsValid, JsonElement (+5 more)
 
-### Community 22 - ".StatusUpdateAdrAsync"
-Cohesion: 0.14
-Nodes (15): CancellationToken, Content, DateTime, Error, Isvalid, Record, RejectCommandHandlerTests, Dictionary (+7 more)
+### Community 22 - ".ParseFileName"
+Cohesion: 0.19
+Nodes (9): CancellationToken, Task, ApproveCommandHandlerTests, Dictionary, Fact, ILogger, MemberData, Task (+1 more)
 
 ### Community 23 - "AdrPlus.Domain"
-Cohesion: 0.08
-Nodes (15): char, AdrPlus.Domain, AdrPlus.Commands.Explore, AdrPlus.Tests.Domain, AdrPlus.Infrastructure.Formatting, AdrPlus.Tests.Core, AdrPlus.Core, JsonDocumentOptions (+7 more)
+Cohesion: 0.10
+Nodes (10): AdrPlus.Commands.Migrate, AdrPlus.Domain, AdrPlus.Commands.Explore, AdrPlus.Tests.Domain, AdrPlus.Infrastructure.Formatting, AdrPlus.Tests.Core, AdrPlus.Core, AdrPlus.Tests.Commands.Migrate (+2 more)
 
 ### Community 24 - "CaseFormat & StringCaseExtensions"
 Cohesion: 0.09
 Nodes (12): CaseFormat, StringCaseExtensions, GeneratedRegex, Regex, StringCaseExtensionsTests, Fact, InlineData, Theory (+4 more)
 
 ### Community 25 - "HelpCommandHandlerTests"
-Cohesion: 0.14
-Nodes (14): HelpCommandHandler, CancellationToken, CommandRouter, ILogger, Task, Alias, Command, ConfigCommandHandler (+6 more)
+Cohesion: 0.13
+Nodes (15): ICommandHandler, HelpCommandHandler, CancellationToken, CommandRouter, ILogger, Task, Alias, Command (+7 more)
 
 ### Community 26 - "UndoStatusCommandHandlerTests"
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (11): UndoStatusCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task, UndoStatusCommandHandlerTests, Dictionary (+3 more)
 
 ### Community 27 - "AdrPlus.Abstractions README (plain text)"
@@ -342,60 +345,72 @@ Cohesion: 0.08
 Nodes (38): AdrPlus.Abstractions README (Markdown), adr-config.adrplus (activeplugins/disableplugins), AdrEventContext, AdrPluginBase base class, doc/api-abstractions API reference, Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/), IAdrPlugin interface, PluginDevelopmentGuide.md (external reference) (+30 more)
 
 ### Community 28 - "PluginManager"
-Cohesion: 0.18
-Nodes (18): HashSet, AdrEventContext, Func, LoadedPlugin, PluginManager, Adr, CancellationToken, Content (+10 more)
+Cohesion: 0.15
+Nodes (21): HashSet, AdrEventContext, Func, AdrEventType, Exception, LoadedPlugin, PluginManager, Adr (+13 more)
 
-### Community 29 - "IFileSystemService"
+### Community 29 - ".StatusChangeAdrAsync"
 Cohesion: 0.12
-Nodes (23): IAdrServices, Content, AdrService, CancellationToken, DateTime, Error, IConfiguration, Isvalid (+15 more)
+Nodes (9): Content, CancellationToken, DateTime, Error, Isvalid, Record, IsValid, AdrRecord (+1 more)
 
-### Community 30 - "ApproveCommandHandlerTests"
-Cohesion: 0.18
-Nodes (9): CancellationToken, Task, ApproveCommandHandlerTests, Dictionary, Fact, ILogger, MemberData, Task (+1 more)
+### Community 30 - "IValidateConfig"
+Cohesion: 0.12
+Nodes (16): IValidateConfig, CancellationToken, ErrorReport, Task, ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration (+8 more)
 
 ### Community 31 - "AdrPlus.Commands"
-Cohesion: 0.07
-Nodes (20): Attribute, AdrPlus.Tests.Commands.Reject, AdrPlus.Tests.Commands.NewAdr, AdrPlus.Tests.Commands.Explore, AdrPlus.Tests.Commands.Attributes, AdrPlus.Tests.Commands.Approve, AdrPlus.Tests.Commands.Revise, AdrPlus.Tests.Helpers (+12 more)
+Cohesion: 0.08
+Nodes (19): Attribute, AdrPlus.Tests.Commands.Reject, AdrPlus.Tests.Commands.NewAdr, AdrPlus.Tests.Commands.Explore, AdrPlus.Tests.Commands.Attributes, AdrPlus.Tests.Commands.Approve, AdrPlus.Tests.Helpers, AdrPlus.Tests.Commands.Config (+11 more)
 
 ### Community 32 - "WizardCommandHandler"
 Cohesion: 0.17
 Nodes (16): NotImplementedException, WizardCommandHandler, Arguments, CancellationToken, CommandRouter, CommandsAdr, IConfiguration, ILogger (+8 more)
 
-### Community 33 - "IConsoleWriter"
-Cohesion: 0.10
-Nodes (12): IOptionsMonitor, IConfigurationMigrator, CancellationToken, Task, IConsoleWriter, Task, ZipPath, MainProgram (+4 more)
+### Community 33 - ".PromptShowPluginsListTable"
+Cohesion: 0.16
+Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
 
 ### Community 34 - "ServiceCollectionExtensions.cs"
 Cohesion: 0.10
-Nodes (17): AdrPlus.Commands.Migrate, AdrPlus.Extensions, AdrPlus.Commands.UndoStatus, AdrPlus.Commands.Config, AdrPlus.Infrastructure.Logging, AdrPlus.Commands.Revise, AdrPlus.Tests.Extensions, AdrPlus.Commands.Approve (+9 more)
+Nodes (16): AdrPlus.Extensions, AdrPlus.Commands.UndoStatus, AdrPlus.Commands.Config, AdrPlus.Infrastructure.Logging, AdrPlus.Commands.Revise, AdrPlus.Tests.Commands.Revise, AdrPlus.Tests.Extensions, AdrPlus.Commands.Approve (+8 more)
+
+### Community 35 - "HelpUsageAttributeTests"
+Cohesion: 0.07
+Nodes (4): CommandArgumentAttributeTests, Fact, HelpUsageAttributeTests, Fact
 
 ### Community 36 - "AdrPlus.Infrastructure.FileSystem"
-Cohesion: 0.11
-Nodes (13): AdrPlus.Tests.Commands.Sync, AdrPlus.Tests.Commands.Plugins, AdrPlus.Plugins, AdrPlus.Commands.Plugins, AdrPlus.Abstractions, AdrPlus.Infrastructure.FileSystem, AdrPlus.Commands.Init, AdrPlus.Abstractions.Domain (+5 more)
-
-### Community 38 - "PluginsCommandHandler"
-Cohesion: 0.11
-Nodes (21): Config, ConfigPath, PluginsCommandHandler, Allowlist, Arguments, CancellationToken, Detail, Dictionary (+13 more)
-
-### Community 39 - ".ParseArgs"
 Cohesion: 0.13
-Nodes (7): SyncWizardMode, Mode, SyncCommandHandlerTests, Fact, ILogger, Task, Dictionary
+Nodes (12): AdrPlus.Tests.Commands.Sync, AdrPlus.Tests.Commands.Plugins, AdrPlus.Plugins, AdrPlus.Commands.Plugins, AdrPlus.Abstractions, AdrPlus.Infrastructure.FileSystem, AdrPlus.Abstractions.Domain, AdrPlus.Plugins.AdrIndexer (+4 more)
+
+### Community 38 - "IsAborted"
+Cohesion: 0.13
+Nodes (8): ConfirmYes, FieldsExplore, FieldsFromFileAdr, IsAborted, IsCreatingReport, PrefixValue, Value, ZipPath
+
+### Community 39 - ".ExecuteAsync"
+Cohesion: 0.21
+Nodes (6): SyncWizardMode, Mode, SyncCommandHandlerTests, Fact, ILogger, Task
+
+### Community 40 - "RejectCommandHandlerTests"
+Cohesion: 0.17
+Nodes (9): RejectCommandHandlerTests, Dictionary, Fact, ILogger, MemberData, Task, Theory, Func (+1 more)
 
 ### Community 41 - "AdrPlus Csproj/NuGet Package Metadata"
 Cohesion: 0.05
 Nodes (36): DefaultDocumentation (1.2.5), Microsoft.Extensions.Hosting (10.0.10), PromptPlus (6.0.0-Beta9), Serilog.Extensions.Logging.File (3.0.0), net10.0, net8.0, net9.0, Microsoft.NET.Sdk (+28 more)
 
 ### Community 42 - "LogMessages"
-Cohesion: 0.19
+Cohesion: 0.20
 Nodes (6): LoggerMessage, LogMessages, Exception, ILogger, HostPluginLogger, ILogger
 
 ### Community 43 - "ConfigCommandHandler"
-Cohesion: 0.15
-Nodes (10): EditField, ConfigCommandHandler, Arguments, Func, ILogger, IsAborted, JsonElement, JsonValueKind (+2 more)
+Cohesion: 0.13
+Nodes (12): EditField, ConfigCommandHandler, Arguments, CancellationToken, Func, ILogger, IsAborted, JsonElement (+4 more)
 
-### Community 45 - "CommandRouter"
-Cohesion: 0.29
-Nodes (6): IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type
+### Community 44 - ".StatusUpdateAdrAsync"
+Cohesion: 0.13
+Nodes (15): RejectCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, CancellationToken (+7 more)
+
+### Community 45 - "IConsoleWriter"
+Cohesion: 0.08
+Nodes (17): IOptionsMonitor, IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type, IConfigurationMigrator (+9 more)
 
 ### Community 47 - "PluginManagerBackfillTests"
 Cohesion: 0.30
@@ -407,23 +422,23 @@ Nodes (14): AdrPlus.Tests.Localization, CultureData, Action, TheoryData, HeaderL
 
 ### Community 50 - "IPluginManager"
 Cohesion: 0.14
-Nodes (19): AdrRecordSnapshot, DateTime, AdrStatus, RepoInfoSnapshot, IReadOnlyDictionary, IReadOnlyList, PluginSnapshotExtensions, IPluginManager (+11 more)
+Nodes (18): AdrRecordSnapshot, DateTime, AdrStatus, RepoInfoSnapshot, IReadOnlyDictionary, IReadOnlyList, PluginSnapshotExtensions, IPluginManager (+10 more)
 
 ### Community 51 - ".RouteAsync"
 Cohesion: 0.29
 Nodes (5): CancellationToken, Task, CommandRouterTests, Fact, Task
 
-### Community 52 - "PluginManagerDispatchTests"
-Cohesion: 0.42
-Nodes (6): PluginManagerDispatchTests, Fact, IEnumerable, ILogger, string, Task
+### Community 52 - "PluginsCommandHandlerInstallTests"
+Cohesion: 0.22
+Nodes (8): ZipPath, PluginsCommandHandlerInstallTests, Dictionary, Fact, ILogger, string, Task, ZipArchive
 
-### Community 53 - "AdrPlusConfig"
-Cohesion: 0.06
-Nodes (18): AdrPlusConfig, List, BehaviorWithoutArg, SearchOption, ExploreCommandHandlerTests, Fact, Task, ExploreCommandHandlerFixture (+10 more)
+### Community 53 - ".ExploreWizardAsync"
+Cohesion: 0.05
+Nodes (25): Fields, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task (+17 more)
 
 ### Community 54 - "VersionCommandHandler"
-Cohesion: 0.24
-Nodes (6): ICommandHandler, VersionCommandHandler, Arguments, DateTime, Dictionary, ILogger
+Cohesion: 0.27
+Nodes (5): VersionCommandHandler, Arguments, DateTime, Dictionary, ILogger
 
 ### Community 55 - "AdrPlus.Infrastructure.UI"
 Cohesion: 0.11
@@ -433,9 +448,9 @@ Nodes (8): AdrPlus.Infrastructure.UI, AdrPlus.Tests.Commands, AdrPlus.Infrastruc
 Cohesion: 0.21
 Nodes (9): Link, AdrIndexerPlugin, CancellationToken, List, Status, string, Task, Title (+1 more)
 
-### Community 57 - "AdrFileNameComponents"
-Cohesion: 0.10
-Nodes (8): ApproveCommandHandler, Arguments, DateTime, Dictionary, ILogger, AdrFileNameComponents, AdrStatus, CommandHandlerMockHelper
+### Community 57 - "PluginManagerTests"
+Cohesion: 0.36
+Nodes (6): SearchOption, PluginManagerTests, Fact, ILogger, string, Task
 
 ### Community 58 - "Alexandrian & Business Case ADR Templates"
 Cohesion: 0.12
@@ -445,25 +460,21 @@ Nodes (18): ADR Index Template, Considered Options, Context and Problem Statemen
 Cohesion: 0.19
 Nodes (8): CancellationTokenSource, AdrPlus.Tests, Program, Assembly, Task, Version, ProgramTests, Fact
 
-### Community 60 - "MigrateCommandHandler"
-Cohesion: 0.33
-Nodes (5): MigrateCommandHandler, Arguments, Func, IEnumerable, ILogger
+### Community 60 - "AdrFileNameComponents"
+Cohesion: 0.19
+Nodes (8): IAdrServices, AdrService, IConfiguration, Result, string, Success, AdrFileNameComponents, StringComparison
 
-### Community 61 - "PromptConsole Plugin/Event Fields"
-Cohesion: 0.13
+### Community 61 - ".PromptShowPluginsListTable"
+Cohesion: 0.17
 Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
 
-### Community 62 - ".ExploreWizardAsync"
-Cohesion: 0.15
-Nodes (16): Fields, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task (+8 more)
+### Community 62 - ".BuildListRowsAsync"
+Cohesion: 0.22
+Nodes (10): Allowlist, Detail, Events, IReadOnlyList, List, Name, NameOrFolder, Pending (+2 more)
 
 ### Community 63 - ".Create"
 Cohesion: 0.10
 Nodes (17): AdrPlus.Abstractions.Testing, AdrPlus.Abstractions.Tests.Testing, AdrEventContextFactory, AdrEventContext, AdrEventType, Func, AdrRecordSnapshotFactory, DateTime (+9 more)
-
-### Community 64 - ".CreateHandler"
-Cohesion: 0.33
-Nodes (3): InitCommandHandlerBuiltinPluginsTests, IReadOnlyList, string
 
 ### Community 65 - "LowercaseNamingPolicyTests"
 Cohesion: 0.29
@@ -477,17 +488,17 @@ Nodes (5): AdrPluginBase, CancellationToken, Task, PluginResult, PluginResultSta
 Cohesion: 0.26
 Nodes (6): AdrPluginBaseTests, TestPlugin, CancellationToken, Fact, Task, ValueTask
 
-### Community 68 - ".ExecuteAsync"
-Cohesion: 0.24
-Nodes (9): AdrEventType, SyncCommandHandler, Arguments, CancellationToken, Dictionary, Func, ILogger, IReadOnlyList (+1 more)
+### Community 68 - "SyncCommandHandler"
+Cohesion: 0.21
+Nodes (9): SyncCommandHandler, Arguments, CancellationToken, Func, ILogger, IReadOnlyList, Task, AdrHeader (+1 more)
 
-### Community 69 - ".ParseAdrHeaderAndContentAsync"
-Cohesion: 0.14
-Nodes (8): content, header, AdrHeader, DateTime, CancellationToken, Result, Success, Task
+### Community 69 - "IFileSystemService"
+Cohesion: 0.10
+Nodes (10): content, header, header, IFileSystemService, CancellationToken, IEnumerable, Result, Success (+2 more)
 
-### Community 70 - "IMainProgram"
-Cohesion: 0.40
-Nodes (3): IMainProgram, CancellationToken, Task
+### Community 70 - "ApproveCommandHandler"
+Cohesion: 0.29
+Nodes (5): ApproveCommandHandler, Arguments, DateTime, Dictionary, ILogger
 
 ### Community 71 - "IAdrPlugin & IPluginConfiguration Contracts"
 Cohesion: 0.16
@@ -501,6 +512,10 @@ Nodes (7): CommandsAdr, Alias, Command, ConfigCommandHandler, Description, Dicti
 Cohesion: 0.18
 Nodes (14): Test Architecture Guide, Arrange-Act-Assert Pattern, CI/CD Pipeline (GitHub Actions), CommandHandlerMockHelper, Domain-Specific Mock Helper Pattern, ExploreCommandHandlerFixture, FluentAssertions, Generic Mock Helper Pattern (+6 more)
 
+### Community 74 - ".Resolve"
+Cohesion: 0.33
+Nodes (5): IsActive, MissingNames, PluginActivationGate, Func, IReadOnlyList
+
 ### Community 75 - "Tyree-Ackerman ADR Template (English)"
 Cohesion: 0.41
 Nodes (13): Tyree-Ackerman ADR Template (English), Tyree-Ackerman ADR Template (German), Tyree-Ackerman ADR Template (Spanish), Tyree-Ackerman ADR Template (French), Tyree-Ackerman ADR Template (Italian), Tyree-Ackerman ADR Template (Japanese), Tyree-Ackerman ADR Template (Korean), Kyaruzi and van Katwijk Architecture Ontology (+5 more)
@@ -509,29 +524,29 @@ Nodes (13): Tyree-Ackerman ADR Template (English), Tyree-Ackerman ADR Template (
 Cohesion: 0.40
 Nodes (5): PluginManagerDisposalTests, Fact, ILogger, string, Task
 
-### Community 77 - "ReviseCommandHandler"
-Cohesion: 0.27
-Nodes (5): ReviseCommandHandler, Arguments, DateTime, Dictionary, ILogger
-
-### Community 78 - ".ExecuteAsync"
+### Community 77 - ".ExecuteAsync"
 Cohesion: 0.23
-Nodes (7): RejectCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task
+Nodes (7): ReviseCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task
 
-### Community 79 - ".PromptShowPluginsListTable"
-Cohesion: 0.15
-Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
+### Community 78 - "PluginsCommandHandler"
+Cohesion: 0.10
+Nodes (15): Config, ConfigPath, PluginsCommandHandler, Arguments, CancellationToken, Dictionary, GeneratedRegex, IEnumerable (+7 more)
 
-### Community 80 - ".Resolve"
-Cohesion: 0.33
-Nodes (5): IsActive, MissingNames, PluginActivationGate, Func, IReadOnlyList
+### Community 80 - "AppConstants"
+Cohesion: 0.25
+Nodes (7): char, JsonDocumentOptions, Lazy, AppConstants, int, JsonSerializerOptions, string
 
 ### Community 81 - "IPromptConsole (shared UI abstraction, #1 god node)"
 Cohesion: 0.36
 Nodes (10): CommandRouter, Graphify memory: why IPromptConsole connects command handlers, IPromptConsole (shared UI abstraction, #1 god node), MainProgram, PromptConsole (single implementation, split across partial classes), InitCommandHandler, Graphify memory: should Init command handling be split into smaller modules, Command-handler test scaffolding community (corrected label, was mislabeled 'Init command handling') (+2 more)
 
-### Community 84 - ".PromptEditTitleAdr"
+### Community 82 - "IMainProgram"
 Cohesion: 0.40
-Nodes (6): INewAdrPrompts, CancellationToken, Content, domains, Exception, IsAborted
+Nodes (3): IMainProgram, CancellationToken, Task
+
+### Community 84 - "AdrPlusRepoConfig"
+Cohesion: 0.11
+Nodes (18): MigrateCommandHandler, Arguments, Func, IEnumerable, ILogger, AdrPlusRepoConfig, Dictionary, List (+10 more)
 
 ### Community 85 - "IPluginLogger"
 Cohesion: 0.25
@@ -573,28 +588,24 @@ Nodes (3): ICommandHandler, CancellationToken, Task
 Cohesion: 0.40
 Nodes (3): domains, Exception, Task
 
-### Community 101 - ".WriteAllTextAsync"
-Cohesion: 0.24
-Nodes (6): CancellationToken, Task, ActivePluginsWriter, CancellationToken, IEnumerable, Task
-
 ## Knowledge Gaps
-- **188 isolated node(s):** `net10.0`, `net9.0`, `net8.0`, `DefaultDocumentation (1.2.5)`, `Microsoft.NET.Sdk` (+183 more)
+- **189 isolated node(s):** `net10.0`, `net9.0`, `net8.0`, `DefaultDocumentation (1.2.5)`, `Microsoft.NET.Sdk` (+184 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **90 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **96 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `IFileSystemService` connect `IFileSystemService` to `IAdrServices`, `ValidateJsonConfigTests`, `IValidateConfig`, `FileSystemServiceEnhancedTests`, `PluginManifest`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PluginsCommandHandlerTests`, `PluginManagerRetryTests`, `PromptConsole`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `UndoStatusCommandHandlerTests`, `PluginManager`, `ApproveCommandHandlerTests`, `WizardCommandHandler`, `PluginsCommandHandler`, `.ParseArgs`, `ConfigCommandHandler`, `PluginManagerBackfillTests`, `PluginManagerDispatchTests`, `AdrPlusConfig`, `VersionCommandHandler`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.CreateHandler`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `PluginManagerDisposalTests`, `ReviseCommandHandler`, `.ExecuteAsync`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.WriteAllTextAsync`?**
-  _High betweenness centrality (0.144) - this node is a cross-community bridge._
-- **Why does `AdrPlus.Domain` connect `AdrPlus.Domain` to `ServiceCollectionExtensions.cs`, `AdrPlus.Infrastructure.FileSystem`, `.ParseAdrHeaderAndContentAsync`, `PatternParserTests`, `FieldsJson`, `TemplateResourcesTests`, `AdrPlusConfig`, `AdrPlus.Infrastructure.UI`, `CaseFormat & StringCaseExtensions`, `AdrFileNameComponents`, `IFileSystemService`, `AdrPlus.Commands`?**
-  _High betweenness centrality (0.103) - this node is a cross-community bridge._
-- **Why does `AdrPlusRepoConfig` connect `IFileSystemService` to `IAdrServices`, `HelperTests`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `AdrServiceTests`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PromptConsole`, `AdrPlusRepoConfigTests`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `CaseFormat & StringCaseExtensions`, `AdrRecordTests`, `PluginsCommandHandler`, `ConfigCommandHandler`, `IPluginManager`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `.Resolve`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.PromptSelecAdrs`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+- **Why does `IFileSystemService` connect `IFileSystemService` to `IAdrServices`, `ValidateJsonConfigTests`, `ConfigCommandHandlerTests`, `FileSystemServiceEnhancedTests`, `PluginManifest`, `.ValidateRepoStructure`, `.ParseArgs`, `.GetFileNameRepoConfig`, `.ReadAllAdrByNumber`, `VersionCommandHandlerTests`, `CancellationToken`, `.DirectoryExists`, `.WriteAllTextAsync`, `PromptConsole`, `ValidateConfig`, `.ParseFileName`, `UndoStatusCommandHandlerTests`, `PluginManager`, `.StatusChangeAdrAsync`, `IValidateConfig`, `WizardCommandHandler`, `.ExecuteAsync`, `RejectCommandHandlerTests`, `ConfigCommandHandler`, `.StatusUpdateAdrAsync`, `PluginManagerBackfillTests`, `PluginsCommandHandlerInstallTests`, `.ExploreWizardAsync`, `VersionCommandHandler`, `PluginManagerTests`, `AdrFileNameComponents`, `SyncCommandHandler`, `ApproveCommandHandler`, `PluginManagerDisposalTests`, `.ExecuteAsync`, `PluginsCommandHandler`, `AdrPlusRepoConfig`, `Task`, `.PromptGetArrayDomainsAdr`?**
+  _High betweenness centrality (0.142) - this node is a cross-community bridge._
+- **Why does `AdrPlus.Domain` connect `AdrPlus.Domain` to `IAdrServices`, `ServiceCollectionExtensions.cs`, `SyncCommandHandler`, `AdrPlus.Infrastructure.FileSystem`, `PatternParserTests`, `.StatusUpdateAdrAsync`, `FieldsJson`, `InitCommandHandlerBuiltinPluginsTests.cs`, `TemplateResourcesTests`, `AdrPlusRepoConfig`, `AdrPlus.Infrastructure.UI`, `CaseFormat & StringCaseExtensions`, `AdrPlus.Commands`?**
+  _High betweenness centrality (0.100) - this node is a cross-community bridge._
+- **Why does `AdrPlusRepoConfig` connect `AdrPlusRepoConfig` to `IAdrServices`, `HelperTests`, `.ValidateRepoStructure`, `AdrServiceTests`, `.GetFileNameRepoConfig`, `.ReadAllAdrByNumber`, `VersionCommandHandlerTests`, `CancellationToken`, `AdrPlusRepoConfigTests`, `ValidateConfig`, `.ParseFileName`, `CaseFormat & StringCaseExtensions`, `.StatusChangeAdrAsync`, `AdrRecordTests`, `ConfigCommandHandler`, `.StatusUpdateAdrAsync`, `IPluginManager`, `.ExploreWizardAsync`, `.PromptShowAdrsMigrations`, `AdrFileNameComponents`, `.BuildListRowsAsync`, `SyncCommandHandler`, `IFileSystemService`, `.Resolve`, `PluginsCommandHandler`, `Task`, `.PromptGetArrayDomainsAdr`, `.PromptSelecAdrs`?**
+  _High betweenness centrality (0.086) - this node is a cross-community bridge._
 - **What connects `net10.0`, `net9.0`, `net8.0` to the rest of the system?**
-  _188 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _189 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `IAdrServices` be split into smaller, more focused modules?**
-  _Cohesion score 0.06437346437346438 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05967016491754123 - nodes in this community are weakly interconnected._
 - **Should `ValidateJsonConfigTests` be split into smaller, more focused modules?**
   _Cohesion score 0.06828282828282828 - nodes in this community are weakly interconnected._
 - **Should `HelperTests` be split into smaller, more focused modules?**

@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | events: {3} | allowlist: {4} | openstaand: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | events: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Geen plugins geladen</value>
   </data>
@@ -464,13 +467,16 @@
     <value>Kies de actie</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List toont geladen plugins; Validate controleert de structurele lading; Install/Uninstall beheren de plugins op deze computer</value>
+    <value>List (repository) vergelijkt met de actieve plugins van de repository; List (host) toont wat op deze computer is geïnstalleerd; Validate controleert de structurele lading; Install/Uninstall beheren de plugins op deze computer</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>Terug</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>Geladen plugins weergeven</value>
+    <value>Plugins weergeven (repository)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>Plugins weergeven (host)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Pluginstructuur valideren</value>

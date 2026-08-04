@@ -11,12 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.0.0-beta6] - 2026-08-04
+
 ### Added
 
 - Plugin system: AdrPlus now dispatches ADR lifecycle events (create, approve, reject, revise, supersede, undo) to plugins implementing the `IAdrPlugin` contract — see the [Plugin Development Guide](PluginDevelopmentGuide.md).
 - Plugins are discovered **host-globally** (`%UserProfile%/AdrPlus.Plugins/<name>/`, merged with whatever ships bundled with the AdrPlus install), not per repository — a repository only holds the `activeplugins`/`disableplugins` on/off switch in `adr-config.adrplus`.
 - `sync` command to re-drive pending plugin dispatches, with `--backfill` to sweep every existing ADR and re-emit its current settled event. Pending state is per-repository (`./plugins-state/<name>/pending.json`), kept independent of the host-global plugin code.
-- `plugins` command (`--list`/`--validate`) for plugin diagnostics, plus `--wizard` support to manage which plugins are active for a repository.
+- `plugins` command (`--list`/`--validate`) for plugin diagnostics, plus `--wizard` support to manage which plugins are active for a repository. `--list` also works without `--path`, reporting only what this host discovered (no active/inactive/missing status, since there's no repository to cross-reference). `--validate` never needs `--path` at all — it only checks structural load, host-wide.
 - Per-repo plugin activation management via the `activeplugins`/`disableplugins` settings in `adr-config.adrplus`, plus non-interactive `adrplus plugins --activate <name>`/`--deactivate <name>` flags.
 - `adrplus plugins --install <path-to-zip>`/`--uninstall <name>` to install/remove a plugin on the machine, without manually copying files — both also available interactively via `adrplus plugins --wizard`. Neither requires `--path`: installing/removing a plugin is machine-wide, independent of any repository.
 - `AdrPlus.Plugins.AdrIndexer` — a reference plugin bundled with AdrPlus and discovered automatically, generating a linked ADR index table.

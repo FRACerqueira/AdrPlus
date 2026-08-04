@@ -108,6 +108,7 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat PluginsAllowlisted => Get(() => Resources.AdrPlus.PluginsAllowlisted);
         public static CompositeFormat PluginsNoAllowlistConfigured => Get(() => Resources.AdrPlus.PluginsNoAllowlistConfigured);
         public static CompositeFormat PluginsListEntry => Get(() => Resources.AdrPlus.PluginsListEntry);
+        public static CompositeFormat PluginsHostListEntry => Get(() => Resources.AdrPlus.PluginsHostListEntry);
         public static CompositeFormat PluginsListEmpty => Get(() => Resources.AdrPlus.PluginsListEmpty);
         public static CompositeFormat PluginsListSummary => Get(() => Resources.AdrPlus.PluginsListSummary);
         public static CompositeFormat PluginsValidateEntryValid => Get(() => Resources.AdrPlus.PluginsValidateEntryValid);

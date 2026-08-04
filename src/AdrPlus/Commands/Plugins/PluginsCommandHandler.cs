@@ -21,9 +21,13 @@ namespace AdrPlus.Commands.Plugins
 {
     /// <summary>
     /// Handles the <c>plugins</c> command's diagnostic, activation-management, and distribution subcommands:
-    /// <c>list</c> reports every loaded plugin (name, version, subscribed events, allowlist status,
-    /// pending-item count); <c>validate</c> re-runs structural load validation and reports loaded vs.
-    /// rejected plugins, without dispatching any event; <c>--activate</c>/<c>--deactivate</c> are the
+    /// <c>list</c> reports every loaded plugin. With <c>--path</c>, it cross-references a repository's
+    /// <c>activeplugins</c> (name, version, subscribed events, allowlist status, pending-item count, and
+    /// Active/Inactive/Missing/Disabled status); without <c>--path</c>, it reports only what's actually
+    /// discovered on this host (name, version, subscribed events, allowlist status) — see
+    /// <see cref="ReportHostList"/>. <c>validate</c> re-runs structural load validation and reports loaded vs.
+    /// rejected plugins, without dispatching any event; it's host-global like <c>--install</c>/<c>--uninstall</c>
+    /// and never reads/requires <c>--path</c>. <c>--activate</c>/<c>--deactivate</c> are the
     /// non-interactive counterpart to the wizard's manage mode, adding or removing a single plugin name from
     /// <c>ActivePlugins</c>; <c>--install</c>/<c>--uninstall</c> are host-global, zip-based operations against
     /// <see cref="IPluginManager.UserPluginsRoot"/> — no repository is in scope for either.
@@ -80,8 +84,9 @@ namespace AdrPlus.Commands.Plugins
                         ValidCommandArgs,
                         [
                             "adrplus plugins --wizard",
+                            "adrplus plugins --list",
                             "adrplus plugins --list --path \"path/to/repository/\"",
-                            "adrplus plugins --validate --path \"path/to/repository/\"",
+                            "adrplus plugins --validate",
                             "adrplus plugins --activate \"PluginName\" --path \"path/to/repository/\"",
                             "adrplus plugins --deactivate \"PluginName\" --path \"path/to/repository/\"",
                             "adrplus plugins --install \"./PluginName-1.0.0.zip\"",
@@ -131,10 +136,18 @@ namespace AdrPlus.Commands.Plugins
                     return;
                 }
 
+                // --list is also allowed with no --path: without a repository to cross-reference,
+                // it reports the host's LoadedPlugins as-is (see ReportHostList). --validate never
+                // reads Arguments.TargetRepo at all (ReportValidate reports LoadedPlugins/Rejections
+                // only), so it never requires --path either. Only --activate/--deactivate and the
+                // repo-scoped form of --list need the DirectoryExists/adr-config.adrplus checks below.
+                var isHostOnlyList = hasList && !parsedArgs.ContainsKey(Arguments.TargetRepo);
+                var requiresRepoPath = hasActivate || hasDeactivate || (hasList && !isHostOnlyList);
+
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
                 targetPath ??= string.Empty;
 
-                if (!_fileSystem.DirectoryExists(targetPath))
+                if (requiresRepoPath && !_fileSystem.DirectoryExists(targetPath))
                 {
                     throw new DirectoryNotFoundException(string.Format(null, FormatMessages.ErrDirectoryNotFound, targetPath));
                 }
@@ -154,8 +167,15 @@ namespace AdrPlus.Commands.Plugins
 
                 if (hasList)
                 {
-                    var (repoconfig, _) = await ReadRepoConfigAsync(targetPath, cancellationToken);
-                    await ReportListAsync(hasWizard, targetPath, repoconfig, cancellationToken);
+                    if (isHostOnlyList)
+                    {
+                        ReportHostList(hasWizard, cancellationToken);
+                    }
+                    else
+                    {
+                        var (repoconfig, _) = await ReadRepoConfigAsync(targetPath, cancellationToken);
+                        await ReportListAsync(hasWizard, targetPath, repoconfig, cancellationToken);
+                    }
                 }
                 else
                 {
@@ -242,6 +262,59 @@ namespace AdrPlus.Commands.Plugins
             }
 
             return rows;
+        }
+
+        /// <summary>
+        /// Reports <see cref="IPluginManager.LoadedPlugins"/> with no repository in scope (<c>adrplus plugins
+        /// --list</c>, no <c>--path</c>). Unlike <see cref="ReportListAsync"/>, there's no
+        /// <see cref="AdrPlusRepoConfig.ActivePlugins"/> to cross-reference and no per-repo <c>plugins-state</c>
+        /// folder to read, so rows carry no Active/Inactive/Missing status and no pending-item count — only what
+        /// this host actually discovered and loaded.
+        /// </summary>
+        private void ReportHostList(bool useTable, CancellationToken cancellationToken)
+        {
+            var rows = BuildHostListRows();
+
+            if (rows.Count == 0)
+            {
+                _prompt.PromptWriteInfo(string.Format(null, FormatMessages.PluginsListEmpty));
+            }
+            else if (useTable)
+            {
+                if (_prompt.PromptShowPluginsHostListTable(rows, cancellationToken))
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+            }
+            else
+            {
+                foreach (var row in rows)
+                {
+                    var message = string.Format(null, FormatMessages.PluginsHostListEntry, row.Name, row.Version, row.Events, row.Allowlist);
+                    _prompt.PromptWriteInfo(message);
+                }
+            }
+
+            var summary = string.Format(null, FormatMessages.PluginsListSummary, _pluginManager.LoadedPlugins.Count, _pluginManager.Rejections.Count);
+            LogMessages.LogCommandSuccessful(_logger, summary);
+            _prompt.PromptWriteSuccess(summary);
+        }
+
+        /// <summary>
+        /// Builds one row per <see cref="IPluginManager.LoadedPlugins"/> entry — no synthetic "Missing" rows,
+        /// since those only make sense against a repository's <c>activeplugins</c> list.
+        /// </summary>
+        private List<(string Name, string Version, string Events, string Allowlist)> BuildHostListRows()
+        {
+            var allowlistStatus = _config.PluginAllowlist is null
+                ? string.Format(null, FormatMessages.PluginsNoAllowlistConfigured)
+                : string.Format(null, FormatMessages.PluginsAllowlisted);
+
+            return [.. _pluginManager.LoadedPlugins.Select(plugin => (
+                plugin.Manifest.Name!,
+                plugin.Manifest.Version!,
+                string.Join(", ", plugin.Manifest.SubscribedEvents ?? []),
+                allowlistStatus))];
         }
 
         /// <summary>
@@ -551,11 +624,14 @@ namespace AdrPlus.Commands.Plugins
 
         /// <summary>
         /// Interactive <c>adrplus plugins --wizard</c>: picks a mode first, then — only for the repo-scoped
-        /// modes (<c>list</c>/<c>validate</c>/<c>manage</c>) — resolves a repository path via prompts. Install
-        /// and uninstall are host-global and never prompt for a repository at all. For
-        /// <c>list</c>/<c>validate</c>, returns the same <see cref="Dictionary{Arguments, String}"/> shape
-        /// <c>ParseArgs</c> would have produced for the equivalent non-interactive flags — the rest of
-        /// <see cref="ExecuteAsync"/> runs unchanged from there (only its final rendering step is aware of
+        /// modes that actually use one (<c>list</c>/<c>manage</c>) — resolves a repository path via prompts.
+        /// Install, uninstall, the host-only list mode (<see cref="PluginsWizardMode.ListHost"/>), and validate
+        /// are all host-global and never prompt for a repository at all: <c>validate</c> reports
+        /// <see cref="IPluginManager.LoadedPlugins"/>/<see cref="IPluginManager.Rejections"/> only, so a
+        /// repository path would go unused. For <c>list</c>/<c>list (host)</c>/<c>validate</c>, returns the
+        /// same <see cref="Dictionary{Arguments, String}"/> shape <c>ParseArgs</c> would have produced for the
+        /// equivalent non-interactive flags — the rest of <see cref="ExecuteAsync"/> runs unchanged from there
+        /// (only its final rendering step is aware of
         /// <c>--wizard</c>, to show a table instead of plain text). <c>manage</c>/<c>install</c>/<c>uninstall</c>/<c>back</c>
         /// instead run to completion here (or, for <c>back</c>, do nothing) and return <see langword="null"/>,
         /// signalling <see cref="ExecuteAsync"/> that there's nothing left to do.
@@ -619,6 +695,16 @@ namespace AdrPlus.Commands.Plugins
                 return null;
             }
 
+            if (modePrompt.Mode == PluginsWizardMode.ListHost)
+            {
+                return new Dictionary<Arguments, string> { [Arguments.PluginsList] = string.Empty };
+            }
+
+            if (modePrompt.Mode == PluginsWizardMode.Validate)
+            {
+                return new Dictionary<Arguments, string> { [Arguments.PluginsValidate] = string.Empty };
+            }
+
             var rootPath = ResolveRootPath(cancellationToken);
 
             var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _fileSystem, _validateConfig, cancellationToken);
@@ -633,12 +719,11 @@ namespace AdrPlus.Commands.Plugins
                 return null;
             }
 
-            var parsedArgs = new Dictionary<Arguments, string>
+            return new Dictionary<Arguments, string>
             {
-                [Arguments.TargetRepo] = folderPrompt.Content
+                [Arguments.TargetRepo] = folderPrompt.Content,
+                [Arguments.PluginsList] = string.Empty
             };
-            parsedArgs[modePrompt.Mode == PluginsWizardMode.Validate ? Arguments.PluginsValidate : Arguments.PluginsList] = string.Empty;
-            return parsedArgs;
         }
 
         /// <summary>

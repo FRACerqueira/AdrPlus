@@ -417,6 +417,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | events: {3} | allowlist: {4} | pending: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | events: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>No plugins loaded</value>
   </data>
@@ -463,13 +466,16 @@
     <value>Choose action</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List shows loaded plugins; Validate checks structural load; Install/Uninstall manage plugins for this machine</value>
+    <value>List (repository) cross-references a repo's active plugins; List (host) shows what's installed on this machine; Validate checks structural load; Install/Uninstall manage plugins for this machine</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>Back</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>List loaded plugins</value>
+    <value>List plugins (repository)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>List plugins (host)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Validate plugin structure</value>

@@ -2750,7 +2750,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginsListEntry", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} v{1} | events: {2} | allowlist: {3}.
+        /// </summary>
+        internal static string PluginsHostListEntry {
+            get {
+                return ResourceManager.GetString("PluginsHostListEntry", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to {0} plugin(s) loaded, {1} rejected.
         /// </summary>
@@ -4246,11 +4255,20 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List loaded plugins.
+        ///   Looks up a localized string similar to List plugins (repository).
         /// </summary>
         internal static string WizardPluginsModeList {
             get {
                 return ResourceManager.GetString("WizardPluginsModeList", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to List plugins (host).
+        /// </summary>
+        internal static string WizardPluginsModeListHost {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeListHost", resourceCulture);
             }
         }
         

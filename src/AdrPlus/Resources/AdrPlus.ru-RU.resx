@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | события: {3} | allowlist: {4} | ожидает: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | события: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Нет загруженных плагинов</value>
   </data>
@@ -464,13 +467,16 @@
     <value>Выберите действие</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List показывает загруженные плагины; Validate проверяет структурную загрузку; Install/Uninstall управляют плагинами на этом компьютере</value>
+    <value>List (репозиторий) сверяется с активными плагинами репозитория; List (хост) показывает, что установлено на этом компьютере; Validate проверяет структурную загрузку; Install/Uninstall управляют плагинами на этом компьютере</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>Назад</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>Показать загруженные плагины</value>
+    <value>Показать плагины (репозиторий)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>Показать плагины (хост)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Проверить структуру плагинов</value>

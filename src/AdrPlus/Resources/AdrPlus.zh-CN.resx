@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | 事件：{3} | allowlist：{4} | 待处理：{5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | 事件：{2} | allowlist：{3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>未加载任何插件</value>
   </data>
@@ -464,13 +467,16 @@
     <value>选择操作</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List 显示已加载的插件；Validate 检查结构化加载；Install/Uninstall 管理此计算机上的插件</value>
+    <value>List（仓库）与仓库的已启用插件进行比对；List（主机）显示此计算机上已安装的内容；Validate 检查结构化加载；Install/Uninstall 管理此计算机上的插件</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>返回</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>列出已加载的插件</value>
+    <value>列出插件（仓库）</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>列出插件（主机）</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>验证插件结构</value>
