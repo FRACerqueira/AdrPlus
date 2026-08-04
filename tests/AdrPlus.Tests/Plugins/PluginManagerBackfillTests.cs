@@ -16,10 +16,19 @@ using AbstractionsDomain = AdrPlus.Abstractions.Domain;
 namespace AdrPlus.Tests.Plugins;
 
 /// <summary>
+/// Not run in parallel with any other collection: <see cref="PluginManagerBackfillTests"/> races a real
+/// <see cref="CancellationTokenSource.CancelAfter"/> against a backoff delay, and thread-pool contention from
+/// unrelated tests running concurrently was making that race unreliable on macOS CI runners.
+/// </summary>
+[CollectionDefinition("PluginManagerBackfillTests (non-parallel)", DisableParallelization = true)]
+public class PluginManagerBackfillTestsCollection;
+
+/// <summary>
 /// Unit tests for <see cref="PluginManager.BackfillAsync"/> — the full-repo sweep (<c>adrplus sync
 /// --backfill</c>): per-item retry loop (always starting at attempt 1, exhaustion logged not persisted),
 /// sequential-per-plugin dispatch, and safe concurrent init across plugins.
 /// </summary>
+[Collection("PluginManagerBackfillTests (non-parallel)")]
 public class PluginManagerBackfillTests
 {
     private readonly IFileSystemService _fileSystem = Substitute.For<IFileSystemService>();
