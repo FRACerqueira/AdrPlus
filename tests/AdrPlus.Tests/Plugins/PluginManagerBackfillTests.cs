@@ -238,15 +238,18 @@ public class PluginManagerBackfillTests
                 return Task.FromResult(new PluginResult { Status = PluginResultStatus.Failed, Message = "boom", IsRetryable = true });
             });
         var manager = CreateManager();
-        manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1", maxAttempts: 2, delayMs: 200), "/repo/plugins/p1"));
+        // delayMs is deliberately huge relative to CancelAfter: the assertion only cares that cancellation
+        // wins the race, and a wide margin keeps this from flaking under CI scheduling jitter (seen on
+        // macOS runners with a much smaller gap) while the cancellation still keeps the test itself fast.
+        manager._loadedPlugins.Add(new LoadedPlugin(plugin, CreateManifest("p1", maxAttempts: 2, delayMs: 5000), "/repo/plugins/p1"));
 
         using var cts = new CancellationTokenSource();
         cts.CancelAfter(50);
 
         var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), isActive: null, cancellationToken: cts.Token);
 
-        summary.Succeeded.Should().Be(1);
-        summary.Exhausted.Should().Be(0);
-        summary.PermanentlyFailed.Should().Be(0);
+        summary.Succeeded.Should().Be(1, "item 1 completes before cancellation fires");
+        summary.Exhausted.Should().Be(0, "cancellation during item 2's backoff should abort it, not exhaust its retries");
+        summary.PermanentlyFailed.Should().Be(0, "item 2 only ever returns a retryable failure, never a permanent one");
     }
 }
