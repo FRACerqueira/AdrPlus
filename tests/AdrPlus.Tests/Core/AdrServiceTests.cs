@@ -814,6 +814,30 @@ public class AdrServiceTests
         result.ErrorMessage.Should().NotBeNullOrEmpty();
     }
 
+    [Fact]
+    public async Task ParseFileName_WithMigrationPatternFileName_ExtractsTitle()
+    {
+        // Arrange
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR")
+        {
+            Prefix = "ADR",
+            Separator = '-',
+            MigrationPattern = "N00:04T04"
+        };
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var validLines = new string[12];
+        for (int i = 0; i < 12; i++) validLines[i] = "line";
+        fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), TestContext.Current.CancellationToken).Returns(validLines);
+
+        var filePath = "0002UseMongoDB.md";
+
+        // Act
+        var result = await _service.ParseFileName(filePath, config, fileSystemService);
+
+        // Assert
+        result.Title.Should().Be("UseMongoDB");
+    }
+
     #endregion
 
     #region ReadAllAdrByNumber Tests
