@@ -386,6 +386,7 @@ namespace AdrPlus.Commands.Plugins
             var movedIntoPlace = false;
             try
             {
+                var stagingRoot = Path.GetFullPath(stagingDir) + Path.DirectorySeparatorChar;
                 using (var archive = ZipFile.OpenRead(zipPath))
                 {
                     foreach (var entry in archive.Entries)
@@ -398,7 +399,12 @@ namespace AdrPlus.Commands.Plugins
                         {
                             throw new InvalidDataException(string.Format(null, FormatMessages.ErrPluginZipTraversal, entry.FullName));
                         }
-                        entry.ExtractToFile(Path.Combine(stagingDir, entry.FullName), overwrite: true);
+                        var destinationPath = Path.GetFullPath(Path.Combine(stagingDir, entry.FullName));
+                        if (!destinationPath.StartsWith(stagingRoot, StringComparison.Ordinal))
+                        {
+                            throw new InvalidDataException(string.Format(null, FormatMessages.ErrPluginZipTraversal, entry.FullName));
+                        }
+                        entry.ExtractToFile(destinationPath, overwrite: true);
                     }
                 }
 
