@@ -10,7 +10,7 @@ without depending on the AdrPlus source tree.
 NuGet: https://www.nuget.org/packages/AdrPlus.Abstractions
 AdrPlus CLI tool: https://www.nuget.org/packages/AdrPlus
 License: MIT
-Target Framework: .NET 10
+Target Frameworks: .NET 8, .NET 9, .NET 10
 
 ================================================================================
 INSTALLATION

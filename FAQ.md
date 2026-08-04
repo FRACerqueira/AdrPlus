@@ -109,7 +109,7 @@ Plugins are installed **once per machine**, not per repository. Run `adrplus plu
 
 ### What does the bundled `AdrIndexer` plugin do?
 
-`AdrPlus.Plugins.AdrIndexer` ships with AdrPlus and is discovered automatically on every machine that has AdrPlus installed — no separate install step. It regenerates a linked table of your ADRs (ADR, title, version, status) whenever an ADR's status changes.
+`AdrPlus.Plugins.AdrIndexer` ships with AdrPlus and is discovered automatically on every machine that has AdrPlus installed — no separate install step. It regenerates a linked table of your ADRs (ADR, title, version, status) whenever an ADR event occurs (created, versioned, revised, approved, rejected, superseded, undone, or migrated) — not only on status changes.
 
 ### Can I disable plugins?
 

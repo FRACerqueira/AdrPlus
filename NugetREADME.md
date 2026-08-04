@@ -36,6 +36,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
+- 🧩 **Plugin support** for integrations that react to ADR lifecycle events
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
