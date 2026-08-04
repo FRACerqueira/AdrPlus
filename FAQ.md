@@ -7,6 +7,7 @@
 - [General](#general)
 - [Configuration](#configuration)
 - [Workflow and Commands](#workflow-and-commands)
+- [Plugins](#plugins)
 - [Troubleshooting and Best Practices](#troubleshooting-and-best-practices)
 
 ## General
@@ -43,7 +44,7 @@ Yes. Language is configurable (for example, `en-US` and `pt-BR`).
 
 ### What happens when I run AdrPlus without arguments?
 
-The behavior is controlled by the `WithoutArgs` setting in `adrplus.json`:
+The behavior is controlled by the `withoutargs` setting in `adrplus.json`:
 - **`Help`** (default): Displays the help information with all available commands
 - **`Wizard`**: Launches the interactive wizard for guided operations
 - **`None`**: Requires you to explicitly provide a command; otherwise, an error is shown
@@ -54,7 +55,7 @@ You can change this behavior anytime by running `adrplus config --application`.
 
 ### Can I customize ADR headers?
 
-No. You cannot customize ADR headers directly. You can customize status labels and header names in `adr-config.adrplus` using keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headertitlestatuscreated`, `headertitlestatuschanged`, and `headertitlestatussuperseded`.
+You can relabel the existing header fields, but you cannot add or remove fields from the header table itself. Relabel via `adr-config.adrplus` keys such as `statusnew`, `statusacc`, `statusrej`, `statussup`, `headertitlestatuscreated`, `headertitlestatuschanged`, and `headertitlestatussuperseded` — these change the displayed text, not the header's structure.
 
 ### Can I use custom status labels?
 
@@ -99,6 +100,24 @@ No. This version focuses on core ADR fields. You can include additional informat
 ### Can I configure different templates per scope or domain?
 
 Not as separate integrated template files, however the tool uses the template in the configuration file in each repository. In this scenario, you can use the tool without having to configure the template that has already been agreed upon by the team.
+
+## Plugins
+
+### How do I install a plugin?
+
+Plugins are installed **once per machine**, not per repository. Run `adrplus plugins --install "./PluginName-1.0.0.zip"` — the zip must be named `<name>-<version>.zip`, matching its own `plugin.json`. Prefer doing it by hand instead? Drop the compiled plugin (its `.dll` plus a `plugin.json` manifest) into `%UserProfile%/AdrPlus.Plugins/<name>/` directly — both end up the same place. Either way, the plugin is available to every repository on that machine but starts out `Inactive` in each one: run `adrplus plugins --activate <name> --path "path/to/repository"` per repo to let it actually dispatch there. `adrplus plugins --wizard` walks through install and activation interactively too, if you'd rather not type flags. See the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract.
+
+### What does the bundled `AdrIndexer` plugin do?
+
+`AdrPlus.Plugins.AdrIndexer` ships with AdrPlus and is discovered automatically on every machine that has AdrPlus installed — no separate install step. It regenerates a linked table of your ADRs (ADR, title, version, status) whenever an ADR's status changes.
+
+### Can I disable plugins?
+
+Yes. Set `disableplugins` to `true` in `adr-config.adrplus` to stop all plugin dispatch for a repository, or run `adrplus plugins --deactivate <name> --path "path/to/repository"` (or remove it from `activeplugins` by hand) to disable one plugin at a time for that repository. `adrplus plugins --uninstall <name>` removes it from the machine entirely — since plugins are host-global, this doesn't touch any repository's `activeplugins`; a repo that still lists the name simply starts reporting it `Missing` the next time a command dispatches.
+
+### Where are plugins stored, and how do I remove everything?
+
+User-installed plugins live in `%UserProfile%/AdrPlus.Plugins/`; AdrPlus also keeps a separate `%UserProfile%/AdrPlus.History/` folder used to carry configuration settings across version upgrades. Neither is touched by uninstalling the `adrplus` tool itself (`dotnet tool uninstall -g adrplus`) — dotnet global tools have no uninstall hook, so both folders are left behind by design, the same way any other CLI's config directory would be. If you want a completely clean removal, delete both folders manually after uninstalling.
 
 ## Troubleshooting and Best Practices
 

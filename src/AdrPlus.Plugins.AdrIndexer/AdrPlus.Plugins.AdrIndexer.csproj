@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<Version>1.0.0</Version>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+		<Authors>Fernando Cerqueira</Authors>
+		<Copyright>Copyright © 2025 Fernando Cerqueira</Copyright>
+		<PackageProjectUrl>https://github.com/FRACerqueira/AdrPlus</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/FRACerqueira/AdrPlus</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<IsPackable>false</IsPackable>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AdrPlus.Abstractions\AdrPlus.Abstractions.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="indexadrs-template.md" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,70 @@
+name: Release Abstractions
+
+on:
+  push:
+    tags:
+      - "abstr-v*.*.*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    name: Pack & Publish AdrPlus.Abstractions to NuGet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#abstr-v}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj
+
+      - name: Build (Release)
+        run: >
+          dotnet build src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj
+          --no-restore
+          --configuration Release
+          -p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Test
+        run: >
+          dotnet test tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj
+          --configuration Release
+          --verbosity normal
+
+      - name: Pack
+        run: >
+          dotnet pack src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj
+          --no-build
+          --configuration Release
+          -p:Version=${{ steps.version.outputs.VERSION }}
+          --output ./artifacts
+
+      - name: Publish to NuGet.org
+        run: >
+          dotnet nuget push ./artifacts/*.nupkg
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "AdrPlus.Abstractions ${{ github.ref_name }}"
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          files: ./artifacts/*.nupkg

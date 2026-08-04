@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<Version>1.0.0-beta6</Version>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+		<Authors>Fernando Cerqueira</Authors>
+		<Copyright>Copyright © 2025 Fernando Cerqueira</Copyright>
+		<PackageProjectUrl>https://github.com/FRACerqueira/AdrPlus</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/FRACerqueira/AdrPlus</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Configurations>Debug;Release;ReleaseDoc</Configurations>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Title>AdrPlus.Abstractions</Title>
+		<PackageId>AdrPlus.Abstractions</PackageId>
+		<PackageDescription>The plugin contract (IAdrPlugin) for AdrPlus, a .NET CLI tool for managing Architecture Decision Records (ADRs). Reference this package to write a plugin that reacts to ADR lifecycle events.</PackageDescription>
+		<PackageTags>adrplus;plugin;plugin-sdk;architecture-decision-records;adr</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\AbstractionsREADME.md" Pack="true" PackagePath="README.md" />
+		<None Include="..\..\AbstractionsREADME.txt" Pack="true" PackagePath="README.txt" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<!-- API documentation, generated only on demand via `dotnet build -c ReleaseDoc` — never during
+	     Debug/Release builds and never wired into CI (mirrors PromptPlus's own ReleaseDoc config,
+	     see docs/api-documentation-guide.md there). -->
+	<ItemGroup Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="DefaultDocumentation" Version="1.2.5" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
+		<DefaultDocumentationFolder>..\..\doc\api-abstractions</DefaultDocumentationFolder>
+		<DefaultDocumentationGeneratedPages>Assembly, Namespaces, Classes, Interfaces, Events, Enums, Structs, Delegates</DefaultDocumentationGeneratedPages>
+		<DefaultDocumentationGeneratedAccessModifiers>Public</DefaultDocumentationGeneratedAccessModifiers>
+		<DefaultDocumentationAssemblyPageName>AdrPlus.Abstractions</DefaultDocumentationAssemblyPageName>
+		<DocIconUrl>https://raw.githubusercontent.com/FRACerqueira/AdrPlus/main/icon.png</DocIconUrl>
+		<DocIconWidth>120</DocIconWidth>
+	</PropertyGroup>
+
+	<UsingTask TaskName="PrependDocIconHeader" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<DocsFolder Required="true" />
+			<IconUrl Required="true" />
+			<IconWidth />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+					if (Directory.Exists(DocsFolder))
+					{
+						string width = string.IsNullOrEmpty(IconWidth) ? "120" : IconWidth;
+						string header = "<img src=\"" + IconUrl + "\" width=\"" + width + "\" alt=\"AdrPlus\" />";
+						foreach (string file in Directory.GetFiles(DocsFolder, "*.md"))
+						{
+							string content = File.ReadAllText(file);
+							if (content.StartsWith(header, StringComparison.Ordinal))
+							{
+								continue;
+							}
+							File.WriteAllText(file, header + Environment.NewLine + Environment.NewLine + content);
+						}
+					}
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+	<Target Name="AddDocIconHeader" AfterTargets="DefaultDocumentation" Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
+		<PropertyGroup>
+			<_DocIconFolder>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(DefaultDocumentationFolder)'))))</_DocIconFolder>
+		</PropertyGroup>
+		<PrependDocIconHeader DocsFolder="$(_DocIconFolder)" IconUrl="$(DocIconUrl)" IconWidth="$(DocIconWidth)" />
+		<Message Importance="high" Text="DefaultDocumentation: added icon header to markdown pages in $(_DocIconFolder)" />
+	</Target>
+
+</Project>

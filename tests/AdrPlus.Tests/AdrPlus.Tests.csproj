@@ -26,16 +26,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\AdrPlus.csproj" />
+		<ProjectReference Include="..\..\src\AdrPlus\AdrPlus.csproj" />
+		<ProjectReference Include="..\..\src\AdrPlus.Plugins.AdrIndexer\AdrPlus.Plugins.AdrIndexer.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Using Include="Xunit" />
 		<Using Include="FluentAssertions" />
 		<Using Include="NSubstitute" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Commands\Init\" />
 	</ItemGroup>
 </Project>

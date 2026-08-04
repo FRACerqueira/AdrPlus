@@ -96,9 +96,9 @@ We have decided to use PostgreSQL...
 
 ```markdown
 <!-- Do not remove this comment, lines and table (1-12) -->
-|Fields|Values Migrated <!-- Migrated -->|
+|Adr-Plus Fields|Values Migrated <!-- Migrated -->|
 |--|--|
-|File title|Use PostgreSQL as Primary Database|
+|File title md|Use PostgreSQL as Primary Database|
 |Version||
 |Revision||
 |Scope||
@@ -138,7 +138,7 @@ We have decided to use PostgreSQL...
 - **Scope/Domain**: Empty by default
 - **Created**: Empty by default
 - **Migrated Flag**: Marked in the comment header to indicate this was migrated
-- **Header Table**: Displays metadata in a structured format using Fields | Values Migrated
+- **Header Table**: Displays metadata in a structured format using Adr-Plus Fields | Values Migrated
 
 ---
 
@@ -329,9 +329,9 @@ Confirm the header has been added with the correct metadata:
 
 ```markdown
 <!-- Do not remove this comment, lines and table (1-12) -->
-|Fields|Values Migrated <!-- Migrated -->|
+|Adr-Plus Fields|Values Migrated <!-- Migrated -->|
 |--|--|
-|File title|Use PostgreSQL as Primary Database|
+|File title md|Use PostgreSQL as Primary Database|
 |Version||
 |Revision||
 |Scope||

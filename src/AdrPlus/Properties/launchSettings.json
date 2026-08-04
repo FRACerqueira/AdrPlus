@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "AdrPlus": {
+      "commandName": "Project",
+      "commandLineArgs": "wizard"
+    },
+    "AdrPlus - Init (builtin plugin check)": {
+      "commandName": "Project",
+      "commandLineArgs": "init --path \"C:\\temp\\adrplus-debug-init-check\""
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": "Ubuntu-22.04"
+    }
+  }
+}

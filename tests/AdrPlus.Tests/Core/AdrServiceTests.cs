@@ -525,6 +525,21 @@ public class AdrServiceTests
         action.Should().Throw<ArgumentException>();
     }
 
+    [Fact]
+    public void ParseArgs_WithRefDateFlag_ConsumesFollowingValueAsDate()
+    {
+        // Arrange
+        var args = new[] { "-r", "2026-01-01" };
+        Arguments[] argsForCommand = [Arguments.DateRefAdr];
+
+        // Act
+        var result = _service.ParseArgs(args, argsForCommand);
+
+        // Assert
+        result.Should().ContainKey(Arguments.DateRefAdr);
+        result[Arguments.DateRefAdr].Should().Be("2026-01-01");
+    }
+
     #endregion
 
     #region GetHelpText Tests
@@ -1106,11 +1121,13 @@ public class AdrServiceTests
         fileSystemService.ReadAllLinesAsync(fullpath, TestContext.Current.CancellationToken).Returns([]);
 
         // Act
-        var (isValid, error) = await _service.StatusUpdateAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
+        var (isValid, error, record, content) = await _service.StatusUpdateAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeFalse(); // Invalid because mock returns empty lines
         error.Should().NotBeNullOrEmpty();
+        record.Should().BeNull();
+        content.Should().BeNull();
     }
 
     [Fact]
@@ -1265,11 +1282,13 @@ public class AdrServiceTests
         fileSystemService.ReadAllLinesAsync(fullpath, TestContext.Current.CancellationToken).Returns([]);
 
         // Act
-        var (isValid, error) = await _service.StatusChangeAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
+        var (isValid, error, record, content) = await _service.StatusChangeAdrAsync(fullpath, AdrStatus.Accepted, DateTime.Now, config, fileSystemService, TestContext.Current.CancellationToken);
 
         // Assert
         isValid.Should().BeFalse(); // Invalid because mock returns empty lines
         error.Should().NotBeNullOrEmpty();
+        record.Should().BeNull();
+        content.Should().BeNull();
     }
 
     #endregion

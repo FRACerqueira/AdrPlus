@@ -9,6 +9,7 @@ using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.UI;
+using AdrPlus.Plugins;
 using AdrPlus.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,7 @@ public class ReviseCommandHandlerTests
     private readonly IConsoleWriter _mockConsole;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
+    private readonly IPluginManager _mockPluginManager;
     private readonly AdrPlusConfig _config;
     private readonly ReviseCommandHandler _handler;
 
@@ -45,6 +47,7 @@ public class ReviseCommandHandlerTests
         _mockConsole = Substitute.For<IConsoleWriter>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
+        _mockPluginManager = Substitute.For<IPluginManager>();
 
         _config = new AdrPlusConfig
         {
@@ -59,7 +62,8 @@ public class ReviseCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
     }
 
     #region Constructor Tests
@@ -74,7 +78,8 @@ public class ReviseCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
 
         // Assert
         handler.Should().NotBeNull();
@@ -1614,7 +1619,8 @@ public class ReviseCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
-            _mockAdrServices);
+            _mockAdrServices,
+            _mockPluginManager);
     }
 
     private static AdrPlusRepoConfig CreateMockAdrPlusRepoConfig()

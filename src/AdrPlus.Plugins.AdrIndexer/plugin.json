@@ -1,0 +1,23 @@
+{
+  "name": "AdrIndexer",
+  "version": "1.0.0",
+  "entryAssembly": "AdrPlus.Plugins.AdrIndexer.dll",
+  "entryType": "AdrPlus.Plugins.AdrIndexer.AdrIndexerPlugin",
+  "abstractionsVersion": "1.0.0",
+  "subscribedEvents": [
+    "Created",
+    "Versioned",
+    "Revised",
+    "Superseded",
+    "Approved",
+    "Rejected",
+    "StatusUndone",
+    "Migrated"
+  ],
+  "foregroundTimeoutMs": 5000,
+  "backgroundTimeoutMs": 30000,
+  "settings": {
+    "outputFileName": "indexadrs.md",
+    "templateFile": "indexadrs-template.md"
+  }
+}

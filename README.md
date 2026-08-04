@@ -4,9 +4,11 @@
 
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/AdrPlus.svg?include_prereleases)](https://www.nuget.org/packages/AdrPlus)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
+[![NuGet Abstractions](https://img.shields.io/nuget/v/AdrPlus.Abstractions.svg?label=Abstractions&include_prereleases)](https://www.nuget.org/packages/AdrPlus.Abstractions)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg?label=AdrPlus)](https://www.nuget.org/packages/AdrPlus)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.Abstractions.svg?label=Abstractions)](https://www.nuget.org/packages/AdrPlus.Abstractions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com)
+[![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
 
 > 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
 
@@ -30,6 +32,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Quick Start](#quick-start)
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
+- [Plugin Development Guide](PluginDevelopmentGuide.md)  
 - [Using AdrPlus with Claude Code](#using-adrplus-with-claude-code)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
@@ -37,6 +40,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
 - [Configuration](#configuration)
+- [Plugins](#plugins)
 - [Settings and configuration across upgrades](#settings-and-configuration-across-upgrades)
 - [Architecture Decisions of this Project](#architecture-decisions-of-this-project)
 - [Contributing](#contributing)
@@ -67,6 +71,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
 - 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
+- 🧩 **Plugin support** for integrations that react to ADR lifecycle events — see the [Plugin Development Guide](PluginDevelopmentGuide.md)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
@@ -88,7 +93,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ### For building and packaging from source
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (builds all three target frameworks: `net8.0`, `net9.0`, `net10.0`)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ---
 
@@ -288,6 +293,26 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
     adrplus version --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
+# Re-drive pending plugin dispatches (safe to schedule via cron/CI); --backfill sweeps every
+# existing ADR and is manual-only, never scheduled
+
+    adrplus sync --path "path/to/repository"
+    adrplus sync --path "path/to/repository" --backfill
+
+# Check installed plugins, or manage which ones are active for this repository
+
+    adrplus plugins --list --path "path/to/repository"
+    adrplus plugins --validate --path "path/to/repository"
+    adrplus plugins --activate "PluginName" --path "path/to/repository"
+    adrplus plugins --deactivate "PluginName" --path "path/to/repository"
+
+# Install or remove a plugin — host-wide, no --path: the zip must be named <name>-<version>.zip,
+# matching its plugin.json; --force overwrites an existing install entirely (including plugin.json);
+# neither touches any repository's activeplugins
+
+    adrplus plugins --install "./PluginName-1.0.0.zip"
+    adrplus plugins --uninstall "PluginName"
+
 ```
 
 Use `adrplus help <command>` to check the available parameters for each command.
@@ -311,6 +336,8 @@ Use `adrplus help <command>` to check the available parameters for each command.
 | `approve`   | Set an ADR status to *Accepted* |
 | `reject`    | Set an ADR status to *Rejected* |
 | `undo`      | Revert the last status change of an ADR |
+| `sync`      | Re-drive pending plugin dispatches (`--backfill` sweeps every existing ADR and re-emits its current settled event) |
+| `plugins`   | Diagnostics for installed plugins (`--list`/`--validate`); activate/deactivate a plugin (`--activate`/`--deactivate <name>`); install/remove one from a zip (`--install <path>`/`--uninstall <name>`) — every mode also available interactively via `--wizard` |
 
 Run `adrplus help <command>` for detailed usage of any command.
 
@@ -442,7 +469,9 @@ adrplus config --repository
   "headertitlestatussuperseded": "Superseded",
   "headertablefields": "Fields",
   "headertablevalues": "Values",
-  "headermigrated": "Migrated"
+  "headermigrated": "Migrated",
+  "activeplugins": [],
+  "disableplugins": false
 }
 ```
 
@@ -477,6 +506,8 @@ adrplus config --repository
 | `headertablefields` | Table header label for displaying field names in the ADR. |
 | `headertablevalues` | Table header label for displaying field values in the ADR. |
 | `headermigrated` | Header label for the "Migrated" indicator (used for ADRs migrated via the `migrate` command). |
+| `activeplugins` | Names of the host-installed plugins (see [Plugins](#plugins)) expected to be active for this repository. Written automatically by `init` from whatever's installed on the machine at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. A plugin installed but left off this list is treated as deliberately inactive (silently skipped); a name listed here with no matching installed plugin is reported as missing the next time a command dispatches. |
+| `disableplugins` | Repository-wide kill switch. When `true`, no plugin ever dispatches for this repo, regardless of `activeplugins` — the ADR operation itself still completes normally. |
 
 ### Suggested settings per team profile
 
@@ -591,6 +622,20 @@ Organize ADRs by department with custom headers and folder structure.
 
 ---
 
+## Plugins
+
+Not every ADR-related need belongs in the core CLI. Teams often want to react to ADR lifecycle events — regenerate an index, notify a channel, sync to an external system, enforce a custom policy — without AdrPlus growing built-in support for every possible target. The plugin system exists for exactly that: any command that changes an ADR's state (create, approve, reject, revise, supersede, undo) dispatches lifecycle events that plugins can subscribe to and react to independently of the core tool.
+
+Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus.Abstractions` package — see the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract and event lifecycle.
+
+You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is discovered automatically — no install step needed. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
+
+Plugins are installed **once per machine, host-wide** — not per repository. Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` into `%UserProfile%/AdrPlus.Plugins/<name>/`, making it available to every repository on that machine; `--uninstall <name>` removes it from the machine entirely. A newly installed plugin never dispatches on its own for any given repository — activate it explicitly per repo with `adrplus plugins --activate <name> --path "path/to/repository"` (or deactivate one with `--deactivate <name> --path "path/to/repository"`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+
+> Removing AdrPlus completely? `dotnet tool uninstall -g adrplus` doesn't clean up `%UserProfile%/AdrPlus.Plugins/` (installed plugins) or `%UserProfile%/AdrPlus.History/` (settings carried across upgrades) — dotnet global tools have no uninstall hook, so both are left behind by design. Delete them by hand if you want a fully clean removal.
+
+---
+
 ## Settings and configuration across upgrades
 
 When you upgrade AdrPlus to a new version, all your settings and configurations are automatically preserved:
@@ -610,7 +655,7 @@ No manual reconfiguration is needed after upgrading — simply update the tool a
 
 ## Architecture Decisions of this Project
 
-AdrPlus is used to manage its own architecture decisions — see the [ADR Index](doc/adr/INDEX.md) for the list of decisions recorded for this repository.
+AdrPlus is used to manage its own architecture decisions — see the [ADR Index](doc/adr/indexadrs.md) (auto-generated by the `AdrIndexer` plugin) for the list of decisions recorded for this repository.
 
 ---
 

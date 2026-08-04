@@ -63,7 +63,9 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
             { AppConstants.FieldHeaderTableFields, "## Fields" },
             { AppConstants.FieldHeaderTableValues, "## Values" },
-            { AppConstants.FieldHeaderMigrated, "## Migrated" }
+            { AppConstants.FieldHeaderMigrated, "## Migrated" },
+            { AppConstants.FieldActivePlugins, Array.Empty<string>() },
+            { AppConstants.FieldDisablePlugins, false }
         }, AppConstants.RepoSerializerOptions);
     }
 
@@ -110,7 +112,9 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
             { AppConstants.FieldHeaderTableFields, "## Fields" },
             { AppConstants.FieldHeaderTableValues, "## Values" },
-            { AppConstants.FieldHeaderMigrated, "## Migrated" }
+            { AppConstants.FieldHeaderMigrated, "## Migrated" },
+            { AppConstants.FieldActivePlugins, Array.Empty<string>() },
+            { AppConstants.FieldDisablePlugins, false }
         };
     }
 
@@ -824,6 +828,106 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeFalse();
         ErrorReport.Should().Contain(e => e.Contains("JSON"));
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithoutPluginAllowlist_ReturnsValid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = CreateValidAppJson();
+
+        // Act
+        var (IsValid, _) = validator.ValidateAppStructure(json);
+
+        // Assert - pluginallowlist is optional; its absence is not an error
+        IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithEmptyPluginAllowlist_ReturnsValid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{
+            ""DefaultSettings"": {
+                ""language"": ""en-US"",
+                ""comandopenadr"": ""code {0}"",
+                ""withoutargs"": ""Help"",
+                ""pluginallowlist"": []
+            }
+        }";
+
+        // Act
+        var (IsValid, _) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithValidPluginAllowlistEntries_ReturnsValid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{
+            ""DefaultSettings"": {
+                ""language"": ""en-US"",
+                ""comandopenadr"": ""code {0}"",
+                ""withoutargs"": ""Help"",
+                ""pluginallowlist"": [ { ""name"": ""confluence"" }, { ""name"": ""jira"", ""hash"": ""deadbeef"" } ]
+            }
+        }";
+
+        // Act
+        var (IsValid, _) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithPluginAllowlistNotAnArray_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{
+            ""DefaultSettings"": {
+                ""language"": ""en-US"",
+                ""comandopenadr"": ""code {0}"",
+                ""withoutargs"": ""Help"",
+                ""pluginallowlist"": ""confluence""
+            }
+        }";
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains(AppConstants.FieldPluginAllowlist));
+    }
+
+    [Fact]
+    public void ValidateAppStructure_WithPluginAllowlistEntryMissingName_ReturnsInvalid()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var json = @"{
+            ""DefaultSettings"": {
+                ""language"": ""en-US"",
+                ""comandopenadr"": ""code {0}"",
+                ""withoutargs"": ""Help"",
+                ""pluginallowlist"": [ { ""hash"": ""deadbeef"" } ]
+            }
+        }";
+
+        // Act
+        var (IsValid, ErrorReport) = validator.ValidateAppStructure(json);
+
+        // Assert
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains('0'));
     }
 
     #endregion

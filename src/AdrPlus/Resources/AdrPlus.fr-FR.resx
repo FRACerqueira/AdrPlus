@@ -1,0 +1,1555 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrMsgDefaultSettingsMissing" xml:space="preserve">
+    <value>La section DefaultSettings est manquante dans la configuration</value>
+  </data>
+  <data name="ErrMsgContentInvalidPath" xml:space="preserve">
+    <value>'content' contient un chemin de fichier invalide : {0}</value>
+  </data>
+  <data name="ErrMsgContentPathTooLong" xml:space="preserve">
+    <value>'content' : le chemin de fichier est trop long : '{0}'</value>
+  </data>
+  <data name="ErrMsgContentPathNotSupported" xml:space="preserve">
+    <value>'content' : le format du chemin de fichier n'est pas pris en charge : '{0}'</value>
+  </data>
+  <data name="ErrMsgFolderRepoMustBeRelative" xml:space="preserve">
+    <value>'folderRepo' doit être un chemin relatif : '{0}'</value>
+  </data>
+  <data name="Usage" xml:space="preserve">
+    <value>Utilisation</value>
+  </data>
+  <data name="ErrMsgInvalidLanguageCode" xml:space="preserve">
+    <value>'language' contient un code de langue invalide : '{0}'. </value>
+  </data>
+  <data name="ExceptionDirectoryNotFound" xml:space="preserve">
+    <value>Répertoire introuvable : {0}</value>
+  </data>
+  <data name="ExceptionUnknownCommand" xml:space="preserve">
+    <value>Commande inconnue : {0}</value>
+  </data>
+  <data name="ExceptionMissingArgumentValue" xml:space="preserve">
+    <value>Valeur manquante pour l'argument '{0}' ({1})</value>
+  </data>
+  <data name="ExceptionMissingRequiredArgument" xml:space="preserve">
+    <value>L'argument requis '{0}' ({1}) est manquant</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="ErrMsgTemplateRepoFileNotFound" xml:space="preserve">
+    <value>Fichier de configuration ADR (template/adr-config.adrplus) introuvable. </value>
+  </data>
+  <data name="ExceptionInvalidArgumentToken" xml:space="preserve">
+    <value>Argument invalide : {0}</value>
+  </data>
+  <data name="MsgCommandStarted" xml:space="preserve">
+    <value>Commande '{0}' démarrée</value>
+  </data>
+  <data name="MsgCommandFinished" xml:space="preserve">
+    <value>Commande '{0}' terminée</value>
+  </data>
+  <data name="StatusNew" xml:space="preserve">
+    <value>Proposé</value>
+  </data>
+  <data name="StatusAcc" xml:space="preserve">
+    <value>Accepté</value>
+  </data>
+  <data name="StatusRej" xml:space="preserve">
+    <value>Rejeté</value>
+  </data>
+  <data name="StatusSup" xml:space="preserve">
+    <value>Remplacé</value>
+  </data>
+  <data name="DefaultScope" xml:space="preserve">
+    <value>Enterprise*;CrossDomain;Project</value>
+  </data>
+  <data name="DefaultHeaderDisclaimer" xml:space="preserve">
+    <value>Ne supprimez pas ce commentaire, ces lignes et ce tableau</value>
+  </data>
+  <data name="DefaultPrefix" xml:space="preserve">
+    <value>ADR</value>
+  </data>
+  <data name="Examples" xml:space="preserve">
+    <value>Exemples</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Obligatoire</value>
+  </data>
+  <data name="FieldTitleFolderRepo" xml:space="preserve">
+    <value>Dossier du dépôt ADR</value>
+  </data>
+  <data name="FieldTitlePrefix" xml:space="preserve">
+    <value>Préfixe de fichier</value>
+  </data>
+  <data name="FieldTitleLenSeq" xml:space="preserve">
+    <value>Longueur de séquence</value>
+  </data>
+  <data name="FieldTitleLenVersion" xml:space="preserve">
+    <value>Longueur de version</value>
+  </data>
+  <data name="FieldTitleLenRevision" xml:space="preserve">
+    <value>Longueur de révision</value>
+  </data>
+  <data name="FieldTitleLenScope" xml:space="preserve">
+    <value>Longueur de portée</value>
+  </data>
+  <data name="FieldTitleScopes" xml:space="preserve">
+    <value>Portées</value>
+  </data>
+  <data name="FieldTitleFolderByScope" xml:space="preserve">
+    <value>Dossier par portée</value>
+  </data>
+  <data name="FieldTitleSkipDomain" xml:space="preserve">
+    <value>Ignorer le domaine quand</value>
+  </data>
+  <data name="FieldTitleSeparator" xml:space="preserve">
+    <value>Séparateur</value>
+  </data>
+  <data name="FieldTitleCaseTransform" xml:space="preserve">
+    <value>Transformation de casse</value>
+  </data>
+  <data name="FieldTitleStatusNew" xml:space="preserve">
+    <value>Texte du statut Proposé</value>
+  </data>
+  <data name="FieldTitleStatusAccepted" xml:space="preserve">
+    <value>Texte du statut Accepté</value>
+  </data>
+  <data name="FieldTitleStatusRejected" xml:space="preserve">
+    <value>Texte du statut Rejeté</value>
+  </data>
+  <data name="FieldTitleStatusSuperseded" xml:space="preserve">
+    <value>Texte du statut Remplacé</value>
+  </data>
+  <data name="FieldTitleHeaderDisclaimer" xml:space="preserve">
+    <value>En-tête d'avertissement</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Revision" xml:space="preserve">
+    <value>Révision</value>
+  </data>
+  <data name="FieldTitleHeaderVersion" xml:space="preserve">
+    <value>Texte de version dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderRevision" xml:space="preserve">
+    <value>Texte de révision dans l'en-tête</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>Facultatif</value>
+  </data>
+  <data name="ExceptionDirectoryPathEmpty" xml:space="preserve">
+    <value>Le chemin du répertoire ne peut pas être vide</value>
+  </data>
+  <data name="ExceptionInvalidCaseFormat" xml:space="preserve">
+    <value>Format de modèle de casse invalide : {0}</value>
+  </data>
+  <data name="ExceptionJsonStringNull" xml:space="preserve">
+    <value>La chaîne JSON ne peut pas être nulle ou vide</value>
+  </data>
+  <data name="ExceptionFilenameEmpty" xml:space="preserve">
+    <value>Le nom de fichier ne peut pas être vide</value>
+  </data>
+  <data name="ExceptionFilenameMustHaveMdExtension" xml:space="preserve">
+    <value>Le nom de fichier doit avoir l'extension .md</value>
+  </data>
+  <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
+    <value>Format de nom de fichier invalide. Au moins le numéro et le titre sont attendus</value>
+  </data>
+  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
+    <value>Format de portée invalide : {0}</value>
+  </data>
+  <data name="ValidationMissingRequiredField" xml:space="preserve">
+    <value>Champ obligatoire manquant : '{0}'</value>
+  </data>
+  <data name="ValidationFieldWrongType" xml:space="preserve">
+    <value>Le champ '{0}' doit être de type {1}, mais le type trouvé est : {2}</value>
+  </data>
+  <data name="ValidationUnexpectedFields" xml:space="preserve">
+    <value>Champs inattendus trouvés : {0}</value>
+  </data>
+  <data name="ValidationInvalidJsonFormat" xml:space="preserve">
+    <value>Format JSON invalide : {0}</value>
+  </data>
+  <data name="ValidationFieldMustBeNonNegative" xml:space="preserve">
+    <value>Le champ '{0}' doit être un nombre non négatif</value>
+  </data>
+  <data name="ValidationFieldMinimumValue" xml:space="preserve">
+    <value>Le champ '{0}' doit être au moins {1}</value>
+  </data>
+  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
+    <value>Le champ '{0}' doit être vide quand '{1}' est 0</value>
+  </data>
+  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
+    <value>Le champ '{0}' ne doit pas être vide quand '{1}' est supérieur à 0</value>
+  </data>
+  <data name="ValidationScopeMinLength" xml:space="preserve">
+    <value>Chaque portée dans '{0}' doit être au moins aussi longue que la valeur de '{1}' ({2})</value>
+  </data>
+  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
+    <value>Les portées suivantes ne sont pas définies : {0}</value>
+  </data>
+  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
+    <value>Le champ '{0}' ne peut pas être true quand '{1}' est vide</value>
+  </data>
+  <data name="ValidationMustbeFollowing" xml:space="preserve">
+    <value>Le champ '{0}' doit être l'un des suivants : {1}</value>
+  </data>
+  <data name="ValidationFieldCannotBeEmpty" xml:space="preserve">
+    <value>Le champ '{0}' ne peut pas être vide</value>
+  </data>
+  <data name="ValidationPluginAllowlistEntryMissingName" xml:space="preserve">
+    <value>L'entrée de la liste blanche des plugins à l'index {0} n'a pas le champ obligatoire 'name'</value>
+  </data>
+  <data name="PluginRejectedManifestInvalid" xml:space="preserve">
+    <value>Plugin dans '{0}' : le manifeste est invalide : {1}</value>
+  </data>
+  <data name="PluginRejectedEntryAssemblyPathTraversal" xml:space="preserve">
+    <value>Plugin dans '{0}' : 'entryAssembly' doit être un simple nom de fichier, sans séparateurs de chemin ni '..' : '{1}'</value>
+  </data>
+  <data name="PluginRejectedNotInAllowlist" xml:space="preserve">
+    <value>Plugin '{0}' : absent de la liste blanche de plugins configurée ; ignoré</value>
+  </data>
+  <data name="PluginAllowlistHashNotEnforced" xml:space="preserve">
+    <value>Plugin '{0}' : le champ 'hash' de la liste blanche est renseigné mais n'est pas encore appliqué dans cette version ; il n'offre pour l'instant aucune garantie de sécurité</value>
+  </data>
+  <data name="PluginRejectedDuplicateName" xml:space="preserve">
+    <value>Plugin '{0}' dans '{1}' : nom en double ; aucun des deux ne sera chargé</value>
+  </data>
+  <data name="PluginRejectedEntryTypeIncompatible" xml:space="preserve">
+    <value>Plugin '{0}' : entryType '{1}' n'implémente pas IAdrPlugin, ou Name/Version ne correspondent pas au manifeste</value>
+  </data>
+  <data name="PluginRejectedAbstractionsVersionIncompatible" xml:space="preserve">
+    <value>Plugin '{0}' : abstractionsVersion '{1}' n'est pas compatible avec la version majeure de l'hôte ({2})</value>
+  </data>
+  <data name="PluginQueuedForRetry" xml:space="preserve">
+    <value>Plugin '{0}' : mis en file d'attente pour une nouvelle tentative</value>
+  </data>
+  <data name="PluginPendingAdrNotFound" xml:space="preserve">
+    <value>Plugin '{0}' : l'entrée en attente pour l'ADR '{1}' ne correspond plus à un fichier, abandon</value>
+  </data>
+  <data name="SyncSummaryReport" xml:space="preserve">
+    <value>Synchronisation terminée : {0} réussies, {1} ignorées, {2} toujours en attente, {3} en échec permanent, {4} abandonnées</value>
+  </data>
+  <data name="BackfillSummaryReport" xml:space="preserve">
+    <value>Backfill terminé : {0} réussies, {1} ignorées, {2} en échec permanent, {3} avec tentatives épuisées</value>
+  </data>
+  <data name="PluginBackfillExhausted" xml:space="preserve">
+    <value>Plugin '{0}' : tentatives de backfill épuisées pour l'ADR '{1}', non mis en file d'attente — relancez 'adrplus sync --backfill' pour réessayer</value>
+  </data>
+  <data name="PluginPermanentFailure" xml:space="preserve">
+    <value>Plugin '{0}' : échec permanent, ne sera pas mis en file d'attente — corrigez la configuration et exécutez 'adrplus sync --backfill'</value>
+  </data>
+  <data name="CmdDescPlugins" xml:space="preserve">
+    <value>Gère les plugins installés : lister, valider, activer, installer ou désinstaller</value>
+  </data>
+  <data name="HelpUsagePluginsList" xml:space="preserve">
+    <value>Liste les plugins chargés : nom, version, événements souscrits, statut de la allowlist et nombre d'éléments en attente</value>
+  </data>
+  <data name="HelpUsagePluginsValidate" xml:space="preserve">
+    <value>Réexécute la validation structurelle du chargement et signale les plugins chargés par rapport aux rejetés, sans déclencher aucun événement</value>
+  </data>
+  <data name="HelpUsagePluginsActivate" xml:space="preserve">
+    <value>Nom du plugin à ajouter à la liste des plugins actifs de ce dépôt</value>
+  </data>
+  <data name="HelpUsagePluginsDeactivate" xml:space="preserve">
+    <value>Nom du plugin à retirer de la liste des plugins actifs de ce dépôt</value>
+  </data>
+  <data name="HelpUsagePluginsInstall" xml:space="preserve">
+    <value>Chemin vers un zip de plugin nommé &lt;nom&gt;-&lt;version&gt;.zip à installer sur cette machine</value>
+  </data>
+  <data name="HelpUsagePluginsUninstall" xml:space="preserve">
+    <value>Nom du plugin à désinstaller de cette machine</value>
+  </data>
+  <data name="HelpUsagePluginsForce" xml:space="preserve">
+    <value>Avec --install, remplace entièrement un plugin déjà installé</value>
+  </data>
+  <data name="PluginsModeRequired" xml:space="preserve">
+    <value>Spécifiez une sous-commande : 'adrplus plugins --list', '--validate', '--activate &lt;nom&gt;', '--deactivate &lt;nom&gt;', '--install &lt;chemin&gt;' ou '--uninstall &lt;nom&gt;'</value>
+  </data>
+  <data name="PluginsModeAmbiguous" xml:space="preserve">
+    <value>Spécifiez exactement une option : --list, --validate, --activate, --deactivate, --install ou --uninstall</value>
+  </data>
+  <data name="ErrPluginZipNameInvalid" xml:space="preserve">
+    <value>Le nom du fichier zip doit respecter &lt;nom&gt;-&lt;version&gt;.zip (par exemple AdrIndexer-1.0.0.zip) : {0}</value>
+  </data>
+  <data name="ErrPluginZipTraversal" xml:space="preserve">
+    <value>L'entrée du zip '{0}' a un chemin non sécurisé et a été rejetée</value>
+  </data>
+  <data name="ErrPluginZipMissingManifest" xml:space="preserve">
+    <value>Le fichier zip ne contient pas de plugin.json à sa racine</value>
+  </data>
+  <data name="ErrPluginZipManifestMismatch" xml:space="preserve">
+    <value>Le plugin.json du zip déclare '{0}' v{1}, mais le nom du fichier indique '{2}' v{3}</value>
+  </data>
+  <data name="ErrPluginAlreadyInstalled" xml:space="preserve">
+    <value>Le dossier du plugin existe déjà : {0} — utilisez --force pour le remplacer</value>
+  </data>
+  <data name="PluginInstalled" xml:space="preserve">
+    <value>Plugin installé : {0} v{1} — SHA256 : {2}</value>
+  </data>
+  <data name="PluginUninstalled" xml:space="preserve">
+    <value>Plugin désinstallé : {0}</value>
+  </data>
+  <data name="PluginsAllowlisted" xml:space="preserve">
+    <value>Dans la allowlist</value>
+  </data>
+  <data name="PluginsNoAllowlistConfigured" xml:space="preserve">
+    <value>Aucune allowlist configurée (tous les plugins autorisés)</value>
+  </data>
+  <data name="PluginsListEntry" xml:space="preserve">
+    <value>{0} | {1} v{2} | événements : {3} | allowlist : {4} | en attente : {5}</value>
+  </data>
+  <data name="PluginsListEmpty" xml:space="preserve">
+    <value>Aucun plugin chargé</value>
+  </data>
+  <data name="PluginsListSummary" xml:space="preserve">
+    <value>{0} plugin(s) chargé(s), {1} rejeté(s)</value>
+  </data>
+  <data name="PluginsValidateEntryValid" xml:space="preserve">
+    <value>VALIDE {0} v{1}</value>
+  </data>
+  <data name="PluginsValidateEntryRejected" xml:space="preserve">
+    <value>REJETÉ {0} — {1}: {2}</value>
+  </data>
+  <data name="PluginsValidateEmpty" xml:space="preserve">
+    <value>Aucun candidat plugin trouvé</value>
+  </data>
+  <data name="PluginsValidateSummary" xml:space="preserve">
+    <value>Validation terminée : {0} valide(s), {1} rejeté(s)</value>
+  </data>
+  <data name="HelpUsageWizardSync" xml:space="preserve">
+    <value>Assistant pour choisir le mode de synchronisation et le chemin du dépôt (supprime les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardPlugins" xml:space="preserve">
+    <value>Assistant pour choisir une action de plugin et le chemin du dépôt si nécessaire (supprime les autres arguments)</value>
+  </data>
+  <data name="WizardSyncModePrompt" xml:space="preserve">
+    <value>Choisir le mode de sync</value>
+  </data>
+  <data name="WizardSyncModeDescription" xml:space="preserve">
+    <value>Default retraite seulement pending.json ; Backfill parcourt tout le dépôt</value>
+  </data>
+  <data name="WizardSyncModeBack" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="WizardSyncModeDefault" xml:space="preserve">
+    <value>Default (retraiter les en attente)</value>
+  </data>
+  <data name="WizardSyncModeBackfill" xml:space="preserve">
+    <value>Backfill (balayage complet du dépôt)</value>
+  </data>
+  <data name="WizardConfirmBackfill" xml:space="preserve">
+    <value>Exécuter le backfill maintenant ?</value>
+  </data>
+  <data name="WizardPluginsModePrompt" xml:space="preserve">
+    <value>Choisir l'action</value>
+  </data>
+  <data name="WizardPluginsModeDescription" xml:space="preserve">
+    <value>List affiche les plugins chargés ; Validate vérifie le chargement structurel ; Install/Uninstall gèrent les plugins sur cette machine</value>
+  </data>
+  <data name="WizardPluginsModeBack" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="WizardPluginsModeList" xml:space="preserve">
+    <value>Lister les plugins chargés</value>
+  </data>
+  <data name="WizardPluginsModeValidate" xml:space="preserve">
+    <value>Valider la structure des plugins</value>
+  </data>
+  <data name="WizardPluginsModeManage" xml:space="preserve">
+    <value>Gérer les plugins actifs</value>
+  </data>
+  <data name="WizardPluginsModeInstall" xml:space="preserve">
+    <value>Installer un plugin à partir d'un zip</value>
+  </data>
+  <data name="WizardPluginsModeUninstall" xml:space="preserve">
+    <value>Désinstaller un plugin</value>
+  </data>
+  <data name="PromptPluginZipPath" xml:space="preserve">
+    <value>Chemin du fichier zip du plugin</value>
+  </data>
+  <data name="PromptPluginInstallForce" xml:space="preserve">
+    <value>Remplacer si un plugin du même nom est déjà installé ?</value>
+  </data>
+  <data name="PromptSelectPluginToUninstall" xml:space="preserve">
+    <value>Sélectionnez le ou les plugins à désinstaller</value>
+  </data>
+  <data name="PluginsNoInstalledPlugins" xml:space="preserve">
+    <value>Aucun plugin installé</value>
+  </data>
+  <data name="WizardPluginsManagePrompt" xml:space="preserve">
+    <value>Sélectionnez les plugins actifs</value>
+  </data>
+  <data name="PluginsActiveUpdated" xml:space="preserve">
+    <value>Liste des plugins actifs du dépôt mise à jour : {0}</value>
+  </data>
+  <data name="WizardBuiltinPluginsAvailable" xml:space="preserve">
+    <value>Inclus dans cette installation d'AdrPlus : {0}</value>
+  </data>
+  <data name="WizardPluginsListTableTitle" xml:space="preserve">
+    <value>Plugins chargés</value>
+  </data>
+  <data name="WizardPluginsValidateTableTitle" xml:space="preserve">
+    <value>Rapport de validation des plugins</value>
+  </data>
+  <data name="TableColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="TableColumnVersion" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="TableColumnEvents" xml:space="preserve">
+    <value>Événements</value>
+  </data>
+  <data name="TableColumnAllowlist" xml:space="preserve">
+    <value>Allowlist</value>
+  </data>
+  <data name="TableColumnPending" xml:space="preserve">
+    <value>En attente</value>
+  </data>
+  <data name="TableColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="TableColumnNameOrFolder" xml:space="preserve">
+    <value>Nom / Dossier</value>
+  </data>
+  <data name="TableColumnDetail" xml:space="preserve">
+    <value>Détail</value>
+  </data>
+  <data name="PluginsValidateStatusValid" xml:space="preserve">
+    <value>VALIDE</value>
+  </data>
+  <data name="PluginsValidateStatusRejected" xml:space="preserve">
+    <value>REJETÉ</value>
+  </data>
+  <data name="PluginsActiveMissing" xml:space="preserve">
+    <value>Plugin(s) manquant(s) : {0} — voir 'adrplus plugins --list' ou '--wizard'</value>
+  </data>
+  <data name="PluginsStatusActive" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="PluginsStatusInactive" xml:space="preserve">
+    <value>Inactif</value>
+  </data>
+  <data name="PluginsStatusMissing" xml:space="preserve">
+    <value>Manquant</value>
+  </data>
+  <data name="PluginsStatusDisabled" xml:space="preserve">
+    <value>Désactivé</value>
+  </data>
+  <data name="WizardGroupPluginsTitle" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="WizardGroupPluginsDescription" xml:space="preserve">
+    <value>Synchronise les événements de plugins en attente et inspecte les plugins chargés</value>
+  </data>
+  <data name="WizardPluginsSyncTitle" xml:space="preserve">
+    <value>Synchroniser les événements de plugins en attente</value>
+  </data>
+  <data name="WizardPluginsDiagnosticsTitle" xml:space="preserve">
+    <value>Lister ou valider les plugins</value>
+  </data>
+  <data name="WizardHelpSyncTitle" xml:space="preserve">
+    <value>Aide de la commande sync</value>
+  </data>
+  <data name="WizardHelpPluginsTitle" xml:space="preserve">
+    <value>Aide de la commande plugins</value>
+  </data>
+  <data name="NewAdrErrorFailedToStartProcess" xml:space="preserve">
+    <value>Échec du démarrage du processus</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ValidationLanguageInvalidFormat" xml:space="preserve">
+    <value>Culture invalide : {0}</value>
+  </data>
+  <data name="FieldTitleLanguage" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="FieldTitleOpenAdr" xml:space="preserve">
+    <value>Commande pour ouvrir l'ADR</value>
+  </data>
+  <data name="CancelledByUser" xml:space="preserve">
+    <value>Annulé par l'utilisateur</value>
+  </data>
+  <data name="ConfigActionSaveAndFinish" xml:space="preserve">
+    <value>Terminer</value>
+  </data>
+  <data name="ConfigActionSaveAndFinishDesc" xml:space="preserve">
+    <value>Enregistrer la configuration et quitter</value>
+  </data>
+  <data name="ConfigErrorInvalidBoolean" xml:space="preserve">
+    <value>Valeur booléenne invalide. Veuillez saisir 'true' ou 'false' ({0})</value>
+  </data>
+  <data name="ConfigErrorInvalidNumber" xml:space="preserve">
+    <value>Format de nombre invalide. Veuillez saisir un nombre valide</value>
+  </data>
+  <data name="ConfigErrorMinThreeChars" xml:space="preserve">
+    <value>Minimum de 3 caractères requis</value>
+  </data>
+  <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
+    <value>Transformation de texte appliquée aux noms de fichier</value>
+  </data>
+  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
+    <value>Organiser les ADR dans des dossiers séparés par portée</value>
+  </data>
+  <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
+    <value>Chemin relatif vers le dossier du dépôt ADR</value>
+  </data>
+  <data name="ConfigFieldDescHeaderDisclaimer" xml:space="preserve">
+    <value>Texte d'avertissement affiché dans les en-têtes ADR</value>
+  </data>
+  <data name="ConfigFieldDescLanguage" xml:space="preserve">
+    <value>Code de langue pour l'interface et les modèles ADR de l'outil (ex. : en-US, pt-BR, de-DE).</value>
+  </data>
+  <data name="ConfigFieldDescLenRevision" xml:space="preserve">
+    <value>Longueur du numéro de révision dans les noms de fichier</value>
+  </data>
+  <data name="ConfigFieldDescLenScope" xml:space="preserve">
+    <value>Longueur de l'abréviation de portée dans les noms de fichier</value>
+  </data>
+  <data name="ConfigFieldDescLenSeq" xml:space="preserve">
+    <value>Longueur du numéro de séquence dans les noms de fichier</value>
+  </data>
+  <data name="ConfigFieldDescLenVersion" xml:space="preserve">
+    <value>Longueur du numéro de version dans les noms de fichier</value>
+  </data>
+  <data name="ConfigFieldDescOpenAdr" xml:space="preserve">
+    <value>Commande pour ouvrir les fichiers ADR (doit contenir le texte '{0}')</value>
+  </data>
+  <data name="ConfigFieldDescPrefix" xml:space="preserve">
+    <value>Préfixe pour les noms de fichier ADR</value>
+  </data>
+  <data name="ConfigFieldDescScopes" xml:space="preserve">
+    <value>Liste des portées valides pour les ADR (séparées par un point-virgule. '*' à la fin de chaque portée pour éviter d'utiliser le domaine)</value>
+  </data>
+  <data name="ConfigFieldDescSeparator" xml:space="preserve">
+    <value>Caractère utilisé pour séparer les parties du nom de fichier</value>
+  </data>
+  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
+    <value>Portées pour lesquelles les informations de domaine sont omises</value>
+  </data>
+  <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
+    <value>Libellé de texte pour le statut 'Accepté'</value>
+  </data>
+  <data name="ConfigFieldDescStatusNew" xml:space="preserve">
+    <value>Libellé de texte pour le statut 'Proposé'</value>
+  </data>
+  <data name="ConfigFieldDescStatusRejected" xml:space="preserve">
+    <value>Libellé de texte pour le statut 'Rejeté'</value>
+  </data>
+  <data name="ConfigFieldDescStatusSuperseded" xml:space="preserve">
+    <value>Libellé de texte pour le statut 'Remplacé'</value>
+  </data>
+  <data name="ConfigInfoFileNameSample" xml:space="preserve">
+    <value>Exemples de noms de fichier :</value>
+  </data>
+  <data name="ConfigPromptChooseNewValue" xml:space="preserve">
+    <value>Choisissez une nouvelle valeur</value>
+  </data>
+  <data name="ConfigPromptEnterNewValue" xml:space="preserve">
+    <value>Saisissez une nouvelle valeur</value>
+  </data>
+  <data name="ConfigPromptOverwriteConfig" xml:space="preserve">
+    <value>Le fichier de configuration existe déjà. Voulez-vous le remplacer ?</value>
+  </data>
+  <data name="ConfigPromptSelectField" xml:space="preserve">
+    <value>Sélectionnez un champ à modifier</value>
+  </data>
+  <data name="ConfigPromptSelectNewValues" xml:space="preserve">
+    <value>Sélectionnez les nouvelles valeurs</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Domain" xml:space="preserve">
+    <value>Domaine</value>
+  </data>
+  <data name="DomainSample" xml:space="preserve">
+    <value>Domaine d'exemple</value>
+  </data>
+  <data name="ErrMsgConfigValidationFailed" xml:space="preserve">
+    <value>Échec de la validation de la configuration</value>
+  </data>
+  <data name="ErrMsgCritical" xml:space="preserve">
+    <value>Une erreur critique s'est produite</value>
+  </data>
+  <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
+    <value>Trop d'arguments fournis pour la commande d'aide</value>
+  </data>
+  <data name="ErrMsgInvalidRepoConfig" xml:space="preserve">
+    <value>Configuration de dépôt invalide : {0}</value>
+  </data>
+  <data name="ErrMsgNotEmpty" xml:space="preserve">
+    <value>Ce champ ne peut pas être vide</value>
+  </data>
+  <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
+    <value>La commande pour ouvrir l'ADR doit contenir le texte '{0}'</value>
+  </data>
+  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
+    <value>Entrées de portée en double trouvées</value>
+  </data>
+  <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
+    <value>Le dépôt n'est pas initialisé</value>
+  </data>
+  <data name="ExceptionConfigFileNotFound" xml:space="preserve">
+    <value>Fichier de configuration introuvable : {0}</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>Champs</value>
+  </data>
+  <data name="HelpHeaderAvailableCommands" xml:space="preserve">
+    <value>Commandes disponibles</value>
+  </data>
+  <data name="InitCmdConfigFileAlreadyExists" xml:space="preserve">
+    <value>Le fichier de configuration existe déjà à : {0}</value>
+  </data>
+  <data name="ErrorDateFormat" xml:space="preserve">
+    <value>Format de date invalide. Format attendu : {0}</value>
+  </data>
+  <data name="ErrorExternalCommand" xml:space="preserve">
+    <value>Commande externe exécutée mais échouée : {0}</value>
+  </data>
+  <data name="ErrorInConfigFile" xml:space="preserve">
+    <value>Erreur dans le fichier de configuration : {0}</value>
+  </data>
+  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
+    <value>Portée invalide '{0}'. Les portées valides sont : {1}</value>
+  </data>
+  <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
+    <value>Un ADR avec ce titre existe déjà : {0}</value>
+  </data>
+  <data name="NewAdrPromptConfirmCreation" xml:space="preserve">
+    <value>Confirmer la création de l'ADR avec ces détails ?</value>
+  </data>
+  <data name="NewAdrPromptSelectDate" xml:space="preserve">
+    <value>Sélectionnez la date de référence</value>
+  </data>
+  <data name="NewAdrPromptSelectDrive" xml:space="preserve">
+    <value>Sélectionnez le lecteur</value>
+  </data>
+  <data name="SuccessExternalCommand" xml:space="preserve">
+    <value>Commande externe exécutée avec succès : {0}</value>
+  </data>
+  <data name="SelectRepo" xml:space="preserve">
+    <value>Dépôt sélectionné</value>
+  </data>
+  <data name="PromptEnterAdrDomain" xml:space="preserve">
+    <value>Saisissez le domaine de l'ADR</value>
+  </data>
+  <data name="PromptEnterAdrTitle" xml:space="preserve">
+    <value>Saisissez le titre de l'ADR</value>
+  </data>
+  <data name="PromptReadingRegisteredDomains" xml:space="preserve">
+    <value>Lecture des domaines enregistrés...</value>
+  </data>
+  <data name="PromptSelectRepositoryPath" xml:space="preserve">
+    <value>Sélectionnez le chemin du dépôt</value>
+  </data>
+  <data name="PromptSelectAdrScope" xml:space="preserve">
+    <value>Sélectionnez la portée de l'ADR</value>
+  </data>
+  <data name="Scope" xml:space="preserve">
+    <value>Portée</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Titre</value>
+  </data>
+  <data name="TitleSample" xml:space="preserve">
+    <value>Titre d'exemple</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Bienvenue dans AdrPlus ({0})</value>
+  </data>
+  <data name="HelpUsageWizardNew" xml:space="preserve">
+    <value>Assistant pour créer un nouvel ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardInit" xml:space="preserve">
+    <value>Assistant pour configurer le dépôt de fichiers (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageTargetRepoPath" xml:space="preserve">
+    <value>Chemin vers le dossier racine du dépôt</value>
+  </data>
+  <data name="HelpUsageJsonFile" xml:space="preserve">
+    <value>Chemin vers le fichier json de configuration du dépôt (repo)</value>
+  </data>
+  <data name="HelpUsageTitleAdr" xml:space="preserve">
+    <value>Titre de l'ADR</value>
+  </data>
+  <data name="HelpUsageDomainAdr" xml:space="preserve">
+    <value>Domaine de l'ADR</value>
+  </data>
+  <data name="HelpUsageScopeAdr" xml:space="preserve">
+    <value>Portée de l'ADR</value>
+  </data>
+  <data name="HelpUsageOpenFile" xml:space="preserve">
+    <value>Ouvrir le fichier après l'exécution de la commande</value>
+  </data>
+  <data name="HelpUsageDateRefAdr" xml:space="preserve">
+    <value>Date de référence de l'ADR</value>
+  </data>
+  <data name="HelpUsageOverwriteInit" xml:space="preserve">
+    <value>Remplacer le fichier de configuration du dépôt</value>
+  </data>
+  <data name="HelpUsageHelp" xml:space="preserve">
+    <value>Afficher les informations d'aide (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageBackfill" xml:space="preserve">
+    <value>Balayage complet du dépôt — réémet chaque ADR déjà réglée. Usage manuel/occasionnel uniquement, ne jamais automatiser via cron/CI</value>
+  </data>
+  <data name="HelpUsageWizardNewVer" xml:space="preserve">
+    <value>Assistant pour créer une nouvelle version d'un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="ErrorSequenceAdrNotFound" xml:space="preserve">
+    <value>Séquence ADR {0} introuvable dans {1}</value>
+  </data>
+  <data name="ErrMsgAdrTooShort" xml:space="preserve">
+    <value>Le fichier ADR est trop court</value>
+  </data>
+  <data name="ErrMsgAdrFileEmpty" xml:space="preserve">
+    <value>Le fichier ADR est vide</value>
+  </data>
+  <data name="ErrMsgAdrFieldHeaderNotFound" xml:space="preserve">
+    <value>Le fichier ADR ne possède pas l'en-tête {0} attendu</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineFormatInvalid" xml:space="preserve">
+    <value>La ligne de statut n'a pas le format attendu</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineParenthesesInvalid" xml:space="preserve">
+    <value>La ligne de statut a un ordre de parenthèses invalide</value>
+  </data>
+  <data name="ErrMsgAdrStatusUnknown" xml:space="preserve">
+    <value>Statut inconnu : {0}</value>
+  </data>
+  <data name="ErrMsgAdrStatusDateFormatInvalid" xml:space="preserve">
+    <value>Format de date invalide : {0}</value>
+  </data>
+  <data name="ErrMsgAdrHeaderParsingError" xml:space="preserve">
+    <value>Erreur d'analyse de l'en-tête ADR : {0}</value>
+  </data>
+  <data name="NewVerChooseAdr" xml:space="preserve">
+    <value>Choisissez un ADR</value>
+  </data>
+  <data name="NotFoundADR" xml:space="preserve">
+    <value>Aucun ADR trouvé</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Fichier</value>
+  </data>
+  <data name="ErrorRevisionNotconfig" xml:space="preserve">
+    <value>Numéro de révision non configuré pour le dépôt {0}</value>
+  </data>
+  <data name="CmdDescHelp" xml:space="preserve">
+    <value>Afficher les informations d'aide pour les commandes disponibles</value>
+  </data>
+  <data name="CmdDescWizard" xml:space="preserve">
+    <value>Assistant pour les opérations guidées</value>
+  </data>
+  <data name="CmdDescConfig" xml:space="preserve">
+    <value>Éditeur de configuration de l'application, du dépôt et du modèle ADR par défaut</value>
+  </data>
+  <data name="CmdDescInit" xml:space="preserve">
+    <value>Initialiser ou mettre à jour un dépôt avec les paramètres ADR</value>
+  </data>
+  <data name="CmdDescNew" xml:space="preserve">
+    <value>Créer un nouvel ADR avec un nouveau numéro (numéro incrémental)</value>
+  </data>
+  <data name="CmdDescVersion" xml:space="preserve">
+    <value>Créer un nouvel ADR avec une nouvelle version (version incrémentale, même numéro)</value>
+  </data>
+  <data name="CmdDescAccepted" xml:space="preserve">
+    <value>Mettre à jour le statut d'un ADR à 'accepté'</value>
+  </data>
+  <data name="CmdDescRejected" xml:space="preserve">
+    <value>Mettre à jour le statut d'un ADR à 'rejeté'</value>
+  </data>
+  <data name="CmdDescSupersede" xml:space="preserve">
+    <value>Remplacer un ADR (numéro incrémental)</value>
+  </data>
+  <data name="CmdDescUndoStatus" xml:space="preserve">
+    <value>Annuler le statut (accepté/rejeté) d'un ADR</value>
+  </data>
+  <data name="CmdDescSync" xml:space="preserve">
+    <value>Retenter les événements de plugin en attente (adrplus sync)</value>
+  </data>
+  <data name="HelpUsageWizardNewRev" xml:space="preserve">
+    <value>Assistant pour créer une nouvelle révision d'un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardSupersede" xml:space="preserve">
+    <value>Assistant pour remplacer un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardApprove" xml:space="preserve">
+    <value>Assistant pour approuver un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardReject" xml:space="preserve">
+    <value>Assistant pour rejeter un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="HelpUsageWizardUndoStatus" xml:space="preserve">
+    <value>Assistant pour annuler le statut (accepté/rejeté) d'un ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="WaitReadFiles" xml:space="preserve">
+    <value>Veuillez patienter, lecture des ADR...</value>
+  </data>
+  <data name="InvalidAppStructure" xml:space="preserve">
+    <value>Structure du fichier JSON de l'application invalide</value>
+  </data>
+  <data name="InvalidRepoStructure" xml:space="preserve">
+    <value>Structure du fichier JSON du dépôt invalide</value>
+  </data>
+  <data name="WhenNotWizard" xml:space="preserve">
+    <value>Lorsque le mode assistant n'est pas utilisé</value>
+  </data>
+  <data name="HelpUsageWizardConfigApp" xml:space="preserve">
+    <value>Assistant des paramètres de l'application (si l'argument de fichier n'est pas fourni)</value>
+  </data>
+  <data name="HelpUsageWizardConfigRepo" xml:space="preserve">
+    <value>Assistant des paramètres du dépôt (si l'argument de fichier n'est pas fourni)</value>
+  </data>
+  <data name="ErrMsgAdrStatusLineSupersedeFormatInvalid" xml:space="preserve">
+    <value>Format du nom de fichier manquant dans le statut : {0}</value>
+  </data>
+  <data name="HelpUsageFileAdr" xml:space="preserve">
+    <value>Nom du chemin de fichier de l'ADR</value>
+  </data>
+  <data name="ExceptionFileNotFound" xml:space="preserve">
+    <value>Fichier introuvable : {0}</value>
+  </data>
+  <data name="NotLatestVersion" xml:space="preserve">
+    <value>Le fichier ADR spécifié n'est pas la dernière version. Veuillez sélectionner la dernière version</value>
+  </data>
+  <data name="NotValidStatusForUpdate" xml:space="preserve">
+    <value>Le fichier ADR spécifié n'a pas de statut valide ({0}) pour la mise à jour ou le remplacement</value>
+  </data>
+  <data name="NotValidStatusForApproveAndReject" xml:space="preserve">
+    <value>Le fichier ADR spécifié n'a pas de statut valide ({0}) pour la mise à jour</value>
+  </data>
+  <data name="NotValidStatusForUndo" xml:space="preserve">
+    <value>Le fichier ADR spécifié n'a pas de statut valide ({0}) pour l'annulation</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Inconnu</value>
+  </data>
+  <data name="NotValidStatusForSupersede" xml:space="preserve">
+    <value>Le fichier ADR spécifié n'a pas de statut valide ({0}) ou a déjà été remplacé</value>
+  </data>
+  <data name="Undone" xml:space="preserve">
+    <value>Annulé</value>
+  </data>
+  <data name="SelectAnOption" xml:space="preserve">
+    <value>Sélectionnez une option</value>
+  </data>
+  <data name="HelpUsageWizardConfigTemplate" xml:space="preserve">
+    <value>Assistant des paramètres du modèle ADR (si l'argument de fichier n'est pas fourni)</value>
+  </data>
+  <data name="InvalidMenuOption" xml:space="preserve">
+    <value>Option de menu non implémentée : {0}</value>
+  </data>
+  <data name="HelpUsageFileConfig" xml:space="preserve">
+    <value>Chemin vers le fichier de configuration</value>
+  </data>
+  <data name="FileTemplateMusbeMd" xml:space="preserve">
+    <value>Le modèle de fichier doit être un fichier avec l'extension ".md"</value>
+  </data>
+  <data name="PromptSelectAdrTemplatePath" xml:space="preserve">
+    <value>Sélectionnez le chemin du modèle ADR</value>
+  </data>
+  <data name="WizardGroupConfigurationsTitle" xml:space="preserve">
+    <value>Configurations</value>
+  </data>
+  <data name="WizardGroupConfigurationsDescription" xml:space="preserve">
+    <value>Configurer les paramètres de l'application, du modèle de dépôt et du modèle de contenu ADR</value>
+  </data>
+  <data name="WizardGroupAdrsTitle" xml:space="preserve">
+    <value>ADR</value>
+  </data>
+  <data name="WizardGroupAdrsDescription" xml:space="preserve">
+    <value>Créez et gérez vos ADR</value>
+  </data>
+  <data name="WizardGroupCommandHelpTitle" xml:space="preserve">
+    <value>Aide des commandes</value>
+  </data>
+  <data name="WizardGroupExitTitle" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="WizardGroupExitDescription" xml:space="preserve">
+    <value>Quitter l'assistant</value>
+  </data>
+  <data name="WizardMainMenu" xml:space="preserve">
+    <value>Menu principal</value>
+  </data>
+  <data name="WizardAdrInitTitle" xml:space="preserve">
+    <value>Initialiser ou mettre à jour un dépôt avec les paramètres ADR</value>
+  </data>
+  <data name="WizardAdrNewTitle" xml:space="preserve">
+    <value>Créer un nouvel ADR</value>
+  </data>
+  <data name="WizardAdrApproveTitle" xml:space="preserve">
+    <value>Approuver un ADR existant</value>
+  </data>
+  <data name="EscForReturnWizard" xml:space="preserve">
+    <value>Après avoir confirmé la sélection, appuyez sur ‘ESC’ si vous souhaitez revenir à l'assistant</value>
+  </data>
+  <data name="WizardAdrRejectTitle" xml:space="preserve">
+    <value>Rejeter un ADR existant</value>
+  </data>
+  <data name="WizardAdrVersionTitle" xml:space="preserve">
+    <value>Créer une nouvelle version d'un ADR existant</value>
+  </data>
+  <data name="WizardAdrRevisionTitle" xml:space="preserve">
+    <value>Créer une nouvelle révision d'un ADR existant</value>
+  </data>
+  <data name="WizardAdrSupersedeTitle" xml:space="preserve">
+    <value>Remplacer un ADR existant</value>
+  </data>
+  <data name="WizardAdrUndoStatusTitle" xml:space="preserve">
+    <value>Annuler l'acceptation/le rejet d'un ADR existant</value>
+  </data>
+  <data name="WizardConfigApplicationTitle" xml:space="preserve">
+    <value>Configurer cette application</value>
+  </data>
+  <data name="WizardConfigTemplateTitle" xml:space="preserve">
+    <value>Configurer le modèle de contenu par défaut</value>
+  </data>
+  <data name="WizardConfigRepositoryTitle" xml:space="preserve">
+    <value>Configurer le dépôt ADR par défaut</value>
+  </data>
+  <data name="WizardHelpMainMenuDescription" xml:space="preserve">
+    <value>Retourner au menu principal</value>
+  </data>
+  <data name="WizardHelpConfigTitle" xml:space="preserve">
+    <value>Aide de la commande config</value>
+  </data>
+  <data name="WizardHelpInitTitle" xml:space="preserve">
+    <value>Aide de la commande init</value>
+  </data>
+  <data name="WizardHelpNewTitle" xml:space="preserve">
+    <value>Aide de la commande new</value>
+  </data>
+  <data name="WizardHelpApproveTitle" xml:space="preserve">
+    <value>Aide de la commande approve</value>
+  </data>
+  <data name="ShowHelpInfo" xml:space="preserve">
+    <value>Afficher les informations d'aide</value>
+  </data>
+  <data name="WizardHelpRejectTitle" xml:space="preserve">
+    <value>Aide de la commande reject</value>
+  </data>
+  <data name="WizardHelpVersionTitle" xml:space="preserve">
+    <value>Aide de la commande version</value>
+  </data>
+  <data name="WizardHelpRevisionTitle" xml:space="preserve">
+    <value>Aide de la commande revision</value>
+  </data>
+  <data name="WizardHelpSupersedeTitle" xml:space="preserve">
+    <value>Aide de la commande supersede</value>
+  </data>
+  <data name="WizardHelpUndoTitle" xml:space="preserve">
+    <value>Aide de la commande undo</value>
+  </data>
+  <data name="PressAnyKey" xml:space="preserve">
+    <value>Appuyez sur une touche pour continuer</value>
+  </data>
+  <data name="NewAdrPromptConfirmRejectCreation" xml:space="preserve">
+    <value>L'ADR a été rejeté. Voulez-vous continuer ?</value>
+  </data>
+  <data name="HelpUsageEmptyAdr" xml:space="preserve">
+    <value>Utiliser uniquement le modèle lors de la création (ne copie pas le contenu)</value>
+  </data>
+  <data name="PromptEmptyTemplate" xml:space="preserve">
+    <value>Utiliser le modèle sans données</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>Modèle</value>
+  </data>
+  <data name="CmdDescMigrate" xml:space="preserve">
+    <value>Migrer les ADR existants pour utiliser l'outil (créer l'en-tête)</value>
+  </data>
+  <data name="ErrorCannotDetermineRootPath" xml:space="preserve">
+    <value>Impossible de déterminer le chemin racine avec la configuration ADR : {0}</value>
+  </data>
+  <data name="HelpUsageWizardMigrate" xml:space="preserve">
+    <value>Assistant pour migrer les ADR afin d'utiliser l'outil AdrPlus (création de l'en-tête)</value>
+  </data>
+  <data name="DefaultHeaderTitleFile" xml:space="preserve">
+    <value>Titre du fichier md</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Créé</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>Modifié</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Valeurs</value>
+  </data>
+  <data name="Migrated" xml:space="preserve">
+    <value>Migré</value>
+  </data>
+  <data name="FieldTitleHeaderTitleFile" xml:space="preserve">
+    <value>Texte du titre de fichier dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderScope" xml:space="preserve">
+    <value>Texte de portée dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderDomain" xml:space="preserve">
+    <value>Texte de domaine dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderStatusCreated" xml:space="preserve">
+    <value>Texte de statut Créé dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderStatusChanged" xml:space="preserve">
+    <value>Texte de statut modifié dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderStatusSuperseded" xml:space="preserve">
+    <value>Texte de statut remplacé dans l'en-tête</value>
+  </data>
+  <data name="FieldTitleHeaderTableFields" xml:space="preserve">
+    <value>Texte d'en-tête des champs</value>
+  </data>
+  <data name="FieldTitleHeaderTableValues" xml:space="preserve">
+    <value>Texte d'en-tête des valeurs</value>
+  </data>
+  <data name="FieldTitleHeaderMigrated" xml:space="preserve">
+    <value>Commentaire de migration</value>
+  </data>
+  <data name="Superseded" xml:space="preserve">
+    <value>Remplacé</value>
+  </data>
+  <data name="PromptConfirmMigration" xml:space="preserve">
+    <value>Confirmer la migration de l'ADR vers ces fichiers ?</value>
+  </data>
+  <data name="NotFoundValidMigrateADR" xml:space="preserve">
+    <value>Aucun ADR trouvé avec des critères valides pour la migration</value>
+  </data>
+  <data name="PromptAdrToMigrate" xml:space="preserve">
+    <value>ADR à migrer</value>
+  </data>
+  <data name="MsgUnknownStructure" xml:space="preserve">
+    <value>Structure inconnue</value>
+  </data>
+  <data name="AdrPlusFormat" xml:space="preserve">
+    <value>Format AdrPlus</value>
+  </data>
+  <data name="InvalidFormatHeader" xml:space="preserve">
+    <value>En-tête invalide</value>
+  </data>
+  <data name="ReadyToMigrate" xml:space="preserve">
+    <value>Prêt à migrer</value>
+  </data>
+  <data name="ViewOnlyPrompt" xml:space="preserve">
+    <value>Affichage uniquement. Appuyez sur Entrée pour continuer</value>
+  </data>
+  <data name="WizardConfigMigratedTitle" xml:space="preserve">
+    <value>Migrer les ADR existants pour la compatibilité AdrPlus</value>
+  </data>
+  <data name="WizardHelpMigrateTitle" xml:space="preserve">
+    <value>Aide de la commande migrate</value>
+  </data>
+  <data name="CmdDescExplore" xml:space="preserve">
+    <value>Explorateur, visualiseur et rapport de fichiers ADR</value>
+  </data>
+  <data name="HelpUsageFileReport" xml:space="preserve">
+    <value>Nom du chemin de fichier (fichier md) pour le rapport de l'explorateur</value>
+  </data>
+  <data name="HelpUsageWizardExplore" xml:space="preserve">
+    <value>Assistant pour explorer les fichiers ADR (supprime tous les autres arguments)</value>
+  </data>
+  <data name="PromptConfirmExplore" xml:space="preserve">
+    <value>Confirmer l'exploration avec ces paramètres ?</value>
+  </data>
+  <data name="ListFieldReport" xml:space="preserve">
+    <value>1)Fichier,2)Statut actuel,3)Dossier,4)Format,5)Préfixe,6)Version,7)Révision,8)Statut créé,9)Statut mis à jour,10)Portée,11)Domaine</value>
+  </data>
+  <data name="ErrFileReportEmpty" xml:space="preserve">
+    <value>Le chemin du fichier de rapport est vide</value>
+  </data>
+  <data name="ReportTitle" xml:space="preserve">
+    <value>ADR-PLUS : Rapport</value>
+  </data>
+  <data name="Folder" xml:space="preserve">
+    <value>Dossier</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="CurrentStatus" xml:space="preserve">
+    <value>Statut actuel</value>
+  </data>
+  <data name="StatusCreated" xml:space="preserve">
+    <value>Statut créé</value>
+  </data>
+  <data name="StatusUpdated" xml:space="preserve">
+    <value>Statut mis à jour</value>
+  </data>
+  <data name="PromptFieldsReport" xml:space="preserve">
+    <value>Champs à afficher</value>
+  </data>
+  <data name="PromptShowOrCreateReport" xml:space="preserve">
+    <value>Voulez-vous afficher les ADR ou créer un rapport ?</value>
+  </data>
+  <data name="ShowAdrs" xml:space="preserve">
+    <value>Afficher les ADR</value>
+  </data>
+  <data name="CreateReport" xml:space="preserve">
+    <value>Créer un rapport</value>
+  </data>
+  <data name="PromptFileNameReport" xml:space="preserve">
+    <value>Nom du fichier de rapport (sans extension)</value>
+  </data>
+  <data name="PromptSelectFolderForReport" xml:space="preserve">
+    <value>Sélectionnez le dossier pour le rapport</value>
+  </data>
+  <data name="PromptOpenReportAfterCreate" xml:space="preserve">
+    <value>Ouvrir le rapport après sa création ?</value>
+  </data>
+  <data name="PromptOpenAdrAfterSelection" xml:space="preserve">
+    <value>Ouvrir l'ADR après la sélection ?</value>
+  </data>
+  <data name="FileReportSummary" xml:space="preserve">
+    <value>Nom du fichier de rapport </value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Ouvrir le fichier</value>
+  </data>
+  <data name="WizardGroupExploreReportTitle" xml:space="preserve">
+    <value>Rapport et explorateur</value>
+  </data>
+  <data name="WizardGroupExploreReportDescription" xml:space="preserve">
+    <value>Crée des rapports et affiche les métadonnées des ADR</value>
+  </data>
+  <data name="FilesExplored" xml:space="preserve">
+    <value>Fichiers explorés</value>
+  </data>
+  <data name="WizardHelpExploreTitle" xml:space="preserve">
+    <value>Aide de la commande explore</value>
+  </data>
+  <data name="ConfigFieldDescMigrationPattern" xml:space="preserve">
+    <value>Motif de migration</value>
+  </data>
+  <data name="HelpUsageWizardConfigMigration" xml:space="preserve">
+    <value>Assistant des paramètres de migration (si l'argument de fichier n'est pas fourni)</value>
+  </data>
+  <data name="ErrMsgWrongMigrationPattern" xml:space="preserve">
+    <value>Motif de migration incorrect</value>
+  </data>
+  <data name="ConfigPromptOverwriteMigration" xml:space="preserve">
+    <value>Seul le motif de migration sera remplacé. Voulez-vous le remplacer ?</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Numéro</value>
+  </data>
+  <data name="PromptFieldsMigrationTitle" xml:space="preserve">
+    <value>Sélectionnez les éléments présents dans le titre du fichier ADR</value>
+  </data>
+  <data name="Prefix" xml:space="preserve">
+    <value>Préfixe</value>
+  </data>
+  <data name="ErrorLenFileSampleMigration" xml:space="preserve">
+    <value>Le nom de fichier doit comporter au moins {0} caractères</value>
+  </data>
+  <data name="PromptFileSampleMigration" xml:space="preserve">
+    <value>Saisissez un exemple de nom de fichier ADR pour valider le motif</value>
+  </data>
+  <data name="SummarySampleFilename" xml:space="preserve">
+    <value>Exemple de nom de fichier</value>
+  </data>
+  <data name="PromptPrefixPosition" xml:space="preserve">
+    <value>Sélectionnez une position pour l'élément 'Préfixe' dans le nom de fichier</value>
+  </data>
+  <data name="SampleResult" xml:space="preserve">
+    <value>Résultat d'exemple</value>
+  </data>
+  <data name="PromptPrefixLength" xml:space="preserve">
+    <value>Sélectionnez une longueur pour l'élément 'Préfixe' dans le nom de fichier</value>
+  </data>
+  <data name="PromptNumberPosition" xml:space="preserve">
+    <value>Sélectionnez une position pour l'élément 'Numéro' dans le nom de fichier</value>
+  </data>
+  <data name="PromptNumberLength" xml:space="preserve">
+    <value>Sélectionnez une longueur pour l'élément 'Numéro' dans le nom de fichier</value>
+  </data>
+  <data name="PromptVersionPosition" xml:space="preserve">
+    <value>Sélectionnez une position pour l'élément 'Version' dans le nom de fichier</value>
+  </data>
+  <data name="PromptVersionLength" xml:space="preserve">
+    <value>Sélectionnez une longueur pour l'élément 'Version' dans le nom de fichier</value>
+  </data>
+  <data name="PromptRevisionPosition" xml:space="preserve">
+    <value>Sélectionnez une position pour l'élément 'Révision' dans le nom de fichier</value>
+  </data>
+  <data name="PromptRevisionLength" xml:space="preserve">
+    <value>Sélectionnez une longueur pour l'élément 'Révision' dans le nom de fichier</value>
+  </data>
+  <data name="PromptTitlePosition" xml:space="preserve">
+    <value>Sélectionnez une position pour l'élément 'Titre' dans le nom de fichier</value>
+  </data>
+  <data name="PromptConfirmParamMigration" xml:space="preserve">
+    <value>Confirmer ces paramètres ?</value>
+  </data>
+  <data name="WizardConfigMigration" xml:space="preserve">
+    <value>Configurer la migration ADR</value>
+  </data>
+  <data name="AlredyAdrPlusCreated" xml:space="preserve">
+    <value>Il existe déjà des ADR créés avec cet outil</value>
+  </data>
+  <data name="ErrMsgFileAlreadyExists" xml:space="preserve">
+    <value>Le fichier existe déjà {0}</value>
+  </data>
+  <data name="InitCmdConfigUpdateFileAlreadyExists" xml:space="preserve">
+    <value>Le fichier de configuration existe déjà. Voulez-vous le mettre à jour ?</value>
+  </data>
+  <data name="ErrMsgNewLenSeqGreatConfigSetting" xml:space="preserve">
+    <value>Il existe un numéro ({0}) supérieur à celui configuré ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenVerGreatConfigSetting" xml:space="preserve">
+    <value>Il existe une version ({0}) supérieure à celle configurée ({1})</value>
+  </data>
+  <data name="ErrMsgNewLenRevGreatConfigSetting" xml:space="preserve">
+    <value>Il existe une révision ({0}) supérieure à celle configurée ({1})</value>
+  </data>
+  <data name="InitConfigBannerMessage" xml:space="preserve">
+    <value>Commençons par la configuration initiale. (Appuyez sur &lt;ESC&gt; pour ignorer la configuration initiale)</value>
+  </data>
+  <data name="InitConfigSkipConfirmation" xml:space="preserve">
+    <value>Voulez-vous ignorer la configuration initiale ?</value>
+  </data>
+  <data name="InitConfigSelectLanguage" xml:space="preserve">
+    <value>Sélectionnez la langue de l'interface</value>
+  </data>
+  <data name="InitConfigLanguageEnglish" xml:space="preserve">
+    <value>Anglais</value>
+  </data>
+  <data name="InitConfigLanguagePortuguese" xml:space="preserve">
+    <value>Portugais</value>
+  </data>
+  <data name="InitConfigLanguageOther" xml:space="preserve">
+    <value>Autre</value>
+  </data>
+  <data name="InitConfigLanguageEnglishDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Anglais</value>
+  </data>
+  <data name="InitConfigLanguagePortugueseDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Portugais</value>
+  </data>
+  <data name="InitConfigLanguageOtherDesc" xml:space="preserve">
+    <value>L'interface de l'outil sera en Anglais, le statut et l'en-tête personnalisés par l'utilisateur</value>
+  </data>
+  <data name="InitConfigLanguageGerman" xml:space="preserve">
+    <value>Allemand</value>
+  </data>
+  <data name="InitConfigLanguageGermanDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Allemand</value>
+  </data>
+  <data name="InitConfigLanguageSpanish" xml:space="preserve">
+    <value>Espagnol</value>
+  </data>
+  <data name="InitConfigLanguageSpanishDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Espagnol</value>
+  </data>
+  <data name="InitConfigLanguageFrench" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="InitConfigLanguageFrenchDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Français</value>
+  </data>
+  <data name="InitConfigLanguageItalian" xml:space="preserve">
+    <value>Italien</value>
+  </data>
+  <data name="InitConfigLanguageItalianDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Italien</value>
+  </data>
+  <data name="InitConfigLanguageJapanese" xml:space="preserve">
+    <value>Japonais</value>
+  </data>
+  <data name="InitConfigLanguageJapaneseDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Japonais</value>
+  </data>
+  <data name="InitConfigLanguageKorean" xml:space="preserve">
+    <value>Coréen</value>
+  </data>
+  <data name="InitConfigLanguageKoreanDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Coréen</value>
+  </data>
+  <data name="InitConfigLanguageDutch" xml:space="preserve">
+    <value>Néerlandais</value>
+  </data>
+  <data name="InitConfigLanguageDutchDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Néerlandais</value>
+  </data>
+  <data name="InitConfigLanguageRussian" xml:space="preserve">
+    <value>Russe</value>
+  </data>
+  <data name="InitConfigLanguageRussianDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Russe</value>
+  </data>
+  <data name="InitConfigLanguageChinese" xml:space="preserve">
+    <value>Chinois</value>
+  </data>
+  <data name="InitConfigLanguageChineseDesc" xml:space="preserve">
+    <value>L'interface de l'outil, le statut et l'en-tête seront en Chinois</value>
+  </data>
+  <data name="InitConfigSelectEditor" xml:space="preserve">
+    <value>Sélectionnez l'éditeur pour ouvrir l'ADR lors de la création/du remplacement d'un ADR</value>
+  </data>
+  <data name="InitConfigEditorNone" xml:space="preserve">
+    <value>Aucun</value>
+  </data>
+  <data name="InitConfigEditorNoneDesc" xml:space="preserve">
+    <value>sans chemin global</value>
+  </data>
+  <data name="InitConfigSelectPatterns" xml:space="preserve">
+    <value>Sélectionnez les motifs souhaités dans les fichiers ADR</value>
+  </data>
+  <data name="InitConfigEnterPrefix" xml:space="preserve">
+    <value>Saisissez le préfixe pour le nom de fichier ADR</value>
+  </data>
+  <data name="InitConfigEnterNumberLength" xml:space="preserve">
+    <value>Saisissez la longueur pour le numéro ADR</value>
+  </data>
+  <data name="InitConfigEnterVersionLength" xml:space="preserve">
+    <value>Saisissez la longueur pour la version ADR</value>
+  </data>
+  <data name="InitConfigEnterRevisionLength" xml:space="preserve">
+    <value>Saisissez la longueur pour la révision ADR</value>
+  </data>
+  <data name="InitConfigEnterCaseTransform" xml:space="preserve">
+    <value>Saisissez la transformation de texte</value>
+  </data>
+  <data name="InitConfigEnterScopeLength" xml:space="preserve">
+    <value>Saisissez la longueur pour la portée ADR</value>
+  </data>
+  <data name="InitConfigCreateFolderByScope" xml:space="preserve">
+    <value>Voulez-vous créer un dossier pour chaque portée ?</value>
+  </data>
+  <data name="InitConfigSelectTemplate" xml:space="preserve">
+    <value>Sélectionnez un modèle de fichier markdown pour les nouveaux ADR</value>
+  </data>
+  <data name="InitConfigTemplateDefault" xml:space="preserve">
+    <value>Par défaut de l'outil (madr)</value>
+  </data>
+  <data name="InitConfigTemplateEmbedded" xml:space="preserve">
+    <value>Autres modèles intégrés</value>
+  </data>
+  <data name="InitConfigTemplateCustom" xml:space="preserve">
+    <value>Modèle personnalisé</value>
+  </data>
+  <data name="InitConfigSelectCustomTemplate" xml:space="preserve">
+    <value>Sélectionnez un fichier de modèle personnalisé</value>
+  </data>
+  <data name="InitConfigMigrationQuestion" xml:space="preserve">
+    <value>Voulez-vous migrer les ADR existants ?</value>
+  </data>
+  <data name="InitConfigRemindCustomLanguage" xml:space="preserve">
+    <value>N'oubliez pas de définir les textes de statut et d'en-tête dans votre langue</value>
+  </data>
+  <data name="InitConfigDefaultFolderADR" xml:space="preserve">
+    <value>Saisissez le dossier par défaut pour les ADR</value>
+  </data>
+  <data name="InitConfigEnterSpecialCases" xml:space="preserve">
+    <value>Cas particuliers (Portée, Dossier par portée)</value>
+  </data>
+  <data name="InitConfigListScopes" xml:space="preserve">
+    <value>Saisissez la liste des portées</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="SummaryOpenAdrWith" xml:space="preserve">
+    <value>Ouvrir l'ADR avec</value>
+  </data>
+  <data name="SummaryFolderForAdrFiles" xml:space="preserve">
+    <value>Dossier pour les fichiers ADR</value>
+  </data>
+  <data name="SummaryPrefixInAdrFileName" xml:space="preserve">
+    <value>Préfixe dans le nom de fichier ADR</value>
+  </data>
+  <data name="SummaryLengthForNumberInAdrFileName" xml:space="preserve">
+    <value>Longueur pour le numéro dans le nom de fichier ADR</value>
+  </data>
+  <data name="SummaryLengthForVersionInAdrFileName" xml:space="preserve">
+    <value>Longueur pour la version dans le nom de fichier ADR</value>
+  </data>
+  <data name="SummaryLengthForRevisionInAdrFileName" xml:space="preserve">
+    <value>Longueur pour la révision dans le nom de fichier ADR</value>
+  </data>
+  <data name="SummaryLengthForScopeInAdrFileName" xml:space="preserve">
+    <value>Longueur pour la portée dans le nom de fichier ADR</value>
+  </data>
+  <data name="SummaryScopes" xml:space="preserve">
+    <value>Portées</value>
+  </data>
+  <data name="SummarySkipDomainCheckForScopes" xml:space="preserve">
+    <value>Ignorer la vérification du domaine pour les portées</value>
+  </data>
+  <data name="SummaryFolderByScope" xml:space="preserve">
+    <value>Dossier par portée</value>
+  </data>
+  <data name="SummaryCaseTransformForAdrFileName" xml:space="preserve">
+    <value>Transformation de casse pour le nom de fichier ADR</value>
+  </data>
+  <data name="SummarySampleMigration" xml:space="preserve">
+    <value>Exemple de migration</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>commentaire</value>
+  </data>
+  <data name="StatusSuperseded" xml:space="preserve">
+    <value>Statut remplacé</value>
+  </data>
+  <data name="CmdDescRevise" xml:space="preserve">
+    <value>Créer un nouvel ADR avec une nouvelle révision (révision incrémentale, même numéro et version)</value>
+  </data>
+  <data name="ErrMsgWithoutArgs" xml:space="preserve">
+    <value>Valeur de comportement invalide ({0}). Doit être 'Help', 'Wizard' ou 'None'</value>
+  </data>
+  <data name="ConfigFieldDescBehaviorWithoutArgs" xml:space="preserve">
+    <value>Comportement de l'application lorsqu'aucun argument n'est fourni</value>
+  </data>
+  <data name="FieldTitleBehaviorWithoutArgs" xml:space="preserve">
+    <value>Comportement sans arguments</value>
+  </data>
+  <data name="ErrMsgNotFoundArgsOrMissing" xml:space="preserve">
+    <value>Arguments introuvables ou manquants : {0}</value>
+  </data>
+  <data name="NotFoundRecreatedVersionMigration" xml:space="preserve">
+    <value>Aucun fichier de version existant trouvé. Version recréée {0}</value>
+  </data>
+  <data name="ErrMigrationVersionFailed" xml:space="preserve">
+    <value>La migration de la version {0} vers {1} a échoué</value>
+  </data>
+  <data name="MigrationVersionSuccess" xml:space="preserve">
+    <value>La migration de la version {0} vers {1} a été effectuée avec succès</value>
+  </data>
+  <data name="WizardGroupInitAndMigrate" xml:space="preserve">
+    <value>Démarrer le dépôt / Migrer les ADR</value>
+  </data>
+  <data name="WizardGroupInitAndMigrateDescription" xml:space="preserve">
+    <value>Configuration d'initialisation pour les dépôts / Migration des ADR existants</value>
+  </data>
+  <data name="ErrMsgCommandMissing" xml:space="preserve">
+    <value>Commande manquante</value>
+  </data>
+</root>

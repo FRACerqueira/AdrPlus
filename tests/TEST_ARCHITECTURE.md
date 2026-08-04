@@ -116,7 +116,7 @@ All tests must pass on Windows and Linux. No platform-specific code or dependenc
 
 - Use `Path` class methods instead of hardcoded path separators
 - Avoid Windows-specific APIs
-- Test on multiple .NET versions (.NET 8, 9, 10)
+- Test on .NET 10
 
 ---
 
@@ -604,9 +604,7 @@ tests/
 │   │   ├── NewAdr/
 │   │   │   └── NewAdrCommandHandlerTests.cs
 │   │   ├── Supersede/
-│   │   │   ├── SupersedeCommandHandlerTests.cs
-│   │   │   ├── REFACTORING_SUMMARY.md      (Documentation)
-│   │   │   └── IMPLEMENTATION_NOTES.md     (Implementation details)
+│   │   │   └── SupersedeCommandHandlerTests.cs
 │   │   └── Version/
 │   │       └── VersionCommandHandlerTests.cs
 │   ├── Core/
@@ -878,6 +876,4 @@ test:
 
 ## Related Documents
 
-- [REFACTORING_SUMMARY.md](tests/AdrPlus.Tests/Commands/Supersede/REFACTORING_SUMMARY.md) - Supersede test refactoring case study
-- [IMPLEMENTATION_NOTES.md](tests/AdrPlus.Tests/Commands/Supersede/IMPLEMENTATION_NOTES.md) - Implementation details and lessons learned
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Project contribution guidelines
+- [CONTRIBUTING.md](../CONTRIBUTING.md) - Project contribution guidelines
