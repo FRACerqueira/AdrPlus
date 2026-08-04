@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "developer" ]
     paths:
       - "src/**"
       - "tests/**"
@@ -10,7 +10,7 @@ on:
       - "**/*.csproj"
       - ".github/workflows/ci.yml"
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "developer" ]
     paths:
       - "src/**"
       - "tests/**"
