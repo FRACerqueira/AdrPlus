@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | イベント: {3} | allowlist: {4} | 保留中: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | イベント: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>読み込まれたプラグインはありません</value>
   </data>
@@ -464,13 +467,16 @@
     <value>操作を選択</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List は読み込まれたプラグインを表示し、Validate は構造的な読み込みを確認し、Install/Uninstall はこのマシンのプラグインを管理します</value>
+    <value>List (リポジトリ) はリポジトリの有効なプラグインと照合し、List (ホスト) はこのマシンにインストールされているものを表示し、Validate は構造的な読み込みを確認し、Install/Uninstall はこのマシンのプラグインを管理します</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>戻る</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>読み込まれたプラグインを一覧表示</value>
+    <value>プラグインを一覧表示 (リポジトリ)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>プラグインを一覧表示 (ホスト)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>プラグインの構造を検証</value>

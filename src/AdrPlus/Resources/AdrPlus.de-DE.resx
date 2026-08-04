@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | Ereignisse: {3} | Allowlist: {4} | ausstehend: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | Ereignisse: {2} | Allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Keine Plugins geladen</value>
   </data>
@@ -464,13 +467,16 @@
     <value>Aktion wählen</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List zeigt geladene Plugins; Validate prüft das strukturelle Laden; Install/Uninstall verwalten Plugins auf diesem Computer</value>
+    <value>List (Repository) gleicht mit den aktiven Plugins des Repositorys ab; List (Host) zeigt, was auf diesem Computer installiert ist; Validate prüft das strukturelle Laden; Install/Uninstall verwalten Plugins auf diesem Computer</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>Zurück</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>Geladene Plugins auflisten</value>
+    <value>Plugins auflisten (Repository)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>Plugins auflisten (Host)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Plugin-Struktur validieren</value>

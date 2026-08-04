@@ -275,6 +275,20 @@ public class PluginsCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_Validate_WithNoPath_NeverChecksDirectoryExists()
+    {
+        SetupParsedArgs(Arguments.PluginsValidate);
+        var plugin = CreateLoadedPlugin("JiraSync", "2.0.0", ["Approved"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--validate"], TestContext.Current.CancellationToken);
+
+        _mockFileSystem.DidNotReceive().DirectoryExists(Arg.Any<string>());
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("VALID") && s.Contains("JiraSync") && s.Contains("2.0.0")));
+    }
+
+    [Fact]
     public async Task ExecuteAsync_Validate_WithRejection_NotInAllowlist_WritesRejectedEntry() =>
         await AssertRejectionReported(PluginRejectionReason.NotInAllowlist);
 
@@ -327,6 +341,35 @@ public class PluginsCommandHandlerTests
         await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrPlus.Abstractions.Domain.AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<AdrPlus.Abstractions.Domain.RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_List_WithNoPath_ReportsHostOnlyWithoutReadingRepoConfig()
+    {
+        SetupParsedArgs(Arguments.PluginsList);
+        var plugin = CreateLoadedPlugin("SlackNotifier", "1.2.0", ["Approved", "Rejected"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--list"], TestContext.Current.CancellationToken);
+
+        await _mockPluginManager.Received(1).LoadPluginsAsync(Arg.Any<CancellationToken>());
+        _mockFileSystem.DidNotReceive().DirectoryExists(Arg.Any<string>());
+        _mockValidateConfig.DidNotReceive().GetFileNameRepoConfig();
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s =>
+            s.Contains("SlackNotifier") && s.Contains("1.2.0") && s.Contains("Approved") && s.Contains("Rejected")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_List_WithNoPath_AndNoLoadedPlugins_WritesEmptyMessage()
+    {
+        SetupParsedArgs(Arguments.PluginsList);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin>());
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--list"], TestContext.Current.CancellationToken);
+
+        _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("No plugins loaded")));
+    }
+
     private void SetupWizardParsedArgs()
     {
         _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
@@ -367,10 +410,6 @@ public class PluginsCommandHandlerTests
     public async Task ExecuteAsync_WithWizardMode_ValidateSelected_ShowsTableInsteadOfPlainText()
     {
         SetupWizardParsedArgs();
-        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
-        _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
-        _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
-            .Returns((false, RepositoryPath));
         _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Validate));
         var plugin = CreateLoadedPlugin("JiraSync", "2.0.0", ["Approved"]);
         _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
@@ -379,6 +418,7 @@ public class PluginsCommandHandlerTests
 
         await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
 
+        _mockConsole.DidNotReceive().PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptShowPluginsValidateTable(
             Arg.Is<IReadOnlyList<(string Status, string NameOrFolder, string Detail)>>(rows => rows.Count == 2),
             Arg.Any<CancellationToken>());
@@ -402,6 +442,24 @@ public class PluginsCommandHandlerTests
 
         _mockConsole.DidNotReceive().PromptShowPluginsListTable(Arg.Any<IReadOnlyList<(string, string, string, string, string, int)>>(), Arg.Any<CancellationToken>());
         _mockConsole.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("No plugins loaded")));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ListHostSelected_NeverPromptsForFolderOrReadsRepoConfig()
+    {
+        SetupWizardParsedArgs();
+        _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.ListHost));
+        var plugin = CreateLoadedPlugin("SlackNotifier", "1.2.0", ["Approved"]);
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { plugin });
+        _mockPluginManager.Rejections.Returns(new List<PluginRejection>());
+
+        await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+        _mockConsole.DidNotReceive().PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>());
+        _mockValidateConfig.DidNotReceive().GetFileNameRepoConfig();
+        _mockConsole.Received(1).PromptShowPluginsHostListTable(
+            Arg.Is<IReadOnlyList<(string Name, string Version, string Events, string Allowlist)>>(rows => rows.Count == 1 && rows[0].Name == "SlackNotifier"),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

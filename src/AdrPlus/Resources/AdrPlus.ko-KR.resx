@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | 이벤트: {3} | allowlist: {4} | 대기 중: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | 이벤트: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>로드된 플러그인이 없습니다</value>
   </data>
@@ -464,13 +467,16 @@
     <value>작업 선택</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List는 로드된 플러그인을 보여주고, Validate는 구조적 로드를 확인하며, Install/Uninstall은 이 컴퓨터의 플러그인을 관리합니다</value>
+    <value>List(저장소)는 저장소의 활성 플러그인과 대조하고, List(호스트)는 이 컴퓨터에 설치된 항목을 보여주며, Validate는 구조적 로드를 확인하고, Install/Uninstall은 이 컴퓨터의 플러그인을 관리합니다</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>뒤로</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>로드된 플러그인 나열</value>
+    <value>플러그인 나열 (저장소)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>플러그인 나열 (호스트)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>플러그인 구조 검증</value>

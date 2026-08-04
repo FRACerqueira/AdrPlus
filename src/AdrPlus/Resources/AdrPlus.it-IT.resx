@@ -418,6 +418,9 @@
   <data name="PluginsListEntry" xml:space="preserve">
     <value>{0} | {1} v{2} | eventi: {3} | allowlist: {4} | in sospeso: {5}</value>
   </data>
+  <data name="PluginsHostListEntry" xml:space="preserve">
+    <value>{0} v{1} | eventi: {2} | allowlist: {3}</value>
+  </data>
   <data name="PluginsListEmpty" xml:space="preserve">
     <value>Nessun plugin caricato</value>
   </data>
@@ -464,13 +467,16 @@
     <value>Scegli l'azione</value>
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
-    <value>List mostra i plugin caricati; Validate verifica il caricamento strutturale; Install/Uninstall gestiscono i plugin su questo computer</value>
+    <value>List (repository) confronta con i plugin attivi del repository; List (host) mostra ciò che è installato su questo computer; Validate verifica il caricamento strutturale; Install/Uninstall gestiscono i plugin su questo computer</value>
   </data>
   <data name="WizardPluginsModeBack" xml:space="preserve">
     <value>Indietro</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
-    <value>Elenca i plugin caricati</value>
+    <value>Elenca i plugin (repository)</value>
+  </data>
+  <data name="WizardPluginsModeListHost" xml:space="preserve">
+    <value>Elenca i plugin (host)</value>
   </data>
   <data name="WizardPluginsModeValidate" xml:space="preserve">
     <value>Valida la struttura dei plugin</value>

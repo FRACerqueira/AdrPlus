@@ -884,7 +884,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardPluginsModeDescription)
-                .AddItems([Resources.AdrPlus.WizardPluginsModeBack, Resources.AdrPlus.WizardPluginsModeInstall, Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage, Resources.AdrPlus.WizardPluginsModeUninstall])
+                .AddItems([Resources.AdrPlus.WizardPluginsModeBack, Resources.AdrPlus.WizardPluginsModeInstall, Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeListHost, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage, Resources.AdrPlus.WizardPluginsModeUninstall])
                 .Default(Resources.AdrPlus.WizardPluginsModeList)
                 .Run(cancellationToken);
             if (result.IsAborted)
@@ -895,6 +895,7 @@ namespace AdrPlus.Infrastructure.UI
                 : result.Content == Resources.AdrPlus.WizardPluginsModeManage ? PluginsWizardMode.Manage
                 : result.Content == Resources.AdrPlus.WizardPluginsModeInstall ? PluginsWizardMode.Install
                 : result.Content == Resources.AdrPlus.WizardPluginsModeUninstall ? PluginsWizardMode.Uninstall
+                : result.Content == Resources.AdrPlus.WizardPluginsModeListHost ? PluginsWizardMode.ListHost
                 : result.Content == Resources.AdrPlus.WizardPluginsModeBack ? PluginsWizardMode.Back
                 : PluginsWizardMode.List;
             return (false, mode);
@@ -934,6 +935,21 @@ namespace AdrPlus.Infrastructure.UI
                 .AddColumn(Resources.AdrPlus.TableColumnEvents, r => r.Events)
                 .AddColumn(Resources.AdrPlus.TableColumnAllowlist, r => r.Allowlist)
                 .AddColumn(Resources.AdrPlus.TableColumnPending, r => r.Pending)
+                .AddItems(rows)
+                .ViewOnly(true)
+                .Run(cancellationToken);
+            return result.IsAborted;
+        }
+
+        /// <inheritdoc/>
+        public bool PromptShowPluginsHostListTable(IReadOnlyList<(string Name, string Version, string Events, string Allowlist)> rows, CancellationToken cancellationToken = default)
+        {
+            var result = PromptPlus.Controls
+                .TableSelect<(string Name, string Version, string Events, string Allowlist)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
+                .AddColumn(Resources.AdrPlus.TableColumnName, r => r.Name)
+                .AddColumn(Resources.AdrPlus.TableColumnVersion, r => r.Version)
+                .AddColumn(Resources.AdrPlus.TableColumnEvents, r => r.Events)
+                .AddColumn(Resources.AdrPlus.TableColumnAllowlist, r => r.Allowlist)
                 .AddItems(rows)
                 .ViewOnly(true)
                 .Run(cancellationToken);
