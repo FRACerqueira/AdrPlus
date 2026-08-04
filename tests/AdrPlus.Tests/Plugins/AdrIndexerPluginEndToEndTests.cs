@@ -37,9 +37,21 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
             }
         }
 
-        if (Directory.Exists(_root))
+        // Even after the ALC is collected, Windows can briefly keep the plugin DLL's file handle open
+        // (async unload / AV scanning on CI runners), and a still-open handle can leave the directory in a
+        // delete-pending state where Directory.Exists keeps reporting true - retry a bounded number of times
+        // and give up silently rather than fail the test over leftover temp-folder cleanup.
+        for (var attempt = 0; attempt < 5; attempt++)
         {
-            Directory.Delete(_root, recursive: true);
+            try
+            {
+                Directory.Delete(_root, recursive: true);
+                return;
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+            {
+                Thread.Sleep(100);
+            }
         }
     }
 

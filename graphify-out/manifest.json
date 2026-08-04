@@ -180,9 +180,9 @@
     "semantic_hash": "835a6e3742d194e35804440f6166c384"
   },
   "src/AdrPlus/Commands/Plugins/PluginsCommandHandler.cs": {
-    "mtime": 1785848307.647605,
-    "ast_hash": "3b4a12c3dff59b44076129ea49e59e06",
-    "semantic_hash": "3b4a12c3dff59b44076129ea49e59e06"
+    "mtime": 1785861738.8724132,
+    "ast_hash": "628eac200dbd8d7c213391e3862dc3c6",
+    "semantic_hash": ""
   },
   "src/AdrPlus/Commands/Reject/RejectCommandHandler.cs": {
     "mtime": 1785789156.2480996,
@@ -775,9 +775,9 @@
     "semantic_hash": "c652e7a2f4eab00cb0fd0509e21586de"
   },
   "tests/AdrPlus.Tests/Plugins/AdrIndexerPluginEndToEndTests.cs": {
-    "mtime": 1785795103.2869184,
-    "ast_hash": "6cfa7bf7e3ba361ac0a199f3a218c22d",
-    "semantic_hash": "6cfa7bf7e3ba361ac0a199f3a218c22d"
+    "mtime": 1785860872.1676638,
+    "ast_hash": "7159f2079af1809a6ee939dd83cb00e6",
+    "semantic_hash": ""
   },
   "tests/AdrPlus.Tests/Plugins/AdrKeyFormatterTests.cs": {
     "mtime": 1785795109.8395815,
@@ -800,9 +800,9 @@
     "semantic_hash": "a9d62f203e84ef320ba7d2d6b85d545f"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs": {
-    "mtime": 1785795143.222875,
-    "ast_hash": "9fd018d835ea30373077bc7f46fb6a62",
-    "semantic_hash": "9fd018d835ea30373077bc7f46fb6a62"
+    "mtime": 1785862435.9118648,
+    "ast_hash": "48a3bc7a64fcfed42ebf819a49e15135",
+    "semantic_hash": ""
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerDispatchTests.cs": {
     "mtime": 1785795161.5525146,
@@ -850,9 +850,9 @@
     "semantic_hash": "718de9b2533b1f1a9d1e8f48236f08dd"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1785533568.1499238,
-    "ast_hash": "04958923963e0aaa710a7d3f362af2a2",
-    "semantic_hash": "04958923963e0aaa710a7d3f362af2a2"
+    "mtime": 1785861675.777205,
+    "ast_hash": "e8cf76052952f9e92157eabea5f28d08",
+    "semantic_hash": ""
   },
   ".github/workflows/protect-main.yml": {
     "mtime": 1785273388.3106468,
