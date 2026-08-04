@@ -30,7 +30,9 @@ jobs:
         run: echo "VERSION=${GITHUB_REF_NAME#abstr-v}" >> "$GITHUB_OUTPUT"
 
       - name: Restore dependencies
-        run: dotnet restore src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj
+        run: |
+          dotnet restore src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj
+          dotnet restore tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj
 
       - name: Build (Release)
         run: >
