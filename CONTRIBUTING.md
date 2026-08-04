@@ -92,7 +92,7 @@ dotnet-coverage collect -f cobertura -o coverage.cobertura.xml dotnet test
 
 ## Coding Guidelines
 
-- Target **C# 14 / .NET 10** idioms where possible (file-scoped namespaces, primary constructors, etc.).
+- Target **C# 14** language idioms where possible (file-scoped namespaces, primary constructors, etc.) — but avoid APIs only available on .NET 10, since the project multi-targets net8.0/net9.0/net10.0.
 - **Least exposure**: prefer `private` over `public` unless the API truly needs to be public.
 - **Null safety**: use `ArgumentNullException.ThrowIfNull` / `ArgumentException.ThrowIfNullOrWhiteSpace`; avoid `!`.
 - All async methods must end with `Async` and accept a `CancellationToken`.

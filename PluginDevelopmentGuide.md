@@ -50,7 +50,7 @@ Create a class library targeting `net10.0` (or anything `>= net8.0`) and referen
 </Project>
 ```
 
-`Private="false"` matters: it stops the build from copying `AdrPlus.Abstractions.dll` into your plugin's own output folder — see the warning below about why that copy breaks loading. If you're working inside a clone of the AdrPlus repository itself (e.g. contributing the plugin back), a `ProjectReference` to `src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj` works the same way, as the bundled `AdrIndexer` example does.
+`Private="false"` matters: it stops the build from copying `AdrPlus.Abstractions.dll` into your plugin's own output folder — see the warning below about why that copy breaks loading. A `ProjectReference` needs the same `Private="false"` metadata to get the same effect. Note that the bundled `AdrIndexer` plugin's own `.csproj` does *not* set this — its build output does contain a copy of `AdrPlus.Abstractions.dll` — so don't copy its reference style as your safeguard; the host avoids shipping that duplicate by cherry-picking only `AdrIndexer`'s `.dll`/`plugin.json`/template into `plugins-builtin/adr-indexer/` at pack time (see `AdrPlus.csproj`), not through anything in the plugin project itself.
 
 Your build output — the plugin's `.dll`, its own dependencies (resolved from its `.deps.json`), and `plugin.json` — goes into its own folder under the host-global `%UserProfile%/AdrPlus.Plugins/<name>/` (not a repository — see below). **Do not** copy `AdrPlus.Abstractions.dll` itself into that folder: the host resolves that assembly once and expects your plugin to share the exact same type identity. A second copy alongside your plugin gives it a *different* `IAdrPlugin` type as far as the CLR is concerned, and the host will reject your plugin as not implementing the contract.
 
@@ -212,7 +212,7 @@ Every plugin folder needs one, alongside the compiled assembly:
   "version": "1.0.0",
   "entryAssembly": "MyCompany.AdrPlus.Confluence.dll",
   "entryType": "MyCompany.AdrPlus.Confluence.ConfluencePlugin",
-  "abstractionsVersion": "1.0.0-beta6",
+  "abstractionsVersion": "1.0.0",
   "subscribedEvents": [ "Approved", "Rejected", "Superseded", "StatusUndone", "Migrated" ],
   "foregroundTimeoutMs": 5000,
   "backgroundTimeoutMs": 30000,
@@ -233,10 +233,10 @@ Every plugin folder needs one, alongside the compiled assembly:
 |---|---|
 | `name` / `version` | Must match `IAdrPlugin.Name`/`Version` exactly — mismatched values reject the plugin at load. |
 | `entryAssembly` / `entryType` | The DLL filename and fully-qualified class implementing `IAdrPlugin`. |
-| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against. The host checks the SemVer **major** matches its own; a mismatch rejects the plugin with a warning rather than risking a binary-incompatible load. |
+| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against, as a plain `major.minor.patch` (the host parses it with `System.Version`, which rejects a SemVer prerelease suffix like `-beta6` — use `"1.0.0"`, not the full NuGet package version string). The host checks the SemVer **major** matches its own; a mismatch rejects the plugin with a warning rather than risking a binary-incompatible load. |
 | `subscribedEvents` | Cheap, declarative filter — the host skips dispatch entirely for events not listed here, before your code runs at all. |
 | `foregroundTimeoutMs` | How long the single, non-retried foreground attempt gets before the host abandons it and queues a retry. Keep this short — it adds directly to how long `adrplus approve`/etc. takes to return. |
-| `backgroundTimeoutMs` / `retryPolicy` | Apply **only** to background re-drive (`adrplus sync`), never to the foreground path — see [How the plugin system works](#how-the-plugin-system-works). `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |
+| `backgroundTimeoutMs` / `retryPolicy` | `backgroundTimeoutMs` applies only to background re-drive (`adrplus sync`) — see [How the plugin system works](#how-the-plugin-system-works). `retryPolicy.maxAttempts` is a single lifecycle budget shared with the initial foreground attempt: a foreground failure that isn't a timeout already consumes one of the `maxAttempts`, leaving fewer for `sync` to use; only a foreground *timeout* leaves the full budget for background retries. `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |
 | `settings` | Your own typed configuration, read via `IPluginConfiguration.GetValue<T>(key)` in `InitializeAsync`. **Non-secret only** — see [Secrets](#secrets-never-put-them-in-pluginjson). |
 
 ---

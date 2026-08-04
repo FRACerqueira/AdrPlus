@@ -381,7 +381,10 @@ adrplus config --application
 {
   "language": "en-US",
   "comandopenadr": "code {0}",
-  "withoutargs": "Help"
+  "withoutargs": "Help",
+  "pluginallowlist": [
+    { "name": "AdrIndexer" }
+  ]
 }
 ```
 
@@ -390,6 +393,7 @@ adrplus config --application
 |`language`| UI language/culture used by the tool (`en-US`, `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`, or any other valid culture code). Defines the language for all prompts and messages displayed in the wizard and command outputs, and the language of the built-in ADR templates. |
 |`comandopenadr`| Command to open an ADR file after creation/update when supported. See examples below. |
 |`withoutargs`| Behavior when no arguments are provided (`Help`, `Wizard`, or `None`). Default is `Help`. |
+|`pluginallowlist`| Optional, host-wide allowlist restricting which installed plugins may load, matched by `name` (case-insensitive). Omit or set to `null` to allow every installed plugin (default); an empty array blocks all plugins. Each entry also accepts a `hash` field, reserved for future enforcement and not yet checked. See [Plugins](#plugins). |
 
 ##### Examples for `comandopenadr`
 
@@ -634,6 +638,8 @@ Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus
 You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is discovered automatically — no install step needed. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
 
 Plugins are installed **once per machine, host-wide** — not per repository. Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` into `%UserProfile%/AdrPlus.Plugins/<name>/`, making it available to every repository on that machine; `--uninstall <name>` removes it from the machine entirely. A newly installed plugin never dispatches on its own for any given repository — activate it explicitly per repo with `adrplus plugins --activate <name> --path "path/to/repository"` (or deactivate one with `--deactivate <name> --path "path/to/repository"`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+
+Before activation even comes into play, an optional `pluginallowlist` in `adrplus.json` can restrict which installed plugin names are permitted to load at all on that host — see the [Configuration](#configuration) section above. `adrplus plugins --list` reports each plugin's allowlist status alongside its active/inactive state.
 
 > Removing AdrPlus completely? `dotnet tool uninstall -g adrplus` doesn't clean up `%UserProfile%/AdrPlus.Plugins/` (installed plugins) or `%UserProfile%/AdrPlus.History/` (settings carried across upgrades) — dotnet global tools have no uninstall hook, so both are left behind by design. Delete them by hand if you want a fully clean removal.
 

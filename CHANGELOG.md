@@ -13,7 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0-beta6] - 2026-08-04
+## [1.0.0-beta8] - 2026-08-04
+
+### Fixed
+
+- Migrating legacy ADRs (`adrplus migrate`) always left the `File title` header field empty — `ParseMigrationFileNameAsync` gated title extraction on a length value that the migration pattern parser intentionally never sets for the title field (position-only, no fixed length), so the guard was always false.
+- Corrected numerous inaccuracies across `README.md`, `StepByStepGuide.md`, `MigrationGuide.md`, `PluginDevelopmentGuide.md`, `FAQ.md`, `CONTRIBUTING.md`, `SECURITY.md`, `NugetREADME.md`, and `AbstractionsREADME.txt` — including missing `--path` flags in examples, a stale default case-transform claim, an unparseable `abstractionsVersion` example, an undocumented `pluginallowlist` config key, and other drift between the docs and current behavior.
+
+---
+
+## [1.0.0-beta7] - 2026-08-04
 
 ### Added
 

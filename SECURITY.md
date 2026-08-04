@@ -6,7 +6,7 @@
 
 | Version | Supported          |
 |---------|--------------------|
-| 0.x     | ❌ Partially supported |
+| 0.x     | ⚠️ Partially supported |
 | 1.x     | ✅ Actively supported |
 
 ---
@@ -51,8 +51,9 @@ Typical in-scope concerns include:
 AdrPlus supports optional plugins loaded from `%UserProfile%/AdrPlus.Plugins/<name>/`, installed once per
 machine and shared across every repository on it. Plugins are **third-party code that runs with the invoking
 user's own OS permissions** — the same trust level as any other executable the user chooses to run. AdrPlus
-does not sandbox plugin code; an optional allowlist in `adrplus.json` (by name and/or assembly hash) lets a
-team restrict which plugins load, but does not isolate what an allowed plugin can do.
+does not sandbox plugin code; an optional allowlist in `adrplus.json`, matched by plugin name, lets a
+team restrict which plugins load (an assembly hash can also be set per entry but is not yet enforced and
+provides no security guarantee), but does not isolate what an allowed plugin can do.
 
 A plugin's `plugin.json` manifest — including its `settings` block — lives alongside the plugin binaries at
 the host-global location, not in the repository. Because `settings` is plain JSON on disk:

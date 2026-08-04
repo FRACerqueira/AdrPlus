@@ -148,9 +148,11 @@ This creates/edits `adrplus.json` with:
 Example `adrplus.json`:
 ```json
 {
-  "language": "en-US",
-  "comandopenadr": "code {0}",
-  "withoutargs": "Help"
+  "DefaultSettings": {
+    "language": "en-US",
+    "comandopenadr": "code {0}",
+    "withoutargs": "Help"
+  }
 }
 ```
 
@@ -172,7 +174,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
-  "lenrevision": 0,
+  "lenrevision": 2,
   "lenscope": 0,
   "separator": "-",
   "casetransform": "PascalCase",
@@ -343,7 +345,7 @@ The tool will then:
 If you prefer to skip prompts:
 
 ```bash
-adrplus new --title "Use PostgreSQL as primary database"
+adrplus new --path "path/to/repository" --title "Use PostgreSQL as primary database"
 ```
 
 ### What Your First ADR Looks Like
@@ -636,29 +638,20 @@ adrplus help supersede
 
 ### Troubleshooting Upgrade
 
-#### Issue: "Revision is already set"
+#### Issue: "There is a number/version/revision (X) greater than the Configured (Y)"
 
-**Problem:** You're trying to enable revisions when they're already enabled.
-
-**Solution:** 
-- This is a protection mechanism. If you need to change revision format, you must manually edit `adr-config.adrplus`
-- Or start fresh with a new repository
-
-#### Issue: "Scope is already set"
-
-**Problem:** You're trying to add scopes when they're already configured.
+**Problem:** You lowered `lenseq`, `lenversion`, or `lenrevision` in `adr-config.adrplus` to a digit count too small to represent a sequence number, version, or revision already used by an existing ADR in the repository.
 
 **Solution:**
-- Scopes can only be set once. To change scopes, manually edit `adr-config.adrplus`
-- Or initialize a new ADR repository with the desired scopes
+- Raise the digit count back to at least what the highest existing number/version/revision requires
+- Or manually rename the affected ADR file(s) before lowering it
 
-#### Issue: "Version value must be greater than current"
+#### Issue: Scope-related validation errors
 
-**Problem:** You specified a version digit count that's not greater than the current setting.
+**Problem:** `scopes`, `lenscope`, `folderbyscope`, and `skipdomain` are interdependent — e.g. `scopes` must be empty when `lenscope` is `0`, `folderbyscope: true` requires at least one scope, and `skipdomain` entries must be a subset of `scopes`.
 
 **Solution:**
-- Example: If current is `2`, you can only upgrade to `2` or `3`
-- To downgrade, manually edit `adr-config.adrplus`
+- Use `adrplus config --repository --wizard` rather than hand-editing `adr-config.adrplus`, so these rules are enforced as you go
 
 ### Next: Commit Your Changes
 
@@ -697,7 +690,7 @@ git commit -m "chore: upgrade ADR repository settings - add scope support"
 ### Issue: Cannot create ADR with special characters in title
 
 **Solution:**
-- AdrPlus uses `PascalCase` by default for file naming
+- AdrPlus uses `KebabCase` by default for file naming
 - Simplify your title to use only letters and numbers
 - Example: Instead of "Use PostgreSQL + Redis", use "Use PostgreSQL and Redis"
 

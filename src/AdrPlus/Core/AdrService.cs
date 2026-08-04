@@ -525,7 +525,7 @@ namespace AdrPlus.Core
             result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length), CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
             result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
             result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
-            result.Title = valuetitle.Length > 0 ? nameWithoutExtension[valuetitle.Position..] : string.Empty;
+            result.Title = valuetitle.Position < nameWithoutExtension.Length ? nameWithoutExtension[valuetitle.Position..] : string.Empty;
             return (true, result);
         }
 
