@@ -800,9 +800,9 @@
     "semantic_hash": "a9d62f203e84ef320ba7d2d6b85d545f"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs": {
-    "mtime": 1785795143.222875,
-    "ast_hash": "9fd018d835ea30373077bc7f46fb6a62",
-    "semantic_hash": "9fd018d835ea30373077bc7f46fb6a62"
+    "mtime": 1785862435.9118648,
+    "ast_hash": "48a3bc7a64fcfed42ebf819a49e15135",
+    "semantic_hash": ""
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerDispatchTests.cs": {
     "mtime": 1785795161.5525146,

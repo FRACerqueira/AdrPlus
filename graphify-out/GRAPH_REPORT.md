@@ -1,16 +1,16 @@
 # Graph Report - AdrPlus  (2026-08-04)
 
 ## Corpus Check
-- 288 files · ~211,094 words
+- 288 files · ~211,173 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3038 nodes · 10782 edges · 178 communities (88 shown, 90 thin omitted)
+- 3038 nodes · 10782 edges · 180 communities (90 shown, 90 thin omitted)
 - Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 3086 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `273458c6`
+- Built from commit: `cdbbef11`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -68,7 +68,7 @@
 - .RouteAsync
 - PluginManagerDispatchTests
 - AdrPlusConfig
-- ReviseCommandHandler
+- VersionCommandHandler
 - AdrPlus.Infrastructure.UI
 - AdrIndexerPlugin
 - AdrFileNameComponents
@@ -91,8 +91,10 @@
 - .LogError
 - Tyree-Ackerman ADR Template (English)
 - PluginManagerDisposalTests
+- ReviseCommandHandler
 - .ExecuteAsync
 - .PromptShowPluginsListTable
+- .Resolve
 - IPromptConsole (shared UI abstraction, #1 god node)
 - .PromptEditTitleAdr
 - IPluginLogger
@@ -229,7 +231,7 @@
 - **Mock Helper Selection Strategy (Generic vs Domain-Specific vs Fixture)** — tests_test_architecture_commandhandlermockhelper, tests_test_architecture_supersedecommandhandlermockhelper, tests_test_architecture_explorecommandhandlerfixture [EXTRACTED 1.00]
 - **ADR Structural Conceptual Framework (Template, REMAP, Ontology)** — src_adrplus_resources_tyree_ackerman_template, src_adrplus_resources_tyree_ackerman_template_remap_metamodel, src_adrplus_resources_tyree_ackerman_template_kyaruzi_van_katwijk_ontology [EXTRACTED 1.00]
 
-## Communities (178 total, 90 thin omitted)
+## Communities (180 total, 90 thin omitted)
 
 ### Community 0 - "IAdrServices"
 Cohesion: 0.06
@@ -419,9 +421,9 @@ Nodes (6): PluginManagerDispatchTests, Fact, IEnumerable, ILogger, string, Task
 Cohesion: 0.06
 Nodes (18): AdrPlusConfig, List, BehaviorWithoutArg, SearchOption, ExploreCommandHandlerTests, Fact, Task, ExploreCommandHandlerFixture (+10 more)
 
-### Community 54 - "ReviseCommandHandler"
-Cohesion: 0.13
-Nodes (11): ICommandHandler, ReviseCommandHandler, Arguments, DateTime, Dictionary, ILogger, VersionCommandHandler, Arguments (+3 more)
+### Community 54 - "VersionCommandHandler"
+Cohesion: 0.24
+Nodes (6): ICommandHandler, VersionCommandHandler, Arguments, DateTime, Dictionary, ILogger
 
 ### Community 55 - "AdrPlus.Infrastructure.UI"
 Cohesion: 0.11
@@ -476,8 +478,8 @@ Cohesion: 0.26
 Nodes (6): AdrPluginBaseTests, TestPlugin, CancellationToken, Fact, Task, ValueTask
 
 ### Community 68 - ".ExecuteAsync"
-Cohesion: 0.15
-Nodes (14): IsActive, MissingNames, AdrEventType, SyncCommandHandler, Arguments, CancellationToken, Dictionary, Func (+6 more)
+Cohesion: 0.24
+Nodes (9): AdrEventType, SyncCommandHandler, Arguments, CancellationToken, Dictionary, Func, ILogger, IReadOnlyList (+1 more)
 
 ### Community 69 - ".ParseAdrHeaderAndContentAsync"
 Cohesion: 0.14
@@ -507,6 +509,10 @@ Nodes (13): Tyree-Ackerman ADR Template (English), Tyree-Ackerman ADR Template (
 Cohesion: 0.40
 Nodes (5): PluginManagerDisposalTests, Fact, ILogger, string, Task
 
+### Community 77 - "ReviseCommandHandler"
+Cohesion: 0.27
+Nodes (5): ReviseCommandHandler, Arguments, DateTime, Dictionary, ILogger
+
 ### Community 78 - ".ExecuteAsync"
 Cohesion: 0.23
 Nodes (7): RejectCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task
@@ -514,6 +520,10 @@ Nodes (7): RejectCommandHandler, Arguments, CancellationToken, DateTime, Diction
 ### Community 79 - ".PromptShowPluginsListTable"
 Cohesion: 0.15
 Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
+
+### Community 80 - ".Resolve"
+Cohesion: 0.33
+Nodes (5): IsActive, MissingNames, PluginActivationGate, Func, IReadOnlyList
 
 ### Community 81 - "IPromptConsole (shared UI abstraction, #1 god node)"
 Cohesion: 0.36
@@ -575,11 +585,11 @@ Nodes (6): CancellationToken, Task, ActivePluginsWriter, CancellationToken, IEnu
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `IFileSystemService` connect `IFileSystemService` to `IAdrServices`, `ValidateJsonConfigTests`, `IValidateConfig`, `FileSystemServiceEnhancedTests`, `PluginManifest`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PluginsCommandHandlerTests`, `PluginManagerRetryTests`, `PromptConsole`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `UndoStatusCommandHandlerTests`, `PluginManager`, `ApproveCommandHandlerTests`, `WizardCommandHandler`, `PluginsCommandHandler`, `.ParseArgs`, `ConfigCommandHandler`, `PluginManagerBackfillTests`, `PluginManagerDispatchTests`, `AdrPlusConfig`, `ReviseCommandHandler`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.CreateHandler`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `PluginManagerDisposalTests`, `.ExecuteAsync`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.WriteAllTextAsync`?**
+- **Why does `IFileSystemService` connect `IFileSystemService` to `IAdrServices`, `ValidateJsonConfigTests`, `IValidateConfig`, `FileSystemServiceEnhancedTests`, `PluginManifest`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PluginsCommandHandlerTests`, `PluginManagerRetryTests`, `PromptConsole`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `UndoStatusCommandHandlerTests`, `PluginManager`, `ApproveCommandHandlerTests`, `WizardCommandHandler`, `PluginsCommandHandler`, `.ParseArgs`, `ConfigCommandHandler`, `PluginManagerBackfillTests`, `PluginManagerDispatchTests`, `AdrPlusConfig`, `VersionCommandHandler`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.CreateHandler`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `PluginManagerDisposalTests`, `ReviseCommandHandler`, `.ExecuteAsync`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.WriteAllTextAsync`?**
   _High betweenness centrality (0.144) - this node is a cross-community bridge._
 - **Why does `AdrPlus.Domain` connect `AdrPlus.Domain` to `ServiceCollectionExtensions.cs`, `AdrPlus.Infrastructure.FileSystem`, `.ParseAdrHeaderAndContentAsync`, `PatternParserTests`, `FieldsJson`, `TemplateResourcesTests`, `AdrPlusConfig`, `AdrPlus.Infrastructure.UI`, `CaseFormat & StringCaseExtensions`, `AdrFileNameComponents`, `IFileSystemService`, `AdrPlus.Commands`?**
   _High betweenness centrality (0.103) - this node is a cross-community bridge._
-- **Why does `AdrPlusRepoConfig` connect `IFileSystemService` to `IAdrServices`, `HelperTests`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `AdrServiceTests`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PromptConsole`, `AdrPlusRepoConfigTests`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `CaseFormat & StringCaseExtensions`, `AdrRecordTests`, `PluginsCommandHandler`, `ConfigCommandHandler`, `IPluginManager`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.PromptSelecAdrs`?**
+- **Why does `AdrPlusRepoConfig` connect `IFileSystemService` to `IAdrServices`, `HelperTests`, `.ReadAllTextAsync`, `.PromptSelectLogicalDrive`, `AdrServiceTests`, `.HasTemplateRepoFile`, `.ParseFileName`, `.ReadAllAdrByNumber`, `CancellationToken`, `PromptConsole`, `AdrPlusRepoConfigTests`, `ValidateConfig`, `.StatusUpdateAdrAsync`, `CaseFormat & StringCaseExtensions`, `AdrRecordTests`, `PluginsCommandHandler`, `ConfigCommandHandler`, `IPluginManager`, `AdrFileNameComponents`, `MigrateCommandHandler`, `.ExploreWizardAsync`, `.ExecuteAsync`, `.ParseAdrHeaderAndContentAsync`, `.Resolve`, `.PromptEditTitleAdr`, `.ReadAllAdr`, `.ReadAllAdrByNumber`, `.PromptGetArrayDomainsAdr`, `.PromptSelecAdrs`?**
   _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **What connects `net10.0`, `net9.0`, `net8.0` to the rest of the system?**
   _188 weakly-connected nodes found - possible documentation gaps or missing edges._

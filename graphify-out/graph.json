@@ -1681,7 +1681,7 @@
       "_origin": "ast",
       "id": "icommandhandler",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "icommandhandler"
     },
     {
@@ -4796,7 +4796,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": "revisecommandhandler"
     },
@@ -4807,7 +4807,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_cs_ilogger",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": "ilogger"
     },
@@ -4818,7 +4818,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_cs_arguments",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": "arguments"
     },
@@ -4908,7 +4908,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_logandwritesuccess",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".logandwritesuccess()"
     },
@@ -4925,7 +4925,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_logandwriteerror",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".logandwriteerror()"
     },
@@ -4942,7 +4942,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_parsedatereference",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".parsedatereference()"
     },
@@ -4953,7 +4953,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_cs_dictionary",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": "dictionary"
     },
@@ -4964,7 +4964,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_cs_datetime",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": "datetime"
     },
@@ -4981,7 +4981,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_openadrfileifrequested",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".openadrfileifrequested()"
     },
@@ -5015,7 +5015,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_logandwriteerrors",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".logandwriteerrors()"
     },
@@ -5032,7 +5032,7 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_commands_revise_revisecommandhandler_adrplus_commands_revise_revisecommandhandler_displaywizardsummary",
-      "community": 54,
+      "community": 77,
       "community_name": "ReviseCommandHandler",
       "norm_label": ".displaywizardsummary()"
     },
@@ -5826,7 +5826,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "versioncommandhandler"
     },
     {
@@ -5837,7 +5837,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_cs_ilogger",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "ilogger"
     },
     {
@@ -5848,7 +5848,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_cs_arguments",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "arguments"
     },
     {
@@ -5938,7 +5938,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_logandwritesuccess",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".logandwritesuccess()"
     },
     {
@@ -5955,7 +5955,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_logandwriteerror",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".logandwriteerror()"
     },
     {
@@ -5972,7 +5972,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_parsedatereference",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".parsedatereference()"
     },
     {
@@ -5983,7 +5983,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_cs_dictionary",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "dictionary"
     },
     {
@@ -5994,7 +5994,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_cs_datetime",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": "datetime"
     },
     {
@@ -6011,7 +6011,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_openadrfileifrequested",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".openadrfileifrequested()"
     },
     {
@@ -6045,7 +6045,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_logandwriteerrors",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".logandwriteerrors()"
     },
     {
@@ -6062,7 +6062,7 @@
       "_origin": "ast",
       "id": "src_adrplus_commands_version_versioncommandhandler_adrplus_commands_version_versioncommandhandler_displaywizardsummary",
       "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community_name": "VersionCommandHandler",
       "norm_label": ".displaywizardsummary()"
     },
     {
@@ -11266,8 +11266,8 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_infrastructure_logging_logmessages_adrplus_infrastructure_logging_logmessages_logerror",
-      "community": 54,
-      "community_name": "ReviseCommandHandler",
+      "community": 42,
+      "community_name": "LogMessages",
       "norm_label": ".logerror()"
     },
     {
@@ -16318,8 +16318,8 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_plugins_pluginactivationgate_adrplus_plugins_pluginactivationgate",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": "pluginactivationgate"
     },
     {
@@ -16335,8 +16335,8 @@
       },
       "_origin": "ast",
       "id": "src_adrplus_plugins_pluginactivationgate_adrplus_plugins_pluginactivationgate_resolve",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": ".resolve()"
     },
     {
@@ -16346,8 +16346,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_plugins_pluginactivationgate_cs_func",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": "func"
     },
     {
@@ -16357,8 +16357,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "isactive",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": "isactive"
     },
     {
@@ -16368,8 +16368,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_adrplus_plugins_pluginactivationgate_cs_ireadonlylist",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": "ireadonlylist"
     },
     {
@@ -16379,8 +16379,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "missingnames",
-      "community": 68,
-      "community_name": ".ExecuteAsync",
+      "community": 80,
+      "community_name": ".Resolve",
       "norm_label": "missingnames"
     },
     {
@@ -45515,8 +45515,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrplus.abstractions readme (markdown)",
-      "id": "abstractionsreadme",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme"
     },
     {
       "label": "IAdrPlugin interface",
@@ -45529,8 +45529,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "iadrplugin interface",
-      "id": "abstractionsreadme_iadrplugin",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_iadrplugin"
     },
     {
       "label": "AdrPluginBase base class",
@@ -45543,8 +45543,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrpluginbase base class",
-      "id": "abstractionsreadme_adrpluginbase",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_adrpluginbase"
     },
     {
       "label": "PluginResult / PluginResultStatus",
@@ -45557,8 +45557,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "pluginresult / pluginresultstatus",
-      "id": "abstractionsreadme_pluginresult",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_pluginresult"
     },
     {
       "label": "AdrEventContext",
@@ -45571,8 +45571,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adreventcontext",
-      "id": "abstractionsreadme_adreventcontext",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_adreventcontext"
     },
     {
       "label": "plugin.json manifest",
@@ -45585,8 +45585,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "plugin.json manifest",
-      "id": "abstractionsreadme_pluginjsonmanifest",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_pluginjsonmanifest"
     },
     {
       "label": "Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)",
@@ -45600,8 +45600,8 @@
       "rationale": "Plugin binaries, manifest, and dependencies are installed once per machine under %UserProfile%/AdrPlus.Plugins/<name>/ rather than per-repository; AdrPlus discovers and loads them automatically, while each repository still controls activation independently via activeplugins/disableplugins in its own adr-config.adrplus (ADR003 pivot from prior per-repo ./plugins/<name>/ model).",
       "community": 27,
       "norm_label": "host-global plugin storage (%userprofile%/adrplus.plugins/<name>/)",
-      "id": "abstractionsreadme_hostglobalpluginstorage",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_hostglobalpluginstorage"
     },
     {
       "label": "adr-config.adrplus (activeplugins/disableplugins)",
@@ -45614,8 +45614,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adr-config.adrplus (activeplugins/disableplugins)",
-      "id": "abstractionsreadme_adrconfigadrplus",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_adrconfigadrplus"
     },
     {
       "label": "PluginDevelopmentGuide.md (external reference)",
@@ -45628,8 +45628,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "plugindevelopmentguide.md (external reference)",
-      "id": "abstractionsreadme_plugindevelopmentguide",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_plugindevelopmentguide"
     },
     {
       "label": "doc/api-abstractions API reference",
@@ -45642,8 +45642,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "doc/api-abstractions api reference",
-      "id": "abstractionsreadme_apiabstractionsreference",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_apiabstractionsreference"
     },
     {
       "label": "AdrPlus.Abstractions README (plain text)",
@@ -45656,8 +45656,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrplus.abstractions readme (plain text)",
-      "id": "abstractionsreadme_txt",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt"
     },
     {
       "label": "Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)",
@@ -45671,8 +45671,8 @@
       "rationale": "Installed once per machine under %UserProfile%/AdrPlus.Plugins/<name>/, discovered and loaded automatically; each repository controls activation independently via activeplugins/disableplugins in its own adr-config.adrplus.",
       "community": 27,
       "norm_label": "host-global plugin storage (%userprofile%/adrplus.plugins/<name>/)",
-      "id": "abstractionsreadme_txt_hostglobalpluginstorage",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt_hostglobalpluginstorage"
     },
     {
       "label": "Plugin Development Guide (external reference)",
@@ -45685,8 +45685,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "plugin development guide (external reference)",
-      "id": "abstractionsreadme_txt_plugindevelopmentguide",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt_plugindevelopmentguide"
     },
     {
       "label": "AdrPlus.Abstractions API reference",
@@ -45699,8 +45699,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrplus.abstractions api reference",
-      "id": "abstractionsreadme_txt_apiabstractionsreference",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt_apiabstractionsreference"
     },
     {
       "label": "AdrPlus.Abstractions NuGet package",
@@ -45713,8 +45713,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrplus.abstractions nuget package",
-      "id": "abstractionsreadme_txt_nugetpackage",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt_nugetpackage"
     },
     {
       "label": "MIT License",
@@ -45727,8 +45727,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "mit license",
-      "id": "abstractionsreadme_txt_mitlicense",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "abstractionsreadme_txt_mitlicense"
     },
     {
       "label": "Security Policy (SECURITY.md)",
@@ -45741,8 +45741,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "security policy (security.md)",
-      "id": "security",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security"
     },
     {
       "label": "Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)",
@@ -45756,8 +45756,8 @@
       "rationale": "Plugins are loaded from %UserProfile%/AdrPlus.Plugins/<name>/, installed once per machine and shared across every repository on it, rather than per-repository storage.",
       "community": 27,
       "norm_label": "host-global plugin storage (%userprofile%/adrplus.plugins/<name>/)",
-      "id": "security_hostglobalpluginstorage",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_hostglobalpluginstorage"
     },
     {
       "label": "plugin.json manifest (settings block)",
@@ -45770,8 +45770,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "plugin.json manifest (settings block)",
-      "id": "security_pluginjsonmanifest",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_pluginjsonmanifest"
     },
     {
       "label": "Plugin trust model (no sandboxing)",
@@ -45785,8 +45785,8 @@
       "rationale": "Plugins are third-party code that runs with the invoking user's own OS permissions - the same trust level as any other executable the user chooses to run. AdrPlus does not sandbox plugin code.",
       "community": 27,
       "norm_label": "plugin trust model (no sandboxing)",
-      "id": "security_plugintrustmodel",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_plugintrustmodel"
     },
     {
       "label": "Plugin allowlist (adrplus.json, by name/assembly hash)",
@@ -45799,8 +45799,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "plugin allowlist (adrplus.json, by name/assembly hash)",
-      "id": "security_pluginallowlist",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_pluginallowlist"
     },
     {
       "label": "Credential handling rule for plugin settings",
@@ -45814,8 +45814,8 @@
       "rationale": "Never put real credential values in a plugin's settings block since plugin.json is plain JSON on disk at the host-global location; credential resolution (tokens, API keys) is entirely the plugin's own responsibility, never the host's.",
       "community": 27,
       "norm_label": "credential handling rule for plugin settings",
-      "id": "security_credentialhandling",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_credentialhandling"
     },
     {
       "label": "Supported Versions table",
@@ -45828,8 +45828,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "supported versions table",
-      "id": "security_supportedversions",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_supportedversions"
     },
     {
       "label": "Reporting a Vulnerability process",
@@ -45842,8 +45842,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "reporting a vulnerability process",
-      "id": "security_vulnerabilityreporting",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_vulnerabilityreporting"
     },
     {
       "label": "Security scope (local CLI tool)",
@@ -45856,8 +45856,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "security scope (local cli tool)",
-      "id": "security_scope",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_scope"
     },
     {
       "label": "Security Best Practices for Users",
@@ -45870,8 +45870,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "security best practices for users",
-      "id": "security_bestpractices",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "security_bestpractices"
     },
     {
       "label": "Step-by-Step Guide",
@@ -45884,8 +45884,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "step-by-step guide",
-      "id": "stepbystepguide",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide"
     },
     {
       "label": "Installation (dotnet tool install -g adrplus)",
@@ -45898,8 +45898,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "installation (dotnet tool install -g adrplus)",
-      "id": "stepbystepguide_installation",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_installation"
     },
     {
       "label": "Automatic first-time setup wizard",
@@ -45912,8 +45912,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "automatic first-time setup wizard",
-      "id": "stepbystepguide_firsttimewizard",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_firsttimewizard"
     },
     {
       "label": "adrplus.json (application settings)",
@@ -45926,8 +45926,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adrplus.json (application settings)",
-      "id": "stepbystepguide_adrplusjson",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_adrplusjson"
     },
     {
       "label": "adr-config.adrplus (repository settings)",
@@ -45940,8 +45940,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "adr-config.adrplus (repository settings)",
-      "id": "stepbystepguide_adrconfigadrplus",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_adrconfigadrplus"
     },
     {
       "label": "activeplugins / disableplugins config keys",
@@ -45954,8 +45954,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "activeplugins / disableplugins config keys",
-      "id": "stepbystepguide_activeplugins",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_activeplugins"
     },
     {
       "label": "Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/)",
@@ -45968,8 +45968,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "host-global plugin storage (%userprofile%/adrplus.plugins/)",
-      "id": "stepbystepguide_hostglobalpluginstorage",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_hostglobalpluginstorage"
     },
     {
       "label": "Create Your First ADR workflow",
@@ -45982,8 +45982,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "create your first adr workflow",
-      "id": "stepbystepguide_createadr",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_createadr"
     },
     {
       "label": "Approve Your ADR workflow",
@@ -45996,8 +45996,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "approve your adr workflow",
-      "id": "stepbystepguide_approveadr",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_approveadr"
     },
     {
       "label": "Migration Guide (MigrationGuide.md)",
@@ -46010,8 +46010,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "migration guide (migrationguide.md)",
-      "id": "stepbystepguide_migrationguide",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_migrationguide"
     },
     {
       "label": "Explorer command (view/manage ADR repository)",
@@ -46024,8 +46024,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "explorer command (view/manage adr repository)",
-      "id": "stepbystepguide_explorercommand",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_explorercommand"
     },
     {
       "label": "Version / Revise / Supersede commands",
@@ -46038,8 +46038,8 @@
       "contributor": null,
       "community": 27,
       "norm_label": "version / revise / supersede commands",
-      "id": "stepbystepguide_versionrevisesupersede",
-      "community_name": "AdrPlus.Abstractions README (plain text)"
+      "community_name": "AdrPlus.Abstractions README (plain text)",
+      "id": "stepbystepguide_versionrevisesupersede"
     }
   ],
   "links": [
@@ -179547,7 +179547,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs",
-      "source_location": "L241",
+      "source_location": "L244",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_adrplus_tests_plugins_pluginmanagerbackfilltests_adrplus_tests_plugins_pluginmanagerbackfilltests_backfillasync_whencancelledduringbackoff_returnspartialsummarywithoutthrowing",
@@ -179667,7 +179667,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs",
-      "source_location": "L246",
+      "source_location": "L249",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_adrplus_tests_plugins_pluginmanagerbackfilltests_adrplus_tests_plugins_pluginmanagerbackfilltests_backfillasync_whencancelledduringbackoff_returnspartialsummarywithoutthrowing",
@@ -179775,7 +179775,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs",
-      "source_location": "L246",
+      "source_location": "L249",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_adrplus_tests_plugins_pluginmanagerbackfilltests_adrplus_tests_plugins_pluginmanagerbackfilltests_backfillasync_whencancelledduringbackoff_returnspartialsummarywithoutthrowing",
@@ -185973,5 +185973,5 @@
       "source_file": "src/AdrPlus/Resources/tyree-ackerman-template.md"
     }
   ],
-  "built_at_commit": "273458c61dc31963f6beb5894dfe463513f26fb4"
+  "built_at_commit": "cdbbef116b6c2ba140e26bf8422d57d4dbfe775a"
 }
