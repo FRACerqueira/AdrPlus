@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<Version>1.0.0-beta7</Version>
+		<Version>1.0.0-beta8</Version>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<AssemblyName>adrplus</AssemblyName>
 		<Authors>Fernando Cerqueira</Authors>
