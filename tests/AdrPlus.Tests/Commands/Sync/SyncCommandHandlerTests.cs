@@ -294,7 +294,7 @@ public class SyncCommandHandlerTests
         _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
-        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, false));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, SyncWizardMode.Default));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
         _mockFileSystem.ReadAllTextAsync(Arg.Is<string>(s => s.EndsWith(".adrplus")), Arg.Any<CancellationToken>()).Returns(jsonConfig);
@@ -322,7 +322,7 @@ public class SyncCommandHandlerTests
         _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
-        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, SyncWizardMode.Backfill));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, true));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
@@ -351,7 +351,7 @@ public class SyncCommandHandlerTests
         _mockFileSystem.DirectoryExists(RepositoryPath).Returns(true);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
-        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true), (false, false));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, SyncWizardMode.Backfill), (false, SyncWizardMode.Default));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, false));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".adrplus"))).Returns(true);
@@ -391,7 +391,7 @@ public class SyncCommandHandlerTests
         _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
-        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((true, false));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((true, SyncWizardMode.Default));
 
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
@@ -406,10 +406,41 @@ public class SyncCommandHandlerTests
         _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepositoryPath));
-        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, true));
+        _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, SyncWizardMode.Backfill));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((true, false));
 
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_BackSelected_ReturnsWithoutSyncingOrOutput()
+    {
+        // Back is resolved right after the folder prompt (this wizard asks for the repo path before the
+        // mode, unlike Plugins) and, like Plugins' Back, produces no output — just a silent return.
+        Helper.SkipWizardContinuePrompt = false;
+        try
+        {
+            var args = new[] { "--wizard" };
+            var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardSync, string.Empty } };
+            _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+            _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+            _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
+                .Returns((false, RepositoryPath));
+            _mockConsole.PromptSelectSyncMode(Arg.Any<CancellationToken>()).Returns((false, SyncWizardMode.Back));
+
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+            _mockConsole.DidNotReceive().PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>());
+            await _mockPluginManager.DidNotReceive().RetryPendingAsync(Arg.Any<Func<string, (AdrRecordSnapshot, string, string)?>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<string>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+            await _mockPluginManager.DidNotReceive().BackfillAsync(Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(), Arg.Any<RepoInfoSnapshot>(), Arg.Any<Func<LoadedPlugin, bool>>(), Arg.Any<CancellationToken>());
+            // Signals WizardCommandHandler's outer loop to skip its "press any key to continue" pause,
+            // so Back feels instant instead of pausing on a screen with no output to read.
+            Helper.SkipWizardContinuePrompt.Should().BeTrue();
+        }
+        finally
+        {
+            Helper.SkipWizardContinuePrompt = false;
+        }
     }
 }

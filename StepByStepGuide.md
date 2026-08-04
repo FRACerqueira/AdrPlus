@@ -231,7 +231,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `headertablefields` | Table header for field names | `Field` |
 | `headertablevalues` | Table header for field values | `Value` |
 | `headermigrated` | Header label for "Migrated" indicator | `Migrated` |
-| `activeplugins` | Names of the plugins (under `./plugins/`) expected to be active for this repository. Written automatically by `init` from whatever's installed at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. | `[]` |
+| `activeplugins` | Names of the plugins (installed under `%UserProfile%/AdrPlus.Plugins/`) expected to be active for this repository. Written automatically by `init` from whatever's installed at the time; edit it via `adrplus plugins --wizard`'s manage mode rather than by hand. | `[]` |
 | `disableplugins` | Repository-wide kill switch. When `true`, no plugin ever dispatches for this repo — the ADR operation itself still completes normally. | `false` |
 
 #### Understanding key configuration concepts

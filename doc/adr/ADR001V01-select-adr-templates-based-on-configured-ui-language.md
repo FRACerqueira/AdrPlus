@@ -13,6 +13,10 @@
 ---
 # Select ADR templates based on configured UI language
 
+## Deciders
+
+* Deciders: Fernando Cerqueira (project maintainer)
+
 ## Context and Problem Statement
 
 AdrPlus ships 7 methodology ADR templates. Before 1.0.0-beta4, only English and Portuguese template variants existed, and the tool always offered these two regardless of the user's configured UI language. Beta4 added UI translations for 9 more languages (`de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN`) to match the set already shipped by the `PromptPlus` dependency. Should the ADR template offered to a user match their configured UI language, or continue to default to English/Portuguese only?

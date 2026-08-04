@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
@@ -41,11 +41,11 @@
 	<!-- API documentation, generated only on demand via `dotnet build -c ReleaseDoc` — never during
 	     Debug/Release builds and never wired into CI (mirrors PromptPlus's own ReleaseDoc config,
 	     see docs/api-documentation-guide.md there). -->
-	<ItemGroup Condition="'$(Configuration)' == 'ReleaseDoc'">
+	<ItemGroup Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
 		<PackageReference Include="DefaultDocumentation" Version="1.2.5" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'ReleaseDoc'">
+	<PropertyGroup Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
 		<DefaultDocumentationFolder>..\..\doc\api-abstractions</DefaultDocumentationFolder>
 		<DefaultDocumentationGeneratedPages>Assembly, Namespaces, Classes, Interfaces, Events, Enums, Structs, Delegates</DefaultDocumentationGeneratedPages>
 		<DefaultDocumentationGeneratedAccessModifiers>Public</DefaultDocumentationGeneratedAccessModifiers>
@@ -81,7 +81,7 @@
 			</Code>
 		</Task>
 	</UsingTask>
-	<Target Name="AddDocIconHeader" AfterTargets="DefaultDocumentation" Condition="'$(Configuration)' == 'ReleaseDoc'">
+	<Target Name="AddDocIconHeader" AfterTargets="DefaultDocumentation" Condition="'$(Configuration)' == 'ReleaseDoc' and '$(TargetFramework)' == 'net10.0'">
 		<PropertyGroup>
 			<_DocIconFolder>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(DefaultDocumentationFolder)'))))</_DocIconFolder>
 		</PropertyGroup>

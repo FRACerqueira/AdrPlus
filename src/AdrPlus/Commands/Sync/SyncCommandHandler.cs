@@ -71,7 +71,12 @@ namespace AdrPlus.Commands.Sync
 
                 if (parsedArgs.ContainsKey(Arguments.WizardSync))
                 {
-                    parsedArgs = await SyncWizard(cancellationToken);
+                    var wizardResult = await SyncWizard(cancellationToken);
+                    if (wizardResult is null)
+                    {
+                        return;
+                    }
+                    parsedArgs = wizardResult;
                 }
 
                 parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
@@ -216,10 +221,11 @@ namespace AdrPlus.Commands.Sync
         /// then returns the same <see cref="Dictionary{Arguments, String}"/> shape <c>ParseArgs</c> would have
         /// produced for the equivalent non-interactive flags — the rest of <see cref="ExecuteAsync"/> runs
         /// unchanged from there. Mirrors the loop-until-confirmed pattern used by every other wizard in the app
-        /// (e.g. <c>ApproveCommandHandler.ApproveAdrWizard</c>).
+        /// (e.g. <c>ApproveCommandHandler.ApproveAdrWizard</c>). Selecting <c>Back</c> at the mode prompt instead
+        /// returns <see langword="null"/>, signalling <see cref="ExecuteAsync"/> that there's nothing left to do.
         /// </summary>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any prompt.</exception>
-        private async Task<Dictionary<Arguments, string>> SyncWizard(CancellationToken cancellationToken)
+        private async Task<Dictionary<Arguments, string>?> SyncWizard(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
 
@@ -252,7 +258,13 @@ namespace AdrPlus.Commands.Sync
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                if (modePrompt.UseBackfill)
+                if (modePrompt.Mode == SyncWizardMode.Back)
+                {
+                    Helper.SkipWizardContinuePrompt = true;
+                    return null;
+                }
+
+                if (modePrompt.Mode == SyncWizardMode.Backfill)
                 {
                     // Extra safety gate that only the wizard can add: --backfill must never be automated, and
                     // automation is exactly what a TTY-only wizard can't do — this is the one place in the

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.IO.Compression;
 using System.Text.Json;
+using static AdrPlus.Tests.Helpers.TestPathData;
 
 namespace AdrPlus.Tests.Commands.Plugins;
 
@@ -213,7 +214,8 @@ public class PluginsCommandHandlerInstallTests : IDisposable
         _mockAdrServices.ParseArgs(Arg.Any<string[]>(), Arg.Any<Arguments[]>())
             .Returns(new Dictionary<Arguments, string> { [Arguments.WizardPlugins] = string.Empty });
         _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Install));
-        _mockConsole.PromptInputPluginZipPath(_mockFileSystem, Arg.Any<CancellationToken>()).Returns((false, zipPath));
+        _mockFileSystem.GetDrives().Returns([SingleTestDrive]);
+        _mockConsole.PromptInputPluginZipPath(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, zipPath));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((false, false));
 
         await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);

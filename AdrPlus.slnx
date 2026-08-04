@@ -1,8 +1,5 @@
 <Solution>
   <Configurations>
-    <Platform Name="Any CPU" />
-    <Platform Name="x64" />
-    <Platform Name="x86" />
     <BuildType Name="Debug" />
     <BuildType Name="Release" />
     <BuildType Name="ReleaseDoc" />
@@ -12,6 +9,7 @@
     <File Path="CHANGELOG.md" />
     <File Path="CODE_OF_CONDUCT.md" />
     <File Path="CONTRIBUTING.md" />
+    <File Path="doc/adr/indexadrs.md" />
     <File Path="FAQ.md" />
     <File Path="LICENSE" />
     <File Path="MigrationGuide.md" />
@@ -29,18 +27,18 @@
   <Folder Name="/src/">
     <Project Path="src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj" />
     <Project Path="src/AdrPlus.Plugins.AdrIndexer/AdrPlus.Plugins.AdrIndexer.csproj">
-      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+      <BuildType Solution="ReleaseDoc|*" Project="Release" />
     </Project>
     <Project Path="src/AdrPlus/AdrPlus.csproj">
-      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+      <BuildType Solution="ReleaseDoc|*" Project="Release" />
     </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj">
-      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+      <BuildType Solution="ReleaseDoc|*" Project="Release" />
     </Project>
     <Project Path="tests/AdrPlus.Tests/AdrPlus.Tests.csproj">
-      <Configuration Solution="ReleaseDoc|*" Project="Release|*" />
+      <BuildType Solution="ReleaseDoc|*" Project="Release" />
     </Project>
   </Folder>
 </Solution>

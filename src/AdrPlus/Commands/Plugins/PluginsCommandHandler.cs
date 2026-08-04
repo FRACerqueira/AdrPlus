@@ -550,9 +550,9 @@ namespace AdrPlus.Commands.Plugins
         /// <c>list</c>/<c>validate</c>, returns the same <see cref="Dictionary{Arguments, String}"/> shape
         /// <c>ParseArgs</c> would have produced for the equivalent non-interactive flags — the rest of
         /// <see cref="ExecuteAsync"/> runs unchanged from there (only its final rendering step is aware of
-        /// <c>--wizard</c>, to show a table instead of plain text). <c>manage</c>/<c>install</c>/<c>uninstall</c>
-        /// instead run to completion here and return <see langword="null"/>, signalling <see cref="ExecuteAsync"/>
-        /// that there's nothing left to do.
+        /// <c>--wizard</c>, to show a table instead of plain text). <c>manage</c>/<c>install</c>/<c>uninstall</c>/<c>back</c>
+        /// instead run to completion here (or, for <c>back</c>, do nothing) and return <see langword="null"/>,
+        /// signalling <see cref="ExecuteAsync"/> that there's nothing left to do.
         /// </summary>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any prompt.</exception>
         private async Task<Dictionary<Arguments, string>?> PluginsWizard(CancellationToken cancellationToken)
@@ -563,9 +563,16 @@ namespace AdrPlus.Commands.Plugins
                 throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
             }
 
+            if (modePrompt.Mode == PluginsWizardMode.Back)
+            {
+                Helper.SkipWizardContinuePrompt = true;
+                return null;
+            }
+
             if (modePrompt.Mode == PluginsWizardMode.Install)
             {
-                var zipPrompt = _prompt.PromptInputPluginZipPath(_fileSystem, cancellationToken);
+                var installRootPath = ResolveRootPath(cancellationToken);
+                var zipPrompt = _prompt.PromptInputPluginZipPath(installRootPath, cancellationToken);
                 if (zipPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -606,17 +613,7 @@ namespace AdrPlus.Commands.Plugins
                 return null;
             }
 
-            string[] drives = _fileSystem.GetDrives();
-            var rootPath = drives[0];
-            if (drives.Length > 1)
-            {
-                var (IsAborted, Content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
-                if (IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                rootPath = Content;
-            }
+            var rootPath = ResolveRootPath(cancellationToken);
 
             var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _fileSystem, _validateConfig, cancellationToken);
             if (folderPrompt.IsAborted)
@@ -636,6 +633,26 @@ namespace AdrPlus.Commands.Plugins
             };
             parsedArgs[modePrompt.Mode == PluginsWizardMode.Validate ? Arguments.PluginsValidate : Arguments.PluginsList] = string.Empty;
             return parsedArgs;
+        }
+
+        /// <summary>
+        /// Resolves the starting path for the wizard's file/folder browsers: the sole drive when there's
+        /// only one, otherwise prompts the user to pick one.
+        /// </summary>
+        /// <exception cref="OperationCanceledException">Thrown when the user cancels the drive prompt.</exception>
+        private string ResolveRootPath(CancellationToken cancellationToken)
+        {
+            string[] drives = _fileSystem.GetDrives();
+            if (drives.Length <= 1)
+            {
+                return drives[0];
+            }
+            var (isAborted, content) = _prompt.PromptSelectLogicalDrive(Resources.AdrPlus.NewAdrPromptSelectDrive, _fileSystem, cancellationToken);
+            if (isAborted)
+            {
+                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+            }
+            return content;
         }
 
         /// <summary>

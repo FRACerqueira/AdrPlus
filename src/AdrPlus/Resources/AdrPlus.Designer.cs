@@ -88,6 +88,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Backfill complete: {0} succeeded, {1} skipped, {2} permanently failed, {3} retries exhausted.
+        /// </summary>
+        internal static string BackfillSummaryReport {
+            get {
+                return ResourceManager.GetString("BackfillSummaryReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancelled by user.
         /// </summary>
         internal static string CancelledByUser {
@@ -169,6 +178,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage installed plugins: list, validate, activate, install, or uninstall.
+        /// </summary>
+        internal static string CmdDescPlugins {
+            get {
+                return ResourceManager.GetString("CmdDescPlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update the status of an ADR to &apos;rejected&apos;.
         /// </summary>
         internal static string CmdDescRejected {
@@ -196,15 +214,6 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Undo the status (accepted/rejected) of an ADR.
-        /// </summary>
-        internal static string CmdDescUndoStatus {
-            get {
-                return ResourceManager.GetString("CmdDescUndoStatus", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Re-attempt pending plugin events (adrplus sync).
         /// </summary>
         internal static string CmdDescSync {
@@ -212,7 +221,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("CmdDescSync", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undo the status (accepted/rejected) of an ADR.
+        /// </summary>
+        internal static string CmdDescUndoStatus {
+            get {
+                return ResourceManager.GetString("CmdDescUndoStatus", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Create a new ADR with a new version (incremental version, same number).
         /// </summary>
@@ -331,7 +349,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Language code for localization (e.g., en-US, pt-BR).
+        ///   Looks up a localized string similar to Language code for the tool&apos;s UI and ADR templates (e.g., en-US, pt-BR, de-DE)..
         /// </summary>
         internal static string ConfigFieldDescLanguage {
             get {
@@ -403,7 +421,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List of valid scopes for ADRs (separated by semicolon. &apos;*&apos; at the end of each scope to avoid using the domain).
+        ///   Looks up a localized string similar to List of valid scopes for ADRs (separated by semicolon; &apos;*&apos; at the end of each scope to avoid using the domain).
         /// </summary>
         internal static string ConfigFieldDescScopes {
             get {
@@ -799,7 +817,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;folderRepo&apos; must be a relative path. Absolute paths are not allowed: &apos;{0}&apos;.
+        ///   Looks up a localized string similar to &apos;folderRepo&apos; must be a relative path: &apos;{0}&apos;.
         /// </summary>
         internal static string ErrMsgFolderRepoMustBeRelative {
             get {
@@ -1015,7 +1033,52 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to After selected, press &apos;ESC&apos; if you want to return to the wizard.
+        ///   Looks up a localized string similar to Plugin folder already exists: {0} — use --force to overwrite.
+        /// </summary>
+        internal static string ErrPluginAlreadyInstalled {
+            get {
+                return ResourceManager.GetString("ErrPluginAlreadyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to plugin.json inside the zip declares &apos;{0}&apos; v{1}, but the file name says &apos;{2}&apos; v{3}.
+        /// </summary>
+        internal static string ErrPluginZipManifestMismatch {
+            get {
+                return ResourceManager.GetString("ErrPluginZipManifestMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zip file does not contain a plugin.json at its root.
+        /// </summary>
+        internal static string ErrPluginZipMissingManifest {
+            get {
+                return ResourceManager.GetString("ErrPluginZipMissingManifest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zip file name must match &lt;name&gt;-&lt;version&gt;.zip (for example AdrIndexer-1.0.0.zip): {0}.
+        /// </summary>
+        internal static string ErrPluginZipNameInvalid {
+            get {
+                return ResourceManager.GetString("ErrPluginZipNameInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zip entry &apos;{0}&apos; has an unsafe path and was rejected.
+        /// </summary>
+        internal static string ErrPluginZipTraversal {
+            get {
+                return ResourceManager.GetString("ErrPluginZipTraversal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After confirming the selection, press ‘ESC’ if you want to return to the wizard.
         /// </summary>
         internal static string EscForReturnWizard {
             get {
@@ -1483,6 +1546,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Full repository sweep — re-emits every settled ADR. Manual/occasional use only, never automate via cron/CI.
+        /// </summary>
+        internal static string HelpUsageBackfill {
+            get {
+                return ResourceManager.GetString("HelpUsageBackfill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reference date of ADR.
         /// </summary>
         internal static string HelpUsageDateRefAdr {
@@ -1537,23 +1609,14 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Display help information (supress all other arguments).
+        ///   Looks up a localized string similar to Display help information (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageHelp {
             get {
                 return ResourceManager.GetString("HelpUsageHelp", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Full repository sweep — re-emits every settled ADR. Manual/occasional use only, never automate via cron/CI.
-        /// </summary>
-        internal static string HelpUsageBackfill {
-            get {
-                return ResourceManager.GetString("HelpUsageBackfill", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Path to repository(repo) configuration json file.
         /// </summary>
@@ -1578,6 +1641,69 @@ namespace AdrPlus.Resources {
         internal static string HelpUsageOverwriteInit {
             get {
                 return ResourceManager.GetString("HelpUsageOverwriteInit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin name to add to this repository&apos;s active-plugin list.
+        /// </summary>
+        internal static string HelpUsagePluginsActivate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsActivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin name to remove from this repository&apos;s active-plugin list.
+        /// </summary>
+        internal static string HelpUsagePluginsDeactivate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsDeactivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to With --install, overwrite an already-installed plugin entirely.
+        /// </summary>
+        internal static string HelpUsagePluginsForce {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsForce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install for this machine.
+        /// </summary>
+        internal static string HelpUsagePluginsInstall {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List loaded plugins: name, version, subscribed events, allowlist status, and pending-item count.
+        /// </summary>
+        internal static string HelpUsagePluginsList {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin name to uninstall from this machine.
+        /// </summary>
+        internal static string HelpUsagePluginsUninstall {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsUninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Re-run structural load validation and report loaded vs. rejected plugins, without dispatching any event.
+        /// </summary>
+        internal static string HelpUsagePluginsValidate {
+            get {
+                return ResourceManager.GetString("HelpUsagePluginsValidate", resourceCulture);
             }
         }
         
@@ -1609,7 +1735,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard for approve of ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard for approve of ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardApprove {
             get {
@@ -1654,7 +1780,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to explorer ADR files (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to explorer ADR files (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardExplore {
             get {
@@ -1663,7 +1789,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to configure the file repository (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to configure the file repository (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardInit {
             get {
@@ -1681,7 +1807,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to create new ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to create new ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardNew {
             get {
@@ -1690,7 +1816,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to create a new revision of an ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to create a new revision of an ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardNewRev {
             get {
@@ -1699,7 +1825,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to create a new version of an ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to create a new version of an ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardNewVer {
             get {
@@ -1708,7 +1834,16 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard to reject an ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard to choose a plugin action and repository path when needed (suppress all other arguments).
+        /// </summary>
+        internal static string HelpUsageWizardPlugins {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardPlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard to reject an ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardReject {
             get {
@@ -1717,11 +1852,20 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard for supersede an ADR (supress all other arguments).
+        ///   Looks up a localized string similar to Wizard for supersede an ADR (suppress all other arguments).
         /// </summary>
         internal static string HelpUsageWizardSupersede {
             get {
                 return ResourceManager.GetString("HelpUsageWizardSupersede", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard to choose sync mode and repository path (suppress all other arguments).
+        /// </summary>
+        internal static string HelpUsageWizardSync {
+            get {
+                return ResourceManager.GetString("HelpUsageWizardSync", resourceCulture);
             }
         }
         
@@ -1859,7 +2003,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigEnterVersionLength", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Chinese.
         /// </summary>
@@ -1868,7 +2012,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageChinese", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Chinese.
         /// </summary>
@@ -1877,7 +2021,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageChineseDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Dutch.
         /// </summary>
@@ -1886,7 +2030,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageDutch", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Dutch.
         /// </summary>
@@ -1895,7 +2039,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageDutchDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
@@ -1913,7 +2057,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageEnglishDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to French.
         /// </summary>
@@ -1922,7 +2066,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageFrench", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in French.
         /// </summary>
@@ -1931,7 +2075,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageFrenchDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to German.
         /// </summary>
@@ -1940,7 +2084,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageGerman", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in German.
         /// </summary>
@@ -1949,7 +2093,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageGermanDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Italian.
         /// </summary>
@@ -1958,7 +2102,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageItalian", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Italian.
         /// </summary>
@@ -1967,7 +2111,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageItalianDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Japanese.
         /// </summary>
@@ -1976,7 +2120,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageJapanese", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Japanese.
         /// </summary>
@@ -1985,7 +2129,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageJapaneseDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Korean.
         /// </summary>
@@ -1994,7 +2138,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageKorean", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Korean.
         /// </summary>
@@ -2003,7 +2147,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageKoreanDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Other.
         /// </summary>
@@ -2039,7 +2183,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguagePortugueseDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Russian.
         /// </summary>
@@ -2048,7 +2192,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageRussian", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Russian.
         /// </summary>
@@ -2057,7 +2201,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageRussianDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Spanish.
         /// </summary>
@@ -2066,7 +2210,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageSpanish", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Interface tool, status and header will be in Spanish.
         /// </summary>
@@ -2075,7 +2219,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("InitConfigLanguageSpanishDesc", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Enter the list of scopes.
         /// </summary>
@@ -2392,7 +2536,7 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified ADR file not has a valid status ({0}) for updating.
+        ///   Looks up a localized string similar to The specified ADR file does not have a valid status ({0}) for updating.
         /// </summary>
         internal static string NotValidStatusForApproveAndReject {
             get {
@@ -2462,61 +2606,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginAllowlistHashNotEnforced", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: abstractionsVersion &apos;{1}&apos; is not compatible with the host&apos;s major version ({2}).
-        /// </summary>
-        internal static string PluginRejectedAbstractionsVersionIncompatible {
-            get {
-                return ResourceManager.GetString("PluginRejectedAbstractionsVersionIncompatible", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: queued for retry.
-        /// </summary>
-        internal static string PluginQueuedForRetry {
-            get {
-                return ResourceManager.GetString("PluginQueuedForRetry", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: permanent failure, not queued for retry — fix configuration and run &apos;adrplus sync --backfill&apos;.
-        /// </summary>
-        internal static string PluginPermanentFailure {
-            get {
-                return ResourceManager.GetString("PluginPermanentFailure", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: pending entry for ADR &apos;{1}&apos; no longer resolves to a file, dropping.
-        /// </summary>
-        internal static string PluginPendingAdrNotFound {
-            get {
-                return ResourceManager.GetString("PluginPendingAdrNotFound", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sync complete: {0} succeeded, {1} skipped, {2} still pending, {3} permanently failed, {4} dropped.
-        /// </summary>
-        internal static string SyncSummaryReport {
-            get {
-                return ResourceManager.GetString("SyncSummaryReport", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Backfill complete: {0} succeeded, {1} skipped, {2} permanently failed, {3} retries exhausted.
-        /// </summary>
-        internal static string BackfillSummaryReport {
-            get {
-                return ResourceManager.GetString("BackfillSummaryReport", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: backfill retries exhausted for ADR &apos;{1}&apos;, not queued — rerun &apos;adrplus sync --backfill&apos; to retry.
         /// </summary>
@@ -2525,124 +2615,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginBackfillExhausted", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Inspect plugins under ./plugins: list loaded plugins or validate their structural load.
-        /// </summary>
-        internal static string CmdDescPlugins {
-            get {
-                return ResourceManager.GetString("CmdDescPlugins", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to List loaded plugins: name, version, subscribed events, allowlist status, and pending-item count.
-        /// </summary>
-        internal static string HelpUsagePluginsList {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsList", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Re-run structural load validation and report loaded vs. rejected plugins, without dispatching any event.
-        /// </summary>
-        internal static string HelpUsagePluginsValidate {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsValidate", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin name to add to this repository's active-plugin list.
-        /// </summary>
-        internal static string HelpUsagePluginsActivate {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsActivate", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin name to remove from this repository's active-plugin list.
-        /// </summary>
-        internal static string HelpUsagePluginsDeactivate {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsDeactivate", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Path to a plugin zip named &lt;name&gt;-&lt;version&gt;.zip to install into ./plugins/&lt;name&gt;/.
-        /// </summary>
-        internal static string HelpUsagePluginsInstall {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsInstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin name to uninstall — deletes ./plugins/&lt;name&gt;/ and removes it from activeplugins.
-        /// </summary>
-        internal static string HelpUsagePluginsUninstall {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsUninstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to With --install, overwrite an existing ./plugins/&lt;name&gt;/ folder entirely, including plugin.json and state/.
-        /// </summary>
-        internal static string HelpUsagePluginsForce {
-            get {
-                return ResourceManager.GetString("HelpUsagePluginsForce", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Zip file name must match &lt;name&gt;-&lt;version&gt;.zip (for example AdrIndexer-1.0.0.zip): {0}.
-        /// </summary>
-        internal static string ErrPluginZipNameInvalid {
-            get {
-                return ResourceManager.GetString("ErrPluginZipNameInvalid", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Zip entry '{0}' has an unsafe path and was rejected.
-        /// </summary>
-        internal static string ErrPluginZipTraversal {
-            get {
-                return ResourceManager.GetString("ErrPluginZipTraversal", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Zip file does not contain a plugin.json at its root.
-        /// </summary>
-        internal static string ErrPluginZipMissingManifest {
-            get {
-                return ResourceManager.GetString("ErrPluginZipMissingManifest", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to plugin.json inside the zip declares '{0}' v{1}, but the file name says '{2}' v{3}.
-        /// </summary>
-        internal static string ErrPluginZipManifestMismatch {
-            get {
-                return ResourceManager.GetString("ErrPluginZipManifestMismatch", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin folder already exists: {0} — use --force to overwrite.
-        /// </summary>
-        internal static string ErrPluginAlreadyInstalled {
-            get {
-                return ResourceManager.GetString("ErrPluginAlreadyInstalled", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin installed: {0} v{1} — SHA256: {2}.
         /// </summary>
@@ -2651,529 +2624,52 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginInstalled", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Plugin uninstalled: {0}.
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: pending entry for ADR &apos;{1}&apos; no longer resolves to a file, dropping.
         /// </summary>
-        internal static string PluginUninstalled {
+        internal static string PluginPendingAdrNotFound {
             get {
-                return ResourceManager.GetString("PluginUninstalled", resourceCulture);
+                return ResourceManager.GetString("PluginPendingAdrNotFound", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Specify a subcommand: &apos;adrplus plugins --list&apos; or &apos;adrplus plugins --validate&apos;.
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: permanent failure, not queued for retry — fix configuration and run &apos;adrplus sync --backfill&apos;.
         /// </summary>
-        internal static string PluginsModeRequired {
+        internal static string PluginPermanentFailure {
             get {
-                return ResourceManager.GetString("PluginsModeRequired", resourceCulture);
+                return ResourceManager.GetString("PluginPermanentFailure", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Specify either --list or --validate, not both.
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: queued for retry.
         /// </summary>
-        internal static string PluginsModeAmbiguous {
+        internal static string PluginQueuedForRetry {
             get {
-                return ResourceManager.GetString("PluginsModeAmbiguous", resourceCulture);
+                return ResourceManager.GetString("PluginQueuedForRetry", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Allowlisted.
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: abstractionsVersion &apos;{1}&apos; is not compatible with the host&apos;s major version ({2}).
         /// </summary>
-        internal static string PluginsAllowlisted {
+        internal static string PluginRejectedAbstractionsVersionIncompatible {
             get {
-                return ResourceManager.GetString("PluginsAllowlisted", resourceCulture);
+                return ResourceManager.GetString("PluginRejectedAbstractionsVersionIncompatible", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to No allowlist configured (all plugins allowed).
-        /// </summary>
-        internal static string PluginsNoAllowlistConfigured {
-            get {
-                return ResourceManager.GetString("PluginsNoAllowlistConfigured", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} | {1} v{2} | events: {3} | allowlist: {4} | pending: {5}.
-        /// </summary>
-        internal static string PluginsListEntry {
-            get {
-                return ResourceManager.GetString("PluginsListEntry", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to No plugins loaded.
-        /// </summary>
-        internal static string PluginsListEmpty {
-            get {
-                return ResourceManager.GetString("PluginsListEmpty", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} plugin(s) loaded, {1} rejected.
-        /// </summary>
-        internal static string PluginsListSummary {
-            get {
-                return ResourceManager.GetString("PluginsListSummary", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to VALID {0} v{1}.
-        /// </summary>
-        internal static string PluginsValidateEntryValid {
-            get {
-                return ResourceManager.GetString("PluginsValidateEntryValid", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to REJECTED {0} — {1}: {2}.
-        /// </summary>
-        internal static string PluginsValidateEntryRejected {
-            get {
-                return ResourceManager.GetString("PluginsValidateEntryRejected", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to No plugin candidates found under ./plugins.
-        /// </summary>
-        internal static string PluginsValidateEmpty {
-            get {
-                return ResourceManager.GetString("PluginsValidateEmpty", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Validate complete: {0} valid, {1} rejected.
-        /// </summary>
-        internal static string PluginsValidateSummary {
-            get {
-                return ResourceManager.GetString("PluginsValidateSummary", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Wizard to choose sync mode and repository path (suppress all other arguments).
-        /// </summary>
-        internal static string HelpUsageWizardSync {
-            get {
-                return ResourceManager.GetString("HelpUsageWizardSync", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Wizard to choose list/validate mode and repository path (suppress all other arguments).
-        /// </summary>
-        internal static string HelpUsageWizardPlugins {
-            get {
-                return ResourceManager.GetString("HelpUsageWizardPlugins", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Choose sync mode.
-        /// </summary>
-        internal static string WizardSyncModePrompt {
-            get {
-                return ResourceManager.GetString("WizardSyncModePrompt", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Default re-drives only pending.json; Backfill sweeps the whole repository.
-        /// </summary>
-        internal static string WizardSyncModeDescription {
-            get {
-                return ResourceManager.GetString("WizardSyncModeDescription", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Default (re-drive pending).
-        /// </summary>
-        internal static string WizardSyncModeDefault {
-            get {
-                return ResourceManager.GetString("WizardSyncModeDefault", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Backfill (full repository sweep).
-        /// </summary>
-        internal static string WizardSyncModeBackfill {
-            get {
-                return ResourceManager.GetString("WizardSyncModeBackfill", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Run backfill now?.
-        /// </summary>
-        internal static string WizardConfirmBackfill {
-            get {
-                return ResourceManager.GetString("WizardConfirmBackfill", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Choose action.
-        /// </summary>
-        internal static string WizardPluginsModePrompt {
-            get {
-                return ResourceManager.GetString("WizardPluginsModePrompt", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to List shows loaded plugins; Validate reports structural load results.
-        /// </summary>
-        internal static string WizardPluginsModeDescription {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeDescription", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to List loaded plugins.
-        /// </summary>
-        internal static string WizardPluginsModeList {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeList", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Validate plugin structure.
-        /// </summary>
-        internal static string WizardPluginsModeValidate {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeValidate", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Manage active plugins.
-        /// </summary>
-        internal static string WizardPluginsModeManage {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeManage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Install a plugin from a zip.
-        /// </summary>
-        internal static string WizardPluginsModeInstall {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeInstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Uninstall a plugin.
-        /// </summary>
-        internal static string WizardPluginsModeUninstall {
-            get {
-                return ResourceManager.GetString("WizardPluginsModeUninstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin zip file path.
-        /// </summary>
-        internal static string PromptPluginZipPath {
-            get {
-                return ResourceManager.GetString("PromptPluginZipPath", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Enter the path to an existing zip file.
-        /// </summary>
-        internal static string PromptPluginZipPathInvalid {
-            get {
-                return ResourceManager.GetString("PromptPluginZipPathInvalid", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Overwrite if a plugin with the same name is already installed?.
-        /// </summary>
-        internal static string PromptPluginInstallForce {
-            get {
-                return ResourceManager.GetString("PromptPluginInstallForce", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Select the plugin(s) to uninstall.
-        /// </summary>
-        internal static string PromptSelectPluginToUninstall {
-            get {
-                return ResourceManager.GetString("PromptSelectPluginToUninstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to No plugins installed under ./plugins.
-        /// </summary>
-        internal static string PluginsNoInstalledPlugins {
-            get {
-                return ResourceManager.GetString("PluginsNoInstalledPlugins", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Select active plugins.
-        /// </summary>
-        internal static string WizardPluginsManagePrompt {
-            get {
-                return ResourceManager.GetString("WizardPluginsManagePrompt", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Repository active-plugin list updated: {0}.
-        /// </summary>
-        internal static string PluginsActiveUpdated {
-            get {
-                return ResourceManager.GetString("PluginsActiveUpdated", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Bundled with this AdrPlus install: {0}.
-        /// </summary>
-        internal static string WizardBuiltinPluginsAvailable {
-            get {
-                return ResourceManager.GetString("WizardBuiltinPluginsAvailable", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Loaded plugins.
-        /// </summary>
-        internal static string WizardPluginsListTableTitle {
-            get {
-                return ResourceManager.GetString("WizardPluginsListTableTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin validation report.
-        /// </summary>
-        internal static string WizardPluginsValidateTableTitle {
-            get {
-                return ResourceManager.GetString("WizardPluginsValidateTableTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Name.
-        /// </summary>
-        internal static string TableColumnName {
-            get {
-                return ResourceManager.GetString("TableColumnName", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Version.
-        /// </summary>
-        internal static string TableColumnVersion {
-            get {
-                return ResourceManager.GetString("TableColumnVersion", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Events.
-        /// </summary>
-        internal static string TableColumnEvents {
-            get {
-                return ResourceManager.GetString("TableColumnEvents", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Allowlist.
-        /// </summary>
-        internal static string TableColumnAllowlist {
-            get {
-                return ResourceManager.GetString("TableColumnAllowlist", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Pending.
-        /// </summary>
-        internal static string TableColumnPending {
-            get {
-                return ResourceManager.GetString("TableColumnPending", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Status.
-        /// </summary>
-        internal static string TableColumnStatus {
-            get {
-                return ResourceManager.GetString("TableColumnStatus", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Name / Folder.
-        /// </summary>
-        internal static string TableColumnNameOrFolder {
-            get {
-                return ResourceManager.GetString("TableColumnNameOrFolder", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Detail.
-        /// </summary>
-        internal static string TableColumnDetail {
-            get {
-                return ResourceManager.GetString("TableColumnDetail", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to VALID.
-        /// </summary>
-        internal static string PluginsValidateStatusValid {
-            get {
-                return ResourceManager.GetString("PluginsValidateStatusValid", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to REJECTED.
-        /// </summary>
-        internal static string PluginsValidateStatusRejected {
-            get {
-                return ResourceManager.GetString("PluginsValidateStatusRejected", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Missing plugin(s): {0} — check ./plugins or run 'adrplus plugins --wizard'.
-        /// </summary>
-        internal static string PluginsActiveMissing {
-            get {
-                return ResourceManager.GetString("PluginsActiveMissing", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Active.
-        /// </summary>
-        internal static string PluginsStatusActive {
-            get {
-                return ResourceManager.GetString("PluginsStatusActive", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Inactive.
-        /// </summary>
-        internal static string PluginsStatusInactive {
-            get {
-                return ResourceManager.GetString("PluginsStatusInactive", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Missing.
-        /// </summary>
-        internal static string PluginsStatusMissing {
-            get {
-                return ResourceManager.GetString("PluginsStatusMissing", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Disabled.
-        /// </summary>
-        internal static string PluginsStatusDisabled {
-            get {
-                return ResourceManager.GetString("PluginsStatusDisabled", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugins.
-        /// </summary>
-        internal static string WizardGroupPluginsTitle {
-            get {
-                return ResourceManager.GetString("WizardGroupPluginsTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sync pending plugin events and inspect loaded plugins.
-        /// </summary>
-        internal static string WizardGroupPluginsDescription {
-            get {
-                return ResourceManager.GetString("WizardGroupPluginsDescription", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sync pending plugin events.
-        /// </summary>
-        internal static string WizardPluginsSyncTitle {
-            get {
-                return ResourceManager.GetString("WizardPluginsSyncTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to List or validate plugins.
-        /// </summary>
-        internal static string WizardPluginsDiagnosticsTitle {
-            get {
-                return ResourceManager.GetString("WizardPluginsDiagnosticsTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sync command help.
-        /// </summary>
-        internal static string WizardHelpSyncTitle {
-            get {
-                return ResourceManager.GetString("WizardHelpSyncTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugins command help.
-        /// </summary>
-        internal static string WizardHelpPluginsTitle {
-            get {
-                return ResourceManager.GetString("WizardHelpPluginsTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name shared with another plugin folder; neither will be loaded.
+        ///   Looks up a localized string similar to Plugin &apos;{0}&apos; in &apos;{1}&apos;: duplicate name; neither will be loaded.
         /// </summary>
         internal static string PluginRejectedDuplicateName {
             get {
                 return ResourceManager.GetString("PluginRejectedDuplicateName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin in &apos;{0}&apos;: &apos;entryAssembly&apos; must be a plain file name, without path separators or &apos;..&apos;: &apos;{1}&apos;.
         /// </summary>
@@ -3182,7 +2678,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginRejectedEntryAssemblyPathTraversal", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: entryType &apos;{1}&apos; does not implement IAdrPlugin, or its Name/Version do not match the manifest.
         /// </summary>
@@ -3191,7 +2687,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginRejectedEntryTypeIncompatible", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin in &apos;{0}&apos;: manifest is invalid: {1}.
         /// </summary>
@@ -3200,7 +2696,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginRejectedManifestInvalid", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin &apos;{0}&apos;: not in the configured plugin allowlist; skipped.
         /// </summary>
@@ -3209,7 +2705,196 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PluginRejectedNotInAllowlist", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing plugin(s): {0} — see &apos;adrplus plugins --list&apos; or &apos;--wizard&apos;.
+        /// </summary>
+        internal static string PluginsActiveMissing {
+            get {
+                return ResourceManager.GetString("PluginsActiveMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository active-plugin list updated: {0}.
+        /// </summary>
+        internal static string PluginsActiveUpdated {
+            get {
+                return ResourceManager.GetString("PluginsActiveUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allowlisted.
+        /// </summary>
+        internal static string PluginsAllowlisted {
+            get {
+                return ResourceManager.GetString("PluginsAllowlisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No plugins loaded.
+        /// </summary>
+        internal static string PluginsListEmpty {
+            get {
+                return ResourceManager.GetString("PluginsListEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} | {1} v{2} | events: {3} | allowlist: {4} | pending: {5}.
+        /// </summary>
+        internal static string PluginsListEntry {
+            get {
+                return ResourceManager.GetString("PluginsListEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} plugin(s) loaded, {1} rejected.
+        /// </summary>
+        internal static string PluginsListSummary {
+            get {
+                return ResourceManager.GetString("PluginsListSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specify exactly one of --list, --validate, --activate, --deactivate, --install, or --uninstall.
+        /// </summary>
+        internal static string PluginsModeAmbiguous {
+            get {
+                return ResourceManager.GetString("PluginsModeAmbiguous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specify a subcommand: &apos;adrplus plugins --list&apos;, &apos;--validate&apos;, &apos;--activate &lt;name&gt;&apos;, &apos;--deactivate &lt;name&gt;&apos;, &apos;--install &lt;path&gt;&apos;, or &apos;--uninstall &lt;name&gt;&apos;.
+        /// </summary>
+        internal static string PluginsModeRequired {
+            get {
+                return ResourceManager.GetString("PluginsModeRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No allowlist configured (all plugins allowed).
+        /// </summary>
+        internal static string PluginsNoAllowlistConfigured {
+            get {
+                return ResourceManager.GetString("PluginsNoAllowlistConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No plugins installed.
+        /// </summary>
+        internal static string PluginsNoInstalledPlugins {
+            get {
+                return ResourceManager.GetString("PluginsNoInstalledPlugins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        internal static string PluginsStatusActive {
+            get {
+                return ResourceManager.GetString("PluginsStatusActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        internal static string PluginsStatusDisabled {
+            get {
+                return ResourceManager.GetString("PluginsStatusDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        internal static string PluginsStatusInactive {
+            get {
+                return ResourceManager.GetString("PluginsStatusInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing.
+        /// </summary>
+        internal static string PluginsStatusMissing {
+            get {
+                return ResourceManager.GetString("PluginsStatusMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No plugin candidates found.
+        /// </summary>
+        internal static string PluginsValidateEmpty {
+            get {
+                return ResourceManager.GetString("PluginsValidateEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to REJECTED {0} — {1}: {2}.
+        /// </summary>
+        internal static string PluginsValidateEntryRejected {
+            get {
+                return ResourceManager.GetString("PluginsValidateEntryRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VALID {0} v{1}.
+        /// </summary>
+        internal static string PluginsValidateEntryValid {
+            get {
+                return ResourceManager.GetString("PluginsValidateEntryValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to REJECTED.
+        /// </summary>
+        internal static string PluginsValidateStatusRejected {
+            get {
+                return ResourceManager.GetString("PluginsValidateStatusRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VALID.
+        /// </summary>
+        internal static string PluginsValidateStatusValid {
+            get {
+                return ResourceManager.GetString("PluginsValidateStatusValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate complete: {0} valid, {1} rejected.
+        /// </summary>
+        internal static string PluginsValidateSummary {
+            get {
+                return ResourceManager.GetString("PluginsValidateSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin uninstalled: {0}.
+        /// </summary>
+        internal static string PluginUninstalled {
+            get {
+                return ResourceManager.GetString("PluginUninstalled", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Prefix.
         /// </summary>
@@ -3364,6 +3049,24 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Overwrite if a plugin with the same name is already installed?.
+        /// </summary>
+        internal static string PromptPluginInstallForce {
+            get {
+                return ResourceManager.GetString("PromptPluginInstallForce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin zip file path.
+        /// </summary>
+        internal static string PromptPluginZipPath {
+            get {
+                return ResourceManager.GetString("PromptPluginZipPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a length for the &apos;Prefix&apos; element at filename.
         /// </summary>
         internal static string PromptPrefixLength {
@@ -3432,6 +3135,15 @@ namespace AdrPlus.Resources {
         internal static string PromptSelectFolderForReport {
             get {
                 return ResourceManager.GetString("PromptSelectFolderForReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the plugin(s) to uninstall.
+        /// </summary>
+        internal static string PromptSelectPluginToUninstall {
+            get {
+                return ResourceManager.GetString("PromptSelectPluginToUninstall", resourceCulture);
             }
         }
         
@@ -3769,6 +3481,87 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sync complete: {0} succeeded, {1} skipped, {2} still pending, {3} permanently failed, {4} dropped.
+        /// </summary>
+        internal static string SyncSummaryReport {
+            get {
+                return ResourceManager.GetString("SyncSummaryReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allowlist.
+        /// </summary>
+        internal static string TableColumnAllowlist {
+            get {
+                return ResourceManager.GetString("TableColumnAllowlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detail.
+        /// </summary>
+        internal static string TableColumnDetail {
+            get {
+                return ResourceManager.GetString("TableColumnDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Events.
+        /// </summary>
+        internal static string TableColumnEvents {
+            get {
+                return ResourceManager.GetString("TableColumnEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string TableColumnName {
+            get {
+                return ResourceManager.GetString("TableColumnName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name / Folder.
+        /// </summary>
+        internal static string TableColumnNameOrFolder {
+            get {
+                return ResourceManager.GetString("TableColumnNameOrFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        internal static string TableColumnPending {
+            get {
+                return ResourceManager.GetString("TableColumnPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        internal static string TableColumnStatus {
+            get {
+                return ResourceManager.GetString("TableColumnStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        internal static string TableColumnVersion {
+            get {
+                return ResourceManager.GetString("TableColumnVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Template.
         /// </summary>
         internal static string Template {
@@ -3902,7 +3695,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ValidationMustbeFollowing", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Plugin allowlist entry at index {0} is missing required field &apos;name&apos;.
         /// </summary>
@@ -3911,7 +3704,7 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ValidationPluginAllowlistEntryMissingName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Each scope in &apos;{0}&apos; must be at least as long as the &apos;{1}&apos; value ({2}).
         /// </summary>
@@ -4084,6 +3877,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bundled with this AdrPlus install: {0}.
+        /// </summary>
+        internal static string WizardBuiltinPluginsAvailable {
+            get {
+                return ResourceManager.GetString("WizardBuiltinPluginsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configure this application.
         /// </summary>
         internal static string WizardConfigApplicationTitle {
@@ -4125,6 +3927,15 @@ namespace AdrPlus.Resources {
         internal static string WizardConfigTemplateTitle {
             get {
                 return ResourceManager.GetString("WizardConfigTemplateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run backfill now?.
+        /// </summary>
+        internal static string WizardConfirmBackfill {
+            get {
+                return ResourceManager.GetString("WizardConfirmBackfill", resourceCulture);
             }
         }
         
@@ -4228,6 +4039,24 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sync pending plugin events and inspect loaded plugins.
+        /// </summary>
+        internal static string WizardGroupPluginsDescription {
+            get {
+                return ResourceManager.GetString("WizardGroupPluginsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugins.
+        /// </summary>
+        internal static string WizardGroupPluginsTitle {
+            get {
+                return ResourceManager.GetString("WizardGroupPluginsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Approve command help.
         /// </summary>
         internal static string WizardHelpApproveTitle {
@@ -4291,6 +4120,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugins command help.
+        /// </summary>
+        internal static string WizardHelpPluginsTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpPluginsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reject command help.
         /// </summary>
         internal static string WizardHelpRejectTitle {
@@ -4318,6 +4156,15 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sync command help.
+        /// </summary>
+        internal static string WizardHelpSyncTitle {
+            get {
+                return ResourceManager.GetString("WizardHelpSyncTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Undo command help.
         /// </summary>
         internal static string WizardHelpUndoTitle {
@@ -4341,6 +4188,168 @@ namespace AdrPlus.Resources {
         internal static string WizardMainMenu {
             get {
                 return ResourceManager.GetString("WizardMainMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List or validate plugins.
+        /// </summary>
+        internal static string WizardPluginsDiagnosticsTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsDiagnosticsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded plugins.
+        /// </summary>
+        internal static string WizardPluginsListTableTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsListTableTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select active plugins.
+        /// </summary>
+        internal static string WizardPluginsManagePrompt {
+            get {
+                return ResourceManager.GetString("WizardPluginsManagePrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List shows loaded plugins; Validate checks structural load; Install/Uninstall manage plugins for this machine.
+        /// </summary>
+        internal static string WizardPluginsModeDescription {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        internal static string WizardPluginsModeBack {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install a plugin from a zip.
+        /// </summary>
+        internal static string WizardPluginsModeInstall {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List loaded plugins.
+        /// </summary>
+        internal static string WizardPluginsModeList {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage active plugins.
+        /// </summary>
+        internal static string WizardPluginsModeManage {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeManage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose action.
+        /// </summary>
+        internal static string WizardPluginsModePrompt {
+            get {
+                return ResourceManager.GetString("WizardPluginsModePrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall a plugin.
+        /// </summary>
+        internal static string WizardPluginsModeUninstall {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeUninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate plugin structure.
+        /// </summary>
+        internal static string WizardPluginsModeValidate {
+            get {
+                return ResourceManager.GetString("WizardPluginsModeValidate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync pending plugin events.
+        /// </summary>
+        internal static string WizardPluginsSyncTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsSyncTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin validation report.
+        /// </summary>
+        internal static string WizardPluginsValidateTableTitle {
+            get {
+                return ResourceManager.GetString("WizardPluginsValidateTableTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        internal static string WizardSyncModeBack {
+            get {
+                return ResourceManager.GetString("WizardSyncModeBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backfill (full repository sweep).
+        /// </summary>
+        internal static string WizardSyncModeBackfill {
+            get {
+                return ResourceManager.GetString("WizardSyncModeBackfill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default (re-drive pending).
+        /// </summary>
+        internal static string WizardSyncModeDefault {
+            get {
+                return ResourceManager.GetString("WizardSyncModeDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default re-drives only pending.json; Backfill sweeps the whole repository.
+        /// </summary>
+        internal static string WizardSyncModeDescription {
+            get {
+                return ResourceManager.GetString("WizardSyncModeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose sync mode.
+        /// </summary>
+        internal static string WizardSyncModePrompt {
+            get {
+                return ResourceManager.GetString("WizardSyncModePrompt", resourceCulture);
             }
         }
         

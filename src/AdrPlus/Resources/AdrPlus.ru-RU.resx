@@ -448,6 +448,9 @@
   <data name="WizardSyncModeDescription" xml:space="preserve">
     <value>Default повторно обрабатывает только pending.json; Backfill просматривает весь репозиторий</value>
   </data>
+  <data name="WizardSyncModeBack" xml:space="preserve">
+    <value>Назад</value>
+  </data>
   <data name="WizardSyncModeDefault" xml:space="preserve">
     <value>Default (повторно обработать ожидающие)</value>
   </data>
@@ -462,6 +465,9 @@
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
     <value>List показывает загруженные плагины; Validate проверяет структурную загрузку; Install/Uninstall управляют плагинами на этом компьютере</value>
+  </data>
+  <data name="WizardPluginsModeBack" xml:space="preserve">
+    <value>Назад</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Показать загруженные плагины</value>
@@ -480,9 +486,6 @@
   </data>
   <data name="PromptPluginZipPath" xml:space="preserve">
     <value>Путь к zip-файлу плагина</value>
-  </data>
-  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
-    <value>Укажите путь к существующему zip-файлу</value>
   </data>
   <data name="PromptPluginInstallForce" xml:space="preserve">
     <value>Перезаписать, если плагин с таким именем уже установлен?</value>

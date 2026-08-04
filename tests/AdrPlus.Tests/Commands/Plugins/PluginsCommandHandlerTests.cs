@@ -614,4 +614,29 @@ public class PluginsCommandHandlerTests
         _mockConsole.DidNotReceive().PromptSelectPluginsToUninstall(Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>());
         _mockConsole.DidNotReceive().PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<IValidateConfig>(), Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_BackSelected_ReturnsWithoutFolderPromptOrOutput()
+    {
+        // Back is resolved before any folder prompt, matching Install/Uninstall/Manage's shape,
+        // and unlike them produces no output at all — just an early return to the caller's menu.
+        Helper.SkipWizardContinuePrompt = false;
+        try
+        {
+            SetupWizardParsedArgs();
+            _mockConsole.PromptSelectPluginsMode(Arg.Any<CancellationToken>()).Returns((false, PluginsWizardMode.Back));
+
+            await _handler.ExecuteAsync(["--wizard"], TestContext.Current.CancellationToken);
+
+            _mockConsole.DidNotReceive().PromptWriteInfo(Arg.Any<string>());
+            _mockConsole.DidNotReceive().PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<IFileSystemService>(), Arg.Any<IValidateConfig>(), Arg.Any<CancellationToken>());
+            // Signals WizardCommandHandler's outer loop to skip its "press any key to continue" pause,
+            // so Back feels instant instead of pausing on a screen with no output to read.
+            Helper.SkipWizardContinuePrompt.Should().BeTrue();
+        }
+        finally
+        {
+            Helper.SkipWizardContinuePrompt = false;
+        }
+    }
 }

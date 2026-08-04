@@ -1,202 +1,206 @@
-# Graph Report - AdrPlus  (2026-08-03)
+# Graph Report - .  (2026-08-04)
 
 ## Corpus Check
-- 267 files · ~204,616 words
+- 4 files · ~210,986 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3705 nodes · 11374 edges · 178 communities (169 shown, 9 thin omitted)
-- Extraction: 73% EXTRACTED · 27% INFERRED · 0% AMBIGUOUS · INFERRED: 3058 edges (avg confidence: 0.8)
-- Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `4c030e62`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- 3022 nodes · 10782 edges · 187 communities (94 shown, 93 thin omitted)
+- Extraction: 71% EXTRACTED · 29% INFERRED · 0% AMBIGUOUS · INFERRED: 3086 edges (avg confidence: 0.8)
+- Token cost: 0 input · 73,684 output
 
 ## Community Hubs (Navigation)
-- ValidateJsonConfigTests
-- .DirectoryExists
-- FileSystemServiceEnhancedTests
-- PatternParserTests
-- .ParseArgs
-- .FileExists
-- .ParseFileName
-- .ValidateRepoStructure
-- VersionCommandHandlerTests
-- NewAdrCommandHandlerTests
-- HelperTests
-- CancellationToken
-- FieldsJson
-- AdrFileNameComponentsTests
-- PathHelper
-- PromptConsole
-- AdrPlusRepoConfigTests
-- AdrPlus.Domain
-- PluginManager
-- AdrServiceTests
-- StringCaseExtensionsTests
-- HelpCommandHandlerTests
-- AdrPlus.Commands
-- ValidateConfig
-- UndoStatusCommandHandlerTests
-- WizardCommandHandler
-- AdrPlus.Abstractions
-- ServiceCollectionExtensions.cs
-- .StatusUpdateAdrAsync
-- .Create
-- .ExecuteAsync
-- .WriteAllTextAsync
-- SyncCommandHandlerTests
-- PluginsCommandHandlerInstallTests
-- Plugin Development Guide
-- IPluginManager
-- .ExploreWizardAsync
-- MainProgram
-- IFileSystemService
-- HelpUsageAttributeTests
-- TemplateResourcesTests
-- AdrPlus CHANGELOG
-- .ExecuteAsync
-- PluginManifest
-- ConfigCommandHandlerTests
-- .PromptWriteSuccess
-- AdrPlus.Infrastructure.FileSystem
-- PluginManagerRetryTests
-- LogMessages
-- AdrPlus.Tests.csproj
-- .ParseAdrHeaderAndContentAsync
-- AdrHeaderTests
-- PluginManagerBackfillTests
-- Task
-- CommandAttributeTests
-- .PromptShowPluginsListTable
-- .RouteAsync
-- PluginManagerDispatchTests
-- IConsoleWriter
-- IValidateConfig
-- AdrPlus.Infrastructure.UI
-- .OnAdrEventAsync
-- AbstractionsREADME.md
-- AdrIndexerPlugin
-- .ResolveAppVersion
-- InitCommandHandler
-- .PromptWriteError
-- .BuildAdrKey
-- .PromptShowPluginsListTable
-- Select ADR templates based on configured UI language
-- LowercaseNamingPolicyTests
-- PluginManagerTests
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- IAdrPlugin
-- .GetCommands
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- AdrService
-- [결정에 대한 간단한 제목]
-- PluginManagerDisposalTests
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- AdrPluginBaseTests
-- IPluginLogger
+- NewAdr & Supersede Command Handlers (+Tests)
+- ValidateJsonConfig Tests
+- Helper Utility (+Tests)
+- Config Command Handler & Validation
+- FileSystemService (+Tests)
+- PromptConsole Editor/IDE Detection
+- PluginManifest & PluginLoader
+- IConsoleWriter Contract (+Tests)
+- Migrate Command Handler & Wizard Args
+- AdrService Parsing (+Tests)
+- Init Command Handler & Config Limits
+- Revise Command Handler (+Tests)
+- Version Command Handler (+Tests)
+- PromptConsole UI Fields
+- FieldsJson & Config Prompts
+- AdrFilenameComponents (+Tests)
+- PluginRejectionReason & Plugins Handler Tests
+- PendingEntry & PendingStateStore
+- PromptConsole Rendering (Color/Position)
+- AdrPlusRepoConfig & PluginSnapshotExtensions Tests
+- ADR/Plugin Documentation Set (README, ADRs, API docs)
+- ValidateConfig Core Logic
+- IAdrServices Contract & CultureData Helper
+- Core Domain & Command Classes (AdrService, Helper, Records)
+- CaseFormat & StringCaseExtensions
+- IAdrServices Command Metadata & HelpCommandHandler
+- UndoStatus Command Handler (+Tests)
+- Plugin Storage & Security Docs (AbstractionsREADME, SECURITY, StepByStepGuide)
+- PluginManager & SyncSummary
+- AdrService & AdrPlusRepoConfig
+- Approve Command Handler (+Tests)
+- Command Attributes (Command/Argument/HelpUsage) & Handler Tests
+- Wizard Command Handler & ItemMenuWizard
+- MainProgram & IMainProgram
+- Command Handlers & ServiceCollectionExtensions DI Wiring
+- HelpUsageAttribute Tests
+- Plugin System & Init/Migrate Command Handlers (+Tests)
+- AdrRecord Header/Filename (+Tests)
+- PluginsCommandHandler Config
+- Sync Command Handler (+Tests)
+- CommandArgumentAttribute Tests
+- AdrPlus Csproj/NuGet Package Metadata
+- LogMessages & PluginHostContext Logging
+- Abstractions Events & PluginManager (+Tests)
+- ICommandHandler Contract Implementations
+- Plugins Install via Zip (+Tests)
+- AdrHeader Tests
+- PluginManager Backfill Tests
+- CultureData & Localization Tests
+- CommandAttribute Tests
+- AdrEventType & IPluginManager Contract
+- CommandRouter (+Tests)
+- PluginManager Dispatch Tests
+- Explore Command Handler (+Tests)
+- Revise Command Handler & LogMessages Info
+- Program/MainProgram & UI Prompt Contracts
+- AdrIndexer Plugin
+- AdrStatus & Approve Command Handler
+- Alexandrian & Business Case ADR Templates
+- Program Entry Point (+Tests)
+- RepoInfoSnapshot & Factory (Abstractions Testing)
+- PromptConsole Plugin/Event Fields
+- Explore Command Handler Arguments
+- AdrEventContext & AdrRecordSnapshot Factories (+Tests)
+- PathHelper Tests
+- LowerCaseNamingPolicy (+Tests)
+- PluginResult & AdrPluginBase (Abstractions)
+- AdrPluginBase DisposeAsync Tests
+- Sync Command Handler Fields
+- AdrHeader & AdrService Content
+- PluginManager Tests
+- IAdrPlugin & IPluginConfiguration Contracts
+- AdrService Command Metadata
+- Test Architecture Conventions
 - ConfigVersionManager
-- .ComputeDelay
-- AdrStatusTests
+- Tyree-Ackerman ADR Template (i18n)
+- PluginManager Disposal Tests
+- PluginsCommandHandler Fields
+- Reject Command Handler
+- IConsoleWriter Plugin/Event Fields
+- IExplorePrompts Contract
+- Graphify Query History Snapshots
+- Arguments & ExploreCommandHandlerMockHelper
+- Plugins Wizard Mode Selection
+- INewAdrPrompts Contract
+- IPluginLogger & IPluginContext
+- ComputeDelay Backoff (+Tests)
+- AdrStatus Tests
 - AppConstants
-- .ExecuteAsync
 - PluginInvokeOutcome
-- PluginLoader.cs
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- ItemMenuWizardTests
-- FormatMessages
-- AdrPlus
-- Q: Why does IPromptConsole connect Migration wizard config to Init command handling, New ADR command, PromptConsole core UI, Approve command handling, Startup/DI services, App config wizard (editor), Repo config validation, Revise command handling, Migrate command handling, Explorer wizard prompts, Help command & router, Config command editing, Explorer report generation, Config field editing prompts, Infrastructure namespaces?
-- Q: Should Init command handling be split into smaller, more focused modules?
-- Q: Why does IFileSystemService connect ADR header parsing to Init command handling, New ADR command, ADR status change service, and most other commands?
-- .ExecuteAsync
-- .PromptGetArrayDomainsAdr
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- [Brief title of the decision]
-- [Kurzer Titel der Entscheidung]
-- [Título breve de la decisión]
-- [Titre bref de la décision]
-- [Titolo breve della decisione]
-- [決定の簡潔なタイトル]
-- [결정에 대한 간단한 제목]
-- [Korte titel van de beslissing]
-- [Título breve da decisão]
-- [Краткое название решения]
-- [决策简要标题]
-- Test Architecture Guide
-- Root CLAUDE.md (project instructions)
-- .PromptSelecAdrs
-- ADR Index
-- AttemptLoopOutcome.cs
+- PluginAssemblyLoadContext (+PluginLoader)
+- AdrKeyFormatter (+Tests)
+- ItemMenuWizard Tests
+- SatelliteResources Localization Tests
+- FormatMessages Infrastructure
+- PluginActivationGate
+- AdrPlus Designer Resources
+- ICommandHandler Contract
+- PromptConsole First Install Flow
+- ActivePluginsWriter
+- SupersedeCommandHandlerMockHelper
+- Approve Command Handler Date Parsing
+- ExploreCommandHandlerFixture
+- PromptConsole Select ADRs
+- AttemptLoopOutcome
+- Claude/Graphify Skill Reference
+- GitHub Issue Templates
+- Plugin JSON Manifest Docs
+- MADR & Merson ADR Templates
+- Nygard & Planguage ADR Templates
+- CI Build and Test Workflow
+- Protect Main Branch Workflow
+- Abstractions Release Workflow
+- Release Workflow
+- Changelog Beta1
+- Changelog Beta3
+- Changelog Beta5
+- GitHub Pull Request Template
+- App Icon
+- App Icon (Alt)
+- NuGet Readme Overview
+- Plugin Dev Guide: ADR Key vs Number
+- Plugin Dev Guide: AdrPluginBase
+- Plugin Dev Guide: Secrets Handling
+- Alexandrian Template (de)
+- Alexandrian Template (es)
+- Alexandrian Template (fr)
+- Alexandrian Template (it)
+- Alexandrian Template (ja)
+- Alexandrian Template (ko)
+- Alexandrian Template (nl)
+- Alexandrian Template (pt-BR)
+- Alexandrian Template (ru)
+- Alexandrian Template (zh)
+- Business Case Template (de)
+- Business Case Template (es)
+- Business Case Template (fr)
+- Business Case Template (it)
+- Business Case Template (ja)
+- Business Case Template (ko)
+- Business Case Template (nl)
+- Business Case Template (pt-BR)
+- Business Case Template (ru)
+- Business Case Template (zh)
+- MADR Template (de)
+- MADR Template (es)
+- MADR Template (fr)
+- MADR Template (it)
+- MADR Template (ja)
+- MADR Template (ko)
+- MADR Template (nl)
+- MADR Template (pt-BR)
+- MADR Template (ru)
+- MADR Template (zh)
+- Merson Template (de)
+- Merson Template (es)
+- Merson Template (fr)
+- Merson Template (it)
+- Merson Template (ja)
+- Merson Template (ko)
+- Merson Template (nl)
+- Merson Template (pt-BR)
+- Merson Template (ru)
+- Merson Template (zh)
+- Nygard Template (de)
+- Nygard Template (es)
+- Nygard Template (fr)
+- Nygard Template (it)
+- Nygard Template (ja)
+- Nygard Template (ko)
+- Nygard Template (nl)
+- Nygard Template (pt-BR)
+- Nygard Template (ru)
+- Nygard Template (zh)
+- Planguage Template (de)
+- Planguage Template (es)
+- Planguage Template (fr)
+- Planguage Template (it)
+- Planguage Template (ja)
+- Planguage Template (ko)
+- Planguage Template (nl)
+- Planguage Template (pt-BR)
+- Planguage Template (ru)
+- Planguage Template (zh)
 
 ## God Nodes (most connected - your core abstractions)
-1. `IFileSystemService` - 103 edges
+1. `IFileSystemService` - 101 edges
 2. `ValidateJsonConfigTests` - 99 edges
 3. `PromptConsole` - 92 edges
 4. `AdrPlus.Domain` - 84 edges
-5. `AdrServiceTests` - 79 edges
+5. `AdrServiceTests` - 80 edges
 6. `IConsoleWriter` - 77 edges
 7. `AdrPlus.Core` - 70 edges
 8. `HelperTests` - 68 edges
@@ -204,711 +208,417 @@
 10. `ReviseCommandHandlerTests` - 61 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `NuGet README` --semantically_similar_to--> `AdrPlus CLI Tool`  [INFERRED] [semantically similar]
-  NugetREADME.md → README.md
-- `Release workflow (release.yml)` --shares_data_with--> `AdrPlus CHANGELOG`  [INFERRED]
-  .github/workflows/release.yml → CHANGELOG.md
-- `Migration Guide` --references--> `AdrPlus Icon`  [EXTRACTED]
-  MigrationGuide.md → icon.png
-- `NuGet README` --references--> `AdrPlus Icon`  [EXTRACTED]
-  NugetREADME.md → icon.png
-- `AdrPlus README` --references--> `AdrPlus Icon`  [EXTRACTED]
-  README.md → icon.png
+- `AdrPlus.Abstractions README (Markdown)` --semantically_similar_to--> `AdrPlus.Abstractions README (plain text)`  [INFERRED] [semantically similar]
+  AbstractionsREADME.md → AbstractionsREADME.txt
+- `plugin.json manifest` --semantically_similar_to--> `plugin.json manifest (settings block)`  [INFERRED] [semantically similar]
+  AbstractionsREADME.md → SECURITY.md
+- `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)` --semantically_similar_to--> `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)`  [INFERRED] [semantically similar]
+  AbstractionsREADME.md → AbstractionsREADME.txt
+- `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)` --semantically_similar_to--> `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)`  [INFERRED] [semantically similar]
+  AbstractionsREADME.md → SECURITY.md
+- `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/)` --semantically_similar_to--> `Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/)`  [INFERRED] [semantically similar]
+  AbstractionsREADME.md → StepByStepGuide.md
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
-- **AdrPlus Contribution Workflow** — contributing_doc, github_pull_request_template_doc, github_issue_template_bug_report_doc, github_issue_template_feature_request_doc, changelog_doc [INFERRED 0.85]
-- **ADR Status Lifecycle Commands** — changelog_new, changelog_version, changelog_review, changelog_supersede, changelog_approve, changelog_reject, changelog_undo [EXTRACTED 1.00]
-- **AdrPlus Documentation Set** — readme, migrationguide, stepbystepguide, nugetreadme, security, faq [INFERRED 0.85]
-- **Test Mock Helper Architecture** — tests_test_architecture_command_handler_pattern, tests_test_architecture_mock_helper_pattern, tests_test_architecture_supersede_case_study [EXTRACTED 1.00]
+- **Host-global plugin storage model described across docs** — abstractionsreadme_hostglobalpluginstorage, abstractionsreadme_txt_hostglobalpluginstorage, security_hostglobalpluginstorage, stepbystepguide_hostglobalpluginstorage [INFERRED 0.85]
+- **Plugin manifest and per-repository activation config flow** — abstractionsreadme_pluginjsonmanifest, security_pluginjsonmanifest, abstractionsreadme_adrconfigadrplus, stepbystepguide_adrconfigadrplus [INFERRED 0.75]
+- **Plugin System: Design, Storage Pivot, Contract, and Release** — doc_adr_adr002v01_add_a_plugin_system_for_adr_lifecycle_event_integrations_decision, doc_adr_adr003v01_store_plugin_binaries_host_globally_instead_of_per_repository_decision, plugindevelopmentguide_iadrplugin_contract, changelog_unreleased [INFERRED 0.85]
+- **11-Language UI and ADR Template Localization** — claude_project_status, translations_status, doc_adr_adr001v01_select_adr_templates_based_on_configured_ui_language_decision, changelog_beta4 [INFERRED 0.85]
+- **Core plugin contract and event/result payload types** — doc_api_abstractions_adrplus_abstractions_iadrplugin_iadrplugin, doc_api_abstractions_adrplus_abstractions_adreventcontext_adreventcontext, doc_api_abstractions_adrplus_abstractions_pluginresult_pluginresult, doc_api_abstractions_adrplus_abstractions_adrpluginbase_adrpluginbase [EXTRACTED 1.00]
+- **Plugin-author testing factory helpers** — doc_api_abstractions_adrplus_abstractions_testing_adreventcontextfactory_adreventcontextfactory, doc_api_abstractions_adrplus_abstractions_testing_adrrecordsnapshotfactory_adrrecordsnapshotfactory, doc_api_abstractions_adrplus_abstractions_testing_repoinfosnapshotfactory_repoinfosnapshotfactory [EXTRACTED 1.00]
+- **Shared abstraction god-nodes referenced across most command handlers** — graphify_out_memory_query_20260727_174354_why_does_ipromptconsole_connect_migration_wizard_c_ipromptconsole, graphify_out_memory_query_20260727_175809_why_does_ifilesystemservice_connect_adr_header_par_ifilesystemservice, graphify_out_memory_query_20260727_175023_should_init_command_handling_be_split_into_smaller_initcommandhandler [INFERRED 0.85]
+- **ADR Template & Index Ecosystem** — src_adrplus_plugins_adrindexer_indexadrs_template_adr_index, src_adrplus_resources_alexandrian_template_overview, src_adrplus_resources_business_case_template_overview [INFERRED 0.75]
+- **Mock Helper Selection Strategy (Generic vs Domain-Specific vs Fixture)** — tests_test_architecture_commandhandlermockhelper, tests_test_architecture_supersedecommandhandlermockhelper, tests_test_architecture_explorecommandhandlerfixture [EXTRACTED 1.00]
+- **ADR Structural Conceptual Framework (Template, REMAP, Ontology)** — src_adrplus_resources_tyree_ackerman_template, src_adrplus_resources_tyree_ackerman_template_remap_metamodel, src_adrplus_resources_tyree_ackerman_template_kyaruzi_van_katwijk_ontology [EXTRACTED 1.00]
 
-## Communities (178 total, 9 thin omitted)
+## Communities (187 total, 93 thin omitted)
 
-### Community 0 - "ValidateJsonConfigTests"
+### Community 0 - "NewAdr & Supersede Command Handlers (+Tests)"
+Cohesion: 0.06
+Nodes (30): NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, SupersedeCommandHandler (+22 more)
+
+### Community 1 - "ValidateJsonConfig Tests"
 Cohesion: 0.07
 Nodes (4): ValidateJsonConfigTests, Dictionary, Fact, Task
 
-### Community 1 - ".DirectoryExists"
-Cohesion: 0.15
-Nodes (9): PluginsWizardMode, Mode, PluginRejectionReason, PluginsCommandHandlerTests, Fact, IEnumerable, ILogger, string (+1 more)
+### Community 2 - "Helper Utility (+Tests)"
+Cohesion: 0.05
+Nodes (16): bool, date, Helper, DateTime, error, GeneratedRegex, int, JsonElement (+8 more)
 
-### Community 2 - "FileSystemServiceEnhancedTests"
+### Community 3 - "Config Command Handler & Validation"
+Cohesion: 0.06
+Nodes (26): EditField, ConfigCommandHandler, Arguments, CancellationToken, Func, ILogger, IsAborted, JsonElement (+18 more)
+
+### Community 4 - "FileSystemService (+Tests)"
 Cohesion: 0.06
 Nodes (20): AdrPlus.Tests.Infrastructure.FileSystem, FileSystemService, CancellationToken, IEnumerable, JsonSerializerOptions, Result, SearchOption, Success (+12 more)
 
-### Community 3 - "PatternParserTests"
+### Community 5 - "PromptConsole Editor/IDE Detection"
 Cohesion: 0.06
 Nodes (20): editorcmd, hasRider, hasVisualStudio, hasVSCode, Length, Position, PatternParser, Dictionary (+12 more)
 
-### Community 4 - ".ParseArgs"
-Cohesion: 0.16
-Nodes (13): Adrfiles, ArgsWizard, CancellationToken, Dictionary, Task, IMigratePrompts, CancellationToken, CountSelected (+5 more)
-
-### Community 5 - ".FileExists"
-Cohesion: 0.14
-Nodes (11): MaxNumber, MaxRevision, MaxVersion, Fact, IReadOnlyList, Task, InitCommandHandlerTests, Fact (+3 more)
-
-### Community 6 - ".ParseFileName"
-Cohesion: 0.15
-Nodes (9): CancellationToken, Task, IAdrServices, ReviseCommandHandlerTests, Dictionary, Fact, ILogger, string (+1 more)
-
-### Community 7 - ".ValidateRepoStructure"
-Cohesion: 0.19
-Nodes (9): CancellationToken, ConfirmYes, Content, DateTime, Func, info, IsAborted, left (+1 more)
-
-### Community 8 - "VersionCommandHandlerTests"
-Cohesion: 0.11
-Nodes (13): VersionCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, VersionCommandHandlerTests (+5 more)
-
-### Community 9 - "NewAdrCommandHandlerTests"
-Cohesion: 0.10
-Nodes (19): NewAdrCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, INewAdrPrompts (+11 more)
-
-### Community 10 - "HelperTests"
+### Community 6 - "PluginManifest & PluginLoader"
 Cohesion: 0.05
-Nodes (17): bool, date, Helper, DateTime, error, GeneratedRegex, int, JsonElement (+9 more)
+Nodes (35): IDisposable, PluginAllowlistEntry, ManifestValidationOutcome, PluginLoader, PluginLoadOutcome, PluginRejection, Action, CancellationToken (+27 more)
 
-### Community 11 - "CancellationToken"
+### Community 7 - "IConsoleWriter Contract (+Tests)"
+Cohesion: 0.17
+Nodes (10): CancellationToken, ConfirmYes, Content, DateTime, Func, info, IsAborted, left (+2 more)
+
+### Community 8 - "Migrate Command Handler & Wizard Args"
 Cohesion: 0.12
-Nodes (9): CancellationToken, Content, DateTime, IEnumerable, IsAborted, Mode, PrefixValue, Value (+1 more)
+Nodes (13): Adrfiles, ArgsWizard, CancellationToken, Dictionary, Task, CancellationToken, CountSelected, IsAborted (+5 more)
 
-### Community 12 - "FieldsJson"
+### Community 9 - "AdrService Parsing (+Tests)"
+Cohesion: 0.08
+Nodes (4): AdrServiceTests, Fact, IConfiguration, Task
+
+### Community 10 - "Init Command Handler & Config Limits"
+Cohesion: 0.16
+Nodes (16): InitCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, List, Task, MaxNumber (+8 more)
+
+### Community 11 - "Revise Command Handler (+Tests)"
+Cohesion: 0.14
+Nodes (8): CancellationToken, Task, ReviseCommandHandlerTests, Dictionary, Fact, ILogger, string, Task
+
+### Community 12 - "Version Command Handler (+Tests)"
+Cohesion: 0.14
+Nodes (8): CancellationToken, Task, VersionCommandHandlerTests, Dictionary, Fact, ILogger, string, Task
+
+### Community 13 - "PromptConsole UI Fields"
+Cohesion: 0.12
+Nodes (9): CancellationToken, Content, DateTime, FieldsFromFileAdr, Filename, IEnumerable, IsAborted, PrefixValue (+1 more)
+
+### Community 14 - "FieldsJson & Config Prompts"
 Cohesion: 0.17
 Nodes (13): JsonConfig, PrefixValue, FieldsJson, JsonValueKind, IConfigPrompts, CancellationToken, Content, FieldsFromFileAdr (+5 more)
 
-### Community 14 - "PathHelper"
-Cohesion: 0.10
-Nodes (7): ExploreCommandHandlerTests, Fact, Task, ExploreCommandHandlerMockHelper, DateTime, Dictionary, PathHelper
+### Community 16 - "PluginRejectionReason & Plugins Handler Tests"
+Cohesion: 0.16
+Nodes (7): PluginRejectionReason, PluginsCommandHandlerTests, Fact, IEnumerable, ILogger, string, Task
 
-### Community 15 - "PromptConsole"
-Cohesion: 0.05
-Nodes (16): Color, FrozenDictionary, PromptConsole, ConfirmYes, CountSelected, FieldsExplore, FieldsFromFileAdr, Filename (+8 more)
-
-### Community 16 - "AdrPlusRepoConfigTests"
-Cohesion: 0.10
-Nodes (5): AdrPlusRepoConfigTests, Fact, string, PluginSnapshotExtensionsTests, Fact
-
-### Community 17 - "AdrPlus.Domain"
-Cohesion: 0.10
-Nodes (10): AdrPlus.Commands.Migrate, AdrPlus.Domain, AdrPlus.Commands.Explore, AdrPlus.Tests.Domain, AdrPlus.Infrastructure.Formatting, AdrPlus.Tests.Core, AdrPlus.Core, AdrPlus.Tests.Commands.Migrate (+2 more)
-
-### Community 18 - "PluginManager"
-Cohesion: 0.15
-Nodes (21): HashSet, AdrEventContext, Func, AdrEventType, Exception, LoadedPlugin, PluginManager, Adr (+13 more)
-
-### Community 19 - "AdrServiceTests"
-Cohesion: 0.12
-Nodes (3): AdrServiceTests, Fact, IConfiguration
-
-### Community 20 - "StringCaseExtensionsTests"
-Cohesion: 0.09
-Nodes (12): CaseFormat, StringCaseExtensions, GeneratedRegex, Regex, StringCaseExtensionsTests, Fact, InlineData, Theory (+4 more)
-
-### Community 21 - "HelpCommandHandlerTests"
-Cohesion: 0.15
-Nodes (11): CancellationToken, Task, Alias, Command, ConfigCommandHandler, Description, Dictionary, Type (+3 more)
-
-### Community 22 - "AdrPlus.Commands"
-Cohesion: 0.09
-Nodes (17): Attribute, AdrPlus.Tests.Commands.Explore, AdrPlus.Tests.Commands.Attributes, AdrPlus.Tests.Commands.Approve, AdrPlus.Tests.Commands.Revise, AdrPlus.Tests.Helpers, AdrPlus.Tests.Commands.Config, AdrPlus.Tests.Commands.Version (+9 more)
-
-### Community 23 - "ValidateConfig"
-Cohesion: 0.11
-Nodes (13): JsonNode, ValidateConfig, CancellationToken, Dictionary, ErrorReport, IConfiguration, IsValid, JsonElement (+5 more)
-
-### Community 24 - "UndoStatusCommandHandlerTests"
-Cohesion: 0.14
-Nodes (11): UndoStatusCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task, UndoStatusCommandHandlerTests, Dictionary (+3 more)
-
-### Community 25 - "WizardCommandHandler"
-Cohesion: 0.17
-Nodes (16): NotImplementedException, WizardCommandHandler, Arguments, CancellationToken, CommandRouter, CommandsAdr, IConfiguration, ILogger (+8 more)
-
-### Community 26 - "AdrPlus.Abstractions"
-Cohesion: 0.22
-Nodes (6): AdrPlus.Tests.Commands.Sync, AdrPlus.Abstractions, AdrPlus.Abstractions.Domain, AdrPlus.Plugins.AdrIndexer, AdrPlus.Commands.Sync, AdrPlus.Abstractions.Tests
-
-### Community 27 - "ServiceCollectionExtensions.cs"
-Cohesion: 0.09
-Nodes (17): AdrPlus.Tests.Commands.Reject, AdrPlus.Tests.Commands.NewAdr, AdrPlus.Extensions, AdrPlus.Commands.UndoStatus, AdrPlus.Commands.Config, AdrPlus.Infrastructure.Logging, AdrPlus.Commands.Revise, AdrPlus.Tests.Extensions (+9 more)
-
-### Community 28 - ".StatusUpdateAdrAsync"
-Cohesion: 0.05
-Nodes (38): ApproveCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task, RejectCommandHandler (+30 more)
-
-### Community 29 - ".Create"
-Cohesion: 0.10
-Nodes (17): AdrPlus.Abstractions.Testing, AdrPlus.Abstractions.Tests.Testing, AdrEventContextFactory, AdrEventContext, AdrEventType, Func, AdrRecordSnapshotFactory, DateTime (+9 more)
-
-### Community 30 - ".ExecuteAsync"
-Cohesion: 0.11
-Nodes (21): Config, ConfigPath, PluginsCommandHandler, Allowlist, Arguments, CancellationToken, Detail, Dictionary (+13 more)
-
-### Community 31 - ".WriteAllTextAsync"
-Cohesion: 0.12
-Nodes (12): EditField, ConfigCommandHandler, Arguments, CancellationToken, Func, ILogger, IsAborted, JsonElement (+4 more)
-
-### Community 32 - "SyncCommandHandlerTests"
-Cohesion: 0.21
-Nodes (5): UseBackfill, SyncCommandHandlerTests, Fact, ILogger, Task
-
-### Community 33 - "PluginsCommandHandlerInstallTests"
-Cohesion: 0.22
-Nodes (8): ZipPath, PluginsCommandHandlerInstallTests, Dictionary, Fact, ILogger, string, Task, ZipArchive
-
-### Community 34 - "Plugin Development Guide"
-Cohesion: 0.09
-Nodes (34): Architecture Decision Record (ADR), FAQ (referenced, not read), AdrPlus Icon, Migration Guide, AdrPlus Migrated Header Table Format, ADR Migration Process, Migration Prerequisites, NuGet README (+26 more)
-
-### Community 35 - "IPluginManager"
-Cohesion: 0.12
-Nodes (20): AdrRecordSnapshot, DateTime, AdrStatus, RepoInfoSnapshot, IReadOnlyDictionary, IReadOnlyList, Func, IEnumerable (+12 more)
-
-### Community 36 - ".ExploreWizardAsync"
-Cohesion: 0.15
-Nodes (16): Fields, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task (+8 more)
-
-### Community 37 - "MainProgram"
-Cohesion: 0.10
-Nodes (16): IOptionsMonitor, IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type, IMainProgram (+8 more)
-
-### Community 38 - "IFileSystemService"
-Cohesion: 0.10
-Nodes (7): Task, AdrPlusRepoConfig, Dictionary, List, IFileSystemService, IEnumerable, CommandHandlerMockHelper
-
-### Community 39 - "HelpUsageAttributeTests"
-Cohesion: 0.07
-Nodes (4): CommandArgumentAttributeTests, Fact, HelpUsageAttributeTests, Fact
-
-### Community 40 - "TemplateResourcesTests"
-Cohesion: 0.08
-Nodes (18): AdrPlus.Tests.Localization, CultureData, Action, TheoryData, HeaderLocalizationTests, InlineData, MemberData, Theory (+10 more)
-
-### Community 41 - "AdrPlus CHANGELOG"
-Cohesion: 0.12
-Nodes (26): approve command, config command, AdrPlus CHANGELOG, explorer command, help command, init command, Keep a Changelog format, migrate command (+18 more)
-
-### Community 42 - ".ExecuteAsync"
-Cohesion: 0.07
-Nodes (20): Arguments, SupersedeCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task (+12 more)
-
-### Community 43 - "PluginManifest"
-Cohesion: 0.06
-Nodes (34): IDisposable, PluginAllowlistEntry, ManifestValidationOutcome, PluginLoader, PluginLoadOutcome, PluginRejection, Action, CancellationToken (+26 more)
-
-### Community 44 - "ConfigCommandHandlerTests"
-Cohesion: 0.14
-Nodes (5): FilePathAdrTemplate, ConfigCommandHandlerTests, Fact, ILogger, Task
-
-### Community 45 - ".PromptWriteSuccess"
-Cohesion: 0.14
-Nodes (9): ICommandHandler, HelpCommandHandler, CommandRouter, ILogger, ReviseCommandHandler, Arguments, DateTime, Dictionary (+1 more)
-
-### Community 46 - "AdrPlus.Infrastructure.FileSystem"
-Cohesion: 0.13
-Nodes (9): AdrPlus.Plugins, AdrPlus.Infrastructure.Configuration, AdrPlus.Infrastructure.FileSystem, AdrPlus.Tests.Commands.Supersede, AdrPlus.Commands.Init, AdrPlus.Commands.Supersede, AdrPlus.Tests.Commands.Init, AdrPlus.Tests.Infrastructure.Configuration (+1 more)
-
-### Community 47 - "PluginManagerRetryTests"
+### Community 17 - "PendingEntry & PendingStateStore"
 Cohesion: 0.14
 Nodes (20): PendingEntry, DateTime, PendingStateStore, CancellationToken, List, string, Task, PendingStateStoreTests (+12 more)
 
-### Community 48 - "LogMessages"
+### Community 18 - "PromptConsole Rendering (Color/Position)"
+Cohesion: 0.05
+Nodes (15): Color, FrozenDictionary, PromptConsole, ConfirmYes, CountSelected, FieldsExplore, FilePathAdrTemplate, IConfiguration (+7 more)
+
+### Community 19 - "AdrPlusRepoConfig & PluginSnapshotExtensions Tests"
+Cohesion: 0.10
+Nodes (5): AdrPlusRepoConfigTests, Fact, string, PluginSnapshotExtensionsTests, Fact
+
+### Community 20 - "ADR/Plugin Documentation Set (README, ADRs, API docs)"
+Cohesion: 0.09
+Nodes (42): CHANGELOG - 1.0.0-beta4 (11-language localization), CHANGELOG - Unreleased (Plugin System), CLAUDE.md Coding Principles (Think/Simplicity/Surgical/Goal-Driven), CLAUDE.md Current Project Status (beta3, 11 languages), Code of Conduct, Contributing Guide, ADR001: Select ADR Templates Based on Configured UI Language, ADR002: Add a Plugin System for ADR Lifecycle Event Integrations (+34 more)
+
+### Community 21 - "ValidateConfig Core Logic"
+Cohesion: 0.11
+Nodes (13): JsonNode, ValidateConfig, CancellationToken, Dictionary, ErrorReport, IConfiguration, IsValid, JsonElement (+5 more)
+
+### Community 22 - "IAdrServices Contract & CultureData Helper"
 Cohesion: 0.14
-Nodes (8): LoggerMessage, LogMessages, Exception, ILogger, CancellationToken, Task, HostPluginLogger, ILogger
+Nodes (15): CancellationToken, Content, DateTime, Error, Isvalid, Record, RejectCommandHandlerTests, Dictionary (+7 more)
 
-### Community 49 - "AdrPlus.Tests.csproj"
+### Community 23 - "Core Domain & Command Classes (AdrService, Helper, Records)"
+Cohesion: 0.10
+Nodes (10): AdrPlus.Domain, AdrPlus.Commands.Explore, AdrPlus.Commands.Revise, AdrPlus.Tests.Commands.Revise, AdrPlus.Tests.Domain, AdrPlus.Infrastructure.Formatting, AdrPlus.Tests.Core, AdrPlus.Core (+2 more)
+
+### Community 24 - "CaseFormat & StringCaseExtensions"
+Cohesion: 0.09
+Nodes (12): CaseFormat, StringCaseExtensions, GeneratedRegex, Regex, StringCaseExtensionsTests, Fact, InlineData, Theory (+4 more)
+
+### Community 25 - "IAdrServices Command Metadata & HelpCommandHandler"
+Cohesion: 0.15
+Nodes (11): CancellationToken, Task, Alias, Command, ConfigCommandHandler, Description, Dictionary, Type (+3 more)
+
+### Community 26 - "UndoStatus Command Handler (+Tests)"
+Cohesion: 0.14
+Nodes (11): UndoStatusCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task, UndoStatusCommandHandlerTests, Dictionary (+3 more)
+
+### Community 27 - "Plugin Storage & Security Docs (AbstractionsREADME, SECURITY, StepByStepGuide)"
+Cohesion: 0.08
+Nodes (38): AdrPlus.Abstractions README (Markdown), adr-config.adrplus (activeplugins/disableplugins), AdrEventContext, AdrPluginBase base class, doc/api-abstractions API reference, Host-global plugin storage (%UserProfile%/AdrPlus.Plugins/<name>/), IAdrPlugin interface, PluginDevelopmentGuide.md (external reference) (+30 more)
+
+### Community 28 - "PluginManager & SyncSummary"
+Cohesion: 0.16
+Nodes (21): HashSet, AdrEventContext, Func, AdrRecordSnapshot, DateTime, LoadedPlugin, PluginManager, Adr (+13 more)
+
+### Community 29 - "AdrService & AdrPlusRepoConfig"
+Cohesion: 0.12
+Nodes (23): IAdrServices, Content, AdrService, CancellationToken, DateTime, Error, IConfiguration, Isvalid (+15 more)
+
+### Community 30 - "Approve Command Handler (+Tests)"
+Cohesion: 0.19
+Nodes (9): CancellationToken, Task, ApproveCommandHandlerTests, Dictionary, Fact, ILogger, MemberData, Task (+1 more)
+
+### Community 31 - "Command Attributes (Command/Argument/HelpUsage) & Handler Tests"
+Cohesion: 0.08
+Nodes (19): Attribute, AdrPlus.Tests.Commands.Reject, AdrPlus.Tests.Commands.NewAdr, AdrPlus.Tests.Commands.Explore, AdrPlus.Tests.Commands.Attributes, AdrPlus.Tests.Commands.Approve, AdrPlus.Tests.Helpers, AdrPlus.Tests.Commands.Config (+11 more)
+
+### Community 32 - "Wizard Command Handler & ItemMenuWizard"
+Cohesion: 0.17
+Nodes (16): NotImplementedException, WizardCommandHandler, Arguments, CancellationToken, CommandRouter, CommandsAdr, IConfiguration, ILogger (+8 more)
+
+### Community 33 - "MainProgram & IMainProgram"
 Cohesion: 0.07
-Nodes (26): DefaultDocumentation (1.2.5), Microsoft.Extensions.Hosting (10.0.10), PromptPlus (6.0.0-Beta7), Serilog.Extensions.Logging.File (3.0.0), net10.0, Microsoft.NET.Sdk, net10.0, Microsoft.NET.Sdk (+18 more)
+Nodes (20): IOptionsMonitor, IServiceProvider, CommandRouter, Dictionary, IConfiguration, ILogger, Type, IMainProgram (+12 more)
 
-### Community 50 - ".ParseAdrHeaderAndContentAsync"
-Cohesion: 0.13
-Nodes (9): content, header, header, AdrHeader, DateTime, CancellationToken, Result, Success (+1 more)
+### Community 34 - "Command Handlers & ServiceCollectionExtensions DI Wiring"
+Cohesion: 0.10
+Nodes (16): AdrPlus.Extensions, AdrPlus.Commands.UndoStatus, AdrPlus.Commands.Config, AdrPlus.Infrastructure.Logging, AdrPlus.Tests.Extensions, AdrPlus.Tests.Commands.Supersede, AdrPlus.Commands.Approve, AdrPlus.Commands.Reject (+8 more)
 
-### Community 52 - "PluginManagerBackfillTests"
+### Community 36 - "Plugin System & Init/Migrate Command Handlers (+Tests)"
+Cohesion: 0.15
+Nodes (9): AdrPlus.Tests.Commands.Plugins, AdrPlus.Commands.Migrate, AdrPlus.Plugins, AdrPlus.Commands.Plugins, AdrPlus.Infrastructure.FileSystem, AdrPlus.Commands.Init, AdrPlus.Tests.Commands.Init, AdrPlus.Tests.Plugins (+1 more)
+
+### Community 38 - "PluginsCommandHandler Config"
+Cohesion: 0.18
+Nodes (11): Config, ConfigPath, PluginsCommandHandler, Arguments, CancellationToken, Dictionary, GeneratedRegex, IEnumerable (+3 more)
+
+### Community 39 - "Sync Command Handler (+Tests)"
+Cohesion: 0.22
+Nodes (6): SyncWizardMode, Mode, SyncCommandHandlerTests, Fact, ILogger, Task
+
+### Community 41 - "AdrPlus Csproj/NuGet Package Metadata"
+Cohesion: 0.14
+Nodes (20): DefaultDocumentation (1.2.5), Microsoft.Extensions.Hosting (10.0.10), PromptPlus (6.0.0-Beta9), Serilog.Extensions.Logging.File (3.0.0), net10.0, net8.0, net9.0, Microsoft.NET.Sdk (+12 more)
+
+### Community 42 - "LogMessages & PluginHostContext Logging"
+Cohesion: 0.17
+Nodes (7): LoggerMessage, LogMessages, Exception, ILogger, HostPluginLogger, Exception, ILogger
+
+### Community 43 - "Abstractions Events & PluginManager (+Tests)"
+Cohesion: 0.14
+Nodes (10): AdrPlus.Tests.Commands.Sync, AdrPlus.Abstractions, AdrPlus.Abstractions.Domain, AdrPlus.Plugins.AdrIndexer, AdrPlus.Commands.Sync, AdrPlus.Abstractions.Testing, AdrPlus.Abstractions.Tests, AdrPlus.Abstractions.Tests.Testing (+2 more)
+
+### Community 44 - "ICommandHandler Contract Implementations"
+Cohesion: 0.12
+Nodes (13): ICommandHandler, HelpCommandHandler, CommandRouter, ILogger, MigrateCommandHandler, Arguments, ILogger, VersionCommandHandler (+5 more)
+
+### Community 45 - "Plugins Install via Zip (+Tests)"
+Cohesion: 0.22
+Nodes (8): SelectedNames, PluginsCommandHandlerInstallTests, Dictionary, Fact, ILogger, string, Task, ZipArchive
+
+### Community 47 - "PluginManager Backfill Tests"
 Cohesion: 0.30
 Nodes (9): PluginManagerBackfillTests, Adr, EventType, Fact, FilePath, Func, GetContent, ILogger (+1 more)
 
-### Community 53 - "Task"
-Cohesion: 0.12
-Nodes (8): Content, CancellationToken, DateTime, Error, Isvalid, Record, IsValid, Task
+### Community 48 - "CultureData & Localization Tests"
+Cohesion: 0.10
+Nodes (14): AdrPlus.Tests.Localization, CultureData, Action, TheoryData, HeaderLocalizationTests, InlineData, MemberData, Theory (+6 more)
 
-### Community 55 - ".PromptShowPluginsListTable"
-Cohesion: 0.15
-Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
+### Community 50 - "AdrEventType & IPluginManager Contract"
+Cohesion: 0.16
+Nodes (14): AdrEventType, Func, IEnumerable, IPluginManager, Adr, CancellationToken, Content, EventType (+6 more)
 
-### Community 56 - ".RouteAsync"
+### Community 51 - "CommandRouter (+Tests)"
 Cohesion: 0.29
 Nodes (5): CancellationToken, Task, CommandRouterTests, Fact, Task
 
-### Community 57 - "PluginManagerDispatchTests"
+### Community 52 - "PluginManager Dispatch Tests"
 Cohesion: 0.42
 Nodes (6): PluginManagerDispatchTests, Fact, IEnumerable, ILogger, string, Task
 
-### Community 58 - "IConsoleWriter"
-Cohesion: 0.12
-Nodes (7): AdrPlusConfig, List, BehaviorWithoutArg, IConsoleWriter, Task, ExploreCommandHandlerFixture, ILogger
+### Community 53 - "Explore Command Handler (+Tests)"
+Cohesion: 0.27
+Nodes (4): ExploreCommandHandlerTests, Fact, Task, DateTime
 
-### Community 59 - "IValidateConfig"
-Cohesion: 0.20
-Nodes (9): IValidateConfig, CancellationToken, ErrorReport, Task, ConfigVersionManagerTests, Fact, ILogger, string (+1 more)
+### Community 54 - "Revise Command Handler & LogMessages Info"
+Cohesion: 0.18
+Nodes (5): ReviseCommandHandler, Arguments, DateTime, Dictionary, ILogger
 
-### Community 60 - "AdrPlus.Infrastructure.UI"
+### Community 55 - "Program/MainProgram & UI Prompt Contracts"
 Cohesion: 0.13
-Nodes (6): AdrPlus.Infrastructure.UI, AdrPlus.Tests.Commands.Plugins, AdrPlus.Commands.Plugins, AdrPlus.Tests.Commands, AdrPlus.Tests.Commands.Help, AdrPlus
+Nodes (6): AdrPlus.Infrastructure.UI, AdrPlus.Tests.Commands, AdrPlus.Infrastructure.Configuration, AdrPlus.Tests.Commands.Help, AdrPlus, AdrPlus.Tests.Infrastructure.Configuration
 
-### Community 61 - ".OnAdrEventAsync"
-Cohesion: 0.25
-Nodes (5): AdrPluginBase, CancellationToken, Task, PluginResult, PluginResultStatus
-
-### Community 63 - "AdrIndexerPlugin"
+### Community 56 - "AdrIndexer Plugin"
 Cohesion: 0.21
 Nodes (9): Link, AdrIndexerPlugin, CancellationToken, List, Status, string, Task, Title (+1 more)
 
-### Community 64 - ".ResolveAppVersion"
+### Community 57 - "AdrStatus & Approve Command Handler"
+Cohesion: 0.13
+Nodes (5): ApproveCommandHandler, ILogger, AdrFileNameComponents, AdrStatus, CommandHandlerMockHelper
+
+### Community 58 - "Alexandrian & Business Case ADR Templates"
+Cohesion: 0.12
+Nodes (18): ADR Index Template, Considered Options, Context and Problem Statement, Deciders Section, Decision Drivers, Decision Outcome (with Positive/Negative Consequences), Links (ADR Cross-References), Alexandrian ADR Template (MADR-format, en-US canonical) (+10 more)
+
+### Community 59 - "Program Entry Point (+Tests)"
 Cohesion: 0.19
 Nodes (8): CancellationTokenSource, AdrPlus.Tests, Program, Assembly, Task, Version, ProgramTests, Fact
 
-### Community 65 - "InitCommandHandler"
-Cohesion: 0.19
-Nodes (11): InitCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, List, Task, ActivePluginsWriter (+3 more)
+### Community 60 - "RepoInfoSnapshot & Factory (Abstractions Testing)"
+Cohesion: 0.15
+Nodes (10): AdrStatus, RepoInfoSnapshot, IReadOnlyDictionary, IReadOnlyList, RepoInfoSnapshotFactory, IReadOnlyDictionary, IReadOnlyList, PluginSnapshotExtensions (+2 more)
 
-### Community 66 - ".PromptWriteError"
-Cohesion: 0.26
-Nodes (3): MigrateCommandHandler, Arguments, ILogger
-
-### Community 67 - ".BuildAdrKey"
-Cohesion: 0.25
-Nodes (4): AdrKeyFormatter, AdrKeyFormatterTests, InlineData, Theory
-
-### Community 68 - ".PromptShowPluginsListTable"
+### Community 61 - "PromptConsole Plugin/Event Fields"
 Cohesion: 0.13
 Nodes (11): Allowlist, Detail, Events, IReadOnlyList, IReadOnlySet, Name, NameOrFolder, Pending (+3 more)
 
-### Community 69 - "Select ADR templates based on configured UI language"
-Cohesion: 0.13
-Nodes (12): Considered Options, Context and Problem Statement, Decision Outcome, Links, Negative Consequences, Positive Consequences, Select ADR templates based on configured UI language, Accepted (+4 more)
+### Community 62 - "Explore Command Handler Arguments"
+Cohesion: 0.27
+Nodes (9): Fields, IOptions, ExploreCommandHandler, Arguments, CancellationToken, Dictionary, ILogger, Task (+1 more)
 
-### Community 70 - "LowercaseNamingPolicyTests"
+### Community 63 - "AdrEventContext & AdrRecordSnapshot Factories (+Tests)"
+Cohesion: 0.21
+Nodes (8): AdrEventContext, AdrEventType, Func, DateTime, AdrEventContextFactoryTests, Fact, AdrRecordSnapshotFactoryTests, Fact
+
+### Community 65 - "LowerCaseNamingPolicy (+Tests)"
 Cohesion: 0.29
 Nodes (6): JsonNamingPolicy, LowercaseNamingPolicy, LowercaseNamingPolicyTests, Fact, InlineData, Theory
 
-### Community 71 - "PluginManagerTests"
-Cohesion: 0.36
-Nodes (6): SearchOption, PluginManagerTests, Fact, ILogger, string, Task
+### Community 66 - "PluginResult & AdrPluginBase (Abstractions)"
+Cohesion: 0.25
+Nodes (5): AdrPluginBase, CancellationToken, Task, PluginResult, PluginResultStatus
 
-### Community 72 - "[Brief title of the decision]"
-Cohesion: 0.13
-Nodes (14): Argument, Assumptions, [Brief title of the decision], Constraints, Decision, Group, Implications, Issue (+6 more)
-
-### Community 73 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.13
-Nodes (14): Annahmen, Argument, Einschränkungen, Entscheidung, Gruppe, Implikationen, [Kurzer Titel der Entscheidung], Notizen (+6 more)
-
-### Community 74 - "[Título breve de la decisión]"
-Cohesion: 0.13
-Nodes (14): Argumento, Artefactos relacionados, Decisiones relacionadas, Decisión, Grupo, Implicaciones, Notas, Posiciones (+6 more)
-
-### Community 75 - "[Titre bref de la décision]"
-Cohesion: 0.13
-Nodes (14): Argumentation, Artefacts connexes, Contraintes, Décision, Décisions connexes, Exigences connexes, Groupe, Hypothèses (+6 more)
-
-### Community 76 - "[Titolo breve della decisione]"
-Cohesion: 0.13
-Nodes (14): Argomentazione, Artefatti correlati, Decisione, Decisioni correlate, Gruppo, Implicazioni, Note, Posizioni (+6 more)
-
-### Community 77 - "[決定の簡潔なタイトル]"
-Cohesion: 0.13
-Nodes (14): グループ, 備考, 制約, 前提条件, 決定, [決定の簡潔なタイトル], 波及効果, 見解 (+6 more)
-
-### Community 78 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.13
-Nodes (14): 가정, 결정, [결정에 대한 간단한 제목], 관련 결정, 관련 산출물, 관련 요구사항, 관련 원칙, 그룹 (+6 more)
-
-### Community 79 - "[Korte titel van de beslissing]"
-Cohesion: 0.13
-Nodes (14): Aannames, Argument, Beperkingen, Beslissing, Gerelateerde artefacten, Gerelateerde beslissingen, Gerelateerde principes, Gerelateerde vereisten (+6 more)
-
-### Community 80 - "[Título breve da decisão]"
-Cohesion: 0.13
-Nodes (14): Argumento, Artefatos relacionados, Decisão, Decisões relacionadas, Grupo, Implicações, Notas, Posições (+6 more)
-
-### Community 81 - "[Краткое название решения]"
-Cohesion: 0.13
-Nodes (14): Аргументация, Группа, [Краткое название решения], Ограничения, Позиции, Предположения, Примечания, Проблема (+6 more)
-
-### Community 82 - "[决策简要标题]"
-Cohesion: 0.13
-Nodes (14): 假设, 决策, [决策简要标题], 分组, 备注, 影响, 相关决策, 相关制品 (+6 more)
-
-### Community 83 - "IAdrPlugin"
-Cohesion: 0.16
-Nodes (7): IAsyncDisposable, IAdrPlugin, CancellationToken, Task, IPluginConfiguration, HostPluginConfiguration, Dictionary
-
-### Community 84 - ".GetCommands"
-Cohesion: 0.15
-Nodes (7): CommandsAdr, Alias, Command, ConfigCommandHandler, Description, Dictionary, Type
-
-### Community 86 - "[Brief title of the decision]"
-Cohesion: 0.14
-Nodes (13): [Brief title of the decision], Considered Options, Context and Problem Statement, Deciders, Decision Drivers <!-- optional -->, Decision Outcome, Links <!-- optional -->, Negative Consequences <!-- optional --> (+5 more)
-
-### Community 87 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.14
-Nodes (13): Betrachtete Optionen, Entscheidungstreiber <!-- optional -->, Entscheidungsträger, Ergebnis der Entscheidung, Kontext und Problemstellung, [Kurzer Titel der Entscheidung], Links <!-- optional -->, Negative Konsequenzen <!-- optional --> (+5 more)
-
-### Community 88 - "[Título breve de la decisión]"
-Cohesion: 0.14
-Nodes (13): Consecuencias Negativas <!-- opcional -->, Consecuencias Positivas <!-- opcional -->, Contexto y Enunciado del Problema, Decisores, Enlaces <!-- opcional -->, Impulsores de la Decisión <!-- opcional -->, Opciones Consideradas, [opción 1] (+5 more)
-
-### Community 89 - "[Titre bref de la décision]"
-Cohesion: 0.14
-Nodes (13): Avantages et inconvénients des options <!-- optionnel -->, Conséquences négatives <!-- optionnel -->, Conséquences positives <!-- optionnel -->, Contexte et énoncé du problème, Décideurs, Facteurs de décision <!-- optionnel -->, Liens <!-- optionnel -->, [option 1] (+5 more)
-
-### Community 90 - "[Titolo breve della decisione]"
-Cohesion: 0.14
-Nodes (13): Conseguenze Negative <!-- opzionale -->, Conseguenze Positive <!-- opzionale -->, Contesto e Definizione del Problema, Decisori, Driver della Decisione <!-- opzionale -->, Esito della Decisione, Link <!-- opzionale -->, [opzione 1] (+5 more)
-
-### Community 91 - "[決定の簡潔なタイトル]"
-Cohesion: 0.14
-Nodes (13): リンク <!-- 任意 -->, 各選択肢の長所と短所 <!-- 任意 -->, 悪い影響 <!-- 任意 -->, 検討した選択肢, [決定の簡潔なタイトル], 決定内容, 決定者, 決定要因 <!-- 任意 --> (+5 more)
-
-### Community 92 - "[Korte titel van de beslissing]"
-Cohesion: 0.14
-Nodes (13): Beslissers, Beslissingsfactoren <!-- optioneel -->, Beslissingsresultaat, Context en probleemstelling, [Korte titel van de beslissing], Links <!-- optioneel -->, Negatieve gevolgen <!-- optioneel -->, [optie 1] (+5 more)
-
-### Community 93 - "[Título breve da decisão]"
-Cohesion: 0.14
-Nodes (13): Consequências Negativas <!-- opcional -->, Consequências Positivas <!-- opcional -->, Contexto e Declaração do Problema, Decisores, Drivers de Decisão <!-- opcional -->, Links <!-- opcional -->, [opção 1], [opção 2] (+5 more)
-
-### Community 94 - "[Краткое название решения]"
-Cohesion: 0.14
-Nodes (13): [вариант 1], [вариант 2], [вариант 3], Итог решения, Контекст и постановка проблемы, [Краткое название решения], Отрицательные последствия <!-- необязательно -->, Плюсы и минусы вариантов <!-- необязательно --> (+5 more)
-
-### Community 95 - "[决策简要标题]"
-Cohesion: 0.14
-Nodes (13): [决策简要标题], 决策结果, 决策者, 决策驱动因素 <!-- 可选 -->, [备选方案 1], [备选方案 2], [备选方案 3], 备选方案的优缺点 <!-- 可选 --> (+5 more)
-
-### Community 96 - "[Brief title of the decision]"
-Cohesion: 0.14
-Nodes (13): [Brief title of the decision], Considered Options, Context and Problem Statement, Deciders, Decision Drivers <!-- optional -->, Decision Outcome, Links <!-- optional -->, Negative Consequences <!-- optional --> (+5 more)
-
-### Community 97 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.14
-Nodes (13): Betrachtete Optionen, Entscheidungstreiber <!-- optional -->, Entscheidungsträger, Ergebnis der Entscheidung, Kontext und Problemstellung, [Kurzer Titel der Entscheidung], Links <!-- optional -->, Negative Konsequenzen <!-- optional --> (+5 more)
-
-### Community 98 - "[Título breve de la decisión]"
-Cohesion: 0.14
-Nodes (13): Consecuencias Negativas <!-- opcional -->, Consecuencias Positivas <!-- opcional -->, Contexto y Enunciado del Problema, Decisores, Enlaces <!-- opcional -->, Impulsores de la Decisión <!-- opcional -->, Opciones Consideradas, [opción 1] (+5 more)
-
-### Community 99 - "[Titre bref de la décision]"
-Cohesion: 0.14
-Nodes (13): Avantages et inconvénients des options <!-- optionnel -->, Conséquences négatives <!-- optionnel -->, Conséquences positives <!-- optionnel -->, Contexte et énoncé du problème, Décideurs, Facteurs de décision <!-- optionnel -->, Liens <!-- optionnel -->, [option 1] (+5 more)
-
-### Community 100 - "[Titolo breve della decisione]"
-Cohesion: 0.14
-Nodes (13): Conseguenze Negative <!-- opzionale -->, Conseguenze Positive <!-- opzionale -->, Contesto e Definizione del Problema, Decisori, Driver della Decisione <!-- opzionale -->, Esito della Decisione, Link <!-- opzionale -->, [opzione 1] (+5 more)
-
-### Community 101 - "[決定の簡潔なタイトル]"
-Cohesion: 0.14
-Nodes (13): リンク <!-- 任意 -->, 各選択肢の長所と短所 <!-- 任意 -->, 悪い影響 <!-- 任意 -->, 検討した選択肢, [決定の簡潔なタイトル], 決定内容, 決定者, 決定要因 <!-- 任意 --> (+5 more)
-
-### Community 102 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.14
-Nodes (13): 결정 결과, 결정 동인 <!-- 선택 사항 -->, [결정에 대한 간단한 제목], 결정자, 고려된 옵션, 긍정적 결과 <!-- 선택 사항 -->, 링크 <!-- 선택 사항 -->, 부정적 결과 <!-- 선택 사항 --> (+5 more)
-
-### Community 103 - "[Korte titel van de beslissing]"
-Cohesion: 0.14
-Nodes (13): Beslissers, Beslissingsfactoren <!-- optioneel -->, Beslissingsresultaat, Context en probleemstelling, [Korte titel van de beslissing], Links <!-- optioneel -->, Negatieve gevolgen <!-- optioneel -->, [optie 1] (+5 more)
-
-### Community 104 - "[Título breve da decisão]"
-Cohesion: 0.14
-Nodes (13): Consequências Negativas <!-- opcional -->, Consequências Positivas <!-- opcional -->, Contexto e Declaração do Problema, Decisores, Drivers da Decisão <!-- opcional -->, Links <!-- opcional -->, [opção 1], [opção 2] (+5 more)
-
-### Community 105 - "[Краткое название решения]"
-Cohesion: 0.14
-Nodes (13): [вариант 1], [вариант 2], [вариант 3], Итог решения, Контекст и постановка проблемы, [Краткое название решения], Отрицательные последствия <!-- необязательно -->, Плюсы и минусы вариантов <!-- необязательно --> (+5 more)
-
-### Community 106 - "[决策简要标题]"
-Cohesion: 0.14
-Nodes (13): [决策简要标题], 决策结果, 决策者, 决策驱动因素 <!-- 可选 -->, [备选方案 1], [备选方案 2], [备选方案 3], 备选方案的优缺点 <!-- 可选 --> (+5 more)
-
-### Community 107 - "AdrService"
-Cohesion: 0.21
-Nodes (7): IAdrServices, AdrService, IConfiguration, Result, string, Success, StringComparison
-
-### Community 109 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.14
-Nodes (13): 결정 결과, 결정 동인 <!-- 선택 사항 -->, [결정에 대한 간단한 제목], 결정자, 고려된 옵션, 긍정적 결과 <!-- 선택 사항 -->, 링크 <!-- 선택 사항 -->, 부정적 결과 <!-- 선택 사항 --> (+5 more)
-
-### Community 110 - "PluginManagerDisposalTests"
-Cohesion: 0.40
-Nodes (5): PluginManagerDisposalTests, Fact, ILogger, string, Task
-
-### Community 112 - "[Brief title of the decision]"
-Cohesion: 0.17
-Nodes (11): Assumptions, Author, [Brief title of the decision], Defined, Gist, Owner, Priority, Rationale (+3 more)
-
-### Community 113 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.17
-Nodes (11): Anforderung, Annahmen, Autor, Begründung, Definiert, [Kurzer Titel der Entscheidung], Kurzfassung, Priorität (+3 more)
-
-### Community 114 - "[Título breve de la decisión]"
-Cohesion: 0.17
-Nodes (11): Autor, Definido, Esencia, Justificación, Partes Interesadas, Prioridad, Requisito, Responsable (+3 more)
-
-### Community 115 - "[Titre bref de la décision]"
-Cohesion: 0.17
-Nodes (11): Auteur, Défini, Essence, Exigence, Hypothèses, Justification, Parties prenantes, Priorité (+3 more)
-
-### Community 116 - "[Titolo breve della decisione]"
-Cohesion: 0.17
-Nodes (11): Autore, Definizione, Essenza, Motivazione, Presupposti, Priorità, Requisito, Responsabile (+3 more)
-
-### Community 117 - "[決定の簡潔なタイトル]"
-Cohesion: 0.17
-Nodes (11): ステークホルダー, リスク, 作成者, 優先度, 前提条件, 定義, 担当者, 根拠 (+3 more)
-
-### Community 118 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.17
-Nodes (11): 가정, [결정에 대한 간단한 제목], 근거, 담당자, 리스크, 요구사항, 요지, 우선순위 (+3 more)
-
-### Community 119 - "[Korte titel van de beslissing]"
-Cohesion: 0.17
-Nodes (11): Aannames, Auteur, Belanghebbenden, Eigenaar, Essentie, Gedefinieerd, [Korte titel van de beslissing], Onderbouwing (+3 more)
-
-### Community 120 - "[Título breve da decisão]"
-Cohesion: 0.17
-Nodes (11): Autor, Definido, Essência, Justificativa, Partes Interessadas, Pressupostos, Prioridade, Requisito (+3 more)
-
-### Community 121 - "[Краткое название решения]"
-Cohesion: 0.17
-Nodes (11): Автор, Заинтересованные стороны, [Краткое название решения], Обоснование, Определение, Ответственный, Предположения, Приоритет (+3 more)
-
-### Community 122 - "[决策简要标题]"
-Cohesion: 0.17
-Nodes (11): 优先级, 作者, 假设, [决策简要标题], 利益相关方, 定义, 概要, 理由 (+3 more)
-
-### Community 125 - "AdrPluginBaseTests"
+### Community 67 - "AdrPluginBase DisposeAsync Tests"
 Cohesion: 0.26
 Nodes (6): AdrPluginBaseTests, TestPlugin, CancellationToken, Fact, Task, ValueTask
 
-### Community 131 - "IPluginLogger"
+### Community 68 - "Sync Command Handler Fields"
+Cohesion: 0.28
+Nodes (8): SyncCommandHandler, Arguments, CancellationToken, Dictionary, Func, ILogger, IReadOnlyList, Task
+
+### Community 69 - "AdrHeader & AdrService Content"
+Cohesion: 0.14
+Nodes (8): content, header, AdrHeader, DateTime, CancellationToken, Result, Success, Task
+
+### Community 70 - "PluginManager Tests"
+Cohesion: 0.36
+Nodes (6): SearchOption, PluginManagerTests, Fact, ILogger, string, Task
+
+### Community 71 - "IAdrPlugin & IPluginConfiguration Contracts"
+Cohesion: 0.16
+Nodes (7): IAsyncDisposable, IAdrPlugin, CancellationToken, Task, IPluginConfiguration, HostPluginConfiguration, Dictionary
+
+### Community 72 - "AdrService Command Metadata"
+Cohesion: 0.15
+Nodes (7): CommandsAdr, Alias, Command, ConfigCommandHandler, Description, Dictionary, Type
+
+### Community 73 - "Test Architecture Conventions"
+Cohesion: 0.18
+Nodes (14): Test Architecture Guide, Arrange-Act-Assert Pattern, CI/CD Pipeline (GitHub Actions), CommandHandlerMockHelper, Domain-Specific Mock Helper Pattern, ExploreCommandHandlerFixture, FluentAssertions, Generic Mock Helper Pattern (+6 more)
+
+### Community 74 - "ConfigVersionManager"
+Cohesion: 0.24
+Nodes (7): ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration, ILogger, Regex, Task
+
+### Community 75 - "Tyree-Ackerman ADR Template (i18n)"
+Cohesion: 0.41
+Nodes (13): Tyree-Ackerman ADR Template (English), Tyree-Ackerman ADR Template (German), Tyree-Ackerman ADR Template (Spanish), Tyree-Ackerman ADR Template (French), Tyree-Ackerman ADR Template (Italian), Tyree-Ackerman ADR Template (Japanese), Tyree-Ackerman ADR Template (Korean), Kyaruzi and van Katwijk Architecture Ontology (+5 more)
+
+### Community 76 - "PluginManager Disposal Tests"
+Cohesion: 0.40
+Nodes (5): PluginManagerDisposalTests, Fact, ILogger, string, Task
+
+### Community 77 - "PluginsCommandHandler Fields"
+Cohesion: 0.18
+Nodes (10): Allowlist, Detail, Events, IReadOnlyList, List, Name, NameOrFolder, Pending (+2 more)
+
+### Community 78 - "Reject Command Handler"
+Cohesion: 0.24
+Nodes (7): RejectCommandHandler, Arguments, CancellationToken, DateTime, Dictionary, ILogger, Task
+
+### Community 79 - "IConsoleWriter Plugin/Event Fields"
+Cohesion: 0.20
+Nodes (9): Allowlist, Detail, Events, IReadOnlyList, Name, NameOrFolder, Pending, Status (+1 more)
+
+### Community 80 - "IExplorePrompts Contract"
+Cohesion: 0.27
+Nodes (7): IExplorePrompts, CancellationToken, FieldsExplore, Filename, FileSelectd, IsAborted, IsCreatingReport
+
+### Community 81 - "Graphify Query History Snapshots"
+Cohesion: 0.36
+Nodes (10): CommandRouter, Graphify memory: why IPromptConsole connects command handlers, IPromptConsole (shared UI abstraction, #1 god node), MainProgram, PromptConsole (single implementation, split across partial classes), InitCommandHandler, Graphify memory: should Init command handling be split into smaller modules, Command-handler test scaffolding community (corrected label, was mislabeled 'Init command handling') (+2 more)
+
+### Community 82 - "Arguments & ExploreCommandHandlerMockHelper"
+Cohesion: 0.36
+Nodes (3): Arguments, ExploreCommandHandlerMockHelper, Dictionary
+
+### Community 84 - "INewAdrPrompts Contract"
+Cohesion: 0.40
+Nodes (6): INewAdrPrompts, CancellationToken, Content, domains, Exception, IsAborted
+
+### Community 85 - "IPluginLogger & IPluginContext"
 Cohesion: 0.25
 Nodes (4): IPluginContext, IPluginLogger, Exception, HostPluginContext
 
-### Community 133 - "ConfigVersionManager"
-Cohesion: 0.23
-Nodes (7): ConfigVersionManager, CancellationToken, GeneratedRegex, IConfiguration, ILogger, Regex, Task
-
-### Community 136 - ".ComputeDelay"
+### Community 86 - "ComputeDelay Backoff (+Tests)"
 Cohesion: 0.36
 Nodes (4): ComputeDelayTests, Fact, InlineData, Theory
 
-### Community 137 - "AdrStatusTests"
+### Community 87 - "AdrStatus Tests"
 Cohesion: 0.28
 Nodes (4): AdrStatusTests, Fact, InlineData, Theory
 
-### Community 138 - "AppConstants"
+### Community 88 - "AppConstants"
 Cohesion: 0.25
 Nodes (7): char, JsonDocumentOptions, Lazy, AppConstants, int, JsonSerializerOptions, string
 
-### Community 139 - ".ExecuteAsync"
-Cohesion: 0.17
-Nodes (13): IsActive, MissingNames, SyncCommandHandler, Arguments, CancellationToken, Dictionary, Func, ILogger (+5 more)
-
-### Community 141 - "PluginLoader.cs"
+### Community 90 - "PluginAssemblyLoadContext (+PluginLoader)"
 Cohesion: 0.29
 Nodes (5): AssemblyDependencyResolver, AssemblyLoadContext, AssemblyName, PluginAssemblyLoadContext, Assembly
 
-### Community 143 - "[Brief title of the decision]"
+### Community 93 - "AdrKeyFormatter (+Tests)"
 Cohesion: 0.29
-Nodes (6): [Brief title of the decision], Candidates to consider, Evaluation criteria, Recommendation, Research and analysis of each candidate, Summary
+Nodes (4): AdrKeyFormatter, AdrKeyFormatterTests, InlineData, Theory
 
-### Community 144 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.29
-Nodes (6): Bewertungskriterien, Empfehlung, [Kurzer Titel der Entscheidung], Recherche und Analyse jedes Kandidaten, Zu berücksichtigende Kandidaten, Zusammenfassung
+### Community 95 - "SatelliteResources Localization Tests"
+Cohesion: 0.38
+Nodes (4): SatelliteResourcesTests, MemberData, Theory, TheoryData
 
-### Community 145 - "[Título breve de la decisión]"
-Cohesion: 0.29
-Nodes (6): Candidatos a considerar, Criterios de evaluación, Investigación y análisis de cada candidato, Recomendación, Resumen, [Título breve de la decisión]
-
-### Community 146 - "[Titre bref de la décision]"
-Cohesion: 0.29
-Nodes (6): Candidats à considérer, Critères d'évaluation, Recherche et analyse de chaque candidat, Recommandation, Résumé, [Titre bref de la décision]
-
-### Community 147 - "[Titolo breve della decisione]"
-Cohesion: 0.29
-Nodes (6): Candidati da considerare, Criteri di valutazione, Raccomandazione, Ricerca e analisi di ciascun candidato, Riepilogo, [Titolo breve della decisione]
-
-### Community 148 - "[決定の簡潔なタイトル]"
-Cohesion: 0.29
-Nodes (6): 各候補の調査と分析, 推奨事項, 検討する候補, 概要, [決定の簡潔なタイトル], 評価基準
-
-### Community 149 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.29
-Nodes (6): 각 후보에 대한 조사 및 분석, [결정에 대한 간단한 제목], 고려할 후보, 권장 사항, 요약, 평가 기준
-
-### Community 150 - "[Korte titel van de beslissing]"
-Cohesion: 0.29
-Nodes (6): Aanbeveling, Evaluatiecriteria, [Korte titel van de beslissing], Onderzoek en analyse van elke kandidaat, Samenvatting, Te overwegen kandidaten
-
-### Community 151 - "[Título breve da decisão]"
-Cohesion: 0.29
-Nodes (6): Candidatos a considerar, Critérios de avaliação, Pesquisa e análise de cada candidato, Recomendação, Resumo, [Título breve da decisão]
-
-### Community 152 - "[Краткое название решения]"
-Cohesion: 0.29
-Nodes (6): Исследование и анализ каждого кандидата, Кандидаты для рассмотрения, [Краткое название решения], Критерии оценки, Резюме, Рекомендация
-
-### Community 153 - "[决策简要标题]"
-Cohesion: 0.29
-Nodes (6): [决策简要标题], 各候选方案的研究与分析, 建议, 待考虑的候选方案, 摘要, 评估标准
-
-### Community 155 - "FormatMessages"
+### Community 96 - "FormatMessages Infrastructure"
 Cohesion: 0.40
 Nodes (4): CompositeFormat, ConcurrentDictionary, FormatMessages, Func
 
-### Community 157 - "AdrPlus"
+### Community 97 - "PluginActivationGate"
+Cohesion: 0.33
+Nodes (5): IsActive, MissingNames, PluginActivationGate, Func, IReadOnlyList
+
+### Community 98 - "AdrPlus Designer Resources"
 Cohesion: 0.40
 Nodes (4): AdrPlus.Resources, CultureInfo, ResourceManager, AdrPlus
 
-### Community 158 - "Q: Why does IPromptConsole connect Migration wizard config to Init command handling, New ADR command, PromptConsole core UI, Approve command handling, Startup/DI services, App config wizard (editor), Repo config validation, Revise command handling, Migrate command handling, Explorer wizard prompts, Help command & router, Config command editing, Explorer report generation, Config field editing prompts, Infrastructure namespaces?"
-Cohesion: 0.40
-Nodes (4): Answer, Outcome, Q: Why does IPromptConsole connect Migration wizard config to Init command handling, New ADR command, PromptConsole core UI, Approve command handling, Startup/DI services, App config wizard (editor), Repo config validation, Revise command handling, Migrate command handling, Explorer wizard prompts, Help command & router, Config command editing, Explorer report generation, Config field editing prompts, Infrastructure namespaces?, Source Nodes
-
-### Community 159 - "Q: Should Init command handling be split into smaller, more focused modules?"
-Cohesion: 0.40
-Nodes (4): Answer, Outcome, Q: Should Init command handling be split into smaller, more focused modules?, Source Nodes
-
-### Community 160 - "Q: Why does IFileSystemService connect ADR header parsing to Init command handling, New ADR command, ADR status change service, and most other commands?"
-Cohesion: 0.40
-Nodes (4): Answer, Outcome, Q: Why does IFileSystemService connect ADR header parsing to Init command handling, New ADR command, ADR status change service, and most other commands?, Source Nodes
-
-### Community 161 - ".ExecuteAsync"
+### Community 99 - "ICommandHandler Contract"
 Cohesion: 0.40
 Nodes (3): ICommandHandler, CancellationToken, Task
 
-### Community 163 - ".PromptGetArrayDomainsAdr"
+### Community 100 - "PromptConsole First Install Flow"
 Cohesion: 0.40
 Nodes (3): domains, Exception, Task
 
-### Community 165 - "[Brief title of the decision]"
+### Community 101 - "ActivePluginsWriter"
 Cohesion: 0.40
-Nodes (4): [Brief title of the decision], Consequences, Decision, Rationale
+Nodes (4): ActivePluginsWriter, CancellationToken, IEnumerable, Task
 
-### Community 166 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.40
-Nodes (4): Begründung, Entscheidung, Konsequenzen, [Kurzer Titel der Entscheidung]
-
-### Community 167 - "[Título breve de la decisión]"
-Cohesion: 0.40
-Nodes (4): Consecuencias, Decisión, Justificación, [Título breve de la decisión]
-
-### Community 168 - "[Titre bref de la décision]"
-Cohesion: 0.40
-Nodes (4): Conséquences, Décision, Justification, [Titre bref de la décision]
-
-### Community 169 - "[Titolo breve della decisione]"
-Cohesion: 0.40
-Nodes (4): Conseguenze, Decisione, Motivazione, [Titolo breve della decisione]
-
-### Community 170 - "[決定の簡潔なタイトル]"
-Cohesion: 0.40
-Nodes (4): 影響, 根拠, 決定, [決定の簡潔なタイトル]
-
-### Community 171 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.40
-Nodes (4): 결과, 결정, [결정에 대한 간단한 제목], 근거
-
-### Community 172 - "[Korte titel van de beslissing]"
-Cohesion: 0.40
-Nodes (4): Beslissing, Gevolgen, [Korte titel van de beslissing], Onderbouwing
-
-### Community 173 - "[Título breve da decisão]"
-Cohesion: 0.40
-Nodes (4): Consequências, Decisão, Justificativa, [Título breve da decisão]
-
-### Community 174 - "[Краткое название решения]"
-Cohesion: 0.40
-Nodes (4): [Краткое название решения], Обоснование, Последствия, Решение
-
-### Community 175 - "[决策简要标题]"
-Cohesion: 0.40
-Nodes (4): 决策, [决策简要标题], 后果, 理由
-
-### Community 176 - "[Brief title of the decision]"
-Cohesion: 0.40
-Nodes (4): [Brief title of the decision], Consequences, Context, Decision
-
-### Community 177 - "[Kurzer Titel der Entscheidung]"
-Cohesion: 0.40
-Nodes (4): Entscheidung, Konsequenzen, Kontext, [Kurzer Titel der Entscheidung]
-
-### Community 178 - "[Título breve de la decisión]"
-Cohesion: 0.40
-Nodes (4): Consecuencias, Contexto, Decisión, [Título breve de la decisión]
-
-### Community 179 - "[Titre bref de la décision]"
-Cohesion: 0.40
-Nodes (4): Conséquences, Contexte, Décision, [Titre bref de la décision]
-
-### Community 180 - "[Titolo breve della decisione]"
-Cohesion: 0.40
-Nodes (4): Conseguenze, Contesto, Decisione, [Titolo breve della decisione]
-
-### Community 181 - "[決定の簡潔なタイトル]"
-Cohesion: 0.40
-Nodes (4): 影響, 決定, [決定の簡潔なタイトル], 背景
-
-### Community 182 - "[결정에 대한 간단한 제목]"
-Cohesion: 0.40
-Nodes (4): 결과, 결정, [결정에 대한 간단한 제목], 컨텍스트
-
-### Community 183 - "[Korte titel van de beslissing]"
-Cohesion: 0.40
-Nodes (4): Beslissing, Context, Gevolgen, [Korte titel van de beslissing]
-
-### Community 184 - "[Título breve da decisão]"
-Cohesion: 0.40
-Nodes (4): Consequências, Contexto, Decisão, [Título breve da decisão]
-
-### Community 185 - "[Краткое название решения]"
-Cohesion: 0.40
-Nodes (4): Контекст, [Краткое название решения], Последствия, Решение
-
-### Community 186 - "[决策简要标题]"
-Cohesion: 0.40
-Nodes (4): 决策, [决策简要标题], 后果, 背景
-
-### Community 188 - "Test Architecture Guide"
-Cohesion: 0.67
-Nodes (4): Test Architecture Guide, CommandHandler Test Architecture, Mock Configuration Pattern, Supersede Test Refactoring Case Study
-
-### Community 189 - "Root CLAUDE.md (project instructions)"
-Cohesion: 0.67
-Nodes (3): Default to --code-only for routine graphify builds on this repo, Root CLAUDE.md (project instructions), .graphifyignore (repo root)
+### Community 103 - "Approve Command Handler Date Parsing"
+Cohesion: 0.50
+Nodes (3): Arguments, DateTime, Dictionary
 
 ## Knowledge Gaps
-- **689 isolated node(s):** `net10.0`, `DefaultDocumentation (1.2.5)`, `Microsoft.NET.Sdk`, `net10.0`, `Microsoft.NET.Sdk` (+684 more)
+- **168 isolated node(s):** `DefaultDocumentation (1.2.5)`, `Microsoft.Extensions.Hosting (10.0.10)`, `PromptPlus (6.0.0-Beta9)`, `Serilog.Extensions.Logging.File (3.0.0)`, `ArgumentMetadata` (+163 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **93 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `IFileSystemService` connect `IFileSystemService` to `ValidateJsonConfigTests`, `.DirectoryExists`, `FileSystemServiceEnhancedTests`, `.ParseArgs`, `ConfigVersionManager`, `.ParseFileName`, `.ValidateRepoStructure`, `VersionCommandHandlerTests`, `NewAdrCommandHandlerTests`, `.FileExists`, `.ExecuteAsync`, `CancellationToken`, `PathHelper`, `PromptConsole`, `PluginManager`, `ValidateConfig`, `UndoStatusCommandHandlerTests`, `WizardCommandHandler`, `.StatusUpdateAdrAsync`, `.ExecuteAsync`, `.WriteAllTextAsync`, `SyncCommandHandlerTests`, `PluginsCommandHandlerInstallTests`, `.PromptGetArrayDomainsAdr`, `.ExploreWizardAsync`, `.ExecuteAsync`, `PluginManifest`, `ConfigCommandHandlerTests`, `.PromptWriteSuccess`, `PluginManagerRetryTests`, `.ParseAdrHeaderAndContentAsync`, `PluginManagerBackfillTests`, `Task`, `PluginManagerDispatchTests`, `IConsoleWriter`, `IValidateConfig`, `InitCommandHandler`, `.PromptWriteError`, `PluginManagerTests`, `.ReadAllAdrByNumber`, `AdrService`, `PluginManagerDisposalTests`?**
-  _High betweenness centrality (0.101) - this node is a cross-community bridge._
-- **Why does `AdrPlus.Domain` connect `AdrPlus.Domain` to `PatternParserTests`, `IConsoleWriter`, `IFileSystemService`, `TemplateResourcesTests`, `FieldsJson`, `.StatusUpdateAdrAsync`, `AdrPlus.Infrastructure.FileSystem`, `PluginLoader.cs`, `.ParseAdrHeaderAndContentAsync`, `StringCaseExtensionsTests`, `AdrPlus.Commands`, `AdrPlus.Abstractions`, `ServiceCollectionExtensions.cs`, `AdrPlus.Infrastructure.UI`?**
-  _High betweenness centrality (0.068) - this node is a cross-community bridge._
-- **Why does `AdrPlus.Commands` connect `AdrPlus.Commands` to `.ExecuteAsync`, `.ExecuteAsync`, `AdrPlus.Infrastructure.FileSystem`, `AdrPlus.Domain`, `AdrPlus.Abstractions`, `ServiceCollectionExtensions.cs`, `AdrPlus.Infrastructure.UI`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **What connects `net10.0`, `DefaultDocumentation (1.2.5)`, `Microsoft.NET.Sdk` to the rest of the system?**
-  _689 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `ValidateJsonConfigTests` be split into smaller, more focused modules?**
+- **Why does `IFileSystemService` connect `AdrService & AdrPlusRepoConfig` to `NewAdr & Supersede Command Handlers (+Tests)`, `ValidateJsonConfig Tests`, `Config Command Handler & Validation`, `FileSystemService (+Tests)`, `PluginManifest & PluginLoader`, `IConsoleWriter Contract (+Tests)`, `Migrate Command Handler & Wizard Args`, `Init Command Handler & Config Limits`, `Revise Command Handler (+Tests)`, `Version Command Handler (+Tests)`, `PromptConsole UI Fields`, `PluginRejectionReason & Plugins Handler Tests`, `PendingEntry & PendingStateStore`, `PromptConsole Rendering (Color/Position)`, `ValidateConfig Core Logic`, `IAdrServices Contract & CultureData Helper`, `UndoStatus Command Handler (+Tests)`, `PluginManager & SyncSummary`, `Approve Command Handler (+Tests)`, `Wizard Command Handler & ItemMenuWizard`, `PluginsCommandHandler Config`, `Sync Command Handler (+Tests)`, `ICommandHandler Contract Implementations`, `Plugins Install via Zip (+Tests)`, `PluginManager Backfill Tests`, `PluginManager Dispatch Tests`, `Revise Command Handler & LogMessages Info`, `AdrStatus & Approve Command Handler`, `Explore Command Handler Arguments`, `Sync Command Handler Fields`, `AdrHeader & AdrService Content`, `PluginManager Tests`, `ConfigVersionManager`, `PluginManager Disposal Tests`, `Reject Command Handler`, `Arguments & ExploreCommandHandlerMockHelper`, `INewAdrPrompts Contract`, `AdrService ReadAllAdr Tests`, `AdrService ReadAllAdrByNumber Tests`, `PromptConsole First Install Flow`, `ActivePluginsWriter`, `SupersedeCommandHandlerMockHelper`, `ExploreCommandHandlerFixture`?**
+  _High betweenness centrality (0.138) - this node is a cross-community bridge._
+- **Why does `AdrPlus.Domain` connect `Core Domain & Command Classes (AdrService, Helper, Records)` to `NewAdr & Supersede Command Handlers (+Tests)`, `Command Handlers & ServiceCollectionExtensions DI Wiring`, `Plugin System & Init/Migrate Command Handlers (+Tests)`, `AdrHeader & AdrService Content`, `PromptConsole Editor/IDE Detection`, `Abstractions Events & PluginManager (+Tests)`, `FieldsJson & Config Prompts`, `CultureData & Localization Tests`, `Program/MainProgram & UI Prompt Contracts`, `CaseFormat & StringCaseExtensions`, `AdrStatus & Approve Command Handler`, `PluginAssemblyLoadContext (+PluginLoader)`, `AdrService & AdrPlusRepoConfig`, `Command Attributes (Command/Argument/HelpUsage) & Handler Tests`?**
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
+- **Why does `IConsoleWriter` connect `MainProgram & IMainProgram` to `NewAdr & Supersede Command Handlers (+Tests)`, `Config Command Handler & Validation`, `PluginManifest & PluginLoader`, `IConsoleWriter Contract (+Tests)`, `Migrate Command Handler & Wizard Args`, `Init Command Handler & Config Limits`, `Revise Command Handler (+Tests)`, `Version Command Handler (+Tests)`, `PluginRejectionReason & Plugins Handler Tests`, `PendingEntry & PendingStateStore`, `PromptConsole Rendering (Color/Position)`, `IAdrServices Contract & CultureData Helper`, `IAdrServices Command Metadata & HelpCommandHandler`, `UndoStatus Command Handler (+Tests)`, `PluginManager & SyncSummary`, `Approve Command Handler (+Tests)`, `Wizard Command Handler & ItemMenuWizard`, `PluginsCommandHandler Config`, `Sync Command Handler (+Tests)`, `ICommandHandler Contract Implementations`, `Plugins Install via Zip (+Tests)`, `PluginManager Backfill Tests`, `PluginManager Dispatch Tests`, `Revise Command Handler & LogMessages Info`, `Program/MainProgram & UI Prompt Contracts`, `AdrStatus & Approve Command Handler`, `Explore Command Handler Arguments`, `Sync Command Handler Fields`, `PluginManager Tests`, `ConfigVersionManager`, `PluginManager Disposal Tests`, `Reject Command Handler`, `IConsoleWriter Plugin/Event Fields`, `Plugins Wizard Mode Selection`, `ExploreCommandHandlerFixture`?**
+  _High betweenness centrality (0.074) - this node is a cross-community bridge._
+- **What connects `DefaultDocumentation (1.2.5)`, `Microsoft.Extensions.Hosting (10.0.10)`, `PromptPlus (6.0.0-Beta9)` to the rest of the system?**
+  _168 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `NewAdr & Supersede Command Handlers (+Tests)` be split into smaller, more focused modules?**
+  _Cohesion score 0.06355446355446355 - nodes in this community are weakly interconnected._
+- **Should `ValidateJsonConfig Tests` be split into smaller, more focused modules?**
   _Cohesion score 0.06828282828282828 - nodes in this community are weakly interconnected._
-- **Should `FileSystemServiceEnhancedTests` be split into smaller, more focused modules?**
-  _Cohesion score 0.057942057942057944 - nodes in this community are weakly interconnected._
-- **Should `PatternParserTests` be split into smaller, more focused modules?**
-  _Cohesion score 0.06127206127206127 - nodes in this community are weakly interconnected._
+- **Should `Helper Utility (+Tests)` be split into smaller, more focused modules?**
+  _Cohesion score 0.05241228070175439 - nodes in this community are weakly interconnected._

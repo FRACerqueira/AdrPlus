@@ -48,13 +48,14 @@ Typical in-scope concerns include:
 
 ## Plugins
 
-AdrPlus supports optional plugins loaded from `./plugins/<name>/` in a repository. Plugins are **third-party
-code that runs with the invoking user's own OS permissions** — the same trust level as any other executable
-the user chooses to run. AdrPlus does not sandbox plugin code; an optional allowlist in `adrplus.json` (by name
-and/or assembly hash) lets a team restrict which plugins load, but does not isolate what an allowed plugin can do.
+AdrPlus supports optional plugins loaded from `%UserProfile%/AdrPlus.Plugins/<name>/`, installed once per
+machine and shared across every repository on it. Plugins are **third-party code that runs with the invoking
+user's own OS permissions** — the same trust level as any other executable the user chooses to run. AdrPlus
+does not sandbox plugin code; an optional allowlist in `adrplus.json` (by name and/or assembly hash) lets a
+team restrict which plugins load, but does not isolate what an allowed plugin can do.
 
-A plugin's `plugin.json` manifest — including its `settings` block — may be committed to the repository so the
-whole team gets the same installed plugins on clone. Because `settings` is plain JSON checked into git:
+A plugin's `plugin.json` manifest — including its `settings` block — lives alongside the plugin binaries at
+the host-global location, not in the repository. Because `settings` is plain JSON on disk:
 
 - **Never put real credential values in `settings`.** Only non-secret configuration belongs there (base URLs,
   space keys, feature flags, etc.). Credential resolution (tokens, API keys) is entirely the plugin's own
@@ -68,5 +69,5 @@ whole team gets the same installed plugins on clone. Because `settings` is plain
 - Keep your .NET SDK and AdrPlus tool updated to the latest version.
 - Do not run AdrPlus with elevated (`sudo` / administrator) privileges unless strictly necessary.
 - Treat `adrplus.json` as a trusted configuration file — do not copy it from untrusted sources.
-- Only install plugins under `./plugins/` from sources you trust, and use the plugin allowlist to prevent
-  unreviewed plugins from loading.
+- Only install plugins under `%UserProfile%/AdrPlus.Plugins/` from sources you trust, and use the plugin
+  allowlist to prevent unreviewed plugins from loading.

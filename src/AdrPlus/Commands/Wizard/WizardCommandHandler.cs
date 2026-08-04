@@ -236,6 +236,11 @@ namespace AdrPlus.Commands.Wizard
                             await _filesystem.SaveHistoryAsync(StartMenuHistoryKey, new ItemMenuWizard(), cancellationToken);
                             throw new NotImplementedException(string.Format(null, FormatMessages.ErrInvalidMenuOption, $"{currentMenu.Id} {currentMenu.Title}"));
                     }
+                    if (Helper.SkipWizardContinuePrompt)
+                    {
+                        Helper.SkipWizardContinuePrompt = false;
+                        continue;
+                    }
                     if (!string.IsNullOrEmpty(currentMenu.Id))
                     {
                         if (_prompt.PromptPressAnyKeyToContinue($"{Resources.AdrPlus.PressAnyKey}...", cancellationToken))

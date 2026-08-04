@@ -42,8 +42,10 @@ public sealed class MyPlugin : IAdrPlugin
 boilerplate `OnAdrEventAsync` needs across several plugins — it's entirely optional, see the full
 guide below for that variant.
 
-Drop the compiled plugin, its `plugin.json` manifest, and dependencies into a subfolder under the
-target repository's `./plugins/<name>/` — AdrPlus discovers and loads it automatically.
+Drop the compiled plugin, its `plugin.json` manifest, and dependencies into a subfolder under
+`%UserProfile%/AdrPlus.Plugins/<name>/` — installed once per machine, AdrPlus discovers and loads it
+automatically. Each repository then controls activation independently via `activeplugins`/`disableplugins`
+in its own `adr-config.adrplus`.
 
 ## Full guide
 
@@ -51,3 +53,6 @@ For which events to subscribe to, retry/timeout semantics, the `ExternalKey`/`ad
 rules, and the manifest schema, see
 [PluginDevelopmentGuide.md](https://github.com/FRACerqueira/AdrPlus/blob/main/PluginDevelopmentGuide.md)
 in the main AdrPlus repository.
+
+For the full generated API reference (every type and member in this package), see
+[doc/api-abstractions](https://github.com/FRACerqueira/AdrPlus/blob/main/doc/api-abstractions/AdrPlus.Abstractions.md).

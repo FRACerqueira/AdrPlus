@@ -14,11 +14,19 @@ namespace AdrPlus.Infrastructure.UI
     /// </summary>
     internal enum PluginsWizardMode
     {
+        Back,
         Install,
         List,
         Validate,
         Manage,
         Uninstall
+    }
+
+    internal enum SyncWizardMode
+    {
+        Back,
+        Default,
+        Backfill
     }
 
     /// <summary>
@@ -218,15 +226,17 @@ namespace AdrPlus.Infrastructure.UI
 
         /// <summary>
         /// Prompts the user to choose between <c>sync</c>'s default (re-drive pending) and <c>--backfill</c>
-        /// (full repository sweep) modes (<c>adrplus sync --wizard</c>).
+        /// (full repository sweep) modes, or <c>Back</c> to return to the previous wizard menu
+        /// (<c>adrplus sync --wizard</c>).
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple indicating whether the operation was aborted and whether backfill mode was chosen.</returns>
-        (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default);
+        /// <returns>A tuple indicating whether the operation was aborted and which mode was chosen.</returns>
+        (bool IsAborted, SyncWizardMode Mode) PromptSelectSyncMode(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to choose between <c>plugins</c>' <c>list</c>, <c>validate</c>, and <c>manage</c>
-        /// (active-plugins selection) modes (<c>adrplus plugins --wizard</c>).
+        /// (active-plugins selection) modes, or <c>Back</c> to return to the previous wizard menu
+        /// (<c>adrplus plugins --wizard</c>).
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple indicating whether the operation was aborted and which mode was chosen.</returns>
@@ -256,12 +266,12 @@ namespace AdrPlus.Infrastructure.UI
 
         /// <summary>
         /// Prompts for the path to a plugin zip file to install (<c>adrplus plugins --wizard</c>'s install
-        /// mode), re-prompting until an existing file is given.
+        /// mode) via an interactive file browser, restricted to <c>.zip</c> files.
         /// </summary>
-        /// <param name="fileSystemService">The file system service used to validate the entered path exists.</param>
+        /// <param name="root">The drive or folder the browser starts from, same as <see cref="PromptSelectFolderPath"/>.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple indicating whether the operation was aborted and the entered zip file path.</returns>
-        (bool IsAborted, string ZipPath) PromptInputPluginZipPath(IFileSystemService fileSystemService, CancellationToken cancellationToken = default);
+        /// <returns>A tuple indicating whether the operation was aborted and the selected zip file path.</returns>
+        (bool IsAborted, string ZipPath) PromptInputPluginZipPath(string root, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Shows a <c>MultiSelect</c> over every folder name currently under <c>./plugins/</c> so the user can

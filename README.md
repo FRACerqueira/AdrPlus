@@ -4,10 +4,11 @@
 
 [![CI](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/FRACerqueira/AdrPlus/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/AdrPlus.svg?include_prereleases)](https://www.nuget.org/packages/AdrPlus)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg)](https://www.nuget.org/packages/AdrPlus)
-[![NuGet Abstractions](https://img.shields.io/nuget/v/AdrPlus.Abstractions.svg?label=AdrPlus.Abstractions&include_prereleases)](https://www.nuget.org/packages/AdrPlus.Abstractions)
+[![NuGet Abstractions](https://img.shields.io/nuget/v/AdrPlus.Abstractions.svg?label=Abstractions&include_prereleases)](https://www.nuget.org/packages/AdrPlus.Abstractions)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.svg?label=AdrPlus)](https://www.nuget.org/packages/AdrPlus)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AdrPlus.Abstractions.svg?label=Abstractions)](https://www.nuget.org/packages/AdrPlus.Abstractions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-10-512BD4)](https://dotnet.microsoft.com)
+[![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
 
 > 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
 
@@ -26,7 +27,6 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 
 - [Motivation and Benefits](#motivation-and-benefits)
 - [Features](#features)
-- [Plugins](#plugins)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -40,6 +40,7 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Rules for adr commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
 - [Configuration](#configuration)
+- [Plugins](#plugins)
 - [Settings and configuration across upgrades](#settings-and-configuration-across-upgrades)
 - [Architecture Decisions of this Project](#architecture-decisions-of-this-project)
 - [Contributing](#contributing)
@@ -82,31 +83,17 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🖥️ Cross-platform (Windows, macOS, Linux)
 ---
 
-## Plugins
-
-Not every ADR-related need belongs in the core CLI. Teams often want to react to ADR lifecycle events — regenerate an index, notify a channel, sync to an external system, enforce a custom policy — without AdrPlus growing built-in support for every possible target. The plugin system exists for exactly that: any command that changes an ADR's state (create, approve, reject, revise, supersede, undo) dispatches lifecycle events that plugins can subscribe to and react to independently of the core tool.
-
-Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus.Abstractions` package — see the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract and event lifecycle.
-
-You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is discovered automatically — no install step needed. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
-
-Plugins are installed **once per machine, host-wide** — not per repository. Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` into `%UserProfile%/AdrPlus.Plugins/<name>/`, making it available to every repository on that machine; `--uninstall <name>` removes it from the machine entirely. A newly installed plugin never dispatches on its own for any given repository — activate it explicitly per repo with `adrplus plugins --activate <name> --path "path/to/repository"` (or deactivate one with `--deactivate <name> --path "path/to/repository"`), the same trust checkpoint the interactive wizard's manage mode already enforces.
-
-> Removing AdrPlus completely? `dotnet tool uninstall -g adrplus` doesn't clean up `%UserProfile%/AdrPlus.Plugins/` (installed plugins) or `%UserProfile%/AdrPlus.History/` (settings carried across upgrades) — dotnet global tools have no uninstall hook, so both are left behind by design. Delete them by hand if you want a fully clean removal.
-
----
-
 ## Requirements
 
 ### For running
 
-- [.NET 10 Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) or later
+- [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) or later
 
 `AdrPlus` can be used in repositories of **any language or framework** (C#, Java, Node.js, Python, Go, etc.), because it manages ADR files in Markdown and does not depend on your application stack.
 
 ### For building and packaging from source
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ---
 
@@ -635,6 +622,20 @@ Organize ADRs by department with custom headers and folder structure.
 
 ---
 
+## Plugins
+
+Not every ADR-related need belongs in the core CLI. Teams often want to react to ADR lifecycle events — regenerate an index, notify a channel, sync to an external system, enforce a custom policy — without AdrPlus growing built-in support for every possible target. The plugin system exists for exactly that: any command that changes an ADR's state (create, approve, reject, revise, supersede, undo) dispatches lifecycle events that plugins can subscribe to and react to independently of the core tool.
+
+Writing a plugin means implementing the `IAdrPlugin` interface from the `AdrPlus.Abstractions` package — see the [Plugin Development Guide](PluginDevelopmentGuide.md) for the full contract and event lifecycle.
+
+You don't need to write one to get value from the plugin system: **`AdrPlus.Plugins.AdrIndexer` already ships bundled with AdrPlus** and is discovered automatically — no install step needed. It rebuilds a linked table of your ADRs (ADR, title, version, status) every time an ADR changes, and doubles as a working reference implementation if you want to build your own.
+
+Plugins are installed **once per machine, host-wide** — not per repository. Installing a third-party or hand-built plugin doesn't require manually copying files: `adrplus plugins --install "./PluginName-1.0.0.zip"` unpacks a zip named `<name>-<version>.zip` into `%UserProfile%/AdrPlus.Plugins/<name>/`, making it available to every repository on that machine; `--uninstall <name>` removes it from the machine entirely. A newly installed plugin never dispatches on its own for any given repository — activate it explicitly per repo with `adrplus plugins --activate <name> --path "path/to/repository"` (or deactivate one with `--deactivate <name> --path "path/to/repository"`), the same trust checkpoint the interactive wizard's manage mode already enforces.
+
+> Removing AdrPlus completely? `dotnet tool uninstall -g adrplus` doesn't clean up `%UserProfile%/AdrPlus.Plugins/` (installed plugins) or `%UserProfile%/AdrPlus.History/` (settings carried across upgrades) — dotnet global tools have no uninstall hook, so both are left behind by design. Delete them by hand if you want a fully clean removal.
+
+---
+
 ## Settings and configuration across upgrades
 
 When you upgrade AdrPlus to a new version, all your settings and configurations are automatically preserved:
@@ -654,7 +655,7 @@ No manual reconfiguration is needed after upgrading — simply update the tool a
 
 ## Architecture Decisions of this Project
 
-AdrPlus is used to manage its own architecture decisions — see the [ADR Index](doc/adr/INDEX.md) for the list of decisions recorded for this repository.
+AdrPlus is used to manage its own architecture decisions — see the [ADR Index](doc/adr/indexadrs.md) (auto-generated by the `AdrIndexer` plugin) for the list of decisions recorded for this repository.
 
 ---
 

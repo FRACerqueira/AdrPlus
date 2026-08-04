@@ -448,6 +448,9 @@
   <data name="WizardSyncModeDescription" xml:space="preserve">
     <value>Default は pending.json のみ再処理し、Backfill はリポジトリ全体を走査します</value>
   </data>
+  <data name="WizardSyncModeBack" xml:space="preserve">
+    <value>戻る</value>
+  </data>
   <data name="WizardSyncModeDefault" xml:space="preserve">
     <value>Default(保留分を再処理)</value>
   </data>
@@ -462,6 +465,9 @@
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
     <value>List は読み込まれたプラグインを表示し、Validate は構造的な読み込みを確認し、Install/Uninstall はこのマシンのプラグインを管理します</value>
+  </data>
+  <data name="WizardPluginsModeBack" xml:space="preserve">
+    <value>戻る</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>読み込まれたプラグインを一覧表示</value>
@@ -480,9 +486,6 @@
   </data>
   <data name="PromptPluginZipPath" xml:space="preserve">
     <value>プラグインzipファイルのパス</value>
-  </data>
-  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
-    <value>既存のzipファイルのパスを入力してください</value>
   </data>
   <data name="PromptPluginInstallForce" xml:space="preserve">
     <value>同名のプラグインが既にインストールされている場合、上書きしますか？</value>

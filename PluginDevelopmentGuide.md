@@ -37,7 +37,7 @@ None of this requires you to write any retry, timeout, or scheduling logic yours
 
 ## Project setup
 
-Create a class library targeting `net10.0` (or anything `>= net10.0`) and reference `AdrPlus.Abstractions` — the only assembly your plugin depends on from AdrPlus itself. It's published as its own [NuGet package](https://www.nuget.org/packages/AdrPlus.Abstractions), versioned and released independently of the `adrplus` CLI tool:
+Create a class library targeting `net10.0` (or anything `>= net8.0`) and reference `AdrPlus.Abstractions` — the only assembly your plugin depends on from AdrPlus itself. It's published as its own [NuGet package](https://www.nuget.org/packages/AdrPlus.Abstractions), versioned and released independently of the `adrplus` CLI tool:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -71,6 +71,9 @@ public interface IAdrPlugin : IAsyncDisposable
     Task<PluginResult> OnAdrEventAsync(AdrEventContext context, CancellationToken ct);
 }
 ```
+
+For the full generated API reference of `AdrPlus.Abstractions` — every type and member, with
+their XML-doc comments — see [doc/api-abstractions](doc/api-abstractions/AdrPlus.Abstractions.md).
 
 - **One singleton instance is held per plugin** for the lifetime of the process — `OnAdrEventAsync` must be reentrant (don't rely on mutable instance state across concurrent calls unless you protect it yourself).
 - **`InitializeAsync` runs lazily**: only the first time, in this process, that an event you actually subscribe to is about to be dispatched to you. A developer running `adrplus new` never triggers your `InitializeAsync` if you don't subscribe to `Created` — so don't resolve credentials or open connections in a constructor; do it here instead, where a failure (e.g. a missing API key) can be reported against the one thing that needed it.

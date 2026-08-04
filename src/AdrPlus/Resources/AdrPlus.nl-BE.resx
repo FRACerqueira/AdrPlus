@@ -448,6 +448,9 @@
   <data name="WizardSyncModeDescription" xml:space="preserve">
     <value>Default verwerkt alleen pending.json opnieuw; Backfill doorzoekt de hele repository</value>
   </data>
+  <data name="WizardSyncModeBack" xml:space="preserve">
+    <value>Terug</value>
+  </data>
   <data name="WizardSyncModeDefault" xml:space="preserve">
     <value>Default (openstaande opnieuw verwerken)</value>
   </data>
@@ -462,6 +465,9 @@
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
     <value>List toont geladen plugins; Validate controleert de structurele lading; Install/Uninstall beheren de plugins op deze computer</value>
+  </data>
+  <data name="WizardPluginsModeBack" xml:space="preserve">
+    <value>Terug</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>Geladen plugins weergeven</value>
@@ -480,9 +486,6 @@
   </data>
   <data name="PromptPluginZipPath" xml:space="preserve">
     <value>Pad naar het plugin-zipbestand</value>
-  </data>
-  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
-    <value>Geef het pad naar een bestaand zipbestand op</value>
   </data>
   <data name="PromptPluginInstallForce" xml:space="preserve">
     <value>Overschrijven als er al een plugin met dezelfde naam is geïnstalleerd?</value>

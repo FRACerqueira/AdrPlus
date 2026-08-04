@@ -860,15 +860,22 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, bool UseBackfill) PromptSelectSyncMode(CancellationToken cancellationToken = default)
+        public (bool IsAborted, SyncWizardMode Mode) PromptSelectSyncMode(CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.WizardSyncModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardSyncModeDescription)
-                .AddItems([Resources.AdrPlus.WizardSyncModeDefault, Resources.AdrPlus.WizardSyncModeBackfill])
+                .AddItems([Resources.AdrPlus.WizardSyncModeBack, Resources.AdrPlus.WizardSyncModeDefault, Resources.AdrPlus.WizardSyncModeBackfill])
                 .Default(Resources.AdrPlus.WizardSyncModeDefault)
                 .Run(cancellationToken);
-            return (result.IsAborted, !result.IsAborted && result.Content == Resources.AdrPlus.WizardSyncModeBackfill);
+            if (result.IsAborted)
+            {
+                return (true, SyncWizardMode.Default);
+            }
+            var mode = result.Content == Resources.AdrPlus.WizardSyncModeBackfill ? SyncWizardMode.Backfill
+                : result.Content == Resources.AdrPlus.WizardSyncModeBack ? SyncWizardMode.Back
+                : SyncWizardMode.Default;
+            return (false, mode);
         }
 
         /// <inheritdoc/>
@@ -877,7 +884,7 @@ namespace AdrPlus.Infrastructure.UI
             var message = $"{Resources.AdrPlus.WizardPluginsModePrompt}";
             var result = PromptPlus.Controls
                 .Select<string>(message, Resources.AdrPlus.WizardPluginsModeDescription)
-                .AddItems([Resources.AdrPlus.WizardPluginsModeInstall, Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage, Resources.AdrPlus.WizardPluginsModeUninstall])
+                .AddItems([Resources.AdrPlus.WizardPluginsModeBack, Resources.AdrPlus.WizardPluginsModeInstall, Resources.AdrPlus.WizardPluginsModeList, Resources.AdrPlus.WizardPluginsModeValidate, Resources.AdrPlus.WizardPluginsModeManage, Resources.AdrPlus.WizardPluginsModeUninstall])
                 .Default(Resources.AdrPlus.WizardPluginsModeList)
                 .Run(cancellationToken);
             if (result.IsAborted)
@@ -888,20 +895,21 @@ namespace AdrPlus.Infrastructure.UI
                 : result.Content == Resources.AdrPlus.WizardPluginsModeManage ? PluginsWizardMode.Manage
                 : result.Content == Resources.AdrPlus.WizardPluginsModeInstall ? PluginsWizardMode.Install
                 : result.Content == Resources.AdrPlus.WizardPluginsModeUninstall ? PluginsWizardMode.Uninstall
+                : result.Content == Resources.AdrPlus.WizardPluginsModeBack ? PluginsWizardMode.Back
                 : PluginsWizardMode.List;
             return (false, mode);
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string ZipPath) PromptInputPluginZipPath(IFileSystemService fileSystemService, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string ZipPath) PromptInputPluginZipPath(string root, CancellationToken cancellationToken = default)
         {
-            var result = PromptPlus.Controls.Input($"{Resources.AdrPlus.PromptPluginZipPath}: ")
-                .PredicateValid((value) => string.IsNullOrWhiteSpace(value) || !fileSystemService.FileExists(value)
-                    ? (false, Resources.AdrPlus.PromptPluginZipPathInvalid)
-                    : (true, string.Empty))
+            var result = PromptPlus.Controls.File($"{Resources.AdrPlus.PromptPluginZipPath}: ")
+                .SelectFilesOnly()
+                .SearchPattern("*.zip")
                 .EnableHistory("AdrPlusPluginsInstallZipPath")
+                .Root(root)
                 .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!);
+            return (result.IsAborted, result.IsAborted ? string.Empty : result.Content!.FullPath);
         }
 
         /// <inheritdoc/>
@@ -919,7 +927,7 @@ namespace AdrPlus.Infrastructure.UI
         public bool PromptShowPluginsListTable(IReadOnlyList<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)> rows, CancellationToken cancellationToken = default)
         {
             var result = PromptPlus.Controls
-                .Table<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
+                .TableSelect<(string Status, string Name, string Version, string Events, string Allowlist, int Pending)>(Resources.AdrPlus.WizardPluginsListTableTitle, string.Empty)
                 .AddColumn(Resources.AdrPlus.TableColumnStatus, r => r.Status)
                 .AddColumn(Resources.AdrPlus.TableColumnName, r => r.Name)
                 .AddColumn(Resources.AdrPlus.TableColumnVersion, r => r.Version)
@@ -950,7 +958,7 @@ namespace AdrPlus.Infrastructure.UI
         public bool PromptShowPluginsValidateTable(IReadOnlyList<(string Status, string NameOrFolder, string Detail)> rows, CancellationToken cancellationToken = default)
         {
             var result = PromptPlus.Controls
-                .Table<(string Status, string NameOrFolder, string Detail)>(Resources.AdrPlus.WizardPluginsValidateTableTitle, string.Empty)
+                .TableSelect<(string Status, string NameOrFolder, string Detail)>(Resources.AdrPlus.WizardPluginsValidateTableTitle, string.Empty)
                 .AddColumn(Resources.AdrPlus.TableColumnStatus, r => r.Status)
                 .AddColumn(Resources.AdrPlus.TableColumnNameOrFolder, r => r.NameOrFolder)
                 .AddColumn(Resources.AdrPlus.TableColumnDetail, r => r.Detail)
@@ -1083,7 +1091,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, string FileSelectd) PromptTableExplore(AdrFileNameComponents[] foundfiles, string[] fields, string folderrepoadr, AdrPlusRepoConfig adrPlusRepoConfig)
         {
             var onstart = true;
-            var table = PromptPlus.Controls.Table<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}")
+            var table = PromptPlus.Controls.TableSelect<AdrFileNameComponents>($"{Resources.AdrPlus.FilesExplored}")
                 .Interaction(foundfiles, (item, ctx) =>
                 {
                     ctx.AddItem(item);
@@ -1209,7 +1217,7 @@ namespace AdrPlus.Infrastructure.UI
         public (bool IsAborted, int CountSelected) PromptShowAdrsMigrations(AdrFileNameComponents[] adrs, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptAdrToMigrate}";
-            bool IsReadyToMigrate(AdrFileNameComponents x) => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated;
+            static bool IsReadyToMigrate(AdrFileNameComponents x) => x.IsValid && !x.Header.IsValid && !x.Header.IsMigrated;
             var result = PromptPlus.Controls.MultiSelect<AdrFileNameComponents>(message, Resources.AdrPlus.ViewOnlyPrompt)
                 .TextSelector(x => $"{Path.GetFileName(x.FileName)} ")
                 .ViewOnly()

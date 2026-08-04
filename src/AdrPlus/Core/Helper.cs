@@ -15,6 +15,8 @@ namespace AdrPlus.Core
     {
         public static  bool HasAppConfigChange;
 
+        public static bool SkipWizardContinuePrompt;
+
         public static int CountError;
 
         public static int ExitCode;

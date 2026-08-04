@@ -525,6 +525,21 @@ public class AdrServiceTests
         action.Should().Throw<ArgumentException>();
     }
 
+    [Fact]
+    public void ParseArgs_WithRefDateFlag_ConsumesFollowingValueAsDate()
+    {
+        // Arrange
+        var args = new[] { "-r", "2026-01-01" };
+        Arguments[] argsForCommand = [Arguments.DateRefAdr];
+
+        // Act
+        var result = _service.ParseArgs(args, argsForCommand);
+
+        // Assert
+        result.Should().ContainKey(Arguments.DateRefAdr);
+        result[Arguments.DateRefAdr].Should().Be("2026-01-01");
+    }
+
     #endregion
 
     #region GetHelpText Tests

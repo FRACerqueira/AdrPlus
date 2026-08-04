@@ -448,6 +448,9 @@
   <data name="WizardSyncModeDescription" xml:space="preserve">
     <value>Default 只重新处理 pending.json；Backfill 扫描整个仓库</value>
   </data>
+  <data name="WizardSyncModeBack" xml:space="preserve">
+    <value>返回</value>
+  </data>
   <data name="WizardSyncModeDefault" xml:space="preserve">
     <value>Default(重新处理待处理项)</value>
   </data>
@@ -462,6 +465,9 @@
   </data>
   <data name="WizardPluginsModeDescription" xml:space="preserve">
     <value>List 显示已加载的插件；Validate 检查结构化加载；Install/Uninstall 管理此计算机上的插件</value>
+  </data>
+  <data name="WizardPluginsModeBack" xml:space="preserve">
+    <value>返回</value>
   </data>
   <data name="WizardPluginsModeList" xml:space="preserve">
     <value>列出已加载的插件</value>
@@ -480,9 +486,6 @@
   </data>
   <data name="PromptPluginZipPath" xml:space="preserve">
     <value>插件 zip 文件路径</value>
-  </data>
-  <data name="PromptPluginZipPathInvalid" xml:space="preserve">
-    <value>请输入一个已存在的 zip 文件路径</value>
   </data>
   <data name="PromptPluginInstallForce" xml:space="preserve">
     <value>如果已安装同名插件，是否覆盖？</value>

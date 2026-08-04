@@ -28,6 +28,8 @@
   "headertablefields": "Fields",
   "headertablevalues": "Values",
   "headermigrated": "Migrated",
-  "activeplugins": [],
+  "activeplugins": [
+    "AdrIndexer"
+  ],
   "disableplugins": false
 }

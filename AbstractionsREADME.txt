@@ -62,8 +62,10 @@ exception-shielding boilerplate OnAdrEventAsync needs across several plugins -
 it's entirely optional, see the full guide below for that variant.
 
 Drop the compiled plugin, its plugin.json manifest, and dependencies into a
-subfolder under the target repository's ./plugins/<name>/ - AdrPlus discovers
-and loads it automatically.
+subfolder under %UserProfile%/AdrPlus.Plugins/<name>/ - installed once per
+machine, AdrPlus discovers and loads it automatically. Each repository then
+controls activation independently via activeplugins/disableplugins in its
+own adr-config.adrplus.
 
 ================================================================================
 FULL GUIDE
@@ -74,6 +76,11 @@ adrKey identity rules, and the manifest schema, see the Plugin Development
 Guide:
 
 https://github.com/FRACerqueira/AdrPlus/blob/main/PluginDevelopmentGuide.md
+
+For the full generated API reference (every type and member in this
+package), see:
+
+https://github.com/FRACerqueira/AdrPlus/blob/main/doc/api-abstractions/AdrPlus.Abstractions.md
 
 ================================================================================
 DOCUMENTATION & REPOSITORY

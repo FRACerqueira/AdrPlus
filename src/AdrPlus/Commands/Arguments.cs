@@ -77,7 +77,7 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.Optional, "HelpUsageEmptyAdr")]
         EmptyAdr,
         [CommandArgument("-r", "--refdate")]
-        [HelpUsage(UsageArgumments.Optional, "HelpUsageDateRefAdr")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageDateRefAdr")]
         DateRefAdr,
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageFileReport")]
