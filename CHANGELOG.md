@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-beta9] - 2026-08-05
+
+### Changed
+
+- Updated the `PromptPlus` dependency from `6.0.0-Beta9` to `6.0.0-rc1`. User-visible effect: `HideAfterFinish`/`HideOnAbort` (set globally in `PromptConfigure`) were dead options on `6.0.0-Beta9` — the wizard's completed steps stayed on screen regardless of the setting. On `6.0.0-rc1` these options actually work, so the wizard now clears each step's UI after confirmation/abort, matching the behavior `PromptConfigure` always intended.
+
+---
+
 ## [1.0.0-beta8] - 2026-08-04
 
 ### Fixed
