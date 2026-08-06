@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-rc1] - 2026-08-06
+
+### Fixed
+
+- Corrected a stale `1.0.0-beta3` version reference in `CLAUDE.md`'s "Current Project Status" section.
+- Fixed a README table-of-contents entry ("Rules for adr commands") that didn't match its own section heading ("Rules by ADR commands").
+- Updated `README.md`/`NugetREADME.md` references to the Claude Code integration: the companion plugin repository was renamed from `AdrPlus-Claude-Plugin` to `AdrPlus-IA-Plugin` and now also supports GitHub Copilot, not just Claude Code — docs, links, and the "Using AdrPlus with Claude Code" section (renamed to "Using AdrPlus with AI Coding Assistants") updated to match.
+
+---
+
 ## [1.0.0-beta9] - 2026-08-05
 
 ### Changed
