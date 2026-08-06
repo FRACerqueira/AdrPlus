@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0-rc1] - 2026-08-06
 
+### Changed
+
+- Bumped `AdrPlus.Abstractions` to `1.0.0-rc1` alongside the CLI tool (still released independently under its own `abstr-v*.*.*` tag series — see [AbstractionsREADME.md](AbstractionsREADME.md)); updated the version shown in the `PackageReference` example in [PluginDevelopmentGuide.md](PluginDevelopmentGuide.md).
+
 ### Fixed
 
 - Corrected a stale `1.0.0-beta3` version reference in `CLAUDE.md`'s "Current Project Status" section.
