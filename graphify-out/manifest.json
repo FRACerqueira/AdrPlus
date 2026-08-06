@@ -25,9 +25,9 @@
     "semantic_hash": "e07d1809e8d49790ed4d5ef034813218"
   },
   "src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj": {
-    "mtime": 1785857040.746518,
-    "ast_hash": "d4c71c7e1d0528dbeeeb1e1dc4f207cb",
-    "semantic_hash": "d4c71c7e1d0528dbeeeb1e1dc4f207cb"
+    "mtime": 1786034135.1539707,
+    "ast_hash": "a3b868d74e2e92631fe0124d438fcd98",
+    "semantic_hash": ""
   },
   "src/AdrPlus.Abstractions/Domain/AdrRecordSnapshot.cs": {
     "mtime": 1785532115.275295,
@@ -105,8 +105,8 @@
     "semantic_hash": "b40f36afbcfec0c6900fc4dd1ae9c295"
   },
   "src/AdrPlus/AdrPlus.csproj": {
-    "mtime": 1785960570.1746113,
-    "ast_hash": "cd78dcbf5312cffa909768b74880f619",
+    "mtime": 1786033991.3869984,
+    "ast_hash": "d3c02c3b548569306e87ce2b4cf3adbb",
     "semantic_hash": ""
   },
   "src/AdrPlus/Commands/Approve/ApproveCommandHandler.cs": {
@@ -880,13 +880,13 @@
     "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1785960655.8496768,
-    "ast_hash": "857bff04cc6d4a101a74b841e116d201",
+    "mtime": 1786034159.787649,
+    "ast_hash": "3ec182cbe871d3699e8bfb00f8c8ce32",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786033151.250738,
-    "ast_hash": "162acb9cd1109f0c7ff72c97a9b9f2ba",
+    "mtime": 1786034054.6676965,
+    "ast_hash": "c32f222439c024684dd8f32bffc36068",
     "semantic_hash": ""
   },
   "CODE_OF_CONDUCT.md": {
@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "PluginDevelopmentGuide.md": {
-    "mtime": 1785874989.656407,
-    "ast_hash": "61e0faedf7eccb0d4190c97ec24bee5b",
+    "mtime": 1786034136.0897267,
+    "ast_hash": "1115cee057f7472fc984e7051960c7f7",
     "semantic_hash": ""
   },
   "README.md": {
