@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
 
-> 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) — let Claude create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-claude-code)
+> 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) — let Claude Code or GitHub Copilot create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-ai-coding-assistants)
 
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no version flow, and hard-to-track status changes).
 
@@ -33,11 +33,11 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Migration Guide](MigrationGuide.md)  
 - [Step-by-Step Guide](StepByStepGuide.md)  
 - [Plugin Development Guide](PluginDevelopmentGuide.md)  
-- [Using AdrPlus with Claude Code](#using-adrplus-with-claude-code)
+- [Using AdrPlus with AI Coding Assistants](#using-adrplus-with-ai-coding-assistants)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
 - [Commands](#commands)
-- [Rules for adr commands](#rules-by-adr-commands)
+- [Rules by ADR commands](#rules-by-adr-commands)
 - [Suggested profiles](#suggested-settings-per-team-profile)
 - [Configuration](#configuration)
 - [Plugins](#plugins)
@@ -70,7 +70,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🔄 **Supersede** an ADR by creating a successor with a new number
 - ✅ **Approve** / ❌ **Reject** / ↩️ **Undo** ADR status changes
 - 🧙 **Interactive wizard** for guided, step-by-step operations
-- 🤖 **Claude Code integration** — manage ADRs conversationally via the official [Claude Code Plugin](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin)
+- 🤖 **AI assistant integration** — manage ADRs conversationally via the official [AdrPlus AI Assistant Plugin](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) for Claude Code and GitHub Copilot
 - 🧩 **Plugin support** for integrations that react to ADR lifecycle events — see the [Plugin Development Guide](PluginDevelopmentGuide.md)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
 - ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
@@ -93,7 +93,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ### For building and packaging from source
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ---
 
@@ -189,9 +189,9 @@ For a detailed walkthrough, see the [Step-by-Step Guide](StepByStepGuide.md).
 
 ---
 
-## Using AdrPlus with Claude Code
+## Using AdrPlus with AI Coding Assistants
 
-Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus Claude Code Plugin**](https://github.com/FRACerqueira/AdrPlus-Claude-Plugin) lets [Claude Code](https://claude.com/claude-code) drive this CLI directly:
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot:
 
 - A skill (`manage-adrs`) that teaches Claude the full `adrplus` command surface, so it can create, approve, reject, version, revise, supersede, and configure ADRs without guessing at flags.
 - An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain integrity, status hygiene) and produces a read-only report.

@@ -54,7 +54,7 @@ For multi-step tasks, state a brief plan:
 
 ## 5. Current Project Status
 
-- **Version**: `1.0.0-beta3` (published as a GitHub tag; the project is in beta — breaking changes are fine, don't add compatibility aliases/shims for renames).
+- **Version**: `1.0.0-beta9` (published as a GitHub tag; the project is in beta — breaking changes are fine, don't add compatibility aliases/shims for renames).
 - **Localization**: both the UI strings (`src/AdrPlus/Resources/AdrPlus.*.resx`) and the ADR templates (`src/AdrPlus/Resources/*-template*.md`, `adr-template*.adrplus`) are localized into 11 languages — `en-US` (neutral), `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN` — matching the set already shipped by the `PromptPlus` dependency. The first-run wizard offers all 11 explicitly, plus "Other" for any other valid culture code.
 - The 9 non-English/Portuguese languages are machine-translated and marked pending native-speaker review — see `TRANSLATIONS.md` for per-file status before treating any of them as final.
 
