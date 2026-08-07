@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-rc2] - 2026-08-07
+
+### Fixed
+
+- Corrected `README.md`/`NugetREADME.md`: the AI-plugin section required `adrplus` v1.0.0-beta1 or
+  later, but beta1/beta2 weren't actually safe to drive non-interactively. Raised the documented
+  floor to v1.0.0-rc1, matching the companion `AdrPlus-IA-Plugin` repo's own requirement.
+
+---
+
 ## [1.0.0-rc1] - 2026-08-06
 
 ### Changed
