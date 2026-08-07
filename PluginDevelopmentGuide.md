@@ -45,7 +45,7 @@ Create a class library targeting `net10.0` (or anything `>= net8.0`) and referen
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0-beta6" Private="false" />
+    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0-rc1" Private="false" />
   </ItemGroup>
 </Project>
 ```

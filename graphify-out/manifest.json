@@ -1,6 +1,6 @@
 {
   ".claude/settings.json": {
-    "mtime": 1785269870.0207894,
+    "mtime": 1786014300.2303464,
     "ast_hash": "2e9bb701419a83a911ac0a75749d6a60",
     "semantic_hash": "2e9bb701419a83a911ac0a75749d6a60"
   },
@@ -25,9 +25,9 @@
     "semantic_hash": "e07d1809e8d49790ed4d5ef034813218"
   },
   "src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj": {
-    "mtime": 1785857040.746518,
-    "ast_hash": "d4c71c7e1d0528dbeeeb1e1dc4f207cb",
-    "semantic_hash": "d4c71c7e1d0528dbeeeb1e1dc4f207cb"
+    "mtime": 1786034135.1539707,
+    "ast_hash": "a3b868d74e2e92631fe0124d438fcd98",
+    "semantic_hash": ""
   },
   "src/AdrPlus.Abstractions/Domain/AdrRecordSnapshot.cs": {
     "mtime": 1785532115.275295,
@@ -105,9 +105,9 @@
     "semantic_hash": "b40f36afbcfec0c6900fc4dd1ae9c295"
   },
   "src/AdrPlus/AdrPlus.csproj": {
-    "mtime": 1785856765.32996,
-    "ast_hash": "9ddb584aa4198dae7b4654da6f722683",
-    "semantic_hash": "9ddb584aa4198dae7b4654da6f722683"
+    "mtime": 1786033991.3869984,
+    "ast_hash": "d3c02c3b548569306e87ce2b4cf3adbb",
+    "semantic_hash": ""
   },
   "src/AdrPlus/Commands/Approve/ApproveCommandHandler.cs": {
     "mtime": 1785789141.376375,
@@ -225,9 +225,9 @@
     "semantic_hash": "bc923873b4b758f76f68e1106395541e"
   },
   "src/AdrPlus/Core/AdrService.cs": {
-    "mtime": 1785584831.201405,
-    "ast_hash": "609739515e7b6ad1e2c70bc3dbf77181",
-    "semantic_hash": "609739515e7b6ad1e2c70bc3dbf77181"
+    "mtime": 1785874552.9122605,
+    "ast_hash": "24dc6ba9b4a2d50d93c446ba63f00261",
+    "semantic_hash": ""
   },
   "src/AdrPlus/Core/AppConstants.cs": {
     "mtime": 1785756875.7150278,
@@ -640,9 +640,9 @@
     "semantic_hash": "9acd7929c04516bf298ebbd24c7e9a93"
   },
   "tests/AdrPlus.Tests/Core/AdrServiceTests.cs": {
-    "mtime": 1785856547.4612079,
-    "ast_hash": "ccff07f63c7f54008ea4416e6e205080",
-    "semantic_hash": "ccff07f63c7f54008ea4416e6e205080"
+    "mtime": 1785874647.4255443,
+    "ast_hash": "52db7f33b6684f99e8b4af0c28f34e2b",
+    "semantic_hash": ""
   },
   "tests/AdrPlus.Tests/Core/HelperTests.cs": {
     "mtime": 1785528093.0198832,
@@ -875,19 +875,19 @@
     "semantic_hash": "c166698ce8122755c870f159baf6913c"
   },
   "AbstractionsREADME.txt": {
-    "mtime": 1785858795.3948135,
-    "ast_hash": "69d00d6cfb27ca621eec34639efd0d67",
-    "semantic_hash": "69d00d6cfb27ca621eec34639efd0d67"
+    "mtime": 1785873582.9362783,
+    "ast_hash": "0d43f49d496357dd3de2d9ebc796b04f",
+    "semantic_hash": ""
   },
   "CHANGELOG.md": {
-    "mtime": 1785870514.8713555,
-    "ast_hash": "abc9e117c0c80ae4176bb25bf6de33cc",
+    "mtime": 1786034159.787649,
+    "ast_hash": "3ec182cbe871d3699e8bfb00f8c8ce32",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785533155.4633937,
-    "ast_hash": "a3433b8d150c1701d6892bd1c4269a19",
-    "semantic_hash": "a3433b8d150c1701d6892bd1c4269a19"
+    "mtime": 1786034054.6676965,
+    "ast_hash": "c32f222439c024684dd8f32bffc36068",
+    "semantic_hash": ""
   },
   "CODE_OF_CONDUCT.md": {
     "mtime": 1785269870.0237913,
@@ -895,44 +895,44 @@
     "semantic_hash": "f84b106fc83efd716d6ed73911d9fd4a"
   },
   "CONTRIBUTING.md": {
-    "mtime": 1785532510.5575342,
-    "ast_hash": "757630570ac20dbd66cfe49803d82482",
-    "semantic_hash": "757630570ac20dbd66cfe49803d82482"
+    "mtime": 1785875015.3617797,
+    "ast_hash": "1a6063111f5364fe6283ba37151ff375",
+    "semantic_hash": ""
   },
   "FAQ.md": {
-    "mtime": 1785790797.0745997,
-    "ast_hash": "8eac76ce27f809c43db7d6687d0fe980",
-    "semantic_hash": "8eac76ce27f809c43db7d6687d0fe980"
+    "mtime": 1785875007.066076,
+    "ast_hash": "7e6cce188b58117dfab460c465ac77a4",
+    "semantic_hash": ""
   },
   "MigrationGuide.md": {
-    "mtime": 1785849835.9712725,
-    "ast_hash": "566b08a011736b5faa0166d266c106f5",
-    "semantic_hash": "566b08a011736b5faa0166d266c106f5"
+    "mtime": 1785874915.4523747,
+    "ast_hash": "f8be31eb8c1d83f18528760bdba85290",
+    "semantic_hash": ""
   },
   "NugetREADME.md": {
-    "mtime": 1785528092.8496172,
-    "ast_hash": "7a6818bb61548bff113bb991cfa0bfb8",
-    "semantic_hash": "7a6818bb61548bff113bb991cfa0bfb8"
+    "mtime": 1786033497.6505775,
+    "ast_hash": "c5e70230ed5c169f6501aaf3c6990c4c",
+    "semantic_hash": ""
   },
   "PluginDevelopmentGuide.md": {
-    "mtime": 1785870507.5078273,
-    "ast_hash": "611f67989c7ef577e944911dad602bbb",
+    "mtime": 1786034136.0897267,
+    "ast_hash": "1115cee057f7472fc984e7051960c7f7",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785870495.2960563,
-    "ast_hash": "4b37183a4ead165918db67c87307878d",
+    "mtime": 1786033487.2610588,
+    "ast_hash": "bb271b75f8347e8e0eacfddffd106f62",
     "semantic_hash": ""
   },
   "SECURITY.md": {
-    "mtime": 1785858811.4703848,
-    "ast_hash": "bb97b8ac1b15fbf9c528f90c120ebc8f",
-    "semantic_hash": "bb97b8ac1b15fbf9c528f90c120ebc8f"
+    "mtime": 1785875029.5762758,
+    "ast_hash": "a627e6ac7043004b8491b01f8971a324",
+    "semantic_hash": ""
   },
   "StepByStepGuide.md": {
-    "mtime": 1785858815.9356432,
-    "ast_hash": "a110000ff5e4f7584f68a53152599aef",
-    "semantic_hash": "a110000ff5e4f7584f68a53152599aef"
+    "mtime": 1785874848.5361822,
+    "ast_hash": "4633caab8e8faaf6780f5622de2e82a4",
+    "semantic_hash": ""
   },
   "TRANSLATIONS.md": {
     "mtime": 1785533150.971988,
