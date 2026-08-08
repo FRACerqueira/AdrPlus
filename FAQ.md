@@ -26,7 +26,9 @@ Yes. If scopes are enabled, ADRs with the same title can coexist as long as they
 
 ### Is the wizard mandatory to use AdrPlus?
 
-On **first use**, the initial setup wizard runs automatically when you execute any command (except `help`). This ensures your configuration is set up correctly.
+On **first use**, the initial setup wizard runs automatically when you execute any command (except `help`) from a real interactive terminal. This ensures your configuration is set up correctly.
+
+If standard input or output is redirected (CI, scripts, an AI agent driving the CLI), the wizard is skipped automatically instead of hanging or crashing on prompts that need real console input, and the tool falls back to its built-in defaults. A team can also pre-provision a `firstinstaller.adrplus` seed file so that first non-interactive run starts from approved settings instead — see [Non-Interactive Setup](StepByStepGuide.md#non-interactive-setup-ci-scripts-ai-agents) in the Step-by-Step Guide. This only affects non-interactive runs; a human at a real terminal always gets the wizard below.
 
 After the initial setup is complete, the interactive wizard (`--wizard`) is optional for subsequent commands. You can run commands directly with their arguments without using the wizard.
 
@@ -139,7 +141,9 @@ Use repository practices (branch policies, code owners, reviews) to control conc
 
 ### What happens if `adr-config.adrplus` is missing or malformed?
 
-Commands that depend on repository config can fail until the file is fixed.
+Depends on which one:
+- **The install-level default template** (used by `adrplus init` to seed a brand-new repository when no `--file` is given): if missing, `init` falls back to generating a valid default from the bundled ADR template instead of failing. If malformed, `init` reports a validation error naming the specific problem.
+- **An already-initialized repository's own `adr-config.adrplus`**: if missing or malformed, commands that depend on it (`new`, `approve`, `migrate`, etc.) fail with a validation error until the file is restored or corrected — AdrPlus doesn't guess at fixing a real repository's settings.
 
 ### Can I use AdrPlus in a monorepo with multiple projects?
 

@@ -699,6 +699,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Critical error occurred</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Invalid command: '{0}' was found, but the installation's default repository template is already configured with different settings. Remove '{0}' if it is no longer needed, or run 'adrplus config --repository' to change the configuration intentionally.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Invalid first-install seed file at '{0}': {1}. Fix the file, or remove it to fall back to interactive setup.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Too many arguments provided for help command</value>
   </data>

@@ -182,6 +182,13 @@ namespace AdrPlus.Core
             return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, GetFileNameRepoConfig()));
         }
 
+        /// <inheritdoc/>
+        public string GetFirstInstallerFilePath()
+        {
+            var baseDirectory = AppContext.BaseDirectory;
+            return Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        }
+
         /// <summary>
         /// Gets the full file system path for the application configuration file <c>adrplus.json</c>.
         /// </summary>
@@ -901,6 +908,80 @@ namespace AdrPlus.Core
             }
 
             return await _fileSystem.ReadAllTextAsync(fullpath, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> TryApplyFirstInstallerAsync(CancellationToken cancellationToken = default)
+        {
+            var firstInstallerPath = GetFirstInstallerFilePath();
+            if (!_fileSystem.FileExists(firstInstallerPath))
+            {
+                return false;
+            }
+
+            var jsonContent = await _fileSystem.ReadAllTextAsync(firstInstallerPath, cancellationToken);
+
+            if (HasTemplateRepoFile())
+            {
+                // A crash between writing adr-config.adrplus and renaming the seed on a prior run leaves
+                // both present with identical content - finish the rename instead of treating a safe retry
+                // as misuse. Only a genuine content mismatch (a stale/leftover seed, or one dropped back in
+                // after real configuration) is rejected.
+                var existingContent = await _fileSystem.ReadAllTextAsync(GetDefaultConfigRepoFilePath(), cancellationToken);
+                if (!RepoConfigContentEquals(existingContent, jsonContent))
+                {
+                    throw new InvalidOperationException(string.Format(null, FormatMessages.ErrFirstInstallerAlreadyConfigured, firstInstallerPath));
+                }
+
+                _fileSystem.MoveFile(firstInstallerPath, $"{firstInstallerPath}{AppConstants.FirstInstallerAppliedSuffix}");
+                return true;
+            }
+
+            var (isValid, errorReport) = ValidateRepoStructure(jsonContent);
+            if (!isValid)
+            {
+                throw new InvalidOperationException(string.Format(null, FormatMessages.ErrFirstInstallerInvalidContent, firstInstallerPath, string.Join("; ", errorReport)));
+            }
+
+            var targetPath = GetDefaultConfigRepoFilePath();
+            var targetDirectory = _fileSystem.GetParentDirectory(targetPath);
+            if (!string.IsNullOrEmpty(targetDirectory) && !_fileSystem.DirectoryExists(targetDirectory))
+            {
+                _fileSystem.CreateDirectory(targetDirectory);
+            }
+            await _fileSystem.WriteAllTextAsync(targetPath, jsonContent, cancellationToken);
+
+            // Re-stamp the version-history baseline with the seed's real values. CheckAndMigrateConfigAsync
+            // runs before this method (see MainProgram.ExecuteAsync) and, finding no version file yet on a
+            // fresh install, already recreated one from generic defaults before targetPath existed. Left
+            // uncorrected, a future app-version migration (ConfigVersionManager.MigrateAsync) would read that
+            // stale generic snapshot as its baseline and overwrite adr-config.adrplus with it, discarding the
+            // seed's real settings.
+            await RecreateVersionFileAsync(cancellationToken);
+
+            _fileSystem.MoveFile(firstInstallerPath, $"{firstInstallerPath}{AppConstants.FirstInstallerAppliedSuffix}");
+
+            return true;
+        }
+
+        /// <summary>
+        /// Compares two repository-config JSON strings for semantic equality, ignoring formatting
+        /// (whitespace, key order, key casing). Used by <see cref="TryApplyFirstInstallerAsync"/> to tell a
+        /// safe retry (identical content left over from an interrupted prior run) apart from a genuine
+        /// conflict (a different seed dropped in after real configuration exists).
+        /// </summary>
+        private static bool RepoConfigContentEquals(string left, string right)
+        {
+            try
+            {
+                var leftNode = JsonNode.Parse(NormalizeJsonKeysToLowerInvariant(left), documentOptions: AppConstants.DocumentOptions);
+                var rightNode = JsonNode.Parse(NormalizeJsonKeysToLowerInvariant(right), documentOptions: AppConstants.DocumentOptions);
+                return JsonNode.DeepEquals(leftNode, rightNode);
+            }
+            catch (JsonException)
+            {
+                return false;
+            }
         }
 
         public async Task<string> LoadPatternsConfigMigration(CancellationToken cancellationToken)

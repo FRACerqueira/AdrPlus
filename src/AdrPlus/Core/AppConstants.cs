@@ -43,6 +43,19 @@ namespace AdrPlus.Core
         public const string AdrRepoConfigFileName = "adr-config.adrplus";
 
         /// <summary>
+        /// The file name of the opt-in seed file that pre-provisions repository configuration for the
+        /// first-install flow, letting a team seed automation/CI installs with pre-approved default values
+        /// instead of the interactive wizard.
+        /// </summary>
+        public const string FirstInstallerFileName = "firstinstaller.adrplus";
+
+        /// <summary>
+        /// The suffix appended to <see cref="FirstInstallerFileName"/> once it has been applied, so a
+        /// successful run cannot be re-applied and cannot be mistaken for a pending seed file.
+        /// </summary>
+        public const string FirstInstallerAppliedSuffix = ".applied";
+
+        /// <summary>
         /// The namespace where the application's embedded resources are located, used for loading templates, configuration files, and other resources that are compiled into the application assembly. 
         /// </summary>
         public const string ResourceNamespace = "AdrPlus.Resources";

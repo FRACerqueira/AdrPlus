@@ -32,10 +32,18 @@ namespace AdrPlus.Infrastructure.FileSystem
 
 
         /// <summary>
-        /// Deletes the file at the specified path if it exists. 
+        /// Deletes the file at the specified path if it exists.
         /// </summary>
         /// <param name="path">The path of the file to delete.</param>
         void RemoveFile(string path);
+
+        /// <summary>
+        /// Moves (renames) a file from <paramref name="sourcePath"/> to <paramref name="destinationPath"/>,
+        /// overwriting the destination if it already exists.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file to move.</param>
+        /// <param name="destinationPath">The destination path for the file.</param>
+        void MoveFile(string sourcePath, string destinationPath);
 
         /// <summary>
         /// Determines whether the specified directory exists.

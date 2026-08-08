@@ -78,7 +78,7 @@ public class InitCommandHandlerBuiltinPluginsTests : IDisposable
         mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
@@ -123,7 +123,7 @@ public class InitCommandHandlerBuiltinPluginsTests : IDisposable
         mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);

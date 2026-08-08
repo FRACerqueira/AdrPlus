@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Произошла критическая ошибка</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Недопустимая команда: найден файл '{0}', но шаблон репозитория по умолчанию для этой установки уже настроен с другими значениями. Удалите '{0}', если он больше не нужен, либо выполните 'adrplus config --repository' для осознанного изменения конфигурации.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Недопустимый файл начальной установки по пути '{0}': {1}. Исправьте файл или удалите его, чтобы вернуться к интерактивной настройке.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Слишком много аргументов для команды help</value>
   </data>

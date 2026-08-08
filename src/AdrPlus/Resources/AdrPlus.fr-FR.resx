@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Une erreur critique s'est produite</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Commande invalide : '{0}' a été trouvé, mais le modèle de dépôt par défaut de cette installation est déjà configuré avec des valeurs différentes. Supprimez '{0}' s'il n'est plus nécessaire, ou exécutez 'adrplus config --repository' pour modifier la configuration intentionnellement.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Fichier d'amorçage de première installation invalide à '{0}' : {1}. Corrigez le fichier, ou supprimez-le pour revenir à la configuration interactive.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Trop d'arguments fournis pour la commande d'aide</value>
   </data>

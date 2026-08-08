@@ -164,6 +164,55 @@ public class FileSystemServiceTests
     }
 
     [Fact]
+    public void MoveFile_MovesFileToDestination()
+    {
+        // Arrange
+        Directory.CreateDirectory(_testDirectory);
+        var sourcePath = Path.Combine(_testDirectory, "source.txt");
+        var destinationPath = Path.Combine(_testDirectory, "destination.txt");
+        File.WriteAllText(sourcePath, "content");
+
+        try
+        {
+            // Act
+            _fileSystemService.MoveFile(sourcePath, destinationPath);
+
+            // Assert
+            File.Exists(sourcePath).Should().BeFalse();
+            File.Exists(destinationPath).Should().BeTrue();
+            File.ReadAllText(destinationPath).Should().Be("content");
+        }
+        finally
+        {
+            Directory.Delete(_testDirectory, true);
+        }
+    }
+
+    [Fact]
+    public void MoveFile_WhenDestinationExists_Overwrites()
+    {
+        // Arrange
+        Directory.CreateDirectory(_testDirectory);
+        var sourcePath = Path.Combine(_testDirectory, "source.txt");
+        var destinationPath = Path.Combine(_testDirectory, "destination.txt");
+        File.WriteAllText(sourcePath, "new content");
+        File.WriteAllText(destinationPath, "stale content");
+
+        try
+        {
+            // Act
+            _fileSystemService.MoveFile(sourcePath, destinationPath);
+
+            // Assert
+            File.ReadAllText(destinationPath).Should().Be("new content");
+        }
+        finally
+        {
+            Directory.Delete(_testDirectory, true);
+        }
+    }
+
+    [Fact]
     public async Task ReadAllLinesAsync_ReturnsFileLines()
     {
         // Arrange

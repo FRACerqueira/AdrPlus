@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>심각한 오류가 발생했습니다</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>잘못된 명령: '{0}'을 찾았지만 이 설치의 기본 리포지토리 템플릿이 이미 다른 값으로 구성되어 있습니다. 더 이상 필요하지 않으면 '{0}'을 제거하거나, 의도적으로 구성을 변경하려면 'adrplus config --repository'를 실행하세요.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>'{0}'의 최초 설치 시드 파일이 잘못되었습니다: {1}. 파일을 수정하거나 제거하여 대화형 설정으로 되돌리세요.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>help 명령에 너무 많은 인수가 제공되었습니다</value>
   </data>

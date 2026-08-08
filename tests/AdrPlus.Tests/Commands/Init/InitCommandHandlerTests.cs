@@ -114,7 +114,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
@@ -149,7 +149,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
@@ -217,7 +217,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((false, errors));
 
         // Act & Assert
@@ -251,7 +251,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -294,7 +294,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -373,7 +373,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -414,7 +414,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -452,7 +452,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
@@ -492,7 +492,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -525,7 +525,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(configPath);
@@ -559,7 +559,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns<string>(callInfo => throw new OperationCanceledException());
 
         // Act & Assert
@@ -610,7 +610,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -652,7 +652,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -693,7 +693,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -734,7 +734,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -773,7 +773,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -808,7 +808,7 @@ public class InitCommandHandlerTests
         _mockFileSystem.FileExists(Arg.Any<string>()).Returns(false);
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -875,7 +875,7 @@ public class InitCommandHandlerTests
             .Returns((false, InitRepositoryPath)); // IsAborted = false, returns selected folder
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -920,7 +920,7 @@ public class InitCommandHandlerTests
             .Returns((false, selectedFolder));
         _mockValidateConfig.GetFileNameRepoConfig().Returns(".adrplus");
         _mockValidateConfig.GetDefaultConfigRepoFilePath().Returns("template-path");
-        _mockFileSystem.ReadAllTextAsync("template-path", Arg.Any<CancellationToken>()).Returns(jsonConfig);
+        _mockValidateConfig.GetConfigDefaultRepoContentAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(jsonConfig);
         _mockValidateConfig.ValidateRepoStructure(jsonConfig).Returns((true, []));
         _mockValidateConfig.GetMaxNumberVersionRevision(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns((0, 0, 0));
         _mockFileSystem.CreateDirectory(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());

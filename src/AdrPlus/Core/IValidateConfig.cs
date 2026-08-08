@@ -85,12 +85,35 @@ namespace AdrPlus.Core
         string GetConfigAppFilePath();
 
         /// <summary>
-        /// Gets the full file path of the configuration file 
+        /// Gets the full file path of the configuration file
         /// </summary>
         /// <returns>
         /// The full file path of the configuration file
         /// </returns>
         string GetDefaultConfigRepoFilePath();
+
+        /// <summary>
+        /// Gets the full file path of the opt-in first-install seed file (<c>firstinstaller.adrplus</c>).
+        /// </summary>
+        /// <returns>The full file path of the seed file.</returns>
+        string GetFirstInstallerFilePath();
+
+        /// <summary>
+        /// Applies the first-install seed file when present, as an alternative to the interactive wizard for
+        /// automation/CI/AI-agent scenarios: a team pre-provisions <c>firstinstaller.adrplus</c> with approved
+        /// default repository settings, and this consumes it in place of prompting.
+        /// </summary>
+        /// <remarks>
+        /// Only valid before the repository has ever been configured. If the seed file is present after
+        /// configuration already exists, this throws instead of silently ignoring it, since that state means
+        /// the seed file is being misused (leftover from provisioning, or dropped back in after the fact).
+        /// On success, the seed file is renamed with the <see cref="AppConstants.FirstInstallerAppliedSuffix"/>
+        /// suffix so it cannot be re-applied on a later run.
+        /// </remarks>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns><see langword="true"/> if the seed file was found and applied; <see langword="false"/> if no seed file is present.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the seed file is present but the repository is already configured, or when its content fails repository structure validation.</exception>
+        Task<bool> TryApplyFirstInstallerAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves the file name configuration value.
