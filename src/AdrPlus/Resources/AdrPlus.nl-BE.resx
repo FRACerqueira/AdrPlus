@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Er is een kritieke fout opgetreden</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Ongeldige opdracht: '{0}' is gevonden, maar de standaard repository-template van deze installatie is al geconfigureerd met andere waarden. Verwijder '{0}' als het niet meer nodig is, of voer 'adrplus config --repository' uit om de configuratie bewust te wijzigen.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Ongeldig first-install seed-bestand op '{0}': {1}. Corrigeer het bestand, of verwijder het om terug te vallen op interactieve installatie.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Te veel argumenten opgegeven voor het commando help</value>
   </data>

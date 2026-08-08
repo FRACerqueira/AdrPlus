@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0-rc3] - 2026-08-08
+
+### Added
+
+- `firstinstaller.adrplus`: an opt-in seed file (`<install dir>/template/firstinstaller.adrplus`, same
+  JSON schema as `adr-config.adrplus`) that lets a team pre-provision approved repository settings for
+  automated/CI/AI-agent first installs, instead of the tool's built-in defaults. Scoped strictly to
+  non-interactive sessions - the same redirected stdin/stdout check that already gates the wizard - so
+  a human at a real terminal always gets the guided wizard regardless of whether this file is present
+  (see [ADR005](doc/adr/ADR005V01-scope-the-firstinstaller.adrplus-automation-seed-to-non-interactive-first-installs-only.md)).
+  Applied at most once (renamed to `firstinstaller.adrplus.applied` on success); a retry after an
+  interrupted prior run completes safely instead of failing.
+
+### Fixed
+
+- `adrplus init --path <dir>` (no `--file`) no longer throws a raw `FileNotFoundException` on a
+  completely fresh, non-interactive install where the installation's default repository template had
+  never been generated. This closes a gap the 1.0.0-beta3 fix left open: that release moved the
+  "config already exists, confirm overwrite" branch onto `GetConfigDefaultRepoContentAsync`'s in-memory
+  fallback, but the structurally identical "no `--file`, no existing config" branch was never updated
+  and kept reading the file directly - unnoticed since most installs already had the template file
+  from an earlier run.
+
+---
+
 ## [1.0.0-rc2] - 2026-08-07
 
 ### Fixed

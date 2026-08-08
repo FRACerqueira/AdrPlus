@@ -105,6 +105,24 @@ adrplus
 adrplus init --wizard
 ```
 
+### Non-Interactive Setup (CI, Scripts, AI Agents)
+
+The interactive wizard above only runs when AdrPlus detects a real, interactive console. When standard input or output is redirected — CI pipelines, scripts, or an AI agent driving the CLI — the wizard is skipped automatically, and this never blocks or changes behavior for a human running AdrPlus at a real terminal.
+
+With no further setup, a redirected first run falls back to the tool's built-in defaults (prefix `ADR`, folder `doc/adr`, the bundled ADR template, etc.) — the same defaults `adrplus init --path <dir>` uses when no `--file` is given.
+
+If your team wants automated/CI installs to start from pre-approved settings instead of the built-in defaults, provide a seed file:
+
+```bash
+# Place this file before the very first (non-interactive) AdrPlus run:
+<AdrPlus install directory>/template/firstinstaller.adrplus
+```
+
+- **Format**: the same JSON schema as `adr-config.adrplus` (see [What file stores repository-level ADR rules?](FAQ.md#what-file-stores-repository-level-adr-rules)) — folder, prefix, numbering, template content, and so on.
+- **When it applies**: only on the very first non-interactive run, before the installation's default repository template has ever been configured. Once applied, the seed file is renamed to `firstinstaller.adrplus.applied` so it cannot be re-applied.
+- **Misuse guard**: if `firstinstaller.adrplus` is found again after the default template is already configured with *different* settings, AdrPlus refuses with an error instead of silently ignoring it — remove the file, or run `adrplus config --repository` if you intend to change the configuration intentionally.
+- **Human sessions are never affected**: even if this file is present, a real interactive terminal always gets the guided wizard above — the seed file is scoped to automation only.
+
 ### What Happens Next
 
 After the initial setup completes:

@@ -20,17 +20,25 @@ namespace AdrPlus.Infrastructure.UI
         };
         public async Task<bool> FistInstall(CancellationToken cancellationToken)
         {
+            // No interactive console available - CI, scripts, or an automation agent driving this
+            // CLI non-interactively. Give automation a chance to self-configure from a pre-provisioned
+            // firstinstaller.adrplus before falling back to skipping the wizard; an interactive human
+            // always keeps the guided wizard below regardless of whether that seed file is present -
+            // this mechanism is scoped to automation, not a substitute for the human's own first-run
+            // choice.
+            var isNonInteractive = Console.IsInputRedirected || Console.IsOutputRedirected;
+            if (isNonInteractive && await _validate.TryApplyFirstInstallerAsync(cancellationToken))
+            {
+                return true;
+            }
             if (_fileSystemService.FileExists(_validate.GetDefaultConfigRepoFilePath()))
             {
                 return false;
             }
-            if (Console.IsInputRedirected || Console.IsOutputRedirected)
+            if (isNonInteractive)
             {
-                // No interactive console available - CI, scripts, or an automation
-                // agent driving this CLI non-interactively. Skip the first-install
-                // wizard instead of hanging/crashing on prompt controls that need
-                // real console input; commands like `init --path` create the config
-                // themselves without going through this wizard.
+                // Commands like `init --path` create the config themselves without going through
+                // this wizard, so skipping here doesn't leave automation stuck.
                 return false;
             }
             PromptEnabledEscToAbort(true);

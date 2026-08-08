@@ -1683,6 +1683,28 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
+    public async Task GetConfigDefaultRepoContentAsync_WhenFileDoesNotExist_ReturnsValidGeneratedDefault()
+    {
+        // Arrange - a fresh install with no adr-config.adrplus on disk yet (the scenario that used to
+        // crash `adrplus init` with a raw FileNotFoundException) should fall back to a structurally
+        // valid default built from the embedded ADR template instead of failing.
+        var validator = CreateValidator([]);
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        var templatePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrTemplateFileName));
+        _fileSystem.FileExists(configPath).Returns(false);
+        _fileSystem.FileExists(templatePath).Returns(true);
+        _fileSystem.ReadAllTextAsync(templatePath, Arg.Any<CancellationToken>()).Returns("## Context\n\n## Decision\n");
+
+        // Act
+        var result = await validator.GetConfigDefaultRepoContentAsync("doc/adr", TestContext.Current.CancellationToken);
+
+        // Assert
+        var (isValid, errors) = validator.ValidateRepoStructure(result);
+        isValid.Should().BeTrue(string.Join("; ", errors));
+        result.Should().Contain("doc/adr");
+    }
+
+    [Fact]
     public async Task GetConfigDefaultRepoContentAsync_WhenTemplateThrows_PropagatesException()
     {
         // Arrange
@@ -1698,6 +1720,127 @@ public class ValidateJsonConfigTests
 
         // Assert
         await act.Should().ThrowAsync<FileNotFoundException>();
+    }
+
+    #endregion
+
+    #region TryApplyFirstInstallerAsync Tests
+
+    [Fact]
+    public async Task TryApplyFirstInstallerAsync_WhenSeedFileAbsent_ReturnsFalse()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var seedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        _fileSystem.FileExists(seedPath).Returns(false);
+
+        // Act
+        var applied = await validator.TryApplyFirstInstallerAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        applied.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task TryApplyFirstInstallerAsync_WhenAlreadyConfiguredWithDifferentContent_ThrowsInvalidOperationException()
+    {
+        // Arrange - misuse guard: a genuinely different seed found after real configuration exists
+        // (a stale/leftover file, or one dropped back in after the fact) must be rejected.
+        var validator = CreateValidator([]);
+        var seedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        var differentDict = GetBaseRepoJsonDict();
+        differentDict[AppConstants.FieldPrefix] = "DIFFERENT";
+        _fileSystem.FileExists(seedPath).Returns(true);
+        _fileSystem.FileExists(configPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(seedPath, Arg.Any<CancellationToken>()).Returns(CreateValidRepoJson());
+        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(JsonSerializer.Serialize(differentDict, AppConstants.RepoSerializerOptions));
+
+        // Act
+        var act = async () => await validator.TryApplyFirstInstallerAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+        _fileSystem.DidNotReceive().MoveFile(Arg.Any<string>(), Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task TryApplyFirstInstallerAsync_WhenAlreadyConfiguredWithIdenticalContent_CompletesRenameWithoutThrowing()
+    {
+        // Arrange - a crash between writing adr-config.adrplus and renaming the seed on a prior run
+        // leaves both present with identical content; retrying must finish the rename, not fail.
+        var validator = CreateValidator([]);
+        var seedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        var seedContent = CreateValidRepoJson();
+        _fileSystem.FileExists(seedPath).Returns(true);
+        _fileSystem.FileExists(configPath).Returns(true);
+        _fileSystem.ReadAllTextAsync(seedPath, Arg.Any<CancellationToken>()).Returns(seedContent);
+        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(seedContent);
+
+        // Act
+        var applied = await validator.TryApplyFirstInstallerAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        applied.Should().BeTrue();
+        _fileSystem.Received().MoveFile(seedPath, seedPath + AppConstants.FirstInstallerAppliedSuffix);
+        await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TryApplyFirstInstallerAsync_WhenContentInvalid_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var seedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        _fileSystem.FileExists(seedPath).Returns(true);
+        _fileSystem.FileExists(configPath).Returns(false);
+        _fileSystem.ReadAllTextAsync(seedPath, Arg.Any<CancellationToken>()).Returns("""{"invalid": "config"}""");
+
+        // Act
+        var act = async () => await validator.TryApplyFirstInstallerAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+        await _fileSystem.DidNotReceive().WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TryApplyFirstInstallerAsync_WhenContentValid_WritesConfigAndRenamesSeedFile()
+    {
+        // Arrange
+        var validator = CreateValidator([]);
+        var seedPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.FirstInstallerFileName));
+        var configPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.TemplateDirectoryName, AppConstants.AdrRepoConfigFileName));
+        var appConfigPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, AppConstants.AppConfigfileName));
+        var seedContent = CreateValidRepoJson();
+        _fileSystem.FileExists(seedPath).Returns(true);
+        // First call is the misuse guard (HasTemplateRepoFile), which must see "not configured yet".
+        // Second call happens inside the version-file re-stamp below and must see the config this
+        // method just wrote - matching the real FileSystemService, where FileExists reflects a write
+        // that already happened.
+        _fileSystem.FileExists(configPath).Returns(false, true);
+        _fileSystem.ReadAllTextAsync(seedPath, Arg.Any<CancellationToken>()).Returns(seedContent);
+        _fileSystem.ReadAllTextAsync(configPath, Arg.Any<CancellationToken>()).Returns(seedContent);
+        _fileSystem.ReadAllTextAsync(appConfigPath, Arg.Any<CancellationToken>()).Returns(CreateValidAppJson());
+        _fileSystem.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
+
+        // Act
+        var applied = await validator.TryApplyFirstInstallerAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        applied.Should().BeTrue();
+        await _fileSystem.Received().WriteAllTextAsync(configPath, seedContent, Arg.Any<CancellationToken>());
+        _fileSystem.Received().MoveFile(seedPath, seedPath + AppConstants.FirstInstallerAppliedSuffix);
+
+        // The version-history baseline must reflect the seed's real values, not generic defaults -
+        // otherwise a future app-version migration (ConfigVersionManager.MigrateAsync) would read a
+        // stale baseline and overwrite adr-config.adrplus, discarding the seed's settings.
+        await _fileSystem.Received().WriteAllTextAsync(
+            Arg.Is<string>(p => p.Contains(AppConstants.VersionFilePrefix)),
+            Arg.Is<string>(content => content.Contains("doc/adr")),
+            Arg.Any<CancellationToken>());
     }
 
     #endregion

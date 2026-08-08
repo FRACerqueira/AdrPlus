@@ -817,6 +817,24 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid command: &apos;{0}&apos; was found, but the installation&apos;s default repository template is already configured with different settings. Remove &apos;{0}&apos; if it is no longer needed, or run &apos;adrplus config --repository&apos; to change the configuration intentionally..
+        /// </summary>
+        internal static string ErrMsgFirstInstallerAlreadyConfigured {
+            get {
+                return ResourceManager.GetString("ErrMsgFirstInstallerAlreadyConfigured", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid first-install seed file at &apos;{0}&apos;: {1}. Fix the file, or remove it to fall back to interactive setup..
+        /// </summary>
+        internal static string ErrMsgFirstInstallerInvalidContent {
+            get {
+                return ResourceManager.GetString("ErrMsgFirstInstallerInvalidContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to &apos;folderRepo&apos; must be a relative path: &apos;{0}&apos;.
         /// </summary>
         internal static string ErrMsgFolderRepoMustBeRelative {

@@ -699,6 +699,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Ocorreu um erro crítico</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Comando inválido: '{0}' foi encontrado, mas o template padrão de repositório desta instalação já está configurado com valores diferentes. Remova '{0}' se não for mais necessário, ou execute 'adrplus config --repository' para alterar a configuração intencionalmente.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Arquivo de instalação inicial inválido em '{0}': {1}. Corrija o arquivo ou remova-o para usar a configuração interativa.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Muitos argumentos fornecidos para o comando help</value>
   </data>

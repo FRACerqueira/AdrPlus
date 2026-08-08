@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Se produjo un error crítico</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Comando no válido: se encontró '{0}', pero la plantilla de repositorio predeterminada de esta instalación ya está configurada con valores diferentes. Elimine '{0}' si ya no es necesario, o ejecute 'adrplus config --repository' para cambiar la configuración de forma intencional.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Archivo de siembra de primera instalación no válido en '{0}': {1}. Corrija el archivo o elimínelo para usar la configuración interactiva.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Se proporcionaron demasiados argumentos para el comando help</value>
   </data>

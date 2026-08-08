@@ -220,7 +220,7 @@ namespace AdrPlus.Commands.Init
                 else
                 {
                     filecfg = _validateconfig.GetDefaultConfigRepoFilePath();
-                    jsonrepoconfig = await _fileSystem.ReadAllTextAsync(filecfg, cancellationToken);
+                    jsonrepoconfig = await _validateconfig.GetConfigDefaultRepoContentAsync(AppConstants.DefaultFolderAdr, cancellationToken);
                 }
             }
 

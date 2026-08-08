@@ -34,10 +34,11 @@ Before migrating your ADRs, ensure you have:
    - Verify: `adrplus help`
 
 ✅ **Initial setup completed**
-   - On first run of any AdrPlus command, the setup wizard runs automatically
+   - On first run of any AdrPlus command from a real interactive terminal, the setup wizard runs automatically
    - This creates `adrplus.json` (application settings) and `adr-config.adrplus` (repository settings)
    - The setup wizard handles language selection, editor configuration, and ADR naming conventions
    - Simply run any command (e.g., `adrplus init --path "."`), and the automatic setup will start
+   - In CI/scripts/an AI agent driving the CLI, the wizard is skipped automatically instead - see [Non-Interactive Setup](StepByStepGuide.md#non-interactive-setup-ci-scripts-ai-agents) in the Step-by-Step Guide
 
 ✅ **Migration configuration set up** ⚠️ **REQUIRED**
    - After initial setup, run: `adrplus config --migrate` to configure migration source settings
@@ -150,9 +151,9 @@ We have decided to use PostgreSQL...
 Before starting migration, **you MUST**:
 
 1. **Complete the AdrPlus initial setup**:
-   - On first run without command, the automatic setup wizard will start
+   - On first run without command, in a real interactive terminal, the automatic setup wizard will start
    - This creates your `adrplus.json` and `adr-config.adrplus` configuration files
-   - If you haven't run the setup yet, simply run: `adrplus init --path "."` to trigger it
+   - If you haven't run the setup yet, simply run: `adrplus init --path "."` to trigger it (non-interactively, this uses built-in defaults or a pre-provisioned `firstinstaller.adrplus` seed instead of the wizard)
 
 2. **Configure migration settings**:
    ```bash

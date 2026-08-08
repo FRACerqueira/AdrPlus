@@ -172,6 +172,8 @@ adrplus
 adrplus init --wizard
 ```
 
+This wizard only runs in a real interactive terminal. In CI, scripts, or an AI agent driving the CLI (standard input/output redirected), it's skipped automatically and AdrPlus falls back to its built-in defaults — a team can also pre-provision a `firstinstaller.adrplus` seed file so that first automated run starts from approved settings instead. See [Non-Interactive Setup](StepByStepGuide.md#non-interactive-setup-ci-scripts-ai-agents) in the Step-by-Step Guide.
+
 After initial setup completes, you can use any command directly:
 
 ```bash
@@ -204,7 +206,7 @@ Requires `adrplus` v1.0.0-rc1 or later — earlier pre-releases (including beta1
 
 ## Advanced Configuration (Optional)
 
-**Note:** The initial setup wizard runs automatically on first use. The commands below are optional if you want to reconfigure or adjust settings after the initial setup.
+**Note:** The initial setup wizard runs automatically on first use in an interactive terminal (see [Quick Start](#quick-start) above for the non-interactive/CI behavior). The commands below are optional if you want to reconfigure or adjust settings after the initial setup.
 
 ### Reconfigure Application Settings
 

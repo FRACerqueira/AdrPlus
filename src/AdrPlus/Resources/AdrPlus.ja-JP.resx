@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>重大なエラーが発生しました</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>無効なコマンド: '{0}' が見つかりましたが、このインストールのデフォルトのリポジトリテンプレートは既に異なる設定で構成されています。不要であれば '{0}' を削除するか、意図的に設定を変更する場合は 'adrplus config --repository' を実行してください。</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>'{0}' の初回インストール用シードファイルが無効です: {1}。ファイルを修正するか、削除して対話形式のセットアップに戻してください。</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>help コマンドに対して引数が多すぎます</value>
   </data>

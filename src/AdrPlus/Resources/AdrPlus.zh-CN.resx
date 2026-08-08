@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>发生严重错误</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>无效命令:找到了 '{0}',但此安装的默认仓库模板已配置为不同的值。如果不再需要,请删除 '{0}';如果确实要更改配置,请运行 'adrplus config --repository'。</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>位于 '{0}' 的首次安装种子文件无效:{1}。请修正该文件,或删除它以回退到交互式设置。</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>为 help 命令提供的参数过多</value>
   </data>

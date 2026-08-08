@@ -63,12 +63,16 @@ namespace AdrPlus.Infrastructure.FileSystem
 
         /// <inheritdoc/>
         public void RemoveFile(string path)
-        { 
+        {
             if (FileExists(path))
             {
                 File.Delete(path);
             }
         }
+
+        /// <inheritdoc/>
+        public void MoveFile(string sourcePath, string destinationPath) =>
+            File.Move(sourcePath, destinationPath, overwrite: true);
 
         /// <inheritdoc/>
         public string? GetFileRootRepositoryPath(string pathfileadr)

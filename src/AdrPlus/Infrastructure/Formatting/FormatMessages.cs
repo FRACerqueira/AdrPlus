@@ -63,6 +63,8 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ErrContentPathTooLongFormat => Get(() => Resources.AdrPlus.ErrMsgContentPathTooLong);
         public static CompositeFormat ErrContentPathNotSupportedFormat => Get(() => Resources.AdrPlus.ErrMsgContentPathNotSupported);
         public static CompositeFormat ErrMigrationVersionFailed => Get(() => Resources.AdrPlus.ErrMigrationVersionFailed);
+        public static CompositeFormat ErrFirstInstallerAlreadyConfigured => Get(() => Resources.AdrPlus.ErrMsgFirstInstallerAlreadyConfigured);
+        public static CompositeFormat ErrFirstInstallerInvalidContent => Get(() => Resources.AdrPlus.ErrMsgFirstInstallerInvalidContent);
 
 
         // ==================== INFORMATIONAL MESSAGES ====================

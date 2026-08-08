@@ -700,6 +700,12 @@
   <data name="ErrMsgCritical" xml:space="preserve">
     <value>Kritischer Fehler aufgetreten</value>
   </data>
+  <data name="ErrMsgFirstInstallerAlreadyConfigured" xml:space="preserve">
+    <value>Ungültiger Befehl: '{0}' wurde gefunden, aber die Standard-Repository-Vorlage dieser Installation ist bereits mit anderen Werten konfiguriert. Entfernen Sie '{0}', falls nicht mehr benötigt, oder führen Sie 'adrplus config --repository' aus, um die Konfiguration bewusst zu ändern.</value>
+  </data>
+  <data name="ErrMsgFirstInstallerInvalidContent" xml:space="preserve">
+    <value>Ungültige Erstinstallations-Seed-Datei unter '{0}': {1}. Korrigieren Sie die Datei, oder entfernen Sie sie, um auf die interaktive Einrichtung zurückzugreifen.</value>
+  </data>
   <data name="ErrMsgHelpTooManyArguments" xml:space="preserve">
     <value>Zu viele Argumente für den Befehl help angegeben</value>
   </data>
