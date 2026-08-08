@@ -49,3 +49,8 @@ Key characteristics of the chosen design:
 
 * If a team later wants to enforce a baseline on human-provisioned machines too (not just CI), that is a new, separate decision to make — this option does not support it as-is.
 * Precedence still relies on the pre-existing `Console.IsInputRedirected`/`IsOutputRedirected` heuristic, which does not perfectly distinguish "a human at a terminal" from every possible automation harness (some allocate a real pty); this is an existing, known limitation the decision inherits rather than one it introduces.
+
+## Links
+
+* Implementing commit: `084f8c5` ("Add firstinstaller.adrplus seed; fix init crash on fresh installs")
+* Documented in [README.md](../../README.md), [StepByStepGuide.md](../../StepByStepGuide.md), [FAQ.md](../../FAQ.md), and [CHANGELOG.md](../../CHANGELOG.md) under `1.0.0-rc3`
