@@ -86,6 +86,11 @@ namespace AdrPlus
                 var main = serviceProvider.GetRequiredService<IMainProgram>();
                 await main.ExecuteAsync(_cts.Token);
             }
+            catch (OperationCanceledException)
+            {
+                PromptConsole.PromptShowError(Resources.AdrPlus.CancelledByUser);
+                Helper.ExitCode = 1;
+            }
             catch (Exception ex)
             {
                 PromptConsole.PromptShowError(Resources.AdrPlus.ErrMsgCritical);
