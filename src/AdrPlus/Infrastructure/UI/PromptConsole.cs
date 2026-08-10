@@ -406,7 +406,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptWriteError(string message)
         {
-            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]",true);
         }
 
         /// <inheritdoc/>
@@ -436,14 +436,14 @@ namespace AdrPlus.Infrastructure.UI
         /// <inheritdoc/>
         public void PromptWriteFinishedCommand(string text)
         {
-            PromptPlus.Console.WriteLine("");
+            PromptPlus.Console.WriteLine("",true);
             if (Console.IsOutputRedirected)
             {
                 PromptPlus.Console.WriteLine(text);
             }
             else
             {
-                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner);
+                PromptPlus.Console.WriteLine(text, ColorWelcomeBanner, true);
             }
         }
 
@@ -453,7 +453,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="message">The error message to display.</param>
         public static void PromptShowError(string message)
         {
-            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]");
+            PromptPlus.Console.WriteLine($"[{ColorError}]{message}[/]",true);
         }
 
         /// <inheritdoc/>
@@ -470,6 +470,7 @@ namespace AdrPlus.Infrastructure.UI
             PromptPlus.Config.EnabledAbortKey = false;
             PromptPlus.Config.ShowMessageAbortKey = false;
             PromptPlus.Config.HideAfterFinish = true;
+            PromptPlus.Config.HideOnAbort = true;
             PromptPlus.Config.PageSize = 8;
         }
 

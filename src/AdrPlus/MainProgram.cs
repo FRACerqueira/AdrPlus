@@ -94,7 +94,7 @@ namespace AdrPlus
                     if (stoppingToken.IsCancellationRequested)
                     {
                         LogMessages.LogStoppedAdrPlus(_logger);
-                        throw new InvalidOperationException(Resources.AdrPlus.CancelledByUser);
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
                 }
             }
