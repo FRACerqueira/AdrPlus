@@ -183,6 +183,14 @@ namespace AdrPlus.Commands.Sync
                 summary = await _pluginManager.BackfillAsync(settledItems, repoconfig.ToSnapshot(), isActive: isActive, cancellationToken: cancellationToken);
             }
 
+            // BackfillAsync deliberately swallows a mid-sweep cancellation per-plugin and returns whatever
+            // partial summary it already accumulated (so a long sweep doesn't lose everything to one Ctrl+C) —
+            // but that means a caller who never re-checks the token would report the partial summary as if it
+            // were a normal, complete run. Unlike approve/reject/etc. (where plugin dispatch is secondary to a
+            // primary local file operation), the sweep itself *is* the entire point of `--backfill`, so silently
+            // treating an interrupted sweep as success would misrepresent what actually happened.
+            cancellationToken.ThrowIfCancellationRequested();
+
             var message = string.Format(null, FormatMessages.BackfillSummaryReport, summary.Succeeded, summary.Skipped, summary.PermanentlyFailed, summary.Exhausted);
             _prompt.PromptWarnMissingActivePlugins(missingNames);
             LogMessages.LogCommandSuccessful(_logger, message);

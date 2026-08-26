@@ -42,3 +42,52 @@ agreement above; noted here only so it's not mistaken for independent confirmati
   `auditoria-complexidade`/`auditoria-desempenho` personas exist but weren't invoked) — P3 noted the
   Jaro-Winkler algorithm's lack of a length cap as low-severity, but that was incidental to its correctness
   angle, not a dedicated performance pass.
+
+---
+
+# Convergence tracking — Round 2 (3 parallel instances of `auditoria-resiliencia`, same day)
+
+Single angle (plugin system resilience vs. ADR002), run as 3 independent instances of the *same* pillar
+agent per its own built-in protocol, rather than 3 different angles like round 1. The agent's own rule:
+a Medium-severity claim needs 2-of-3 agreement to be accepted as real; report disagreement as disagreement
+rather than resolving it unilaterally.
+
+Instance legend: **R1**, **R2**, **R3** (arrival order — R1 landed first, then R3, then R2)
+
+## Findings confirmed by 2+ independent instances (high confidence)
+
+| Finding | Confirmed by | Agreement detail |
+|---|---|---|
+| `pending.json` corruption/write failure breaks the fail-soft guarantee (propagates to command exit code; aborts the whole retry loop for every other plugin) | **R1, R3** | Both independently traced the same non-atomic-write root cause and the same unhandled-exception path through `DispatchAsync`/`RetryPendingAsync`. R3 additionally traced it through `ApproveCommandHandler` specifically and elevated severity to Critical — a deepening, not a conflict. |
+| Same-process plugin reload skips `InitializeAsync` on the new instance (stale per-name init bookkeeping) | **R2, R3** | Confirmed via two *different* probe methodologies — R3 reproduced the exact wizard-reload call path end-to-end; R2 manipulated the test seam directly (couldn't invoke the real reload without a compiled assembly) but established the same precondition by reading `PluginLoader.LoadAssembly`'s stateless construction. Independent convergence on the same root cause via different evidence paths is stronger, not weaker, confirmation. |
+| Abandoned timed-out hook races with `DisposeAsync` on the same instance | **R1, R3** | R1 flagged this as Low/code-read-only, explicitly not corroborated at the time. R3 independently found it too and *empirically* confirmed it with a probe (`hookStillRunningWhenDisposeCalled == true`), which is what elevates it from "R1's uncorroborated read" to a real, confirmed finding. |
+
+## Genuine disagreement — not resolved, reported as disagreement
+
+**Does `RetryPendingAsync` losing already-succeeded entries within one plugin's loop (when cancelled mid-loop, before the single end-of-loop `WriteAllAsync`) count as a bug?**
+
+- **R1 and R3: yes, a bug.** Both point to `BackfillPluginAsync` (same file, same author) having an explicit, tested guard against the *identical* failure shape ("a cancelled item shouldn't erase every prior item's outcome") while `RetryPendingAsync` has none — asymmetric protection for the same risk is evidence of an oversight, not a considered trade-off.
+- **R2: no, not a new finding.** R2 examined the same mechanism and concluded it's already covered by ADR002's own stated Negative Consequence ("eventual, not transactional — idempotency expected"), and that no *cross-plugin* durable state is lost (each plugin's own file is written before moving to the next plugin).
+- This is a real three-way review with a real split (2 say bug, 1 says by-design) — see `pre-release-audit.md`'s decision table. Not something I'm resolving unilaterally; it's the user's call.
+
+## Findings from a single instance (not contradicted, evidenced but not corroborated by count)
+
+- **R2 only**: `DisposeLoadedPluginsAsync` has no timeout at all — a slow, non-throwing `DisposeAsync` hangs *every* command exit, not just shutdown. Empirically demonstrated by R2 itself (a probe with a hanging `DisposeAsync` and a pre-cancelled token that was ignored) — single-instance origin, but the claim isn't merely asserted, it's shown.
+- **R2 only**: the per-call timeout never actually cancels the plugin's task (no `CancelAfter`-derived token passed to `OnAdrEventAsync`) — this is the mechanistic root cause underneath the R1/R3-confirmed "hook races with dispose" finding above. Code-read only, not separately probed, but consistent with and explanatory of a finding two other instances already confirmed independently.
+- **R2 only**: `adrplus sync --backfill` silently swallows Ctrl+C, reports success, exit code 0. Code-read + points to an existing test (`PluginManagerBackfillTests`) to establish that the manager-level swallow is deliberate, then shows the gap is one layer up in `SyncCommandHandler` never checking `IsCancellationRequested` afterward.
+
+## No other disagreements found
+
+All three instances independently agreed `attempts = 0` on timeout is intentional/documented, and that
+the config-validation/first-install startup paths are correctly covered by `MainProgram`'s `finally`
+before any plugin is ever loaded (R2 explicit; R1/R3 didn't contradict).
+
+## What this round did NOT check
+
+- No instance benchmarked or stress-tested under real concurrent load (`Task.WhenAll` fan-out in
+  `DispatchAsync` itself) — this round's brief was resilience/failure-handling, not concurrency/shared-state
+  correctness under load, which is `auditoria-estabilidade`'s remit (still unused this project).
+- All three instances flagged that several findings (reload-skip-init, dispose-race, no-dispose-timeout,
+  timeout-doesn't-cancel) are *currently latent* because the only bundled plugin (`AdrIndexer`) has no
+  real teardown/network logic — none of the three could demonstrate real-world impact beyond a synthetic
+  probe plugin, since no third-party plugin exists yet to observe failing in practice.

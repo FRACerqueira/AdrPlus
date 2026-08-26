@@ -11,7 +11,12 @@ namespace AdrPlus.Abstractions
     /// <remarks>
     /// One singleton instance is held per plugin, reused across events for the lifetime of the process —
     /// <see cref="OnAdrEventAsync"/> must be reentrant. <see cref="InitializeAsync"/> is called lazily: only the
-    /// first time, in this process, that an event this plugin subscribes to is about to be dispatched.
+    /// first time, in this process, that an event this plugin subscribes to is about to be dispatched. If an
+    /// <see cref="OnAdrEventAsync"/> call runs past its configured timeout, the host abandons waiting on it but
+    /// does not forcibly stop it — that abandoned call may still be running, on this same instance, when
+    /// <see cref="IAsyncDisposable.DisposeAsync"/> is invoked (at process shutdown or before a same-process
+    /// reload). Implementations should tolerate <c>DisposeAsync</c> running concurrently with a still-in-flight
+    /// <see cref="OnAdrEventAsync"/> call on the same instance, rather than assuming the two never overlap.
     /// </remarks>
     public interface IAdrPlugin : IAsyncDisposable
     {

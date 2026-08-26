@@ -43,6 +43,19 @@ public class PendingStateStoreTests
     }
 
     [Fact]
+    public async Task ReadAllAsync_WhenFileContainsInvalidJson_ReturnsEmptyListAndInvokesWarning()
+    {
+        _fileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _fileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns("{ not valid json");
+
+        string? warning = null;
+        var entries = await PendingStateStore.ReadAllAsync(_fileSystem, PluginFolderPath, TestContext.Current.CancellationToken, w => warning = w);
+
+        entries.Should().BeEmpty();
+        warning.Should().NotBeNull();
+    }
+
+    [Fact]
     public async Task WriteAllAsync_CreatesStateDirectoryAndSerializesEntries()
     {
         string? writtenJson = null;
@@ -55,6 +68,24 @@ public class PendingStateStoreTests
         writtenJson.Should().NotBeNull();
         var entries = JsonSerializer.Deserialize<List<PendingEntry>>(writtenJson!, PluginManifest.SerializerOptions);
         entries.Should().ContainSingle(e => e.AdrKey == "0002-v1-r0");
+    }
+
+    [Fact]
+    public async Task WriteAllAsync_WritesToTempFileThenMovesIntoPlaceOfTheRealPendingFile()
+    {
+        // A process killed mid-write must never leave a truncated pending.json — writing to a ".tmp" path
+        // first and only then renaming it into place (an atomic File.Move) guarantees the previous, still-valid
+        // file survives any interruption before the rename.
+        var expectedPendingPath = Path.Combine(PluginFolderPath, "pending.json");
+        var expectedTempPath = expectedPendingPath + ".tmp";
+        string? writtenPath = null;
+        _fileSystem.WriteAllTextAsync(Arg.Do<string>(p => writtenPath = p), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await PendingStateStore.WriteAllAsync(_fileSystem, PluginFolderPath, [new PendingEntry { AdrKey = "0002-v1-r0", EventType = "Rejected" }], TestContext.Current.CancellationToken);
+
+        writtenPath.Should().Be(expectedTempPath);
+        _fileSystem.Received(1).MoveFile(expectedTempPath, expectedPendingPath);
     }
 
     [Fact]

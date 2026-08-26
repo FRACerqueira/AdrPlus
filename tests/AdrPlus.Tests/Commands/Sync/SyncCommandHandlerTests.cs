@@ -283,6 +283,34 @@ public class SyncCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithBackfillCancelledDuringRun_PropagatesCancellationInsteadOfReportingSuccess()
+    {
+        // PluginManager.BackfillAsync deliberately swallows a mid-sweep cancellation per-plugin and returns
+        // whatever partial summary it already accumulated — SyncCommandHandler must still notice the token was
+        // cancelled and propagate rather than reporting the partial summary as a normal, successful run.
+        var args = new[] { "--path", RepositoryPath, "--backfill" };
+        ArrangeValidRepoConfig(args, """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2}""");
+        _mockPluginManager.LoadedPlugins.Returns(new List<LoadedPlugin> { CreateDummyLoadedPlugin() });
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, RepositoryPath, Arg.Any<AdrPlusRepoConfig>(), false).Returns([]);
+        using var cts = new CancellationTokenSource();
+        _mockPluginManager.BackfillAsync(
+            Arg.Any<IEnumerable<(AdrEventType, AdrRecordSnapshot, string, Func<string>)>>(),
+            Arg.Any<RepoInfoSnapshot>(),
+            Arg.Any<Func<LoadedPlugin, bool>>(),
+            Arg.Any<CancellationToken>())
+            .Returns(_ =>
+            {
+                cts.Cancel();
+                return new SyncSummary { Succeeded = 1 };
+            });
+
+        await _handler.Invoking(h => h.ExecuteAsync(args, cts.Token))
+            .Should().ThrowAsync<OperationCanceledException>();
+
+        _mockConsole.DidNotReceive().PromptWriteSuccess(Arg.Any<string>());
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WithWizardMode_DefaultSelected_RunsDefaultSyncWithoutExtraConfirm()
     {
         var args = new[] { "--wizard" };

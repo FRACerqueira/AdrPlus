@@ -33,14 +33,15 @@ public class PluginManagerDisposalTests
     private readonly ILogger<PluginManager> _logger = Substitute.For<ILogger<PluginManager>>();
     private readonly IConsoleWriter _console = Substitute.For<IConsoleWriter>();
 
-    private static PluginManifest CreateManifest(string name) => new()
+    private static PluginManifest CreateManifest(string name, int foregroundTimeoutMs = 5000) => new()
     {
         Name = name,
         Version = "1.0.0",
         EntryAssembly = "Plugin.dll",
         EntryType = "Plugin.Type",
         AbstractionsVersion = "1.0.0",
-        SubscribedEvents = ["Approved"]
+        SubscribedEvents = ["Approved"],
+        ForegroundTimeoutMs = foregroundTimeoutMs
     };
 
     private static LoadedPlugin CreateLoadedPlugin(string name, IAdrPlugin instance) =>
@@ -100,6 +101,22 @@ public class PluginManagerDisposalTests
 
         await manager.DisposeLoadedPluginsAsync(TestContext.Current.CancellationToken);
 
+        manager.LoadedPlugins.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DisposeLoadedPluginsAsync_WhenDisposeAsyncHangsPastTimeout_DoesNotBlockIndefinitely()
+    {
+        var manager = CreateManager();
+        var hanging = Substitute.For<IAdrPlugin>();
+        var neverCompletes = new TaskCompletionSource();
+        hanging.DisposeAsync().Returns(new ValueTask(neverCompletes.Task));
+        manager._loadedPlugins.Add(new LoadedPlugin(hanging, CreateManifest("Hanging", foregroundTimeoutMs: 30), FolderPath));
+
+        var disposeTask = manager.DisposeLoadedPluginsAsync(TestContext.Current.CancellationToken);
+        var completed = await Task.WhenAny(disposeTask, Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
+
+        completed.Should().BeSameAs(disposeTask);
         manager.LoadedPlugins.Should().BeEmpty();
     }
 

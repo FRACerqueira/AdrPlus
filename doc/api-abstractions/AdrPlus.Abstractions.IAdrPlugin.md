@@ -19,7 +19,12 @@ Implements [System\.IAsyncDisposable](https://learn.microsoft.com/en-us/dotnet/a
 ### Remarks
 One singleton instance is held per plugin, reused across events for the lifetime of the process —
 [OnAdrEventAsync\(AdrEventContext, CancellationToken\)](AdrPlus.Abstractions.IAdrPlugin.md#AdrPlus.Abstractions.IAdrPlugin.OnAdrEventAsync(AdrPlus.Abstractions.AdrEventContext,System.Threading.CancellationToken) 'AdrPlus\.Abstractions\.IAdrPlugin\.OnAdrEventAsync\(AdrPlus\.Abstractions\.AdrEventContext, System\.Threading\.CancellationToken\)') must be reentrant\. [InitializeAsync\(IPluginContext, IPluginConfiguration, CancellationToken\)](AdrPlus.Abstractions.IAdrPlugin.md#AdrPlus.Abstractions.IAdrPlugin.InitializeAsync(AdrPlus.Abstractions.IPluginContext,AdrPlus.Abstractions.IPluginConfiguration,System.Threading.CancellationToken) 'AdrPlus\.Abstractions\.IAdrPlugin\.InitializeAsync\(AdrPlus\.Abstractions\.IPluginContext, AdrPlus\.Abstractions\.IPluginConfiguration, System\.Threading\.CancellationToken\)') is called lazily: only the
-first time, in this process, that an event this plugin subscribes to is about to be dispatched\.
+first time, in this process, that an event this plugin subscribes to is about to be dispatched\. If an
+[OnAdrEventAsync\(AdrEventContext, CancellationToken\)](AdrPlus.Abstractions.IAdrPlugin.md#AdrPlus.Abstractions.IAdrPlugin.OnAdrEventAsync(AdrPlus.Abstractions.AdrEventContext,System.Threading.CancellationToken) 'AdrPlus\.Abstractions\.IAdrPlugin\.OnAdrEventAsync\(AdrPlus\.Abstractions\.AdrEventContext, System\.Threading\.CancellationToken\)') call runs past its configured timeout, the host abandons waiting on it but
+does not forcibly stop it — that abandoned call may still be running, on this same instance, when
+[System\.IAsyncDisposable\.DisposeAsync](https://learn.microsoft.com/en-us/dotnet/api/system.iasyncdisposable.disposeasync 'System\.IAsyncDisposable\.DisposeAsync') is invoked \(at process shutdown or before a same\-process
+reload\)\. Implementations should tolerate `DisposeAsync` running concurrently with a still\-in\-flight
+[OnAdrEventAsync\(AdrEventContext, CancellationToken\)](AdrPlus.Abstractions.IAdrPlugin.md#AdrPlus.Abstractions.IAdrPlugin.OnAdrEventAsync(AdrPlus.Abstractions.AdrEventContext,System.Threading.CancellationToken) 'AdrPlus\.Abstractions\.IAdrPlugin\.OnAdrEventAsync\(AdrPlus\.Abstractions\.AdrEventContext, System\.Threading\.CancellationToken\)') call on the same instance, rather than assuming the two never overlap\.
 ### Properties
 
 <a name='AdrPlus.Abstractions.IAdrPlugin.Name'></a>

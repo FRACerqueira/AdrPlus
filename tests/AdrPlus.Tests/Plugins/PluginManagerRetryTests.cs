@@ -234,6 +234,92 @@ public class PluginManagerRetryTests
     }
 
     [Fact]
+    public async Task RetryPendingAsync_WhenReadingPendingStateFails_SkipsPluginWithoutThrowing()
+    {
+        var plugin = Substitute.For<IAdrPlugin>();
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
+        _fileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _fileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).ThrowsAsync(new IOException("disk error"));
+
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        summary.Succeeded.Should().Be(0);
+        summary.StillPending.Should().Be(0);
+        await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RetryPendingAsync_WhenPersistingPendingStateFails_LogsWarningWithoutThrowing()
+    {
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Success });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
+        SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0 });
+        _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).ThrowsAsync(new IOException("disk full"));
+
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        // The entry itself succeeded and was already removed from the in-memory list before the failing
+        // persistence write — a write failure here must not turn a successful plugin dispatch into a thrown
+        // exception (that would propagate through 'adrplus sync' and misreport the run as failed).
+        summary.Succeeded.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task RetryPendingAsync_WhenCancelledMidLoop_PersistsAlreadyResolvedProgressBeforeThrowing()
+    {
+        // Regression: BackfillPluginAsync already guards against this identical shape (a cancelled item must
+        // not erase every prior item's outcome within the same plugin's loop) — RetryPendingAsync must too.
+        var plugin = Substitute.For<IAdrPlugin>();
+        using var cts = new CancellationTokenSource();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(callInfo =>
+        {
+            var ctx = (AdrEventContext)callInfo[0];
+            if (ctx.Adr.Number == 2)
+            {
+                // Simulates Ctrl+C arriving after entry 1 has already been fully resolved, but before entry 2
+                // is dispatched.
+                cts.Cancel();
+            }
+            return true;
+        });
+        plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Success });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
+
+        var json = JsonSerializer.Serialize(new List<PendingEntry>
+        {
+            new() { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0 },
+            new() { AdrKey = "0002-v1-r0", EventType = "Approved", Attempts = 0 }
+        }, PluginManifest.SerializerOptions);
+        _fileSystem.FileExists(Arg.Any<string>()).Returns(true);
+        _fileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(json);
+
+        List<PendingEntry>? written = null;
+        _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(j => written = JsonSerializer.Deserialize<List<PendingEntry>>(j, PluginManifest.SerializerOptions)), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        (AbstractionsDomain.AdrRecordSnapshot Adr, string FilePath, string Content)? Resolve(string key) => key switch
+        {
+            "0001-v1-r0" => (CreateAdrSnapshot(1), "/repo/adr/0001.md", "c1"),
+            "0002-v1-r0" => (CreateAdrSnapshot(2), "/repo/adr/0002.md", "c2"),
+            _ => null
+        };
+
+        var act = () => manager.RetryPendingAsync(Resolve, CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: cts.Token);
+
+        await FluentActions.Awaiting(act).Should().ThrowAsync<OperationCanceledException>();
+        // Entry 1 already succeeded and must stay removed from pending.json; entry 2 never ran and must be
+        // written back untouched rather than lost.
+        written.Should().ContainSingle(e => e.AdrKey == "0002-v1-r0" && e.Attempts == 0);
+    }
+
+    [Fact]
     public async Task RetryPendingAsync_WithTwoDifferentPlugins_ProcessesEntriesIndependently()
     {
         var succeeding = Substitute.For<IAdrPlugin>();
