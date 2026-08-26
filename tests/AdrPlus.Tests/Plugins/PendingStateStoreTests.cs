@@ -73,19 +73,35 @@ public class PendingStateStoreTests
     [Fact]
     public async Task WriteAllAsync_WritesToTempFileThenMovesIntoPlaceOfTheRealPendingFile()
     {
-        // A process killed mid-write must never leave a truncated pending.json — writing to a ".tmp" path
+        // A process killed mid-write must never leave a truncated pending.json — writing to a temp path
         // first and only then renaming it into place (an atomic File.Move) guarantees the previous, still-valid
         // file survives any interruption before the rename.
         var expectedPendingPath = Path.Combine(PluginFolderPath, "pending.json");
-        var expectedTempPath = expectedPendingPath + ".tmp";
         string? writtenPath = null;
         _fileSystem.WriteAllTextAsync(Arg.Do<string>(p => writtenPath = p), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         await PendingStateStore.WriteAllAsync(_fileSystem, PluginFolderPath, [new PendingEntry { AdrKey = "0002-v1-r0", EventType = "Rejected" }], TestContext.Current.CancellationToken);
 
-        writtenPath.Should().Be(expectedTempPath);
-        _fileSystem.Received(1).MoveFile(expectedTempPath, expectedPendingPath);
+        writtenPath.Should().NotBeNull();
+        writtenPath.Should().StartWith(expectedPendingPath).And.EndWith(".tmp").And.NotBe(expectedPendingPath + ".tmp");
+        _fileSystem.Received(1).MoveFile(writtenPath!, expectedPendingPath);
+    }
+
+    [Fact]
+    public async Task WriteAllAsync_CalledTwiceConcurrently_UsesDistinctTempFileNames()
+    {
+        // Regression: a fixed temp file name (e.g. always "pending.json.tmp") makes two concurrent writers to
+        // the same plugin's state folder collide on the same temp path — a unique-per-call suffix avoids that.
+        var writtenPaths = new List<string>();
+        _fileSystem.WriteAllTextAsync(Arg.Do<string>(p => writtenPaths.Add(p)), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        await PendingStateStore.WriteAllAsync(_fileSystem, PluginFolderPath, [new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved" }], TestContext.Current.CancellationToken);
+        await PendingStateStore.WriteAllAsync(_fileSystem, PluginFolderPath, [new PendingEntry { AdrKey = "0002-v1-r0", EventType = "Rejected" }], TestContext.Current.CancellationToken);
+
+        writtenPaths.Should().HaveCount(2);
+        writtenPaths.Should().OnlyHaveUniqueItems();
     }
 
     [Fact]

@@ -305,7 +305,7 @@ Practically, this means:
 - Resolve actual credentials (API keys, tokens, passwords) yourself, from an environment variable or a local secret store — never from `settings`.
 - Each repository's `./plugins-state/<name>/pending.json` is local, per-machine, per-repository runtime state, not something to commit — make sure your repo's `.gitignore` excludes `plugins-state/`.
 
-An optional allowlist can restrict which plugin names are permitted to load at all, configured under `pluginallowlist` in the repo's `adrplus.json` (each entry has a `name`, matched case-insensitively, and an as-yet-unenforced `hash` field reserved for future use). This guards against an unexpected plugin folder being loaded — it does not replace the credential discipline above.
+An optional allowlist can restrict which plugin names are permitted to load at all, configured under `pluginallowlist` in the **host-global** `adrplus.json` (resolved relative to the `adrplus` install directory, not any repository — there is no per-repo `adrplus.json`) — each entry has a `name`, matched case-insensitively, and an as-yet-unenforced `hash` field reserved for future use. This guards against an unexpected plugin folder being loaded — it does not replace the credential discipline above.
 
 ---
 

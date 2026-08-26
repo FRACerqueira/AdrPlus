@@ -148,7 +148,7 @@ namespace AdrPlus.Commands.Sync
             var summary = await _pluginManager.RetryPendingAsync(ResolveAdr, repoconfig.ToSnapshot(), Path.Combine(targetPath, "plugins-state"), isActive: isActive, cancellationToken: cancellationToken);
 
             var message = string.Format(null, FormatMessages.SyncSummaryReport, summary.Succeeded, summary.Skipped, summary.StillPending, summary.PermanentlyFailed, summary.Dropped);
-            _prompt.PromptWarnMissingActivePlugins(missingNames);
+            PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
             LogMessages.LogCommandSuccessful(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }
@@ -192,7 +192,7 @@ namespace AdrPlus.Commands.Sync
             cancellationToken.ThrowIfCancellationRequested();
 
             var message = string.Format(null, FormatMessages.BackfillSummaryReport, summary.Succeeded, summary.Skipped, summary.PermanentlyFailed, summary.Exhausted);
-            _prompt.PromptWarnMissingActivePlugins(missingNames);
+            PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
             LogMessages.LogCommandSuccessful(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }

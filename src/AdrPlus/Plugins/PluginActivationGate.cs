@@ -4,6 +4,10 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Formatting;
+using AdrPlus.Infrastructure.Logging;
+using AdrPlus.Infrastructure.UI;
+using Microsoft.Extensions.Logging;
 
 namespace AdrPlus.Plugins
 {
@@ -53,6 +57,25 @@ namespace AdrPlus.Plugins
             var missing = active.Except(loadedNames).ToList();
 
             return (plugin => active.Contains(plugin.Manifest.Name!), missing);
+        }
+
+        /// <summary>
+        /// Warns about <paramref name="missingPluginNames"/> (the <c>Missing</c> case from <see cref="Resolve"/>)
+        /// on both the console and the log file. <see cref="IConsoleWriter.PromptWarnMissingActivePlugins"/> alone
+        /// only ever reached the console - a non-interactive/cron <c>adrplus sync</c> run had no record of a
+        /// configured-active plugin failing to load, since this is the only channel that surfaces it at all.
+        /// Callers should call this at the exact point they previously called
+        /// <c>IConsoleWriter.PromptWarnMissingActivePlugins</c> directly - see <see cref="Resolve"/>'s remarks on
+        /// why the console call's timing matters.
+        /// </summary>
+        public static void WarnMissingActivePlugins(ILogger logger, IConsoleWriter prompt, IReadOnlyList<string> missingPluginNames)
+        {
+            if (missingPluginNames.Count > 0)
+            {
+                LogMessages.LogPluginWarning(logger, string.Format(null, FormatMessages.PluginsActiveMissing, string.Join(", ", missingPluginNames)));
+            }
+
+            prompt.PromptWarnMissingActivePlugins(missingPluginNames);
         }
     }
 }

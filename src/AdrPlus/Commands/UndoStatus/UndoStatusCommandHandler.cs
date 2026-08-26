@@ -172,7 +172,7 @@ namespace AdrPlus.Commands.UndoStatus
                 {
                     throw new InvalidDataException(upderror);
                 }
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {infoadr.FileName}");
 
                 await _pluginManager.DispatchAsync(AdrEventType.StatusUndone, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);

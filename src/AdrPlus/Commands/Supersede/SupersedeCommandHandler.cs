@@ -214,7 +214,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new InvalidDataException(upderror);
                 }
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
                 await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);

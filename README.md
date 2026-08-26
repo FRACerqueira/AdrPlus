@@ -289,6 +289,8 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus supersede --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 # Create revise/version flows
+# `revise` requires revision support enabled (`lenrevision` > 0 in `adr-config.adrplus`) —
+# the default "Simple repository" profile below sets `lenrevision: 0`, which disables it.
 
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
     adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
@@ -349,7 +351,7 @@ Run `adrplus help <command>` for detailed usage of any command.
 
 The rules below describe what must be true for a command to select its target successfully (especially in wizard mode).
 
-> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
+> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `folderadr`, and the repository config file must be valid.
 
 | Command | Successful selection rules |
 |---|---|
@@ -380,12 +382,14 @@ adrplus config --application
 
 ```json
 {
-  "language": "en-US",
-  "comandopenadr": "code {0}",
-  "withoutargs": "Help",
-  "pluginallowlist": [
-    { "name": "AdrIndexer" }
-  ]
+  "DefaultSettings": {
+    "language": "en-US",
+    "comandopenadr": "code {0}",
+    "withoutargs": "Help",
+    "pluginallowlist": [
+      { "name": "AdrIndexer" }
+    ]
+  }
 }
 ```
 
@@ -535,6 +539,9 @@ Before selecting a team profile, understand these key concepts:
 #### 1) Simple repository
 
 The default shape: a flat `folderadr` directory, no scope/domain-based organization (there isn't one anymore — see [Scope and Domain](#understanding-configuration-concepts) above). Fits most projects, single-domain or not.
+
+> `lenrevision: 0` disables the `revise` command entirely — attempting it under this profile fails with a
+> configuration error. Set `lenrevision` to `1` or higher (see [Product team with frequent revisions](#2-product-team-with-frequent-revisions) below) if you plan to use `revise`.
 
 ```json
 {

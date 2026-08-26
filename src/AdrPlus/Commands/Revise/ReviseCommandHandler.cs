@@ -264,7 +264,7 @@ namespace AdrPlus.Commands.Revise
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 

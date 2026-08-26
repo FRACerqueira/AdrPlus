@@ -320,6 +320,42 @@ public class PluginManagerRetryTests
     }
 
     [Fact]
+    public async Task RetryPendingAsync_ReusesTheEntrysOriginalCorrelationId()
+    {
+        // Regression: retry used to mint a brand-new correlationId per attempt, so nothing about a retry
+        // could ever be cross-referenced back to the original dispatch that queued it.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        AdrEventContext? capturedContext = null;
+        plugin.OnAdrEventAsync(Arg.Do<AdrEventContext>(c => capturedContext = c), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Success });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
+        SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0, CorrelationId = "original-correlation-id" });
+
+        await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        capturedContext.Should().NotBeNull();
+        capturedContext!.CorrelationId.Should().Be("original-correlation-id");
+    }
+
+    [Fact]
+    public async Task RetryPendingAsync_WhenShouldHandleThrows_WarnsOnConsoleNotJustLog()
+    {
+        // Regression: previously log-only, unlike every other plugin failure path in this class.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(_ => throw new InvalidOperationException("boom"));
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1")));
+        SeedPending(new PendingEntry { AdrKey = "0001-v1-r0", EventType = "Approved", Attempts = 0 });
+
+        var summary = await manager.RetryPendingAsync(ResolverFor("0001-v1-r0"), CreateRepoSnapshot(), "/repo/plugins-state", isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        summary.StillPending.Should().Be(1);
+        _console.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("p1")));
+    }
+
+    [Fact]
     public async Task RetryPendingAsync_WithTwoDifferentPlugins_ProcessesEntriesIndependently()
     {
         var succeeding = Substitute.For<IAdrPlugin>();

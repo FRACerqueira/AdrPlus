@@ -52,12 +52,15 @@ namespace AdrPlus.Plugins
         /// <paramref name="entries"/>. Writes to a temporary file first and then renames it into place
         /// (<see cref="IFileSystemService.MoveFile"/>, itself an atomic <c>File.Move</c> on the same volume) so a
         /// process killed mid-write leaves the previous, still-valid <c>pending.json</c> in place instead of a
-        /// truncated one.
+        /// truncated one. The temp file name includes a random suffix so two concurrent writers (e.g. a cron
+        /// <c>sync</c> running alongside an interactive command touching the same plugin's state) never collide
+        /// on the same temp path — each writer's rename-into-place still ultimately last-writer-wins on
+        /// <paramref name="pluginStateFolderPath"/> itself, which this does not change.
         /// </summary>
         public static async Task WriteAllAsync(IFileSystemService fileSystem, string pluginStateFolderPath, List<PendingEntry> entries, CancellationToken cancellationToken)
         {
             var pendingPath = Path.Combine(pluginStateFolderPath, PendingFileName);
-            var tempPath = pendingPath + ".tmp";
+            var tempPath = pendingPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
 
             fileSystem.CreateDirectory(pluginStateFolderPath);
             var json = JsonSerializer.Serialize(entries, PluginManifest.SerializerOptions);

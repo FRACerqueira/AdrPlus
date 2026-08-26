@@ -601,7 +601,8 @@ Creates: `ADR0001V02-UsePostgresqlAsPrimaryDatabase.md`
 
 ### Revise an ADR (Minor Change)
 
-Create a revision for minor updates:
+Create a revision for minor updates. Requires revision support enabled (`lenrevision` > 0 in
+`adr-config.adrplus`) — the default profile sets `lenrevision: 0`, which disables this command:
 
 ```bash
 adrplus revise --wizard

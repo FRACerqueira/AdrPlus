@@ -134,7 +134,7 @@ namespace AdrPlus.Commands.Migrate
                 }
 
                 var result = await MigrateRepositoryAsync(foundfiles, repoconfig, isActive, Path.Combine(targetPath, "plugins-state"), cancellationToken);
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);

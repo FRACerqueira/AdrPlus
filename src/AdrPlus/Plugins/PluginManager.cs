@@ -195,7 +195,9 @@ namespace AdrPlus.Plugins
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw, skipping for this event");
+                    var message = $"{plugin.Manifest.Name}: ShouldHandle threw, skipping for this event (correlationId={correlationId})";
+                    LogMessages.LogPluginError(_logger, ex, message);
+                    _prompt.PromptWriteInfo(message);
                     continue;
                 }
 
@@ -210,7 +212,26 @@ namespace AdrPlus.Plugins
                 return;
             }
 
-            await Task.WhenAll(filtered.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, pendingStateRoot, cancellationToken)));
+            // Sequential init phase: EnsureInitializedAsync mutates _initializedPlugins/_initFailedPlugins
+            // (plain HashSets, not thread-safe) - must finish before the parallel dispatch below starts,
+            // mirroring BackfillAsync's existing sequential-init-then-parallel-sweep split. Without this,
+            // concurrent first-time EnsureInitializedAsync calls from Task.WhenAll below corrupt the shared
+            // HashSets - silently dropping a subscribed plugin from dispatch, or throwing from inside Add.
+            var ready = new List<LoadedPlugin>();
+            foreach (var plugin in filtered)
+            {
+                if (await EnsureInitializedAsync(plugin, cancellationToken))
+                {
+                    ready.Add(plugin);
+                }
+            }
+
+            if (ready.Count == 0)
+            {
+                return;
+            }
+
+            await Task.WhenAll(ready.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, pendingStateRoot, cancellationToken)));
         }
 
         /// <inheritdoc/>
@@ -288,7 +309,10 @@ namespace AdrPlus.Plugins
                             AdrFilePath = adr.FilePath,
                             GetAdrRenderedContent = () => adr.Content,
                             Repo = repo,
-                            CorrelationId = Guid.NewGuid().ToString()
+                            // Reuses the pending entry's own correlationId (assigned when the original live
+                            // dispatch first failed) rather than minting a new one, so retry log lines can
+                            // actually be cross-referenced back to the dispatch that queued this entry.
+                            CorrelationId = entry.CorrelationId
                         };
 
                         bool shouldHandle;
@@ -298,7 +322,9 @@ namespace AdrPlus.Plugins
                         }
                         catch (Exception ex)
                         {
-                            LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw on retry, skipping for this entry");
+                            var message = $"{plugin.Manifest.Name}: ShouldHandle threw on retry, skipping for this entry (correlationId={context.CorrelationId})";
+                            LogMessages.LogPluginError(_logger, ex, message);
+                            _prompt.PromptWriteInfo(message);
                             remaining.Add(entry);
                             summary.StillPending++;
                             continue;
@@ -499,7 +525,12 @@ namespace AdrPlus.Plugins
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw during backfill, skipping this ADR");
+                    // ShouldHandle throwing means this item was never even attempted - it must still be
+                    // reflected in the summary. A bare `continue` here left every SyncSummary field at zero
+                    // when this happened for every eligible ADR, so a fully-failed sweep looked identical to
+                    // "nothing to do" (green PromptWriteSuccess banner, 0/0/0/0).
+                    WritePermanentFailure(plugin.Manifest.Name!, $"ShouldHandle threw during backfill ({ex.Message}) (correlationId={context.CorrelationId})", ex);
+                    summary.PermanentlyFailed++;
                     continue;
                 }
 
@@ -660,11 +691,8 @@ namespace AdrPlus.Plugins
         {
             var name = plugin.Manifest.Name!;
 
-            if (!await EnsureInitializedAsync(plugin, cancellationToken))
-            {
-                return;
-            }
-
+            // Initialization already happened in DispatchAsync's sequential phase before this method's caller
+            // fanned out in parallel - EnsureInitializedAsync must never be called from here too.
             var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.ForegroundTimeoutMs, cancellationToken);
 
             switch (outcome.Status)
@@ -673,7 +701,7 @@ namespace AdrPlus.Plugins
                 case PluginInvokeStatus.Skipped:
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        var message = string.Concat(name, ": ", outcome.Status.ToString());
+                        var message = $"{name}: {outcome.Status} (correlationId={correlationId})";
                         LogMessages.LogPluginInfo(_logger, message);
                     }
                     return;
@@ -789,10 +817,15 @@ namespace AdrPlus.Plugins
                 _ = hookTask.ContinueWith(
                     t =>
                     {
-                        _outstandingHooks.TryRemove(plugin, out _);
+                        // Remove by key+value, not by key alone - if this same plugin instance times out
+                        // again before this hook completes (e.g. MigrateCommandHandler's per-file dispatch
+                        // loop hitting the same slow plugin repeatedly), a newer hook's tracking entry has
+                        // already overwritten this one at the same key; removing by key alone would erase
+                        // that newer, still-running entry too.
+                        _outstandingHooks.TryRemove(new KeyValuePair<LoadedPlugin, Task>(plugin, hookTask));
                         if (t.IsFaulted)
                         {
-                            LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after timeout ({timeoutMs}ms) elapsed");
+                            LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after timeout ({timeoutMs}ms) elapsed (correlationId={context.CorrelationId})");
                         }
                     },
                     CancellationToken.None,
@@ -830,7 +863,7 @@ namespace AdrPlus.Plugins
 
             if (!isRetryable)
             {
-                WritePermanentFailure(name, lastError);
+                WritePermanentFailure(name, $"{lastError} (correlationId={correlationId})");
                 return;
             }
 
@@ -846,7 +879,7 @@ namespace AdrPlus.Plugins
             try
             {
                 await PendingStateStore.UpsertAsync(_fileSystem, Path.Combine(pendingStateRoot, name), entry, cancellationToken, WriteWarning);
-                WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name));
+                WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name) + $" (correlationId={correlationId})");
             }
             catch (OperationCanceledException) { throw; }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -855,7 +888,7 @@ namespace AdrPlus.Plugins
                 // lifecycle command (approve/reject/new/etc.) — a failure persisting *that a plugin needs
                 // retrying* must never itself propagate and turn a successful local ADR operation into a
                 // command-level error/exit code 1.
-                WriteWarning($"{name}: could not queue pending retry ({ex.Message}); this failure will not be automatically retried via 'adrplus sync'.");
+                WriteWarning($"{name}: could not queue pending retry ({ex.Message}); this failure will not be automatically retried via 'adrplus sync'. (correlationId={correlationId})");
             }
         }
 

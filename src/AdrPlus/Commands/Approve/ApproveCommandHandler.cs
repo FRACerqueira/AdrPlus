@@ -174,7 +174,7 @@ namespace AdrPlus.Commands.Approve
                 {
                     throw new InvalidDataException(upderror);
                 }
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusAcc} : {infoadr.FileName}");
 
                 await _pluginManager.DispatchAsync(AdrEventType.Approved, record.ToSnapshot(), infoadr.FileName, () => content, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
