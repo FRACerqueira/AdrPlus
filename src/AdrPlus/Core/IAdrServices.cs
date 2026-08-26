@@ -109,15 +109,14 @@ namespace AdrPlus.Core
         Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false);
 
         /// <summary>
-        /// Gets the file path of an ADR with a unique title in a specific domain asynchronously.
+        /// Gets the file path of an ADR with a unique title asynchronously.
         /// </summary>
         /// <param name="title">The title of the ADR to find.</param>
-        /// <param name="domain">The domain to search within.</param>
         /// <param name="fileSystemService">The file system service used to access files.</param>
         /// <param name="rootrepo">The root path repository</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
-        /// <returns>The file path of the ADR with the matching title and domain.</returns>
-        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config);
+        /// <returns>The file path of the ADR with the matching title.</returns>
+        Task<string> GetFileByUniqueTitle(string title, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Gets the next available ADR sequence number asynchronously.
@@ -146,6 +145,15 @@ namespace AdrPlus.Core
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <returns>An array of domain names found in the repository.</returns>
         Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+
+        /// <summary>
+        /// Gets all available scopes asynchronously.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service used to access files.</param>
+        /// <param name="directoryPath">The directory path to search in.</param>
+        /// <param name="config">The ADR Plus repository configuration.</param>
+        /// <returns>An array of scope names found in the repository.</returns>
+        Task<string[]> GetScopes(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Parses the header and content from an ADR file asynchronously.

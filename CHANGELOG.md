@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The `new` wizard's Scope and Domain prompts now suggest similar values already used elsewhere in the
+  repository (Jaro-Winkler similarity, plain-C# implementation, no new dependency) - e.g. typing
+  `"Backend"` when `"Back-End"` already exists surfaces it as a suggestion. Purely advisory: it never
+  blocks, rejects, or silently rewrites what the user types, keeping this consistent with ADR006 (no
+  host-enforced rules on these fields). Not applied in non-interactive/CLI-flag mode, where a value the
+  caller explicitly passed is always used exactly as given (important for scripted/CI/AI-agent usage).
+
+### Removed
+
+- Scope and Domain are now plain free-text header fields with no host-enforced rules
+  (see [ADR006](doc/adr/ADR006V01-remove-scope-and-domain-specific-rules.md)). Removed from
+  `adr-config.adrplus`: `scopes` (whitelist), `lenscope` (filename participation/truncation),
+  `skipdomain` (per-scope domain skipping), `folderbyscope` (per-scope subfolders). Removed from the
+  public `AdrPlus.Abstractions` contract: `RepoInfoSnapshot.Scopes`. A legacy `adr-config.adrplus` that
+  still carries these fields is tolerated (no validation error) and self-heals - they're dropped the
+  next time that config is rewritten, either via `adrplus config --repository` or the host's own
+  version-bump migration.
+
+### Changed
+
+- ADR filenames no longer embed Scope or Domain in any form; both remain visible only in the ADR's
+  header table. Title-uniqueness for `adrplus new` is now based on Title alone (previously Title+Domain).
+- The `new` wizard's Scope prompt is now free text (previously a picklist sourced from the repository's
+  configured scope whitelist), matching Domain's existing free-text-with-autocomplete behavior.
+- Bumped to `1.0.0-rc5` (`AdrPlus.Abstractions` to `1.0.0-rc2`) for this breaking config/contract change.
+
 ---
 
 ## [1.0.0-rc3] - 2026-08-08

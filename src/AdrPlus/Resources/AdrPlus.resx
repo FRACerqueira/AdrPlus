@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -773,6 +773,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>Reading registered domains...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>Reading registered scopes...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>Select repository path</value>

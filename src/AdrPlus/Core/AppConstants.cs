@@ -162,27 +162,47 @@ namespace AdrPlus.Core
         public const string FieldLenRevision = "lenrevision";
 
         /// <summary>
-        /// The configuration key for the scope format used in ADR filenames, allowing users to define how the scope is formatted in the generated ADR file names.
+        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): used to control whether/how much of the
+        /// scope was embedded in ADR filenames. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and
+        /// tolerate it in configs written by older versions.
         /// </summary>
         public const string FieldLenScope = "lenscope";
 
         /// <summary>
-        /// The configuration key for the domain format used in ADR filenames, allowing users to define how the domain is formatted in the generated ADR file names.
+        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): the semicolon-separated whitelist of
+        /// valid scope values. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate it in
+        /// configs written by older versions.
         /// </summary>
         public const string FieldScopes = "scopes";
 
         /// <summary>
-        /// The configuration key for the folder organization strategy based on ADR scope, allowing users to specify how ADR files should be organized into folders based on their scope.
+        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): whether ADRs were organized into
+        /// per-scope subfolders. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate it in
+        /// configs written by older versions.
         /// </summary>
         public const string FieldFolderByScope = "folderbyscope";
 
         /// <summary>
-        /// Represents the field name for skipping domain information. Use scope values to determine which domain to skip in the generated ADR content, allowing users to customize the level of detail included in the ADRs based on their scope.
+        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): the scopes for which the domain
+        /// prompt/segment was skipped. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate
+        /// it in configs written by older versions.
         /// </summary>
         public const string FieldSkipDomain = "skipdomain";
 
         /// <summary>
-        /// The configuration key for the separator used to join multiple text values into a single string for storage in the configuration file, allowing users to specify a custom separator character or string. 
+        /// Repository config field names removed in 1.0.0-rc5 (ADR006: Scope/Domain became free-text header-only
+        /// fields, no longer governed). <see cref="ValidateConfig.ValidateRepoStructure"/> tolerates these when
+        /// present in a config written by an older version instead of reporting them as unexpected fields; they are
+        /// dropped the next time that config is rewritten (host default on version-bump migration, or a repository
+        /// config explicitly rewritten via <c>adrplus config --repository</c>), since the current
+        /// <see cref="AdrPlusRepoConfig"/> type no longer declares them.
+        /// </summary>
+        public static readonly IReadOnlySet<string> ObsoleteRepoConfigFields = new HashSet<string>(
+            [FieldLenScope, FieldScopes, FieldFolderByScope, FieldSkipDomain],
+            StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// The configuration key for the separator used to join multiple text values into a single string for storage in the configuration file, allowing users to specify a custom separator character or string.
         /// </summary>
         public const string FieldSeparator = "separator";
 

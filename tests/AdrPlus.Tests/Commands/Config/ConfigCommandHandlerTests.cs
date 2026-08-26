@@ -248,9 +248,6 @@ public class ConfigCommandHandlerTests
         {
             Prefix = "ADR",
             LenSeq = 4,
-            LenScope = 0,
-            Scopes = "",
-            SkipDomain = "",
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
@@ -292,9 +289,6 @@ public class ConfigCommandHandlerTests
         {
             Prefix = "ADR",
             LenSeq = 4,
-            LenScope = 0,
-            Scopes = "",
-            SkipDomain = "",
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
@@ -632,9 +626,6 @@ public class ConfigCommandHandlerTests
         {
             Prefix = "ADR",
             LenSeq = 4,
-            LenScope = 0,
-            Scopes = "",
-            SkipDomain = "",
             CaseTransform = CaseFormat.PascalCase,
             Separator = '-'
         };
@@ -723,11 +714,7 @@ public class ConfigCommandHandlerTests
         {
             Prefix = "ADR",
             LenSeq = 4,
-            CaseTransform = CaseFormat.PascalCase,
-            LenScope = 0,
-            Scopes = string.Empty,
-            SkipDomain = string.Empty,
-            FolderByScope = false
+            CaseTransform = CaseFormat.PascalCase
         };
 
         var jsonContent = JsonSerializer.Serialize(repoConfig);
@@ -753,11 +740,7 @@ public class ConfigCommandHandlerTests
         {
             Prefix = "ADR",
             LenSeq = 4,
-            CaseTransform = CaseFormat.PascalCase,
-            LenScope = 0,
-            Scopes = string.Empty,
-            SkipDomain = string.Empty,
-            FolderByScope = false
+            CaseTransform = CaseFormat.PascalCase
         };
 
         var jsonContent = JsonSerializer.Serialize(repoConfig);
@@ -799,8 +782,6 @@ public class ConfigCommandHandlerTests
             AdrStatus.Proposed, // status
             null, // superseded
             "X", // titleSuffix
-            string.Empty, // scope
-            string.Empty, // domainSuffix
             repoConfig // repoConfig
         ])!;
 
@@ -834,8 +815,6 @@ public class ConfigCommandHandlerTests
             AdrStatus.Superseded, // status
             2, // superseded (ADR-002)
             "Y", // titleSuffix
-            string.Empty, // scope
-            "K", // domainSuffix
             repoConfig // repoConfig
         ])!;
 
@@ -843,40 +822,6 @@ public class ConfigCommandHandlerTests
         model.StatusCreate.Should().Be(AdrStatus.Superseded);
         model.Superseded.Should().Be(2);
         model.Number.Should().Be(3);
-    }
-
-    [Fact]
-    public void CreateSampleModel_WithScope_IncludesInModel()
-    {
-        // Arrange
-        var repoConfig = new AdrPlusRepoConfig("docs/adr", "# ADR Template")
-        {
-            Prefix = "ADR",
-            LenSeq = 4,
-            CaseTransform = CaseFormat.PascalCase
-        };
-
-        // Act
-        var method = typeof(ConfigCommandHandler).GetMethod(
-            "CreateSampleModel",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-
-        var model = (AdrRecord)method?.Invoke(null,
-        [
-            2, // number
-            1, // version
-            1, // revision
-            AdrStatus.Proposed, // status
-            null, // superseded
-            "Y", // titleSuffix
-            "architecture", // scope
-            "K", // domainSuffix
-            repoConfig // repoConfig
-        ])!;
-
-        // Assert
-        model.Scope.Should().Be("architecture");
-        model.Domain.Should().NotBeEmpty();
     }
 
     #endregion

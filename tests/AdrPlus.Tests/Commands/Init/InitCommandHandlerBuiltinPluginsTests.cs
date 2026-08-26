@@ -84,7 +84,7 @@ public class InitCommandHandlerBuiltinPluginsTests : IDisposable
         mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
         mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(Path.Combine(repoPath, ".adrplus"));
 
-        var repoConfig = new AdrPlusRepoConfig("", "") { FolderByScope = false };
+        var repoConfig = new AdrPlusRepoConfig("", "");
         mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         var configFilePath = Path.GetFullPath(Path.Combine(targetPath, ".adrplus"));
@@ -129,7 +129,7 @@ public class InitCommandHandlerBuiltinPluginsTests : IDisposable
         mockFileSystem.CreateDirectory(repoPath).Returns(repoPath);
         mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(Path.Combine(repoPath, ".adrplus"));
 
-        var repoConfig = new AdrPlusRepoConfig("", "") { FolderByScope = false };
+        var repoConfig = new AdrPlusRepoConfig("", "");
         mockAdrServices.FromJson(jsonConfig, "").Returns(repoConfig);
 
         await handler.ExecuteAsync(args, TestContext.Current.CancellationToken);

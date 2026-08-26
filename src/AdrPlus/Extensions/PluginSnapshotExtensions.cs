@@ -44,7 +44,6 @@ namespace AdrPlus.Extensions
             return new AbstractionsDomain.RepoInfoSnapshot
             {
                 FolderAdr = config.FolderAdr,
-                Scopes = config.GetScopes(),
                 StatusMapping = config.StatusMapping.ToDictionary(kv => kv.Key.ToSnapshot(), kv => kv.Value)
             };
         }

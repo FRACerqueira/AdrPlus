@@ -49,7 +49,6 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ErrAdrSequenceNotFound => Get(() => Resources.AdrPlus.ErrorSequenceAdrNotFound);
         public static CompositeFormat ErrAdrUniqueTitleAlreadyExists => Get(() => Resources.AdrPlus.NewAdrErrorUniqueTitleAlreadyExists);
         public static CompositeFormat ErrMissingRequiredArgumentFormat => Get(() => Resources.AdrPlus.ExceptionMissingRequiredArgument);
-        public static CompositeFormat ErrInvalidScope => Get(() => Resources.AdrPlus.NewAdrErrorInvalidScope);
         public static CompositeFormat ErrConfigFileAlreadyExists => Get(() => Resources.AdrPlus.InitCmdConfigFileAlreadyExists);
         public static CompositeFormat ErrInvalidRepositoryConfig => Get(() => Resources.AdrPlus.ErrMsgInvalidRepoConfig);
         public static CompositeFormat ErrConfigFileNotFound => Get(() => Resources.AdrPlus.ExceptionConfigFileNotFound);
@@ -82,11 +81,6 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ValidationInvalidJsonFormat => Get(() => Resources.AdrPlus.ValidationInvalidJsonFormat);
         public static CompositeFormat ValidationFieldMustBeNonNegative => Get(() => Resources.AdrPlus.ValidationFieldMustBeNonNegative);
         public static CompositeFormat ValidationFieldMinimumValue => Get(() => Resources.AdrPlus.ValidationFieldMinimumValue);
-        public static CompositeFormat ValidationScopesMustBeEmptyWhenLenScopeZero => Get(() => Resources.AdrPlus.ValidationScopesMustBeEmptyWhenLenScopeZero);
-        public static CompositeFormat ValidationScopesMustNotBeEmptyWhenLenScopePositive => Get(() => Resources.AdrPlus.ValidationScopesMustNotBeEmptyWhenLenScopePositive);
-        public static CompositeFormat ValidationScopeMinLength => Get(() => Resources.AdrPlus.ValidationScopeMinLength);
-        public static CompositeFormat ValidationSkipDomainInvalidScopes => Get(() => Resources.AdrPlus.ValidationskipdomainInvalidScopes);
-        public static CompositeFormat ValidationFolderByScopeRequiresScopes => Get(() => Resources.AdrPlus.ValidationFolderByScopeRequiresScopes);
         public static CompositeFormat ValidationMustFollowPattern => Get(() => Resources.AdrPlus.ValidationMustbeFollowing);
         public static CompositeFormat ValidationFieldCannotBeEmpty => Get(() => Resources.AdrPlus.ValidationFieldCannotBeEmpty);
         public static CompositeFormat ValidationPluginAllowlistEntryMissingName => Get(() => Resources.AdrPlus.ValidationPluginAllowlistEntryMissingName);

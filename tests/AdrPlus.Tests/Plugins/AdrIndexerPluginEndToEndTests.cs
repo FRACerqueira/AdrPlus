@@ -151,7 +151,6 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
             Repo = new RepoInfoSnapshot
             {
                 FolderAdr = "doc/adr",
-                Scopes = [],
                 StatusMapping = new Dictionary<AdrStatus, string>
                 {
                     [AdrStatus.Proposed] = "Proposed",
@@ -217,7 +216,6 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
             Repo = new RepoInfoSnapshot
             {
                 FolderAdr = "doc/adr",
-                Scopes = [],
                 StatusMapping = new Dictionary<AdrStatus, string>
                 {
                     [AdrStatus.Proposed] = "Proposed",

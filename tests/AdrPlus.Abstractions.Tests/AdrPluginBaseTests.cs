@@ -25,7 +25,6 @@ public class AdrPluginBaseTests
         Repo = new RepoInfoSnapshot
         {
             FolderAdr = "docs/adr",
-            Scopes = [],
             StatusMapping = new Dictionary<AdrStatus, string>()
         },
         CorrelationId = "correlation-id"

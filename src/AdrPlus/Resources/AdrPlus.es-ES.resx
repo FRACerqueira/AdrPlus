@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -774,6 +774,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>Leyendo dominios registrados...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>Leyendo ámbitos registrados...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>Seleccione la ruta del repositorio</value>

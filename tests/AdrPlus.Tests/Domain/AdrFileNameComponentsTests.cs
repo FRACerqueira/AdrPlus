@@ -10,72 +10,38 @@ namespace AdrPlus.Tests.Domain;
 public class AdrFileNameComponentsTests
 {
     [Fact]
-    public void CreateUniqueTitle_WithTitleAndDomain_CombinesBoth()
+    public void CreateUniqueTitle_WithTitle_ReturnsCasedTitle()
     {
         // Arrange
         var title = "UseNewDatabase";
-        var domain = "Backend";
 
         // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be("UseNewDatabaseBackend"); // ToPascalCase("UseNewDatabase" + "Backend")
-    }
-
-    [Fact]
-    public void CreateUniqueTitle_WithTitleOnly_ReturnsTitle()
-    {
-        // Arrange
-        var title = "UseNewDatabase";
-        string? domain = null;
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var result = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
         result.Should().Be("UseNewDatabase");
     }
 
     [Fact]
-    public void CreateUniqueTitle_WithEmptyDomain_ReturnsTitle()
+    public void CreateUniqueTitle_WithEmptyTitle_ReturnsEmpty()
     {
         // Arrange
-        var title = "UseNewDatabase";
-        var domain = string.Empty;
+        var title = string.Empty;
 
         // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var result = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
-        result.Should().Be("UseNewDatabase");
+        result.Should().Be(string.Empty);
     }
 
     [Fact]
-    public void UniqueTitle_Property_CombinesTitleAndDomain()
+    public void UniqueTitle_Property_ReflectsTitle()
     {
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "UseNewDatabase",
-            Domain = "Backend"
-        };
-
-        // Act
-        var result = components.UniqueTitle;
-
-        // Assert
-        result.Should().Be("UseNewDatabaseBackend");
-    }
-
-    [Fact]
-    public void UniqueTitle_Property_WithNullDomain_ReturnsTitle()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "UseNewDatabase",
-            Domain = null
+            Title = "UseNewDatabase"
         };
 
         // Act
@@ -97,8 +63,6 @@ public class AdrFileNameComponentsTests
         components.Title.Should().Be(string.Empty);
         components.Version.Should().Be(0);
         components.Revision.Should().BeNull();
-        components.Scope.Should().BeNull();
-        components.Domain.Should().BeNull();
         components.SupersededValue.Should().BeNull();
         components.IsValid.Should().BeFalse();
         components.ErrorMessage.Should().Be(string.Empty);
@@ -119,8 +83,6 @@ public class AdrFileNameComponentsTests
             Title = "UseNewDatabase",
             Version = 1,
             Revision = 0,
-            Scope = "API",
-            Domain = "Backend",
             SupersededValue = 2,
             IsValid = true,
             ErrorMessage = "No errors",
@@ -135,8 +97,6 @@ public class AdrFileNameComponentsTests
         components.Title.Should().Be("UseNewDatabase");
         components.Version.Should().Be(1);
         components.Revision.Should().Be(0);
-        components.Scope.Should().Be("API");
-        components.Domain.Should().Be("Backend");
         components.SupersededValue.Should().Be(2);
         components.IsValid.Should().BeTrue();
         components.ErrorMessage.Should().Be("No errors");
@@ -148,41 +108,12 @@ public class AdrFileNameComponentsTests
     #region Additional Edge Cases
 
     [Fact]
-    public void CreateUniqueTitle_WithEmptyTitle_CombinesWithDomain()
-    {
-        // Arrange
-        var title = string.Empty;
-        var domain = "Backend";
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be("Backend");
-    }
-
-    [Fact]
-    public void CreateUniqueTitle_WithBothEmpty_ReturnsEmpty()
-    {
-        // Arrange
-        var title = string.Empty;
-        var domain = string.Empty;
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
-
-        // Assert
-        result.Should().Be(string.Empty);
-    }
-
-    [Fact]
     public void UniqueTitle_Property_UpdatesWhenTitleChanges()
     {
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "OldTitle",
-            Domain = "Backend"
+            Title = "OldTitle"
         };
         var oldResult = components.UniqueTitle;
 
@@ -191,28 +122,8 @@ public class AdrFileNameComponentsTests
         var newResult = components.UniqueTitle;
 
         // Assert
-        oldResult.Should().Be("OldTitleBackend");
-        newResult.Should().Be("NewTitleBackend");
-    }
-
-    [Fact]
-    public void UniqueTitle_Property_UpdatesWhenDomainChanges()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "UseDatabase",
-            Domain = "Backend"
-        };
-        var oldResult = components.UniqueTitle;
-
-        // Act
-        components.Domain = "Frontend";
-        var newResult = components.UniqueTitle;
-
-        // Assert
-        oldResult.Should().Be("UseDatabaseBackend");
-        newResult.Should().Be("UseDatabaseFrontend");
+        oldResult.Should().Be("OldTitle");
+        newResult.Should().Be("NewTitle");
     }
 
     [Fact]
@@ -253,8 +164,6 @@ public class AdrFileNameComponentsTests
         // Arrange
         var longPrefix = "VERYLONGPREFIX_WITH_MANY_CHARACTERS";
         var longTitle = "This is a very long title that exceeds normal expectations for ADR titles";
-        var longScope = "EnterpriseLevelIntegrationArchitecture";
-        var longDomain = "MicroservicesPaymentProcessingCoreWithAsyncMessaging";
         var longErrorMessage = "This is a detailed error message that explains exactly what went wrong and why";
         var longContent = new string('X', 10000);
 
@@ -262,8 +171,6 @@ public class AdrFileNameComponentsTests
         {
             Prefix = longPrefix,
             Title = longTitle,
-            Scope = longScope,
-            Domain = longDomain,
             ErrorMessage = longErrorMessage,
             ContentAdr = longContent
         };
@@ -271,8 +178,6 @@ public class AdrFileNameComponentsTests
         // Act & Assert
         components.Prefix.Should().Be(longPrefix);
         components.Title.Should().Be(longTitle);
-        components.Scope.Should().Be(longScope);
-        components.Domain.Should().Be(longDomain);
         components.ErrorMessage.Should().Be(longErrorMessage);
         components.ContentAdr.Should().HaveLength(10000);
     }
@@ -284,19 +189,17 @@ public class AdrFileNameComponentsTests
         var component1 = new AdrFileNameComponents
         {
             Title = "Title1",
-            Domain = "Domain1",
             Number = 1
         };
         var component2 = new AdrFileNameComponents
         {
             Title = "Title2",
-            Domain = "Domain2",
             Number = 2
         };
 
         // Act & Assert
-        component1.UniqueTitle.Should().Be("Title1Domain1");
-        component2.UniqueTitle.Should().Be("Title2Domain2");
+        component1.UniqueTitle.Should().Be("Title1");
+        component2.UniqueTitle.Should().Be("Title2");
         component1.Number.Should().Be(1);
         component2.Number.Should().Be(2);
     }
@@ -307,18 +210,16 @@ public class AdrFileNameComponentsTests
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "OriginalTitle",
-            Domain = "OriginalDomain"
+            Title = "OriginalTitle"
         };
 
         // Act
-        var staticResult = AdrFileNameComponents.CreateUniqueTitle("DifferentTitle", "DifferentDomain");
+        var staticResult = AdrFileNameComponents.CreateUniqueTitle("DifferentTitle");
 
         // Assert
         components.Title.Should().Be("OriginalTitle");
-        components.Domain.Should().Be("OriginalDomain");
-        components.UniqueTitle.Should().Be("OriginalTitleOriginalDomain");
-        staticResult.Should().Be("DifferentTitleDifferentDomain");
+        components.UniqueTitle.Should().Be("OriginalTitle");
+        staticResult.Should().Be("DifferentTitle");
     }
 
     [Fact]
@@ -329,14 +230,10 @@ public class AdrFileNameComponentsTests
         {
             Prefix = "ADR",
             Title = "Test",
-            Scope = null,
-            Domain = null,
             ErrorMessage = null ?? string.Empty
         };
 
         // Act & Assert
-        components.Scope.Should().BeNull();
-        components.Domain.Should().BeNull();
         components.ErrorMessage.Should().Be(string.Empty);
         components.UniqueTitle.Should().Be("Test");
     }
@@ -353,8 +250,6 @@ public class AdrFileNameComponentsTests
         _ = components.Title;
         _ = components.Version;
         _ = components.Revision;
-        _ = components.Scope;
-        _ = components.Domain;
         _ = components.SupersededValue;
         _ = components.IsValid;
         _ = components.ErrorMessage;
@@ -379,8 +274,6 @@ public class AdrFileNameComponentsTests
             Title = "Title",
             Version = 2,
             Revision = 1,
-            Scope = "Scope",
-            Domain = "Domain",
             SupersededValue = 40,
             IsValid = true,
             ErrorMessage = "Error",
@@ -396,8 +289,6 @@ public class AdrFileNameComponentsTests
         components.Title.Should().Be("Title");
         components.Version.Should().Be(2);
         components.Revision.Should().Be(1);
-        components.Scope.Should().Be("Scope");
-        components.Domain.Should().Be("Domain");
         components.SupersededValue.Should().Be(40);
         components.IsValid.Should().Be(true);
         components.ErrorMessage.Should().Be("Error");
@@ -411,16 +302,14 @@ public class AdrFileNameComponentsTests
     {
         // Arrange
         var title = "ConsistentTitle";
-        var domain = "ConsistentDomain";
         var components = new AdrFileNameComponents
         {
-            Title = title,
-            Domain = domain
+            Title = title
         };
 
         // Act
         var propertyResult = components.UniqueTitle;
-        var staticResult = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var staticResult = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
         propertyResult.Should().Be(staticResult);
@@ -448,41 +337,6 @@ public class AdrFileNameComponentsTests
     #endregion
 
     #region Gap Coverage - Untested Scenarios
-
-    [Fact]
-    public void CreateUniqueTitle_WithBothParametersNull_TreatsNullAsEmptyString()
-    {
-        // Arrange - null title forced to string, null domain becomes empty string via coalescing
-        string? title = null;
-        string? domain = null;
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title!, domain);
-
-        // Assert - null title + (null -> "") = empty string
-        result.Should().Be(string.Empty);
-    }
-
-    [Fact]
-    public void UniqueTitle_Property_SetDomainToNullAfterInitialization_ReflectsChange()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "TestTitle",
-            Domain = "InitialDomain"
-        };
-        var initialResult = components.UniqueTitle;
-
-        // Act
-        components.Domain = null;
-        var finalResult = components.UniqueTitle;
-
-        // Assert
-        initialResult.Should().Be("TestTitleInitialDomain");
-        finalResult.Should().Be("TestTitle");
-    }
-
 
     [Fact]
     public void AdrFileNameComponents_PrefixSetToWhitespaceOnly_StoresAsIs()
@@ -550,51 +404,17 @@ public class AdrFileNameComponentsTests
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "Title1",
-            Domain = "Domain1"
+            Title = "Title1"
         };
 
         // Act - read UniqueTitle multiple times with changes
         var result1 = components.UniqueTitle;
         components.Title = "Title2";
         var result2 = components.UniqueTitle;
-        components.Domain = "Domain2";
-        var result3 = components.UniqueTitle;
 
         // Assert - each call reflects current state
-        result1.Should().Be("Title1Domain1");
-        result2.Should().Be("Title2Domain1");
-        result3.Should().Be("Title2Domain2");
-    }
-
-    [Fact]
-    public void CreateUniqueTitle_WithNullTitle_DefaultsToEmptyString()
-    {
-        // Arrange - testing null coalescing in static method
-        string? title = null;
-        var domain = "Domain";
-
-        // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title!, domain);
-
-        // Assert
-        result.Should().Be("Domain");
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_ScopeProperty_IndependentOfTitle()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "MyTitle",
-            Scope = "MyScope"
-        };
-
-        // Act & Assert
-        components.Title.Should().Be("MyTitle");
-        components.Scope.Should().Be("MyScope");
-        components.UniqueTitle.Should().Be("MyTitle"); // Scope doesn't affect UniqueTitle
+        result1.Should().Be("Title1");
+        result2.Should().Be("Title2");
     }
 
     [Fact]
@@ -604,7 +424,6 @@ public class AdrFileNameComponentsTests
         var components = new AdrFileNameComponents
         {
             Title = "Title",
-            Domain = "Domain",
             FileName = "adr-0001.md"
         };
 
@@ -612,7 +431,7 @@ public class AdrFileNameComponentsTests
         var uniqueTitle = components.UniqueTitle;
 
         // Assert
-        uniqueTitle.Should().Be("TitleDomain");
+        uniqueTitle.Should().Be("Title");
         components.FileName.Should().Be("adr-0001.md");
     }
 
@@ -676,7 +495,6 @@ public class AdrFileNameComponentsTests
         var components = new AdrFileNameComponents
         {
             Title = "Title",
-            Domain = "Domain",
             Header = originalHeader
         };
         var uniqueTitle1 = components.UniqueTitle;
@@ -687,8 +505,8 @@ public class AdrFileNameComponentsTests
         var uniqueTitle2 = components.UniqueTitle;
 
         // Assert
-        uniqueTitle1.Should().Be("TitleDomain");
-        uniqueTitle2.Should().Be("TitleDomain");
+        uniqueTitle1.Should().Be("Title");
+        uniqueTitle2.Should().Be("Title");
         components.Header.Title.Should().Be("Modified");
     }
 
@@ -699,39 +517,15 @@ public class AdrFileNameComponentsTests
         var components = new AdrFileNameComponents
         {
             Title = "Título em Português",
-            Domain = "Domínio",
             Prefix = "ADR-日本語",
-            Scope = "Σκοπός",
             ErrorMessage = "Ошибка"
         };
 
         // Act & Assert
         components.Title.Should().Be("Título em Português");
-        components.Domain.Should().Be("Domínio");
         components.Prefix.Should().Be("ADR-日本語");
-        components.Scope.Should().Be("Σκοπός");
         components.ErrorMessage.Should().Be("Ошибка");
-        components.UniqueTitle.Should().Be("TítuloEmPortuguêsDomínio");
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_SettingDomainToEmptyAfterNullInitialization_UpdatesUniqueTitle()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Title = "Title",
-            Domain = null
-        };
-        var initialResult = components.UniqueTitle;
-
-        // Act
-        components.Domain = string.Empty;
-        var afterEmptyResult = components.UniqueTitle;
-
-        // Assert
-        initialResult.Should().Be("Title");
-        afterEmptyResult.Should().Be("Title");
+        components.UniqueTitle.Should().Be("TítuloEmPortuguês");
     }
 
     [Fact]
@@ -740,8 +534,7 @@ public class AdrFileNameComponentsTests
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "Title",
-            Domain = "Domain"
+            Title = "Title"
         };
 
         // Act
@@ -752,7 +545,7 @@ public class AdrFileNameComponentsTests
         // Assert
         result1.Should().Be(result2);
         result2.Should().Be(result3);
-        result1.Should().Be("TitleDomain");
+        result1.Should().Be("Title");
     }
 
     [Fact]
@@ -760,13 +553,12 @@ public class AdrFileNameComponentsTests
     {
         // Arrange
         var title = "use-new-database";
-        var domain = "backend";
 
         // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var result = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
-        result.Should().Be("UseNewDatabasebackend");
+        result.Should().Be("UseNewDatabase");
     }
 
     [Fact]
@@ -774,13 +566,12 @@ public class AdrFileNameComponentsTests
     {
         // Arrange
         var title = "use_new_database";
-        var domain = "backend";
 
         // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var result = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
-        result.Should().Be("UseNewDatabasebackend");
+        result.Should().Be("UseNewDatabase");
     }
 
     [Fact]
@@ -788,13 +579,12 @@ public class AdrFileNameComponentsTests
     {
         // Arrange
         var title = "use new database";
-        var domain = "backend";
 
         // Act
-        var result = AdrFileNameComponents.CreateUniqueTitle(title, domain);
+        var result = AdrFileNameComponents.CreateUniqueTitle(title);
 
         // Assert
-        result.Should().Be("UseNewDatabasebackend");
+        result.Should().Be("UseNewDatabase");
     }
 
     [Fact]
@@ -803,15 +593,14 @@ public class AdrFileNameComponentsTests
         // Arrange
         var components = new AdrFileNameComponents
         {
-            Title = "use-new_database",
-            Domain = "back end"
+            Title = "use-new_database"
         };
 
         // Act
         var result = components.UniqueTitle;
 
         // Assert
-        result.Should().Be("UseNewDatabasebackEnd");
+        result.Should().Be("UseNewDatabase");
     }
 
     #endregion

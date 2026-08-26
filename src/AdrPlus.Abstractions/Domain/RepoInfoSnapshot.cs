@@ -22,11 +22,6 @@ namespace AdrPlus.Abstractions.Domain
         public required string FolderAdr { get; init; }
 
         /// <summary>
-        /// Gets the configured scopes for organizing ADRs.
-        /// </summary>
-        public required IReadOnlyList<string> Scopes { get; init; }
-
-        /// <summary>
         /// Gets the mapping between <see cref="AdrStatus"/> values and their configured, localized string representations.
         /// </summary>
         public required IReadOnlyDictionary<AdrStatus, string> StatusMapping { get; init; }

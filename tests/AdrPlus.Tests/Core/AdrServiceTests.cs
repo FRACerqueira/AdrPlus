@@ -141,7 +141,6 @@ public class AdrServiceTests
         result.LenSeq.Should().Be(4);
         result.LenVersion.Should().Be(2);
         result.LenRevision.Should().Be(1);
-        result.LenScope.Should().Be(0);
         result.Separator.Should().Be('-');
         result.StatusNew.Should().Be("Proposed");
         result.StatusAcc.Should().Be("Accepted");
@@ -281,15 +280,14 @@ public class AdrServiceTests
     }
 
     [Fact]
-    public void FromJson_WithZeroLenVersionOrRevisionOrScope_AcceptsZero()
+    public void FromJson_WithZeroLenVersionOrRevision_AcceptsZero()
     {
         // Arrange - These can be zero (optional)
         var jsonConfig = JsonSerializer.Serialize(new Dictionary<string, object>
         {
             { AppConstants.FieldFolderAdr, "doc/adr" },
             { AppConstants.FieldLenVersion, 0 },
-            { AppConstants.FieldLenRevision, 0 },
-            { AppConstants.FieldLenScope, 0 }
+            { AppConstants.FieldLenRevision, 0 }
         });
         var template = "# ADR {0}";
 
@@ -299,42 +297,6 @@ public class AdrServiceTests
         // Assert
         result.LenVersion.Should().Be(0);
         result.LenRevision.Should().Be(0);
-        result.LenScope.Should().Be(0);
-    }
-
-    [Fact]
-    public void FromJson_WithFolderByScopeBoolean_ParsesCorrectly()
-    {
-        // Arrange
-        var jsonConfig = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { AppConstants.FieldFolderAdr, "doc/adr" },
-            { AppConstants.FieldFolderByScope, true }
-        });
-        var template = "# ADR {0}";
-
-        // Act
-        var result = _service.FromJson(jsonConfig, template);
-
-        // Assert
-        result.FolderByScope.Should().BeTrue();
-    }
-
-    [Fact]
-    public void FromJson_WithFolderByScopeString_ParsesCorrectly()
-    {
-        // Arrange - FolderByScope as string
-        var jsonConfig = @"{
-            ""FolderAdr"": ""doc/adr"",
-            ""FolderByScope"": ""true""
-        }";
-        var template = "# ADR {0}";
-
-        // Act
-        var result = _service.FromJson(jsonConfig, template);
-
-        // Assert
-        result.FolderByScope.Should().BeTrue();
     }
 
     #endregion
@@ -1006,7 +968,7 @@ public class AdrServiceTests
     #region GetFileByUniqueTitle Tests
 
     [Fact]
-    public async Task GetFileByUniqueTitle_WithValidTitleAndDomain_ReturnsFilePath()
+    public async Task GetFileByUniqueTitle_WithValidTitle_ReturnsFilePath()
     {
         // Arrange
         var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
@@ -1016,7 +978,7 @@ public class AdrServiceTests
         fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
 
         // Act
-        var result = await _service.GetFileByUniqueTitle("Test", "Architecture", fileSystemService, rootrepo, config);
+        var result = await _service.GetFileByUniqueTitle("Test", fileSystemService, rootrepo, config);
 
         // Assert
         result.Should().BeOfType<string>();
@@ -1126,6 +1088,45 @@ public class AdrServiceTests
 
         // Act
         var result = await _service.GetDomains(fileSystemService, directoryPath, config);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    #endregion
+
+    #region GetScopes Tests
+
+    [Fact]
+    public async Task GetScopes_WithValidDirectory_ReturnsScopes()
+    {
+        // Arrange
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var directoryPath = "/repo";
+        fileSystemService.DirectoryExists(directoryPath).Returns(true);
+        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
+
+        // Act
+        var result = await _service.GetScopes(fileSystemService, directoryPath, config);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<string[]>();
+    }
+
+    [Fact]
+    public async Task GetScopes_WithEmptyDirectory_ReturnsEmptyArray()
+    {
+        // Arrange
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var directoryPath = "/repo";
+        fileSystemService.DirectoryExists(directoryPath).Returns(true);
+        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
+
+        // Act
+        var result = await _service.GetScopes(fileSystemService, directoryPath, config);
 
         // Assert
         result.Should().BeEmpty();

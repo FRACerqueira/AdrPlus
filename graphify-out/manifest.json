@@ -25,9 +25,9 @@
     "semantic_hash": "e07d1809e8d49790ed4d5ef034813218"
   },
   "src/AdrPlus.Abstractions/AdrPlus.Abstractions.csproj": {
-    "mtime": 1786034135.1539707,
-    "ast_hash": "a3b868d74e2e92631fe0124d438fcd98",
-    "semantic_hash": ""
+    "mtime": 1787766864.4851246,
+    "ast_hash": "c62221bace64de60e9d11233ba6146af",
+    "semantic_hash": "c62221bace64de60e9d11233ba6146af"
   },
   "src/AdrPlus.Abstractions/Domain/AdrRecordSnapshot.cs": {
     "mtime": 1785532115.275295,
@@ -40,9 +40,9 @@
     "semantic_hash": "2400d6f84cfa6a8fcdd53a5ba73b71a1"
   },
   "src/AdrPlus.Abstractions/Domain/RepoInfoSnapshot.cs": {
-    "mtime": 1785532116.4266396,
-    "ast_hash": "3cf81da367de0ed826204ed759bfd61b",
-    "semantic_hash": "3cf81da367de0ed826204ed759bfd61b"
+    "mtime": 1787767326.7480943,
+    "ast_hash": "f411a83a9fededfdb5eb3f9db0e1d426",
+    "semantic_hash": "f411a83a9fededfdb5eb3f9db0e1d426"
   },
   "src/AdrPlus.Abstractions/IAdrPlugin.cs": {
     "mtime": 1785529238.5226285,
@@ -85,9 +85,9 @@
     "semantic_hash": "badb136efba1da497176e4b02e614578"
   },
   "src/AdrPlus.Abstractions/Testing/RepoInfoSnapshotFactory.cs": {
-    "mtime": 1785793952.3163638,
-    "ast_hash": "2ab28a2e67f9bb2cdad295bc0d2dc6f7",
-    "semantic_hash": "2ab28a2e67f9bb2cdad295bc0d2dc6f7"
+    "mtime": 1787767337.698331,
+    "ast_hash": "e74b232bd2269822aaeb58dd42794fc7",
+    "semantic_hash": "e74b232bd2269822aaeb58dd42794fc7"
   },
   "src/AdrPlus.Plugins.AdrIndexer/AdrIndexerPlugin.cs": {
     "mtime": 1785795031.1119857,
@@ -105,9 +105,9 @@
     "semantic_hash": "b40f36afbcfec0c6900fc4dd1ae9c295"
   },
   "src/AdrPlus/AdrPlus.csproj": {
-    "mtime": 1786141908.45486,
-    "ast_hash": "26f70b42d48684087849fd763e02693e",
-    "semantic_hash": ""
+    "mtime": 1787766861.5694163,
+    "ast_hash": "df6930d245073d8203b3d550495170ff",
+    "semantic_hash": "df6930d245073d8203b3d550495170ff"
   },
   "src/AdrPlus/Commands/Approve/ApproveCommandHandler.cs": {
     "mtime": 1785789141.376375,
@@ -130,7 +130,7 @@
     "semantic_hash": "b70b1de0c2bde59010077feaf5fd844d"
   },
   "src/AdrPlus/Commands/CommandRouter.cs": {
-    "mtime": 1785269870.0287921,
+    "mtime": 1786364956.3835099,
     "ast_hash": "2fea7a742b9390aa5dd97b51d2ec1c99",
     "semantic_hash": "2fea7a742b9390aa5dd97b51d2ec1c99"
   },
@@ -140,9 +140,9 @@
     "semantic_hash": "b51addc9f05dd18eb133efef79d3ad9f"
   },
   "src/AdrPlus/Commands/Config/ConfigCommandHandler.cs": {
-    "mtime": 1785528092.912854,
-    "ast_hash": "8323e2d1fd9e0e723c7034c270720ace",
-    "semantic_hash": "8323e2d1fd9e0e723c7034c270720ace"
+    "mtime": 1787767472.4544654,
+    "ast_hash": "854bb7b28310a274c10cf63cc9b0a58d",
+    "semantic_hash": "854bb7b28310a274c10cf63cc9b0a58d"
   },
   "src/AdrPlus/Commands/Explore/ExploreCommandHandler.cs": {
     "mtime": 1785269870.030791,
@@ -165,9 +165,9 @@
     "semantic_hash": "c3ea1f6bbd0e273c7f630c125c62ce6b"
   },
   "src/AdrPlus/Commands/Init/InitCommandHandler.cs": {
-    "mtime": 1786192130.4773426,
-    "ast_hash": "4d5f202ec9dd8ea0e7a8bbbef953382d",
-    "semantic_hash": ""
+    "mtime": 1787767570.4579263,
+    "ast_hash": "53a687780eee8aad99c479338ffebc9d",
+    "semantic_hash": "53a687780eee8aad99c479338ffebc9d"
   },
   "src/AdrPlus/Commands/Migrate/MigrateCommandHandler.cs": {
     "mtime": 1785789445.2665703,
@@ -175,14 +175,14 @@
     "semantic_hash": "31fee62d8228b2000c1a9711a23e5a5d"
   },
   "src/AdrPlus/Commands/NewAdr/NewAdrCommandHandler.cs": {
-    "mtime": 1785789204.1199949,
-    "ast_hash": "835a6e3742d194e35804440f6166c384",
-    "semantic_hash": "835a6e3742d194e35804440f6166c384"
+    "mtime": 1787769676.8118951,
+    "ast_hash": "30f3c4e82e3506b3d6e4e27e9843fa0b",
+    "semantic_hash": "30f3c4e82e3506b3d6e4e27e9843fa0b"
   },
   "src/AdrPlus/Commands/Plugins/PluginsCommandHandler.cs": {
     "mtime": 1785870407.060225,
     "ast_hash": "ec70a72b65a6f8a7c0cd69e1e44285c3",
-    "semantic_hash": ""
+    "semantic_hash": "ec70a72b65a6f8a7c0cd69e1e44285c3"
   },
   "src/AdrPlus/Commands/Reject/RejectCommandHandler.cs": {
     "mtime": 1785789156.2480996,
@@ -190,14 +190,14 @@
     "semantic_hash": "1c5750f4a2285b5654793158948185c4"
   },
   "src/AdrPlus/Commands/Revise/ReviseCommandHandler.cs": {
-    "mtime": 1785789166.0595496,
-    "ast_hash": "5ec157f2d13a1bd9243b74430846c4e4",
-    "semantic_hash": "5ec157f2d13a1bd9243b74430846c4e4"
+    "mtime": 1787767201.5094264,
+    "ast_hash": "7ce5efccc1cbb80ab054909eb01bc54c",
+    "semantic_hash": "7ce5efccc1cbb80ab054909eb01bc54c"
   },
   "src/AdrPlus/Commands/Supersede/SupersedeCommandHandler.cs": {
-    "mtime": 1785789175.370646,
-    "ast_hash": "9aecd3356ad253279f759ba694334493",
-    "semantic_hash": "9aecd3356ad253279f759ba694334493"
+    "mtime": 1787767229.0535092,
+    "ast_hash": "a00ad3288d6b494f55cfac506f463e6c",
+    "semantic_hash": "a00ad3288d6b494f55cfac506f463e6c"
   },
   "src/AdrPlus/Commands/Sync/SyncCommandHandler.cs": {
     "mtime": 1785846097.0123782,
@@ -215,9 +215,9 @@
     "semantic_hash": "483044fbc0227c31cdb04bcb1472f17f"
   },
   "src/AdrPlus/Commands/Version/VersionCommandHandler.cs": {
-    "mtime": 1785789216.0965774,
-    "ast_hash": "24a1018fbea275ff3018853ee8cc07ae",
-    "semantic_hash": "24a1018fbea275ff3018853ee8cc07ae"
+    "mtime": 1787767192.7274795,
+    "ast_hash": "bdd5784a28ce35ed4c84e14a2d49d4fe",
+    "semantic_hash": "bdd5784a28ce35ed4c84e14a2d49d4fe"
   },
   "src/AdrPlus/Commands/Wizard/WizardCommandHandler.cs": {
     "mtime": 1785845307.789905,
@@ -225,14 +225,14 @@
     "semantic_hash": "bc923873b4b758f76f68e1106395541e"
   },
   "src/AdrPlus/Core/AdrService.cs": {
-    "mtime": 1785874552.9122605,
-    "ast_hash": "24dc6ba9b4a2d50d93c446ba63f00261",
-    "semantic_hash": ""
+    "mtime": 1787769458.8897371,
+    "ast_hash": "e2ace628d3a51d3dbe32d83628e8f15c",
+    "semantic_hash": "e2ace628d3a51d3dbe32d83628e8f15c"
   },
   "src/AdrPlus/Core/AppConstants.cs": {
-    "mtime": 1786192027.197507,
-    "ast_hash": "2485090fb796784f774b1e92b8b6b770",
-    "semantic_hash": ""
+    "mtime": 1787767302.2248073,
+    "ast_hash": "a90f7944a49d24a870056ded3dcfd753",
+    "semantic_hash": "a90f7944a49d24a870056ded3dcfd753"
   },
   "src/AdrPlus/Core/Helper.cs": {
     "mtime": 1785845296.654361,
@@ -240,9 +240,9 @@
     "semantic_hash": "4ba34f3245a6141fe20d0b6843c87578"
   },
   "src/AdrPlus/Core/IAdrServices.cs": {
-    "mtime": 1785584809.915449,
-    "ast_hash": "dc0570bc958366edea633eae90fb5adb",
-    "semantic_hash": "dc0570bc958366edea633eae90fb5adb"
+    "mtime": 1787769468.5240111,
+    "ast_hash": "d73c95cb2d4870738e33823f1b94325d",
+    "semantic_hash": "d73c95cb2d4870738e33823f1b94325d"
   },
   "src/AdrPlus/Core/IMainProgram.cs": {
     "mtime": 1780325580.243719,
@@ -252,7 +252,7 @@
   "src/AdrPlus/Core/IValidateConfig.cs": {
     "mtime": 1786192049.3380497,
     "ast_hash": "e5cd849747fba3c6b2ed6f79d7b0a7c4",
-    "semantic_hash": ""
+    "semantic_hash": "e5cd849747fba3c6b2ed6f79d7b0a7c4"
   },
   "src/AdrPlus/Core/ItemMenuWizard.cs": {
     "mtime": 1780325580.244719,
@@ -275,14 +275,14 @@
     "semantic_hash": "14f0e4584cdece18b6ca229fb796e233"
   },
   "src/AdrPlus/Core/ValidateConfig.cs": {
-    "mtime": 1786194281.851185,
-    "ast_hash": "fe9334e3c1bd283f2d7d6da86d4c295a",
-    "semantic_hash": ""
+    "mtime": 1787767494.0687191,
+    "ast_hash": "e31b71c2702b55951f7c44905cd345a6",
+    "semantic_hash": "e31b71c2702b55951f7c44905cd345a6"
   },
   "src/AdrPlus/Domain/AdrFileNameComponents.cs": {
-    "mtime": 1780325580.2487204,
-    "ast_hash": "0317a982e27c35d774479da2e9e9689f",
-    "semantic_hash": "0317a982e27c35d774479da2e9e9689f"
+    "mtime": 1787767021.0492914,
+    "ast_hash": "21315775b1d4a4a43f2abc9a0dc1e4d1",
+    "semantic_hash": "21315775b1d4a4a43f2abc9a0dc1e4d1"
   },
   "src/AdrPlus/Domain/AdrHeader.cs": {
     "mtime": 1780325580.2487204,
@@ -295,14 +295,14 @@
     "semantic_hash": "4c83fd3cb63a8d00429282b30f6d9a06"
   },
   "src/AdrPlus/Domain/AdrPlusRepoConfig.cs": {
-    "mtime": 1785756862.2622113,
-    "ast_hash": "cd1fe248d48fe0cb2e9a440bda70be13",
-    "semantic_hash": "cd1fe248d48fe0cb2e9a440bda70be13"
+    "mtime": 1787766880.2128644,
+    "ast_hash": "a918ddede1d7286c38f1e4e766a72d8d",
+    "semantic_hash": "a918ddede1d7286c38f1e4e766a72d8d"
   },
   "src/AdrPlus/Domain/AdrRecord.cs": {
-    "mtime": 1780325580.251719,
-    "ast_hash": "7d79b229547c8c8bb1a7802971011f94",
-    "semantic_hash": "7d79b229547c8c8bb1a7802971011f94"
+    "mtime": 1787766892.297448,
+    "ast_hash": "248314371c98f65b5823d9807ea09a2b",
+    "semantic_hash": "248314371c98f65b5823d9807ea09a2b"
   },
   "src/AdrPlus/Domain/AdrStatus.cs": {
     "mtime": 1780325580.2552414,
@@ -330,9 +330,9 @@
     "semantic_hash": "538a6fb40902d32be900874cf65502ac"
   },
   "src/AdrPlus/Extensions/PluginSnapshotExtensions.cs": {
-    "mtime": 1785534393.3489537,
-    "ast_hash": "c27a5ee888d29c2470b1207ec5158104",
-    "semantic_hash": "c27a5ee888d29c2470b1207ec5158104"
+    "mtime": 1787767347.343005,
+    "ast_hash": "48d09abc0ea98e39e3a904e47f8678ac",
+    "semantic_hash": "48d09abc0ea98e39e3a904e47f8678ac"
   },
   "src/AdrPlus/Extensions/ServiceCollectionExtensions.cs": {
     "mtime": 1785789120.4969854,
@@ -357,17 +357,17 @@
   "src/AdrPlus/Infrastructure/FileSystem/FileSystemService.cs": {
     "mtime": 1786192039.0180712,
     "ast_hash": "799270dd522e0752cf2c2963bef3185f",
-    "semantic_hash": ""
+    "semantic_hash": "799270dd522e0752cf2c2963bef3185f"
   },
   "src/AdrPlus/Infrastructure/FileSystem/IFileSystemService.cs": {
     "mtime": 1786192032.9975326,
     "ast_hash": "c3ab799f5b5d3d222665d7e492732afa",
-    "semantic_hash": ""
+    "semantic_hash": "c3ab799f5b5d3d222665d7e492732afa"
   },
   "src/AdrPlus/Infrastructure/Formatting/FormatMessages.cs": {
-    "mtime": 1786192081.5096333,
-    "ast_hash": "103a7235b662970eeafb6b13aa4bef74",
-    "semantic_hash": ""
+    "mtime": 1787767827.4942803,
+    "ast_hash": "e1d519ddceee40068411d02e6b829641",
+    "semantic_hash": "e1d519ddceee40068411d02e6b829641"
   },
   "src/AdrPlus/Infrastructure/Logging/LogMessages.cs": {
     "mtime": 1785585045.9463522,
@@ -375,14 +375,14 @@
     "semantic_hash": "491a22a19cb9b8f5cd5e782a75d7aff5"
   },
   "src/AdrPlus/Infrastructure/UI/IConfigPrompts.cs": {
-    "mtime": 1785269870.0437868,
-    "ast_hash": "4f92ba4d76664abc4815ef3bd7dd19e0",
-    "semantic_hash": "4f92ba4d76664abc4815ef3bd7dd19e0"
+    "mtime": 1787767514.342182,
+    "ast_hash": "50cb9ba7fa52d90b5aa00b25fcb1c606",
+    "semantic_hash": "50cb9ba7fa52d90b5aa00b25fcb1c606"
   },
   "src/AdrPlus/Infrastructure/UI/IConsoleWriter.cs": {
     "mtime": 1785869522.124293,
     "ast_hash": "9e3fd493dc907b122b1ce7c572d1f463",
-    "semantic_hash": ""
+    "semantic_hash": "9e3fd493dc907b122b1ce7c572d1f463"
   },
   "src/AdrPlus/Infrastructure/UI/IExplorePrompts.cs": {
     "mtime": 1785269870.0447865,
@@ -395,9 +395,9 @@
     "semantic_hash": "d09f92c4376dc60c5c90d22dee19cd2f"
   },
   "src/AdrPlus/Infrastructure/UI/INewAdrPrompts.cs": {
-    "mtime": 1785269870.0457861,
-    "ast_hash": "1bf33afb28708fc62561f5d0ea045bb8",
-    "semantic_hash": "1bf33afb28708fc62561f5d0ea045bb8"
+    "mtime": 1787769487.5634334,
+    "ast_hash": "8d8d68b1f2853572612ce96a78c17386",
+    "semantic_hash": "8d8d68b1f2853572612ce96a78c17386"
   },
   "src/AdrPlus/Infrastructure/UI/IWizardMenuPrompts.cs": {
     "mtime": 1785269870.0457861,
@@ -405,19 +405,19 @@
     "semantic_hash": "889faa0f2c0b1aeaadbc200abf47179f"
   },
   "src/AdrPlus/Infrastructure/UI/PromptConsole.FirstInstall.cs": {
-    "mtime": 1786196164.0752015,
-    "ast_hash": "5d76db752032b658d3cdeca37a934d7b",
-    "semantic_hash": ""
+    "mtime": 1787767664.9250817,
+    "ast_hash": "051881443ffd7e2efc77456d14a257d2",
+    "semantic_hash": "051881443ffd7e2efc77456d14a257d2"
   },
   "src/AdrPlus/Infrastructure/UI/PromptConsole.cs": {
-    "mtime": 1785869541.222143,
-    "ast_hash": "7879dc22c510448f306ca23166fa20dd",
-    "semantic_hash": ""
+    "mtime": 1787769646.9524398,
+    "ast_hash": "8c8f57dc63854eaf8794d7369eedc819",
+    "semantic_hash": "8c8f57dc63854eaf8794d7369eedc819"
   },
   "src/AdrPlus/MainProgram.cs": {
-    "mtime": 1785598889.9340427,
-    "ast_hash": "e6c04a71a8ac191c5da5610c561162ce",
-    "semantic_hash": "e6c04a71a8ac191c5da5610c561162ce"
+    "mtime": 1786363802.5905838,
+    "ast_hash": "0ec1ae99ec8930937cd46f549b5c2e6f",
+    "semantic_hash": "0ec1ae99ec8930937cd46f549b5c2e6f"
   },
   "src/AdrPlus/Plugins/ActivePluginsWriter.cs": {
     "mtime": 1785758393.233118,
@@ -485,9 +485,9 @@
     "semantic_hash": "3e7769dc13ec3a174339aac62a447238"
   },
   "src/AdrPlus/Program.cs": {
-    "mtime": 1785269870.0477853,
-    "ast_hash": "5fdc4d00036cc56ad64abb5fd35a2801",
-    "semantic_hash": "5fdc4d00036cc56ad64abb5fd35a2801"
+    "mtime": 1786364705.4101918,
+    "ast_hash": "f40e6ba294dc36fe03e906e84aa88089",
+    "semantic_hash": "f40e6ba294dc36fe03e906e84aa88089"
   },
   "src/AdrPlus/Properties/AssemblyInfo.cs": {
     "mtime": 1780325580.2749643,
@@ -495,9 +495,9 @@
     "semantic_hash": "60811c49e92ea92b1e1323e072b6ed8b"
   },
   "src/AdrPlus/Resources/AdrPlus.Designer.cs": {
-    "mtime": 1786194348.143059,
-    "ast_hash": "fc37b9c167ffbd7b4c4f78d68bdb1e29",
-    "semantic_hash": ""
+    "mtime": 1787769616.9163039,
+    "ast_hash": "8ffde41cd59b938835d15358f247f6cf",
+    "semantic_hash": "8ffde41cd59b938835d15358f247f6cf"
   },
   "src/AdrPlus/adrplus.json": {
     "mtime": 1785528093.015906,
@@ -505,14 +505,14 @@
     "semantic_hash": "a4c607d8b60dfc73fe41a4b7f57df22e"
   },
   "tests/AdrPlus.Abstractions.Tests/AdrPluginBaseTests.cs": {
-    "mtime": 1785532753.7426908,
-    "ast_hash": "15c14f7bc52df91d83ab15d5f43c8df2",
-    "semantic_hash": "15c14f7bc52df91d83ab15d5f43c8df2"
+    "mtime": 1787767868.816142,
+    "ast_hash": "144c2456451308e2edc6e16dfc80a327",
+    "semantic_hash": "144c2456451308e2edc6e16dfc80a327"
   },
   "tests/AdrPlus.Abstractions.Tests/AdrPlus.Abstractions.Tests.csproj": {
-    "mtime": 1785839872.0558636,
-    "ast_hash": "4d7654b251d953dcc1794096044d04ad",
-    "semantic_hash": "4d7654b251d953dcc1794096044d04ad"
+    "mtime": 1786381403.6438498,
+    "ast_hash": "d79148aeebb5000af07d4b23dcfc165e",
+    "semantic_hash": "d79148aeebb5000af07d4b23dcfc165e"
   },
   "tests/AdrPlus.Abstractions.Tests/Testing/AdrEventContextFactoryTests.cs": {
     "mtime": 1785794001.7287357,
@@ -525,14 +525,14 @@
     "semantic_hash": "e4d5c4283c61ba218552a9ab4a01b05d"
   },
   "tests/AdrPlus.Abstractions.Tests/Testing/RepoInfoSnapshotFactoryTests.cs": {
-    "mtime": 1785793991.9007268,
-    "ast_hash": "27e80d839f012e27263bfe0f4d69f0c6",
-    "semantic_hash": "27e80d839f012e27263bfe0f4d69f0c6"
+    "mtime": 1787767854.2997646,
+    "ast_hash": "c4a8d03552523b75106dd37b5910018b",
+    "semantic_hash": "c4a8d03552523b75106dd37b5910018b"
   },
   "tests/AdrPlus.Tests/AdrPlus.Tests.csproj": {
-    "mtime": 1785840573.5679615,
-    "ast_hash": "dc51f4d8dfd772b50217c7a08e51f48a",
-    "semantic_hash": "dc51f4d8dfd772b50217c7a08e51f48a"
+    "mtime": 1786381403.597046,
+    "ast_hash": "4029ae719f2c41ad88ffce68cac4727a",
+    "semantic_hash": "4029ae719f2c41ad88ffce68cac4727a"
   },
   "tests/AdrPlus.Tests/Commands/Approve/ApproveCommandHandlerTests.cs": {
     "mtime": 1785768598.2060049,
@@ -560,9 +560,9 @@
     "semantic_hash": "121cbbfc8b4b302d69becce614ef0421"
   },
   "tests/AdrPlus.Tests/Commands/Config/ConfigCommandHandlerTests.cs": {
-    "mtime": 1785528093.0168827,
-    "ast_hash": "9a74c059a60fa3839c656c4c877b4291",
-    "semantic_hash": "9a74c059a60fa3839c656c4c877b4291"
+    "mtime": 1787768773.9019458,
+    "ast_hash": "cc9b1333854e72bf2b32042ddde9fc58",
+    "semantic_hash": "cc9b1333854e72bf2b32042ddde9fc58"
   },
   "tests/AdrPlus.Tests/Commands/Explore/ExploreCommandHandlerTests.cs": {
     "mtime": 1785269870.0557852,
@@ -575,14 +575,14 @@
     "semantic_hash": "59d4dc5c1d42908ccb1c263ab2461c5f"
   },
   "tests/AdrPlus.Tests/Commands/Init/InitCommandHandlerBuiltinPluginsTests.cs": {
-    "mtime": 1786192422.329412,
-    "ast_hash": "0857636f07b413b596d9c2abc28cbe1e",
-    "semantic_hash": ""
+    "mtime": 1787767997.7538621,
+    "ast_hash": "483011c64fe503ba835456d1c3e57c4c",
+    "semantic_hash": "483011c64fe503ba835456d1c3e57c4c"
   },
   "tests/AdrPlus.Tests/Commands/Init/InitCommandHandlerTests.cs": {
-    "mtime": 1786192248.7086482,
-    "ast_hash": "af0797ff09777658bbd9fa1814ad076f",
-    "semantic_hash": ""
+    "mtime": 1787768610.0305896,
+    "ast_hash": "7723fa87348dae68e82844886dce76b3",
+    "semantic_hash": "7723fa87348dae68e82844886dce76b3"
   },
   "tests/AdrPlus.Tests/Commands/Migrate/MigrateCommandHandlerTests.cs": {
     "mtime": 1785586328.303706,
@@ -590,9 +590,9 @@
     "semantic_hash": "9a44dbef465aecf72727f3a8f4bd8e74"
   },
   "tests/AdrPlus.Tests/Commands/NewAdr/NewAdrCommandHandlerTests.cs": {
-    "mtime": 1785586234.2780845,
-    "ast_hash": "f9af265b47981b6afe9ca468e61e889f",
-    "semantic_hash": "f9af265b47981b6afe9ca468e61e889f"
+    "mtime": 1787769880.2528327,
+    "ast_hash": "8e5322427746187825701ec25134a4a1",
+    "semantic_hash": "8e5322427746187825701ec25134a4a1"
   },
   "tests/AdrPlus.Tests/Commands/Plugins/PluginsCommandHandlerInstallTests.cs": {
     "mtime": 1785848355.825742,
@@ -602,7 +602,7 @@
   "tests/AdrPlus.Tests/Commands/Plugins/PluginsCommandHandlerTests.cs": {
     "mtime": 1785870461.1849413,
     "ast_hash": "38d8fe4358dff6138d1cfd6313ce9abc",
-    "semantic_hash": ""
+    "semantic_hash": "38d8fe4358dff6138d1cfd6313ce9abc"
   },
   "tests/AdrPlus.Tests/Commands/Reject/RejectCommandHandlerTests.cs": {
     "mtime": 1785585865.9943578,
@@ -610,9 +610,9 @@
     "semantic_hash": "ba3d740990875c2f788053c67217d73d"
   },
   "tests/AdrPlus.Tests/Commands/Revise/ReviseCommandHandlerTests.cs": {
-    "mtime": 1785586302.8782034,
-    "ast_hash": "27347895125246e8b51377bd75c683c3",
-    "semantic_hash": "27347895125246e8b51377bd75c683c3"
+    "mtime": 1787768370.1080492,
+    "ast_hash": "eb809b774eb5a793668061a86b24ded2",
+    "semantic_hash": "eb809b774eb5a793668061a86b24ded2"
   },
   "tests/AdrPlus.Tests/Commands/Supersede/SupersedeCommandHandlerTests.cs": {
     "mtime": 1785585896.189445,
@@ -630,9 +630,9 @@
     "semantic_hash": "78009fab4027dfb379db9d77ba47ee37"
   },
   "tests/AdrPlus.Tests/Commands/Version/VersionCommandHandlerTests.cs": {
-    "mtime": 1785586274.5684843,
-    "ast_hash": "edec72a475549a3834e405734393eb49",
-    "semantic_hash": "edec72a475549a3834e405734393eb49"
+    "mtime": 1787768359.154014,
+    "ast_hash": "142a3674973ac7eca8d970cfc65ab198",
+    "semantic_hash": "142a3674973ac7eca8d970cfc65ab198"
   },
   "tests/AdrPlus.Tests/Commands/Wizard/WizardCommandHandlerBuiltinPluginsTests.cs": {
     "mtime": 1785765351.8872006,
@@ -640,9 +640,9 @@
     "semantic_hash": "9acd7929c04516bf298ebbd24c7e9a93"
   },
   "tests/AdrPlus.Tests/Core/AdrServiceTests.cs": {
-    "mtime": 1785874647.4255443,
-    "ast_hash": "52db7f33b6684f99e8b4af0c28f34e2b",
-    "semantic_hash": ""
+    "mtime": 1787769779.2528589,
+    "ast_hash": "f893f081fc335e5fbcb26253f9fea06d",
+    "semantic_hash": "f893f081fc335e5fbcb26253f9fea06d"
   },
   "tests/AdrPlus.Tests/Core/HelperTests.cs": {
     "mtime": 1785528093.0198832,
@@ -670,14 +670,14 @@
     "semantic_hash": "db52748d51fd04cb7d2621c6eb1f07e1"
   },
   "tests/AdrPlus.Tests/Core/ValidateJsonConfigTests.cs": {
-    "mtime": 1786194413.9080372,
-    "ast_hash": "c313d483b8f445214e91a7bd4adecc0d",
-    "semantic_hash": ""
+    "mtime": 1787769128.3766491,
+    "ast_hash": "6c63136631189b69d75b1b8387f889cb",
+    "semantic_hash": "6c63136631189b69d75b1b8387f889cb"
   },
   "tests/AdrPlus.Tests/Domain/AdrFileNameComponentsTests.cs": {
-    "mtime": 1780325580.3535244,
-    "ast_hash": "5dd3f9d6306a739a9a08f20c8d4bc55a",
-    "semantic_hash": "5dd3f9d6306a739a9a08f20c8d4bc55a"
+    "mtime": 1787768160.3795185,
+    "ast_hash": "ed23fb5a99bfe60fb86141e4a08795e9",
+    "semantic_hash": "ed23fb5a99bfe60fb86141e4a08795e9"
   },
   "tests/AdrPlus.Tests/Domain/AdrHeaderTests.cs": {
     "mtime": 1780325580.3545263,
@@ -685,14 +685,14 @@
     "semantic_hash": "47c95652e7e3ec5af00845f865108d3a"
   },
   "tests/AdrPlus.Tests/Domain/AdrPlusRepoConfigTests.cs": {
-    "mtime": 1780325580.3645265,
-    "ast_hash": "bacef8f015c0e73f3d53fb6ddcd8f497",
-    "semantic_hash": "bacef8f015c0e73f3d53fb6ddcd8f497"
+    "mtime": 1787768049.3168352,
+    "ast_hash": "cb93a758b392c0e3eab0fc990859b259",
+    "semantic_hash": "cb93a758b392c0e3eab0fc990859b259"
   },
   "tests/AdrPlus.Tests/Domain/AdrRecordTests.cs": {
-    "mtime": 1780325580.3660374,
-    "ast_hash": "24a107331ed0828675dc743c187a97bf",
-    "semantic_hash": "24a107331ed0828675dc743c187a97bf"
+    "mtime": 1787768238.317531,
+    "ast_hash": "a17c0c7b0daed6c1af1d648ac7db5eec",
+    "semantic_hash": "a17c0c7b0daed6c1af1d648ac7db5eec"
   },
   "tests/AdrPlus.Tests/Domain/AdrStatusTests.cs": {
     "mtime": 1780325580.372061,
@@ -705,14 +705,14 @@
     "semantic_hash": "f29afcb41e459ebfd8ee2edd1ab5f09d"
   },
   "tests/AdrPlus.Tests/Extensions/PluginSnapshotExtensionsTests.cs": {
-    "mtime": 1785534444.3421545,
-    "ast_hash": "d178488c9cb571a1516ef104f0258162",
-    "semantic_hash": "d178488c9cb571a1516ef104f0258162"
+    "mtime": 1787767836.8511286,
+    "ast_hash": "7e431ee6148b4726e44ef906924b6fc5",
+    "semantic_hash": "7e431ee6148b4726e44ef906924b6fc5"
   },
   "tests/AdrPlus.Tests/Helpers/CommandHandlerMockHelper.cs": {
-    "mtime": 1785269870.0647867,
-    "ast_hash": "b739eb52602bee278bf0101422ff24e3",
-    "semantic_hash": "b739eb52602bee278bf0101422ff24e3"
+    "mtime": 1787767953.661015,
+    "ast_hash": "85a28d5d83246f49d9a020dd35ae20a1",
+    "semantic_hash": "85a28d5d83246f49d9a020dd35ae20a1"
   },
   "tests/AdrPlus.Tests/Helpers/CultureData.cs": {
     "mtime": 1785528093.0208826,
@@ -757,7 +757,7 @@
   "tests/AdrPlus.Tests/Infrastructure/FileSystem/FileSystemServiceTests.cs": {
     "mtime": 1786192367.1557791,
     "ast_hash": "b21e3e46fae52687dce070b0b49b89de",
-    "semantic_hash": ""
+    "semantic_hash": "b21e3e46fae52687dce070b0b49b89de"
   },
   "tests/AdrPlus.Tests/Localization/HeaderLocalizationTests.cs": {
     "mtime": 1785528093.0228853,
@@ -775,9 +775,9 @@
     "semantic_hash": "c652e7a2f4eab00cb0fd0509e21586de"
   },
   "tests/AdrPlus.Tests/Plugins/AdrIndexerPluginEndToEndTests.cs": {
-    "mtime": 1785860872.1676638,
-    "ast_hash": "7159f2079af1809a6ee939dd83cb00e6",
-    "semantic_hash": ""
+    "mtime": 1787767980.7655137,
+    "ast_hash": "6846c47174043e9142995dd167dc1e7d",
+    "semantic_hash": "6846c47174043e9142995dd167dc1e7d"
   },
   "tests/AdrPlus.Tests/Plugins/AdrKeyFormatterTests.cs": {
     "mtime": 1785795109.8395815,
@@ -800,14 +800,14 @@
     "semantic_hash": "a9d62f203e84ef320ba7d2d6b85d545f"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerBackfillTests.cs": {
-    "mtime": 1785864073.8156896,
-    "ast_hash": "f0b69a3d787cfffffb984e9fd44d87b2",
-    "semantic_hash": ""
+    "mtime": 1787767912.8599026,
+    "ast_hash": "136ccace039827a6d2be210370f1c783",
+    "semantic_hash": "136ccace039827a6d2be210370f1c783"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerDispatchTests.cs": {
-    "mtime": 1785795161.5525146,
-    "ast_hash": "d8e91b9e488abd2b2964e21af077f25e",
-    "semantic_hash": "d8e91b9e488abd2b2964e21af077f25e"
+    "mtime": 1787767924.7630107,
+    "ast_hash": "732ca91db110a5ffe819cd50a4e3a05b",
+    "semantic_hash": "732ca91db110a5ffe819cd50a4e3a05b"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerDisposalTests.cs": {
     "mtime": 1785795173.5546439,
@@ -815,9 +815,9 @@
     "semantic_hash": "9cb7495ee47fbf00c986853fd1456023"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerRetryTests.cs": {
-    "mtime": 1785795181.056326,
-    "ast_hash": "6e1db4b99dfc23a26a320dc3d316f17c",
-    "semantic_hash": "6e1db4b99dfc23a26a320dc3d316f17c"
+    "mtime": 1787767928.936203,
+    "ast_hash": "14c73d60dc5357d1bc27db85547287e7",
+    "semantic_hash": "14c73d60dc5357d1bc27db85547287e7"
   },
   "tests/AdrPlus.Tests/Plugins/PluginManagerTests.cs": {
     "mtime": 1785795195.6466355,
@@ -1468,5 +1468,15 @@
     "mtime": 1785855753.6915283,
     "ast_hash": "fe9e366eab6097aa1d9b91d76d977de4",
     "semantic_hash": "fe9e366eab6097aa1d9b91d76d977de4"
+  },
+  "src/AdrPlus/Extensions/StringSimilarityExtensions.cs": {
+    "mtime": 1787769437.8904727,
+    "ast_hash": "4c13925df3679fd6dc87a3ca1fb5f47f",
+    "semantic_hash": "4c13925df3679fd6dc87a3ca1fb5f47f"
+  },
+  "tests/AdrPlus.Tests/Core/StringSimilarityExtensionsTests.cs": {
+    "mtime": 1787769793.0067964,
+    "ast_hash": "b0caf61f4902a2be7292e9ea66b70d11",
+    "semantic_hash": "b0caf61f4902a2be7292e9ea66b70d11"
   }
 }

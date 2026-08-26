@@ -202,10 +202,6 @@ namespace AdrPlus.Commands.Supersede
 
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(rootrepo, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
@@ -273,7 +269,7 @@ namespace AdrPlus.Commands.Supersede
 
         /// <summary>
         /// Writes the ADR content (header + template body) to a <c>.md</c> file under the configured
-        /// repository folder, creating a scope sub-folder when <see cref="AdrPlusRepoConfig.FolderByScope"/> is enabled.
+        /// repository folder.
         /// </summary>
         /// <param name="adrRecord">The ADR record whose filename and content will be generated.</param>
         /// <param name="rootPath">The root directory of the repository.</param>
@@ -284,12 +280,6 @@ namespace AdrPlus.Commands.Supersede
         {
             var filename = adrRecord.GetFileName(auxconfig);
             var folder = Path.GetFullPath(Path.Combine(rootPath, auxconfig.FolderAdr));
-
-            if (auxconfig.FolderByScope)
-            {
-                folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-            }
-
             var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
             var content = $"{adrRecord.GetHeader(auxconfig)}{adrRecord.Template}";
             await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);

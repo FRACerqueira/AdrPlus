@@ -774,83 +774,6 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldScopes(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptEnterNewValue}";
-            var result = PromptPlus.Controls
-                .Input(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value)
-                .AcceptInput(input => char.IsAsciiLetter(input) || input == ';' || input == '*')
-                .SuggestionHandler(input => [Resources.AdrPlus.DefaultScope])
-                .PredicateValid(input =>
-                {
-                    var scopes = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                    var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var scope in scopes)
-                    {
-                        if (!uniqueScopes.Add(scope))
-                        {
-                            return (false, Resources.AdrPlus.ErrMsgScopesDuplicateEntries);
-                        }
-                    }
-                    return (true, string.Empty);
-                })
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditFieldskipdomain(FieldsJson fieldsJson, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptSelectNewValues}";
-            var result = PromptPlus.Controls
-                .MultiSelect<string>(message, ShowDescField(fieldsJson))
-                .Default(fieldsJson.Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
-                .AddItems(fields.First(f => f.Name == AppConstants.FieldScopes).Value.Split(';', StringSplitOptions.RemoveEmptyEntries))
-                .PredicateChecked(input =>
-                {
-                    var scopes = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                    var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var scope in scopes)
-                    {
-                        if (!uniqueScopes.Add(scope))
-                        {
-                            return (false, Resources.AdrPlus.ErrMsgScopesDuplicateEntries);
-                        }
-                    }
-                    return (true, string.Empty);
-                })
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? fieldsJson.Value : string.Join(";", result.Content));
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, int Content) PromptEditFieldLenScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
-            var result = PromptPlus.Controls
-                .Slider(message, ShowDescField(fieldsJson))
-                .Default(int.TryParse(fieldsJson.Value, out int intValue) ? intValue : 1)
-                .Layout(SliderLayout.UpDown)
-                .Step(1)
-                .LargeStep(5)
-                .Range(0, 5)
-                .Run(cancellationToken);
-            return (result.IsAborted, result.IsAborted ? 0 : (int)result.Content!);
-        }
-
-        /// <inheritdoc/>
-        public (bool IsAborted, bool Content) PromptEditFieldFolderByScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default)
-        {
-            var message = $"{Resources.AdrPlus.ConfigPromptChooseNewValue}";
-            var result = PromptPlus.Controls
-                .Switch(message, ShowDescField(fieldsJson))
-                .Default(bool.TryParse(fieldsJson.Value, out bool boolValue) && boolValue)
-                .Run(cancellationToken);
-            return (result.IsAborted, !result.IsAborted && (bool)result.Content!);
-        }
-
-        /// <inheritdoc/>
         public (bool IsAborted, bool Content) PromptEmptyTemplate(CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptEmptyTemplate}";
@@ -1159,11 +1082,11 @@ namespace AdrPlus.Infrastructure.UI
                         }
                         if (fields.Any(x => x.StartsWith("10)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Scope, (item) => (object)(item.Scope ?? string.Empty), width: 20);
+                            ctx.AddColumn(Resources.AdrPlus.Scope, (item) => (object)(item.Header.Scope ?? string.Empty), width: 20);
                         }
                         if (fields.Any(x => x.StartsWith("11)", false, CultureInfo.InvariantCulture)))
                         {
-                            ctx.AddColumn(Resources.AdrPlus.Domain, (item) => (object)(item.Domain ?? string.Empty), width: 20);
+                            ctx.AddColumn(Resources.AdrPlus.Domain, (item) => (object)(item.Header.Domain ?? string.Empty), width: 20);
                         }
                         ctx.Filter(FilterMode.Contains, FilterTableMode.ColumnFilters);
                         ctx.ChangeDescription((item) =>
@@ -1309,14 +1232,35 @@ namespace AdrPlus.Infrastructure.UI
             return (result.IsAborted, result.IsAborted ? defaultTitle : result.Content!);
         }
 
+        /// <summary>
+        /// Minimum Jaro-Winkler similarity for an existing value to be surfaced as a suggestion.
+        /// Advisory only: never blocks or rejects what the user types.
+        /// </summary>
+        private const double SimilaritySuggestionThreshold = 0.80;
+
+        /// <summary>
+        /// Ranks <paramref name="candidates"/> against <paramref name="input"/>, keeping those that either
+        /// contain <paramref name="input"/> as a substring or are similar enough by Jaro-Winkler distance.
+        /// </summary>
+        private static string[] SuggestSimilar(string input, string[] candidates)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return candidates;
+            }
+            return [.. candidates.Where(x =>
+                x.Contains(input, StringComparison.OrdinalIgnoreCase) ||
+                x.JaroWinklerSimilarity(input) >= SimilaritySuggestionThreshold)];
+        }
+
         /// <inheritdoc/>
-        public (bool IsAborted, string Content) PromptEditScopeAdr(string defaultScope, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string Content) PromptEditScopeAdr(string defaultScope, string[] sugestscopes, CancellationToken cancellationToken = default)
         {
             var message = $"{Resources.AdrPlus.PromptSelectAdrScope}";
             var result = PromptPlus.Controls
-                .Select<string>(message)
+                .Input(message)
                 .Default(defaultScope)
-                .AddItems(adrPlusRepo.GetScopes())
+                .SuggestionHandler((input) => SuggestSimilar(input, sugestscopes))
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? defaultScope : result.Content!);
         }
@@ -1328,11 +1272,7 @@ namespace AdrPlus.Infrastructure.UI
             var result = PromptPlus.Controls
                 .Input(message)
                 .Default(defaultdomain)
-                .PredicateValid(input => (input.Trim().Length > 0, Resources.AdrPlus.ErrMsgNotEmpty))
-                .SuggestionHandler((input) =>
-                {
-                    return string.IsNullOrWhiteSpace(input) ? sugestdomains : [.. sugestdomains.Where(x => x.Contains(input, StringComparison.OrdinalIgnoreCase)) ?? []];
-                })
+                .SuggestionHandler((input) => SuggestSimilar(input, sugestdomains))
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? defaultdomain : result.Content!);
         }
@@ -1348,6 +1288,19 @@ namespace AdrPlus.Infrastructure.UI
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
             return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!.Exception);
+        }
+
+        /// <inheritdoc/>
+        public (bool IsAborted, string[] scopes, Exception? Content) PromptGetArrayScopesAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        {
+            var defarrscope = Array.Empty<string>();
+            var message = $"{Resources.AdrPlus.PromptReadingRegisteredScopes}";
+            var resuldefarrscope = PromptPlus.Controls
+                .Task(message)
+                .Action(_ => defarrscope = _adrServices.GetScopes(fileSystemService, path, adrPlusRepo).Result)
+                .Spinner(SpinnersType.Ascii)
+                .Run(cancellationToken);
+            return (resuldefarrscope.IsAborted, defarrscope, resuldefarrscope.IsAborted ? null : resuldefarrscope.Content!.Exception);
         }
 
         /// <inheritdoc/>

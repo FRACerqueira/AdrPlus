@@ -38,16 +38,6 @@ namespace AdrPlus.Domain
         public int? Revision { get; set; }
 
         /// <summary>
-        /// Gets or sets the scope of the ADR.
-        /// </summary>
-        public string? Scope { get; set; }
-
-        /// <summary>
-        /// Gets or sets the domain of the ADR.
-        /// </summary>
-        public string? Domain { get; set; }
-
-        /// <summary>
         /// Gets or sets the sequence number of the ADR that supersedes this one.
         /// </summary>
         public int? SupersededValue { get; set; }
@@ -78,20 +68,19 @@ namespace AdrPlus.Domain
         public string?  ContentAdr { get; set; }
 
         /// <summary>
-        /// Gets the unique title combining the title and domain.
+        /// Gets the unique title.
         /// </summary>
-        public string UniqueTitle => CreateUniqueTitle(Title, Domain);
+        public string UniqueTitle => CreateUniqueTitle(Title);
 
         /// <summary>
-        /// Creates a unique title by concatenating <paramref name="title"/> and <paramref name="domain"/>.
-        /// Used to distinguish ADRs that share a title but differ by domain.
+        /// Creates a unique title from <paramref name="title"/>. Domain is a free-text header field and no
+        /// longer disambiguates ADRs sharing a title.
         /// </summary>
         /// <param name="title">The ADR title.</param>
-        /// <param name="domain">The ADR domain (optional). When <see langword="null"/>, an empty string is appended.</param>
-        /// <returns>A concatenated unique title string of the form <c>&lt;title&gt;&lt;domain&gt;</c>.</returns>
-        public static string CreateUniqueTitle(string title, string? domain)
+        /// <returns>The title normalized for uniqueness comparison.</returns>
+        public static string CreateUniqueTitle(string title)
         {
-            return $"{title}{domain ?? string.Empty}".ToPascalCase();
+            return title.ToPascalCase();
         }
     }
 }

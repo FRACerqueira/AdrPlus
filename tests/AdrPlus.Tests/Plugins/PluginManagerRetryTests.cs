@@ -61,7 +61,6 @@ public class PluginManagerRetryTests
     private static AbstractionsDomain.RepoInfoSnapshot CreateRepoSnapshot() => new()
     {
         FolderAdr = "docs/adr",
-        Scopes = [],
         StatusMapping = new Dictionary<AbstractionsDomain.AdrStatus, string>()
     };
 

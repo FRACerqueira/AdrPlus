@@ -3119,7 +3119,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PromptReadingRegisteredDomains", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Reading registered scopes....
+        /// </summary>
+        internal static string PromptReadingRegisteredScopes {
+            get {
+                return ResourceManager.GetString("PromptReadingRegisteredScopes", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select a length for the &apos;Revision&apos; element at filename.
         /// </summary>

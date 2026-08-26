@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -773,6 +773,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>Lendo domínios registrados...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>Lendo escopos registrados...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>Selecione o caminho do repositório</value>

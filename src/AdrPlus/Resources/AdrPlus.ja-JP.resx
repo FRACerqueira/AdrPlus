@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -774,6 +774,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>登録済みのドメインを読み込んでいます...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>登録済みのスコープを読み込んでいます...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>リポジトリのパスを選択してください</value>

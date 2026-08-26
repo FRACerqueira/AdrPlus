@@ -210,39 +210,6 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, int Content) PromptEditFieldRevision(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts the user to edit the available scopes and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered scopes content.</returns>
-        (bool IsAborted, string Content) PromptEditFieldScopes(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the skip detail field and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="fields">The available field options to choose from.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered skip detail content.</returns>
-        (bool IsAborted, string Content) PromptEditFieldskipdomain(FieldsJson fieldsJson, IEnumerable<FieldsJson> fields, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the scope field length and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the entered scope length.</returns>
-        (bool IsAborted, int Content) PromptEditFieldLenScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Prompts the user to edit the folder-by-scope setting and returns the result along with an abort status.
-        /// </summary>
-        /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected boolean value.</returns>
-        (bool IsAborted, bool Content) PromptEditFieldFolderByScope(FieldsJson fieldsJson, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Prompts the user to edit the case transformation format and returns the result along with an abort status.
         /// </summary>
         /// <param name="fieldsJson">The fields metadata used to guide the prompt.</param>

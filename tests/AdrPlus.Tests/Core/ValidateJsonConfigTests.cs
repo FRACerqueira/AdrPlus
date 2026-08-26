@@ -372,74 +372,6 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateRepoStructure_WhenLenScopeZeroButScopesNotEmpty_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldScopes] = "scope1;scope2";
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, _) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WhenLenScopePositiveButScopesEmpty_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldLenScope] = 3;
-        dict[AppConstants.FieldScopes] = "";
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, _) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithInvalidskipdomainScopes_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldLenScope] = 3;
-        dict[AppConstants.FieldScopes] = "scope1;scope2";
-        dict[AppConstants.FieldSkipDomain] = "scope1;invalidscope";
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("invalidscope"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WhenFolderByScopeTrueButScopesEmpty_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldFolderByScope] = true;
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, _) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-    }
-
-    [Fact]
     public void ValidateRepoStructure_WithEmptyStatusFields_ReturnsInvalid()
     {
         // Arrange
@@ -523,24 +455,6 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateRepoStructure_WithScopeLengthLessThanLenScope_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldLenScope] = 5;
-        dict[AppConstants.FieldScopes] = "ab;cd";
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("lenscope"));
-    }
-
-    [Fact]
     public void ValidateRepoStructure_WithAllValidSeparators_ReturnsValid()
     {
         // Arrange
@@ -597,23 +511,6 @@ public class ValidateJsonConfigTests
         // Assert
         IsValid.Should().BeFalse();
         ErrorReport.Should().Contain(e => e.Contains("headerdisclaimer"));
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithNonBooleanFolderByScope_ReturnsInvalid()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var dict = GetBaseRepoJsonDict();
-        dict[AppConstants.FieldFolderByScope] = "not-a-boolean";
-        var json = JsonSerializer.Serialize(dict, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(json);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("folderbyscope") && e.Contains("boolean"));
     }
 
     [Fact]
@@ -935,126 +832,6 @@ public class ValidateJsonConfigTests
     #region EnsureFieldsRepoStructure Tests
 
     [Fact]
-    public void EnsureFieldsRepoStructure_WhenLenScopeZero_ClearsScopesAndskipdomain()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 0 },
-            { "scopes", "scope1;scope2" },
-            { "skipdomain", "scope1" },
-            { "folderbyscope", true },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict!["scopes"].ToString().Should().BeEmpty();
-        resultDict["skipdomain"].ToString().Should().BeEmpty();
-        resultDict["folderbyscope"].ToString().Should().Be("False");
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_WhenLenScopePositiveButScopesEmpty_SetsDefaults()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict!["scopes"].ToString().Should().NotBeEmpty();
-        resultDict["skipdomain"].ToString().Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_RemovesDuplicateScopes()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "scope1;scope2;SCOPE1;scope2" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        var scopes = resultDict!["scopes"].ToString()!.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        scopes.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_RemovesDuplicateskipdomains()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "scope1;scope2" },
-            { "skipdomain", "scope1;scope2;SCOPE1" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        var skipdomains = resultDict!["skipdomain"].ToString()!.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        skipdomains.Should().HaveCount(2);
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_RemovesInvalidskipdomains()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "scope1;scope2" },
-            { "skipdomain", "scope1;invalidscope" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict!["skipdomain"].ToString().Should().Be("scope1");
-    }
-
-    [Fact]
     public void EnsureFieldsRepoStructure_ClampsLenVersionBetween2And3()
     {
         // Arrange
@@ -1098,29 +875,6 @@ public class ValidateJsonConfigTests
 
         // Assert
         int.Parse(resultDict!["lenrevision"].ToString()!).Should().Be(3);
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_AdjustsLenScopeToMinScopeLength()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 5 },
-            { "scopes", "ab;abc" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        int.Parse(resultDict!["lenscope"].ToString()!).Should().Be(2);
     }
 
     [Fact]
@@ -1170,81 +924,6 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void EnsureFieldsRepoStructure_WithScopesContainingWildcard_ExtractsSkipdomainScopes()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "scope1*;scope2" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict!["scopes"].ToString().Should().Contain("scope1");
-        resultDict["skipdomain"].ToString().Should().Contain("scope1");
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_WithMultipleScopesAndWildcard_HandlesCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "api*;web;db*" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        var scopes = resultDict!["scopes"].ToString()!.Split(';');
-        var skipdomains = resultDict["skipdomain"].ToString()!.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        scopes.Should().Contain("api");
-        scopes.Should().Contain("db");
-        skipdomains.Should().Contain("api");
-        skipdomains.Should().Contain("db");
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_WithLenScopeGreaterThanMinScopeLength_AdjustsCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 10 },
-            { "scopes", "short;tiny" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        int.Parse(resultDict!["lenscope"].ToString()!).Should().BeLessThan(10);
-    }
-
-    [Fact]
     public void EnsureFieldsRepoStructure_WithOnlyWhitespaceScopes_HandlesCorrectly()
     {
         // Arrange
@@ -1265,30 +944,6 @@ public class ValidateJsonConfigTests
 
         // Assert
         resultDict.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void EnsureFieldsRepoStructure_WhenScopesEmpty_SetsDefaultScope()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 1 },
-            { "scopes", "" },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict!["scopes"].ToString().Should().NotBeEmpty();
-        resultDict["skipdomain"].ToString().Should().NotBeEmpty();
     }
 
     [Fact]
@@ -1939,25 +1594,6 @@ public class ValidateJsonConfigTests
 
         // Assert - should be valid because scopes is empty when lenscope = 0
         IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public void ValidateRepoStructure_WithScopesEmptyWhenLenScopePositive_ReturnsError()
-    {
-        // Arrange - Scopes is empty when LenScope > 0, which is invalid
-        var validator = CreateValidator([]);
-        var invalidJson = CreateValidRepoJson();
-        var jsonObj = JsonSerializer.Deserialize<Dictionary<string, object>>(invalidJson);
-        jsonObj![AppConstants.FieldLenScope] = 2;
-        jsonObj![AppConstants.FieldScopes] = ""; // Must not be empty when LenScope > 0
-        var jsonContent = JsonSerializer.Serialize(jsonObj);
-
-        // Act
-        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(jsonContent);
-
-        // Assert
-        IsValid.Should().BeFalse();
-        ErrorReport.Should().Contain(e => e.Contains("Scopes", StringComparison.OrdinalIgnoreCase));
     }
 
     #endregion

@@ -310,8 +310,9 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates and normalizes the repository configuration JSON to ensure all required fields are present and consistent.
-        /// Normalizes <c>scopes</c>, <c>skipdomain</c>, <c>folderByScope</c>, <c>lenversion</c>, and <c>lenrevision</c> based on <c>lenscope</c>.
-        /// Removes duplicate scope entries (case-insensitive) and removes <c>skipdomain</c> entries not in the defined scopes.
+        /// Clamps <c>lenversion</c> and <c>lenrevision</c> to their valid ranges, and drops repository config fields
+        /// removed in 1.0.0-rc5 (ADR006: <see cref="AppConstants.ObsoleteRepoConfigFields"/>) when a legacy config still
+        /// carries them, so the next write of this config no longer contains them.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate and normalize.</param>
         /// <returns>The normalized JSON content as a string.</returns>
@@ -326,71 +327,17 @@ namespace AdrPlus.Core
                 kvp => kvp.Value
             );
 
-            var lenscope = int.Parse(jsonObject[AppConstants.FieldLenScope].ToString() ?? "0", CultureInfo.InvariantCulture);
-            var folderByScope = bool.Parse(jsonObject[AppConstants.FieldFolderByScope].ToString() ?? "false");
+            foreach (var obsoleteField in AppConstants.ObsoleteRepoConfigFields)
+            {
+                jsonObject.Remove(obsoleteField);
+            }
 
-            var fieldscopes = jsonObject[AppConstants.FieldScopes].ToString() ?? string.Empty;
-            var listscopes = fieldscopes
-                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => s.Replace("*","").Trim()).ToArray();
             // Ensure lenversion and lenrevision are within valid ranges
             var lenversion = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenVersion].ToString() ?? "0", CultureInfo.InvariantCulture), 2, 3);
             var lenrevision = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenRevision].ToString() ?? "0", CultureInfo.InvariantCulture), 0, 3);
 
-            var scopes = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
-
-            var listskipdomain = fieldscopes
-                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                     .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
-                     .Select(s => s.Replace("*", "").Trim()).ToArray();
-            if (listskipdomain.Length == 0)
-            {
-                var fieldskipscopes = jsonObject[AppConstants.FieldSkipDomain].ToString() ?? string.Empty;
-                listskipdomain = fieldskipscopes
-                     .Split(';', StringSplitOptions.RemoveEmptyEntries);
-            }
-            var skipdomain = string.Join(";", listskipdomain.Distinct(StringComparer.OrdinalIgnoreCase));
-
-            if (lenscope == 0)
-            {
-                scopes = string.Empty;
-                skipdomain = string.Empty;
-                folderByScope = false;
-            }
-            else if (scopes.Length == 0)
-            {
-                fieldscopes = Resources.AdrPlus.DefaultScope;
-                listscopes = [.. fieldscopes
-                        .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s => s.Replace("*", "").Trim())];
-                scopes = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
-                if (skipdomain.Length == 0)
-                {
-                    listskipdomain = [.. fieldscopes
-                             .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                             .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
-                             .Select(s => s.Replace("*", "").Trim())];
-                    skipdomain = string.Join(";", listskipdomain.Distinct(StringComparer.OrdinalIgnoreCase));
-                }
-            }
-            if (lenscope > 0 && scopes.Length > 0)
-            {
-                var minlen = Math.Clamp(
-                    scopes.Split(';', StringSplitOptions.RemoveEmptyEntries).Min(x => x.Length),
-                    0, 5);
-                lenscope = Math.Min(lenscope, minlen);
-            }
-            if (skipdomain.Length > 0 && listscopes.Length > 0)
-            {
-                var validScopes = new HashSet<string>(listscopes, StringComparer.OrdinalIgnoreCase);
-                skipdomain = string.Join(';', listskipdomain.Where(validScopes.Contains).Distinct(StringComparer.OrdinalIgnoreCase));
-            }
             jsonObject[AppConstants.FieldLenVersion] = lenversion;
             jsonObject[AppConstants.FieldLenRevision] = lenrevision;
-            jsonObject[AppConstants.FieldLenScope] = lenscope;
-            jsonObject[AppConstants.FieldFolderByScope] = folderByScope;
-            jsonObject[AppConstants.FieldScopes] = scopes;
-            jsonObject[AppConstants.FieldSkipDomain] = skipdomain;
             return JsonSerializer.Serialize(jsonObject, AppConstants.RepoSerializerOptions);
         }
 
@@ -530,10 +477,6 @@ namespace AdrPlus.Core
                     { AppConstants.FieldLenSeq, JsonValueKind.Number },
                     { AppConstants.FieldLenVersion , JsonValueKind.Number },
                     { AppConstants.FieldLenRevision, JsonValueKind.Number },
-                    { AppConstants.FieldLenScope, JsonValueKind.Number },
-                    { AppConstants.FieldScopes, JsonValueKind.String },
-                    { AppConstants.FieldFolderByScope, JsonValueKind.True | JsonValueKind.False },
-                    { AppConstants.FieldSkipDomain, JsonValueKind.String },
                     { AppConstants.FieldSeparator, JsonValueKind.String },
                     { AppConstants.FieldCaseTransform, JsonValueKind.String },
                     { AppConstants.FieldStatusNew, JsonValueKind.String },
@@ -579,8 +522,7 @@ namespace AdrPlus.Core
                     }
 
                     // Validate type - special handling for boolean
-                    if (field.Key.Equals(AppConstants.FieldFolderByScope, StringComparison.OrdinalIgnoreCase) ||
-                        field.Key.Equals(AppConstants.FieldDisablePlugins, StringComparison.OrdinalIgnoreCase))
+                    if (field.Key.Equals(AppConstants.FieldDisablePlugins, StringComparison.OrdinalIgnoreCase))
                     {
                         if (property.ValueKind != JsonValueKind.True && property.ValueKind != JsonValueKind.False)
                         {
@@ -608,7 +550,10 @@ namespace AdrPlus.Core
                     actualFields.Add(property.Name);
                 }
 
-                var extraFields = actualFields.Except(requiredFields.Keys, StringComparer.OrdinalIgnoreCase).ToList();
+                var extraFields = actualFields
+                    .Except(requiredFields.Keys, StringComparer.OrdinalIgnoreCase)
+                    .Except(AppConstants.ObsoleteRepoConfigFields, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
                 if (extraFields.Count > 0)
                 {
                     errors.Add(string.Format(null, FormatMessages.ValidationUnexpectedFields, string.Join(", ", extraFields)));
@@ -669,7 +614,7 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates the values of repository configuration fields for correctness and internal consistency.
-        /// Checks numeric minimums, scope/skipdomain coherence, separator validity, case-transform enum values, and required non-empty string fields.
+        /// Checks numeric minimums, separator validity, case-transform enum values, and required non-empty string fields.
         /// </summary>
         /// <param name="root">The root <see cref="JsonElement"/> of the repository configuration JSON.</param>
         /// <returns>An array of validation error messages; empty if all field values are valid.</returns>
@@ -703,49 +648,6 @@ namespace AdrPlus.Core
                     errors.Add(string.Format(null, FormatMessages.ValidationFieldMustBeNonNegative, AppConstants.FieldLenRevision));
                 }
             }
-
-            property = root.GetProperty(AppConstants.FieldScopes);
-            var propertylen = root.GetProperty(AppConstants.FieldLenScope);
-            if (propertylen.TryGetInt32(out var lenscope))
-            {
-                if (lenscope == 0 && (property.GetString() ?? string.Empty).Length > 0)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustBeEmptyWhenLenScopeZero, AppConstants.FieldScopes, AppConstants.FieldLenScope));
-                }
-                if (lenscope > 0 && (property.GetString() ?? string.Empty).Length == 0)
-                {
-                    errors.Add(string.Format(null, FormatMessages.ValidationScopesMustNotBeEmptyWhenLenScopePositive, AppConstants.FieldScopes, AppConstants.FieldLenScope));
-                }
-                if (lenscope > 0 && (property.GetString() ?? string.Empty).Length > 0)
-                {
-                    var minlen = property.GetString()!.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Length).Min();
-                    if (minlen < lenscope)
-                    {
-                        errors.Add(string.Format(null, FormatMessages.ValidationScopeMinLength, AppConstants.FieldScopes, AppConstants.FieldLenScope, lenscope));
-                    }
-                }
-            }
-            property = root.GetProperty(AppConstants.FieldSkipDomain);
-            var propertyscope = root.GetProperty(AppConstants.FieldScopes);
-            var skipdomainValue = property.GetString() ?? string.Empty;
-            if (skipdomainValue.Length > 0 && (propertyscope.GetString() ?? string.Empty).Length > 0)
-            {
-                var skipdomainScopes = skipdomainValue.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                var definedScopes = propertyscope.GetString()!.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                var invalidskipdomains = skipdomainScopes.Except(definedScopes, StringComparer.OrdinalIgnoreCase);
-                if (invalidskipdomains.Any())
-                {
-                    errors.Add(string.Format(null, FormatMessages.ValidationSkipDomainInvalidScopes, string.Join(", ", invalidskipdomains)));
-                }
-            }
-
-            property = root.GetProperty(AppConstants.FieldFolderByScope);
-            var foldervalue = property.GetBoolean();
-            if (foldervalue && (propertyscope.GetString() ?? string.Empty).Length == 0)
-            {
-                errors.Add(string.Format(null, FormatMessages.ValidationFolderByScopeRequiresScopes, AppConstants.FieldFolderByScope, AppConstants.FieldScopes));
-            }
-
 
             property = root.GetProperty(AppConstants.FieldSeparator);
             var validSeparators = new[] { "-", "_", "." };

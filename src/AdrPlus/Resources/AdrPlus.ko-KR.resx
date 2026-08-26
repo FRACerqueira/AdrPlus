@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -774,6 +774,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>등록된 도메인을 읽는 중...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>등록된 범위를 읽는 중...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>저장소 경로를 선택하세요</value>

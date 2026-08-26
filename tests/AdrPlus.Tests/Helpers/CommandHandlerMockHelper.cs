@@ -82,7 +82,6 @@ internal static class CommandHandlerMockHelper
             Number = 1,
             IsValid = true,
             Title = "test",
-            Domain = string.Empty,
             Version = 1,
             Revision = 1,
             Header = new AdrHeader
@@ -127,7 +126,6 @@ internal static class CommandHandlerMockHelper
             Number = number,
             IsValid = true,
             Title = title,
-            Domain = domain,
             Version = version,
             Revision = revision,
             Header = new AdrHeader

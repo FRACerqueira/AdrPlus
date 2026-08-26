@@ -41,12 +41,8 @@ public class AdrPlusRepoConfigTests
         config.LenSeq.Should().Be(3);
         config.LenVersion.Should().Be(2);
         config.LenRevision.Should().Be(0);
-        config.LenScope.Should().Be(0);
         config.Separator.Should().Be('-');
         config.CaseTransform.Should().Be(CaseFormat.KebabCase);
-        config.FolderByScope.Should().BeFalse();
-        config.Scopes.Should().Be(string.Empty);
-        config.SkipDomain.Should().Be(string.Empty);
     }
 
     [Fact]
@@ -263,201 +259,6 @@ public class AdrPlusRepoConfigTests
 
     #endregion
 
-    #region GetScopes Tests
-
-    [Fact]
-    public void GetScopes_WithEmptyScopes_ReturnsEmptyArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = string.Empty;
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetScopes_WithNullScopes_ReturnsEmptyArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = null!;
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetScopes_WithSingleScope_ReturnsSingleElementArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = "Enterprise";
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().HaveCount(1);
-        scopes[0].Should().Be("Enterprise");
-    }
-
-    [Fact]
-    public void GetScopes_WithMultipleScopes_ReturnsAllScopes()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = "Enterprise;Domain;Project";
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().HaveCount(3);
-        scopes.Should().Contain("Enterprise");
-        scopes.Should().Contain("Domain");
-        scopes.Should().Contain("Project");
-    }
-
-    [Fact]
-    public void GetScopes_TrimsWhitespace()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = "  Enterprise  ;  Domain  ;  Project  ";
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().HaveCount(3);
-        scopes.Should().Contain("Enterprise");
-        scopes.Should().Contain("Domain");
-        scopes.Should().Contain("Project");
-        scopes.Should().NotContain("  Enterprise  ");
-    }
-
-    [Fact]
-    public void GetScopes_RemovesEmptyEntries()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.Scopes = "Enterprise;;Domain;;Project";
-
-        // Act
-        var scopes = config.GetScopes();
-
-        // Assert
-        scopes.Should().HaveCount(3);
-        scopes.Should().Contain("Enterprise");
-        scopes.Should().Contain("Domain");
-        scopes.Should().Contain("Project");
-    }
-
-    #endregion
-
-    #region GetSkipDomains Tests
-
-    [Fact]
-    public void GetSkipDomains_WithEmptySkipDomain_ReturnsEmptyArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = string.Empty;
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetSkipDomains_WithNullSkipDomain_ReturnsEmptyArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = null!;
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void GetSkipDomains_WithSingleScope_ReturnsSingleElementArray()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = "Enterprise";
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().HaveCount(1);
-        skipDomains[0].Should().Be("Enterprise");
-    }
-
-    [Fact]
-    public void GetSkipDomains_WithMultipleDomains_ReturnsAllDomains()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = "Enterprise;Global";
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().HaveCount(2);
-        skipDomains.Should().Contain("Enterprise");
-        skipDomains.Should().Contain("Global");
-    }
-
-    [Fact]
-    public void GetSkipDomains_TrimsWhitespace()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = "  Enterprise  ;  Global  ";
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().HaveCount(2);
-        skipDomains.Should().Contain("Enterprise");
-        skipDomains.Should().Contain("Global");
-        skipDomains.Should().NotContain("  Enterprise  ");
-    }
-
-    [Fact]
-    public void GetSkipDomains_RemovesEmptyEntries()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        config.SkipDomain = "Enterprise;;Global";
-
-        // Act
-        var skipDomains = config.GetSkipDomains();
-
-        // Assert
-        skipDomains.Should().HaveCount(2);
-        skipDomains.Should().Contain("Enterprise");
-        skipDomains.Should().Contain("Global");
-    }
-
-    #endregion
-
     #region Integration Tests
 
     [Fact]
@@ -470,12 +271,8 @@ public class AdrPlusRepoConfigTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 1,
-            LenScope = 1,
             Separator = '~',
             CaseTransform = CaseFormat.PascalCase,
-            Scopes = "Enterprise;Domain;Project",
-            FolderByScope = true,
-            SkipDomain = "Enterprise",
             StatusNew = "Proposed",
             StatusAcc = "Accepted",
             StatusRej = "Rejected",
@@ -488,9 +285,6 @@ public class AdrPlusRepoConfigTests
         config.LenSeq.Should().Be(4);
         config.Separator.Should().Be('~');
         config.CaseTransform.Should().Be(CaseFormat.PascalCase);
-        config.FolderByScope.Should().BeTrue();
-        config.GetScopes().Should().HaveCount(3);
-        config.GetSkipDomains().Should().HaveCount(1);
         config.StatusMapping.Should().HaveCount(5);
     }
 

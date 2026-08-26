@@ -62,12 +62,6 @@ namespace AdrPlus.Core
                 if (lenrevision >= 0) config.LenRevision = lenrevision;
             }
 
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldLenScope, out var lenscopeElement) && lenscopeElement.ValueKind == JsonValueKind.Number)
-            {
-                var lenscope = lenscopeElement.GetInt32();
-                if (lenscope >= 0) config.LenScope = lenscope;
-            }
-
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldSeparator, out var separatorElement) && separatorElement.ValueKind == JsonValueKind.String)
             {
                 var separator = separatorElement.GetString();
@@ -94,23 +88,6 @@ namespace AdrPlus.Core
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldStatusSuperseded, out var statusSupElement) && statusSupElement.ValueKind == JsonValueKind.String)
                 config.StatusSup = statusSupElement.GetString()!;
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldScopes, out var scopesElement) && scopesElement.ValueKind == JsonValueKind.String)
-                config.Scopes = scopesElement.GetString()!;
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldFolderByScope, out var folderByScopeElement))
-            {
-                if (folderByScopeElement.ValueKind == JsonValueKind.True)
-                    config.FolderByScope = true;
-                else if (folderByScopeElement.ValueKind == JsonValueKind.False)
-                    config.FolderByScope = false;
-                else if (folderByScopeElement.ValueKind == JsonValueKind.String &&
-                         bool.TryParse(folderByScopeElement.GetString(), out bool folderByScopeValue))
-                    config.FolderByScope = folderByScopeValue;
-            }
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldSkipDomain, out var skipdomainElement) && skipdomainElement.ValueKind == JsonValueKind.String)
-                config.SkipDomain = skipdomainElement.GetString()!;
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderDisclaimer, out var headerDisclaimerElement) && headerDisclaimerElement.ValueKind == JsonValueKind.String)
                 config.HeaderDisclaimer = headerDisclaimerElement.GetString()!;
@@ -609,42 +586,14 @@ namespace AdrPlus.Core
             result.Version = pattern["V"].Length == 0 ? 0 : int.Parse(pattern["V"], CultureInfo.InvariantCulture);
             //revision
             result.Revision = pattern["R"].Length == 0 ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
-            //scope
-            result.Scope = pattern["S"].Length == 0 ? "" : pattern["S"];
-
-            //invalid version
-            if (result.Scope.Length > 0 && pattern["V"].Length == 0 && config.LenVersion > 0 && result.Scope.StartsWith("V", StringComparison.OrdinalIgnoreCase))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-
-            //invalid revision
-            if (result.Scope.Length > 0 && pattern["R"].Length == 0 && config.LenRevision > 0 && result.Scope.StartsWith("R", StringComparison.OrdinalIgnoreCase))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-            //title and domain
+            //title
             part = parts[1];
             if (part.Length == 0)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            index = part.LastIndexOf('@');
-            if (index != -1)
-            {
-                result.Title = part[..index];
-                if (index + 1 < part.Length)
-                {
-                    result.Domain = part[(index + 1)..];
-                }
-            }
-            else
-            {
-                result.Title = part;
-            }
+            result.Title = part;
             result.SupersededValue = string.IsNullOrEmpty(supersedeNumber) ? null : int.Parse(supersedeNumber, CultureInfo.InvariantCulture);
             return (true, result);
         }
@@ -723,9 +672,9 @@ namespace AdrPlus.Core
                 .ThenByDescending(x=> x.Revision ?? 0)];
         }
 
-        public async Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
+        public async Task<string> GetFileByUniqueTitle(string title, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
         {
-            var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform), domain.ToCase(config.CaseTransform));
+            var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform));
             AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, rootrepo, config);
             var aux = adrFiles
                 .FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
@@ -752,9 +701,20 @@ namespace AdrPlus.Core
             return adrFiles.Length == 0
                 ? []
                 : [.. adrFiles
-                    .Where(f => !string.IsNullOrWhiteSpace(f.Domain))
-                    .DistinctBy(x => x.Domain!.ToPascalCase())
-                    .Select(f => f.Domain!)];
+                    .Where(f => !string.IsNullOrWhiteSpace(f.Header.Domain))
+                    .DistinctBy(x => x.Header.Domain!.ToPascalCase())
+                    .Select(f => f.Header.Domain!)];
+        }
+
+        public async Task<string[]> GetScopes(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        {
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
+            return adrFiles.Length == 0
+                ? []
+                : [.. adrFiles
+                    .Where(f => !string.IsNullOrWhiteSpace(f.Header.Scope))
+                    .DistinctBy(x => x.Header.Scope!.ToPascalCase())
+                    .Select(f => f.Header.Scope!)];
         }
 
         public async Task<(bool Isvalid, string Error, AdrRecord? Record, string? Content)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)

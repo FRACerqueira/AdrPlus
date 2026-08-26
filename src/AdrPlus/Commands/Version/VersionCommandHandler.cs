@@ -286,10 +286,6 @@ namespace AdrPlus.Commands.Version
 
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(rootPath, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {

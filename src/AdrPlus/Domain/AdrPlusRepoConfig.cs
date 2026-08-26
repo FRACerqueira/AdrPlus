@@ -59,12 +59,6 @@ namespace AdrPlus.Domain
         public int LenRevision { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of characters to use for the scope text in the filename, e.g., 1 for "E".
-        /// Set to 0 to omit scope from the filename.
-        /// </summary>
-        public int LenScope { get; set; }
-
-        /// <summary>
         /// Gets or sets the separator character used between different parts of the filename.
         /// Valid values are "-", "~", or ".".
         /// </summary>
@@ -99,22 +93,6 @@ namespace AdrPlus.Domain
         /// This status is valid only when the current ADR status is <see cref="StatusAcc"/>.
         /// </summary>
         public string StatusSup { get; set; } = Resources.AdrPlus.StatusSup;
-
-        /// <summary>
-        /// Gets or sets the semicolon-separated list of scopes for organizing ADRs, e.g., "Enterprise;Domain;Project".
-        /// </summary>
-        public string Scopes { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to create subfolders for each scope, e.g., <c>true</c> or <c>false</c>.
-        /// </summary>
-        public bool FolderByScope { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scope for which to skip the domain section in the filename, e.g., "Enterprise".
-        /// Must be one of the scopes defined in <see cref="Scopes"/>. Optional when no domain skipping is needed.
-        /// </summary>
-        public string SkipDomain { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the disclaimer text that appears in the ADR header.
@@ -207,29 +185,5 @@ namespace AdrPlus.Domain
             {AdrStatus.Superseded, StatusSup},
         };
 
-        /// <summary>
-        /// Gets the <see cref="Scopes"/> value as a trimmed, non-empty string array.
-        /// </summary>
-        /// <returns>An array of scope name strings; an empty array if <see cref="Scopes"/> is null or whitespace.</returns>
-        public string[] GetScopes()
-        {
-            if (string.IsNullOrWhiteSpace(Scopes))
-                return [];
-
-            return Scopes.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        }
-
-        /// <summary>
-        /// Gets the <see cref="SkipDomain"/> value as a trimmed, non-empty string array.
-        /// These are the scopes for which the domain segment is omitted from the filename.
-        /// </summary>
-        /// <returns>An array of scope name strings; an empty array if <see cref="SkipDomain"/> is null or whitespace.</returns>
-        public string[] GetSkipDomains()
-        {
-            if (string.IsNullOrWhiteSpace(SkipDomain))
-                return [];
-
-            return SkipDomain.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        }
     }
 }

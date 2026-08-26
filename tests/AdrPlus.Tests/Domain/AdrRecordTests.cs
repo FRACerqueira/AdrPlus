@@ -44,7 +44,6 @@ public class AdrRecordTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 2,
-            LenScope = 0,
             Separator = '-',
             CaseTransform = CaseFormat.KebabCase
         };
@@ -67,37 +66,6 @@ public class AdrRecordTests
     }
 
     [Fact]
-    public void GetFileName_WithScopeAndDomain_IncludesInFileName()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("","")
-        {
-            Prefix = "ADR-",
-            LenSeq = 4,
-            LenVersion = 2,
-            LenRevision = 0,
-            LenScope = 3,
-            Separator = '-',
-            CaseTransform = CaseFormat.PascalCase
-        };
-
-        var record = new AdrRecord
-        {
-            Number = 5,
-            Title = "Use GraphQL",
-            Version = 2,
-            Scope = "API",
-            Domain = "Backend"
-        };
-
-        // Act
-        var fileName = record.GetFileName(config);
-
-        // Assert
-        fileName.Should().Be("ADR-0005V02API-UseGraphQl@Backend.md");
-    }
-
-    [Fact]
     public void GetFileName_WithSuperseded_IncludesSupersedeTag()
     {
         // Arrange
@@ -107,7 +75,6 @@ public class AdrRecordTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 2,
-            LenScope = 0,
             Separator = '-',
             CaseTransform = CaseFormat.KebabCase
         };
@@ -138,7 +105,6 @@ public class AdrRecordTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 0,
-            LenScope = 0,
             Separator = '-',
             CaseTransform = CaseFormat.PascalCase
         };
@@ -167,7 +133,6 @@ public class AdrRecordTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 0,
-            LenScope = 0,
             Separator = '-',
             CaseTransform = CaseFormat.SnakeCase
         };
@@ -196,7 +161,6 @@ public class AdrRecordTests
             LenSeq = 4,
             LenVersion = 2,
             LenRevision = 0,
-            LenScope = 0,
             Separator = '-',
             CaseTransform = CaseFormat.CamelCase
         };
@@ -213,37 +177,6 @@ public class AdrRecordTests
 
         // Assert
         fileName.Should().Be("ADR-0002V01-useNewApi.md");
-    }
-
-    [Fact]
-    public void GetFileName_WithScopeOnly_IncludesScopeInFileName()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("","")
-        {
-            Prefix = "ADR-",
-            LenSeq = 4,
-            LenVersion = 2,
-            LenRevision = 0,
-            LenScope = 5,
-            Separator = '-',
-            CaseTransform = CaseFormat.PascalCase
-        };
-
-        var record = new AdrRecord
-        {
-            Number = 7,
-            Title = "UseCache",
-            Version = 1,
-            Scope = "Performance",
-            Domain = string.Empty
-        };
-
-        // Act
-        var fileName = record.GetFileName(config);
-
-        // Assert
-        fileName.Should().Be("ADR-0007V01Perfo-UseCache.md");
     }
 
     #endregion

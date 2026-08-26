@@ -22,7 +22,7 @@ namespace AdrPlus.Commands.NewAdr
 {
     /// <summary>
     /// Handles the <c>new</c> command to create a new Architecture Decision Record (ADR).
-    /// Validates uniqueness of title+domain, resolves the next sequence number, and writes
+    /// Validates uniqueness of title, resolves the next sequence number, and writes
     /// the new <c>.md</c> file following the configured naming convention.
     /// </summary>
     /// <remarks>
@@ -72,7 +72,7 @@ namespace AdrPlus.Commands.NewAdr
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="args"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Thrown when required arguments are missing, invalid, or scope/domain validation fails.</exception>
+        /// <exception cref="ArgumentException">Thrown when required arguments are missing or invalid.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the repository template or configuration file is not found.</exception>
         /// <exception cref="DirectoryNotFoundException">Thrown when the specified target directory does not exist.</exception>
         /// <exception cref="InvalidOperationException">Thrown when an ADR with the same unique title already exists.</exception>
@@ -134,17 +134,14 @@ namespace AdrPlus.Commands.NewAdr
                 await _pluginManager.LoadPluginsAsync(cancellationToken);
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
-                ValidateScopeAndDomain(repoconfig, parsedArgs);
-
                 var title = parsedArgs[Arguments.TitleAdr];
-                var domain = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? valueDomain) ? valueDomain : string.Empty;
                 var existfile = string.Empty;
                 var curpos = _prompt.PromptGetCursorPosition();
                 if (hasWizard)
                 {
                     _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
                 }
-                existfile = await _adrServices.GetFileByUniqueTitle(title, domain, _filesystem, targetPath,  repoconfig);
+                existfile = await _adrServices.GetFileByUniqueTitle(title, _filesystem, targetPath,  repoconfig);
                 if (hasWizard)
                 {
                     _prompt.PromptClearWaitText(curpos);
@@ -172,10 +169,6 @@ namespace AdrPlus.Commands.NewAdr
                 var adrRecord = CreateAdrRecord(nextNumber, parsedArgs, dateAdr, repoconfig);
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(targetPath, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.Combine(folder, adrRecord.Scope);
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
@@ -222,51 +215,6 @@ namespace AdrPlus.Commands.NewAdr
         {
             LogMessages.LogCommandFailure(_logger, message);
             _prompt.PromptWriteError(message);
-        }
-
-        /// <summary>
-        /// Validates the scope and domain arguments against the repository configuration.
-        /// When <see cref="AdrPlusRepoConfig.LenScope"/> is zero, scope and domain are removed from
-        /// <paramref name="parsedArgs"/> silently. Otherwise the scope must exist in the configured list
-        /// and the domain must be provided unless the scope is in the skip-domain list.
-        /// </summary>
-        /// <param name="auxconfig">The repository configuration defining valid scopes and skip-domain rules.</param>
-        /// <param name="parsedArgs">The parsed command arguments (modified in-place).</param>
-        /// <exception cref="ArgumentException">
-        /// Thrown when a required scope is missing, the scope is not in the configured list,
-        /// or a required domain is missing for the given scope.
-        /// </exception>
-        private static void ValidateScopeAndDomain(AdrPlusRepoConfig auxconfig, Dictionary<Arguments, string> parsedArgs)
-        {
-            if (auxconfig.LenScope == 0)
-            {
-                parsedArgs.Remove(Arguments.ScopeAdr);
-                parsedArgs.Remove(Arguments.DomainAdr);
-                return;
-            }
-
-            if (!parsedArgs.TryGetValue(Arguments.ScopeAdr, out string? scopeArg))
-            {
-                throw new ArgumentException(string.Format(null, FormatMessages.ErrMissingRequiredArgumentFormat, "--scope", "-s"));
-            }
-
-            if (auxconfig.Scopes != null && !auxconfig.GetScopes().Any(x => x.Equals(scopeArg, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new ArgumentException(string.Format(null, FormatMessages.ErrInvalidScope, scopeArg, auxconfig.Scopes));
-            }
-
-            string domainArg = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? valueArg) ? valueArg : string.Empty;
-            bool skipdomains = auxconfig.GetSkipDomains().Any(x => x.Equals(scopeArg, StringComparison.OrdinalIgnoreCase));
-
-            if (domainArg.Length == 0 && !skipdomains)
-            {
-                throw new ArgumentException(string.Format(null, FormatMessages.ErrMissingRequiredArgumentFormat, "--domain", "-d"));
-            }
-
-            if (domainArg.Length > 0 && skipdomains)
-            {
-                parsedArgs.Remove(Arguments.DomainAdr);
-            }
         }
 
         /// <summary>
@@ -355,7 +303,7 @@ namespace AdrPlus.Commands.NewAdr
 
         /// <summary>
         /// Runs the interactive wizard for the <c>new</c> command, prompting the user to select a drive,
-        /// repository folder, title, date, and (when configured) scope and domain.
+        /// repository folder, title, date, scope, and domain.
         /// The wizard loops until the user confirms the selection.
         /// </summary>
         /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenFile"/> flag is pre-populated in the result.</param>
@@ -373,6 +321,7 @@ namespace AdrPlus.Commands.NewAdr
             var defDomain = string.Empty;
             var defDateRef = DateTime.UtcNow;
             var oldDefFolder = string.Empty;
+            string[] defArrScope = [];
             string[] defArrDomain = [];
 
             while (true)
@@ -433,39 +382,40 @@ namespace AdrPlus.Commands.NewAdr
                 defDateRef = dateRefPrompt.Content;
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
-                // Get scope and domain if configured
-                if (auxconfig.Scopes.Length > 0)
+                // Get scope and domain (free-text header fields, always optional; suggestions from
+                // values already used in this repo are advisory only and never restrict the input)
+                if (oldDefFolder != defFolder)
                 {
-                    var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(defScope, auxconfig, cancellationToken);
-                    if (scopePrompt.IsAborted)
+                    var (ScopesAborted, scopes, _) = _newAdrPrompts.PromptGetArrayScopesAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    if (ScopesAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
-                    parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
-                    defScope = scopePrompt.Content.Trim();
-
-                    if (!auxconfig.GetSkipDomains().Any(x => x.Equals(scopePrompt.Content, StringComparison.OrdinalIgnoreCase)))
+                    var (DomainsAborted, domains, _) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    if (DomainsAborted)
                     {
-                        if (oldDefFolder != defFolder)
-                        {
-                            var (IsAborted, domains, _) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
-                            if (IsAborted)
-                            {
-                                throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                            }
-                            oldDefFolder = defFolder;
-                            defArrDomain = domains;
-                        }
-
-                        var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(defDomain, defArrDomain, cancellationToken);
-                        if (domainPrompt.IsAborted)
-                        {
-                            throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                        }
-                        parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
-                        defDomain = domainPrompt.Content.Trim();
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
+                    oldDefFolder = defFolder;
+                    defArrScope = scopes;
+                    defArrDomain = domains;
                 }
+
+                var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(defScope, defArrScope, cancellationToken);
+                if (scopePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
+                defScope = scopePrompt.Content.Trim();
+
+                var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(defDomain, defArrDomain, cancellationToken);
+                if (domainPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
+                defDomain = domainPrompt.Content.Trim();
 
                 if (isOpenAdr)
                 {

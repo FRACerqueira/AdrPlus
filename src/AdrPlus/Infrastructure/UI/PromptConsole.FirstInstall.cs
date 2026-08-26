@@ -58,10 +58,6 @@ namespace AdrPlus.Infrastructure.UI
             var lenseqsetting = 0;
             var lenversetting = 0;
             var lenrevsetting = 0;
-            var lenscopessetting = 0;
-            var scopestextsetting = string.Empty;
-            var skipdomaintextsetting = string.Empty;
-            var folderbyscopessetting = false;
             var templatecontentsetting = string.Empty;
             var migrationpatternsetting = string.Empty;
             var casetransformsetting = CaseFormat.KebabCase;
@@ -223,7 +219,6 @@ namespace AdrPlus.Infrastructure.UI
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.Version, Code = "V" }, true, true)
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.Revision, Code = "R" })
                     .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigEnterCaseTransform, Code = "T" })
-                    .AddItem(new SelectedItem { Name = Resources.AdrPlus.InitConfigEnterSpecialCases, Code = "S" })
                     .Run(cancellationToken);
                 if (optionsPatternsADR.IsAborted)
                 {
@@ -310,84 +305,6 @@ namespace AdrPlus.Infrastructure.UI
                     }
                     casetransformsetting = Enum.Parse<CaseFormat>(resultcase.Content!);
                 }
-                if (optionsPatternsADR.Content.Any(x => x.Code == "S"))
-                {
-                    var resultoption = PromptPlus.Controls.Slider($"{Resources.AdrPlus.InitConfigEnterScopeLength}: ")
-                        .Range(0, 5)
-                        .Default(1)
-                        .Step(1)
-                        .LargeStep(1)
-                        .Layout(SliderLayout.UpDown)
-                        .Run(cancellationToken);
-                    if (resultoption.IsAborted)
-                    {
-                        tryabort = true;
-                        continue;
-                    }
-                    lenscopessetting = (int)resultoption.Content!;
-                    if (resultoption.Content != 0)
-                    {
-                        var scopeslist = PromptPlus.Controls
-                            .Input($"{Resources.AdrPlus.InitConfigListScopes}: ", Resources.AdrPlus.ConfigFieldDescScopes)
-                            .Default(Resources.AdrPlus.DefaultScope)
-                            .AcceptInput(input => char.IsAsciiLetter(input) || input == ';' || input == '*')
-                            .SuggestionHandler(input => [Resources.AdrPlus.DefaultScope])
-                            .PredicateValid(input =>
-                            {
-                                if (input.Length == 0)
-                                {
-                                    return (false, Resources.AdrPlus.ErrorInvalidScopeFormat);
-                                }
-                                var scopes = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                                var uniqueScopes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                                foreach (var scope in scopes)
-                                {
-                                    if (!uniqueScopes.Add(scope))
-                                    {
-                                        return (false, Resources.AdrPlus.ErrMsgScopesDuplicateEntries);
-                                    }
-                                }
-                                return (true, string.Empty);
-                            })
-                            .Run(cancellationToken);
-                        if (scopeslist.IsAborted)
-                        {
-                            tryabort = true;
-                            continue;
-                        }
-                        var listscopes = scopeslist.Content
-                            .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(s => s.Replace("*", "").Trim()).ToArray();
-
-                        scopestextsetting = string.Join(";", listscopes.Distinct(StringComparer.OrdinalIgnoreCase));
-
-                        var listskipdomain = scopeslist.Content
-                                 .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                                 .Where(s => s.EndsWith("*", StringComparison.OrdinalIgnoreCase))
-                                 .Select(s => s.Replace("*", "").Trim()).ToArray();
-                        if (listskipdomain.Length > 0)
-                        {
-                            skipdomaintextsetting = string.Join(";", listskipdomain.Distinct(StringComparer.OrdinalIgnoreCase));
-                        }
-
-
-                        var optionsfolder = PromptPlus.Controls.Select<SelectedItem>($"{Resources.AdrPlus.InitConfigCreateFolderByScope} ")
-                            .TextSelector(item => item.Name)
-                            .AddItem(new SelectedItem { Name = Resources.AdrPlus.Yes, Code = "true" })
-                            .AddItem(new SelectedItem { Name = Resources.AdrPlus.No, Code = "false" })
-                            .Run(cancellationToken);
-                        if (optionsfolder.IsAborted)
-                        {
-                            tryabort = true;
-                            continue;
-                        }
-                        if (optionsfolder.Content.Code == "true")
-                        {
-                            folderbyscopessetting = true;
-                        }
-                    }
-                }
-
                 //template
                 var optionstemplate = PromptPlus.Controls.Select<SelectedItem>($"{Resources.AdrPlus.InitConfigSelectTemplate}: ")
                     .TextSelector(item => item.Name)
@@ -476,19 +393,6 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     PromptWriteSummary($"{Resources.AdrPlus.SummaryLengthForRevisionInAdrFileName} : {lenrevsetting}");
                 }
-                if (lenscopessetting.CompareTo(0) > 0)
-                {
-                    PromptWriteSummary($"{Resources.AdrPlus.SummaryLengthForScopeInAdrFileName} : {lenscopessetting}");
-                    PromptWriteSummary($"{Resources.AdrPlus.SummaryScopes} : {scopestextsetting}");
-                    if (!string.IsNullOrEmpty(skipdomaintextsetting))
-                    {
-                        PromptWriteSummary($"{Resources.AdrPlus.SummarySkipDomainCheckForScopes} : {skipdomaintextsetting}");
-                    }
-                    if (folderbyscopessetting)
-                    {
-                        PromptWriteSummary($"{Resources.AdrPlus.SummaryFolderByScope} : {Resources.AdrPlus.Yes}");
-                    }
-                }
                 PromptWriteSummary($"{Resources.AdrPlus.SummaryCaseTransformForAdrFileName} : {casetransformsetting}");
                 if (optionsMigrate.Content.Code == "true")
                 {
@@ -557,13 +461,10 @@ namespace AdrPlus.Infrastructure.UI
             var configrecord = new AdrPlusRepoConfig(folderadrsetting, templatecontentsetting)
             {
                 CaseTransform = casetransformsetting,
-                LenScope = lenscopessetting,
                 LenRevision = lenrevsetting,
                 LenSeq = lenseqsetting,
                 LenVersion = lenversetting,
                 Prefix = prefixsetting,
-                Scopes = scopestextsetting,
-                SkipDomain = skipdomaintextsetting,
                 MigrationPattern = migrationpatternsetting
             };
             jsoncontent = JsonSerializer.Serialize(configrecord, AppConstants.RepoSerializerOptions);
