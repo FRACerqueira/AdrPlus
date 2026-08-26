@@ -246,7 +246,7 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle("Existing ADR", _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom("Existing ADR", Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns($"{AdrFolderPath}\\ADR-0001-Existing-Adr.md");
 
         // Act & Assert
@@ -270,9 +270,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
@@ -294,9 +294,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
@@ -324,9 +324,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
 
         string? capturedContent = null;
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
@@ -354,9 +354,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
 
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
@@ -375,9 +375,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         var beforeCall = DateTime.UtcNow.Year;
@@ -416,9 +416,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
@@ -449,9 +449,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
 
@@ -481,9 +481,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
         _mockAdrServices.OpenFile(Arg.Any<string>(), Arg.Any<string>()).Returns("open command failed");
 
@@ -506,9 +506,9 @@ public class NewAdrCommandHandlerTests
         };
 
         SetupBasicMocks(parsedArgs, BasicJsonConfig);
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
@@ -691,9 +691,9 @@ public class NewAdrCommandHandlerTests
             .Returns((false, DateTime.UtcNow));
         _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
-        _mockNewAdrPrompts.PromptGetArrayScopesAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
             .Returns((false, [], (Exception?)null));
-        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
             .Returns((true, [], (Exception?)null));
 
         // Act & Assert
@@ -753,9 +753,9 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, true));
 
-        _mockAdrServices.GetFileByUniqueTitle(Arg.Any<string>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
             .Returns(string.Empty);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(1);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
         _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
 
         // Act
@@ -763,6 +763,33 @@ public class NewAdrCommandHandlerTests
 
         // Assert
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithWizardMode_ConfirmedYes_ReadsTheRepositoryOnlyOnce()
+    {
+        // Regression: the wizard used to read the whole repository up to 4 times for the same folder -
+        // once each for scope suggestions, domain suggestions, title-uniqueness, and next-number - where a
+        // single shared read (fetched once for scope/domain suggestions) now covers all four.
+        var args = new[] { "--wizard" };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.WizardNew, string.Empty } };
+
+        SetupWizardMocksUpToConfirmation(BasicJsonConfig);
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((false, true));
+        _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>(), Arg.Any<bool>())
+            .Returns([]);
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
+            .Returns(string.Empty);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
+        _mockFileSystem.GetFullNameFile(Arg.Any<string>()).Returns(callInfo => callInfo.Arg<string>());
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert
+        await _mockAdrServices.Received(1).ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<bool>(), Arg.Any<bool>());
     }
 
     [Fact]
@@ -858,9 +885,9 @@ public class NewAdrCommandHandlerTests
             .Returns((false, new DateTime(2026, 1, 15)));
         _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((false, string.Empty));
-        _mockNewAdrPrompts.PromptGetArrayScopesAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
             .Returns((false, Array.Empty<string>(), (Exception?)null));
-        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), Arg.Any<CancellationToken>())
+        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
             .Returns((false, Array.Empty<string>(), (Exception?)null));
         _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((false, string.Empty));

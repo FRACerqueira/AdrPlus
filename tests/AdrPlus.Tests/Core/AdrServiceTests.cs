@@ -717,6 +717,59 @@ public class AdrServiceTests
         header.ErrorMessage.Should().NotBeNullOrEmpty();
     }
 
+    private static string[] ValidHeaderPlusBodyLines() =>
+    [
+        "<!-- Do not remove this comment, lines and table (1-12) -->",
+        "|Adr-Plus Fields|Values|",
+        "|--|--|",
+        "|Title File||",
+        "|Version||",
+        "|Revision||",
+        "|Scope||",
+        "|Domain||",
+        "|Created||",
+        "|Changed||",
+        "|Superseded||",
+        "<!-- end -->",
+        "Body line 1",
+        "Body line 2"
+    ];
+
+    [Fact]
+    public async Task ParseAdrHeaderAndContentAsync_WithIncludeContentTrue_MaterializesBody()
+    {
+        // Arrange
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var filePath = "/tmp/ADR-001-test.md";
+        fileSystemService.ReadAllLinesAsync(filePath, Arg.Any<CancellationToken>()).Returns(ValidHeaderPlusBodyLines());
+
+        // Act
+        var (header, content) = await _service.ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService, includeContent: true);
+
+        // Assert
+        header.IsValid.Should().BeTrue();
+        content.Should().Contain("Body line 1").And.Contain("Body line 2");
+    }
+
+    [Fact]
+    public async Task ParseAdrHeaderAndContentAsync_WithIncludeContentFalse_ReturnsEmptyContentButStillParsesHeader()
+    {
+        // Regression: a caller that only needs header fields (e.g. Scope/Domain/Number lookups) shouldn't
+        // pay for reconstructing the body into a string it will never read.
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var filePath = "/tmp/ADR-001-test.md";
+        fileSystemService.ReadAllLinesAsync(filePath, Arg.Any<CancellationToken>()).Returns(ValidHeaderPlusBodyLines());
+
+        // Act
+        var (header, content) = await _service.ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService, includeContent: false);
+
+        // Assert
+        header.IsValid.Should().BeTrue();
+        content.Should().BeEmpty();
+    }
+
     #endregion
 
     #region ParseFileName Tests
@@ -873,9 +926,53 @@ public class AdrServiceTests
         await action.Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
+    [Fact]
+    public async Task ReadAllAdrByNumber_SkipsExpensiveHeaderParseForFilesThatDontMatchByName()
+    {
+        // Regression: the substring glob `*{sequence}*.md` isn't selective - e.g. a search for sequence "1"
+        // also matches any filename embedding "V01" (the version segment every ADR has), so ParseFileName's
+        // expensive header+content read used to run for nearly every glob-matched file before filtering by
+        // Number. Number always comes from the filename alone (never the header, for both adrplus-created and
+        // migrated files), so a cheap, I/O-free pre-filter can skip that read for files that don't match.
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR") { Prefix = "ADR", LenSeq = 3, LenVersion = 2, Separator = '-' };
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var rootpath = "/repo";
+        var matchingFile = "/repo/doc/adr/ADR001V01-TitleA.md";
+        var nonMatchingFile = "/repo/doc/adr/ADR999V01-TitleB.md"; // matches the loose glob for sequence "1" via "V01"
+        fileSystemService.DirectoryExists(Arg.Any<string>()).Returns(true);
+        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>()).Returns([matchingFile, nonMatchingFile]);
+        fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
+
+        // Act
+        await _service.ReadAllAdrByNumber(1, fileSystemService, rootpath, config);
+
+        // Assert
+        await fileSystemService.DidNotReceive().ReadAllLinesAsync(nonMatchingFile, Arg.Any<CancellationToken>());
+        await fileSystemService.Received(1).ReadAllLinesAsync(matchingFile, Arg.Any<CancellationToken>());
+    }
+
     #endregion
 
     #region ReadAllAdr Tests
+
+    [Fact]
+    public async Task ReadAllAdr_WithIncludeContentFalse_ReturnsResultsWithEmptyContentAdr()
+    {
+        // Regression: callers that only need filename/header fields (GetNextNumber, GetFileByUniqueTitle,
+        // GetScopes, GetDomains) shouldn't pay for materializing every file's body.
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR") { Prefix = "ADR", LenSeq = 3, LenVersion = 2, Separator = '-' };
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var directoryPath = "/repo";
+        fileSystemService.DirectoryExists(Arg.Any<string>()).Returns(true);
+        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns(["/repo/doc/adr/ADR001V01-Title.md"]);
+        fileSystemService.ReadAllLinesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ValidHeaderPlusBodyLines());
+
+        var result = await _service.ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+
+        result.Should().ContainSingle();
+        result[0].Header.IsValid.Should().BeTrue();
+        result[0].ContentAdr.Should().BeEmpty();
+    }
 
     [Fact]
     public async Task ReadAllAdr_WithValidDirectory_ReturnsAdrFiles()
@@ -1054,6 +1151,25 @@ public class AdrServiceTests
         await action.Should().ThrowAsync<ArgumentNullException>();
     }
 
+    [Fact]
+    public async Task GetLatestADRSequence_WhenSequenceMatchesNoFile_ReturnsNullInsteadOfThrowing()
+    {
+        // Regression: the method's own signature (Task<AdrFileNameComponents?>) and its callers
+        // (e.g. RejectCommandHandler's "?? throw new InvalidDataException(...)" for an undo-supersede
+        // target that no longer exists) assume this can return null - but .Last() on the empty sequence
+        // ReadAllAdrByNumber returns for a non-matching number throws InvalidOperationException instead,
+        // which skips the caller's own friendly error message entirely.
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var fileSystemService = Substitute.For<IFileSystemService>();
+        var directoryPath = "/repo";
+        fileSystemService.DirectoryExists(Arg.Any<string>()).Returns(true);
+        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
+
+        var result = await _service.GetLatestADRSequence(999, fileSystemService, directoryPath, config);
+
+        result.Should().BeNull();
+    }
+
     #endregion
 
     #region GetDomains Tests
@@ -1130,6 +1246,67 @@ public class AdrServiceTests
 
         // Assert
         result.Should().BeEmpty();
+    }
+
+    #endregion
+
+    #region "From" pure-function variants Tests (share one already-read AdrFileNameComponents[] across lookups)
+
+    private static AdrFileNameComponents MakeFile(int number, string title, string scope = "", string domain = "") => new()
+    {
+        Number = number,
+        Title = title,
+        Header = new AdrHeader { IsValid = true, Scope = scope, Domain = domain }
+    };
+
+    [Fact]
+    public void GetNextNumberFrom_WithNoFiles_ReturnsOne()
+    {
+        _service.GetNextNumberFrom([]).Should().Be(1);
+    }
+
+    [Fact]
+    public void GetNextNumberFrom_WithFiles_ReturnsMaxPlusOne()
+    {
+        var files = new[] { MakeFile(1, "A"), MakeFile(3, "B"), MakeFile(2, "C") };
+
+        _service.GetNextNumberFrom(files).Should().Be(4);
+    }
+
+    [Fact]
+    public void GetFileByUniqueTitleFrom_WithMatchingTitle_ReturnsFileName()
+    {
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var match = MakeFile(1, "My Title");
+        match.FileName = "/repo/doc/adr/ADR001V01-MyTitle.md";
+        var files = new[] { match, MakeFile(2, "Other Title") };
+
+        _service.GetFileByUniqueTitleFrom("My Title", files, config).Should().Be(match.FileName);
+    }
+
+    [Fact]
+    public void GetFileByUniqueTitleFrom_WithNoMatch_ReturnsEmpty()
+    {
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
+        var files = new[] { MakeFile(1, "Other Title") };
+
+        _service.GetFileByUniqueTitleFrom("My Title", files, config).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetScopesFrom_ReturnsDistinctNonEmptyScopes()
+    {
+        var files = new[] { MakeFile(1, "A", scope: "Backend"), MakeFile(2, "B", scope: "backend"), MakeFile(3, "C", scope: ""), MakeFile(4, "D", scope: "Frontend") };
+
+        _service.GetScopesFrom(files).Should().BeEquivalentTo(["Backend", "Frontend"]);
+    }
+
+    [Fact]
+    public void GetDomainsFrom_ReturnsDistinctNonEmptyDomains()
+    {
+        var files = new[] { MakeFile(1, "A", domain: "Sales"), MakeFile(2, "B", domain: "sales"), MakeFile(3, "C", domain: "") };
+
+        _service.GetDomainsFrom(files).Should().BeEquivalentTo(["Sales"]);
     }
 
     #endregion

@@ -4,7 +4,6 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
-using AdrPlus.Infrastructure.FileSystem;
 
 namespace AdrPlus.Infrastructure.UI
 {
@@ -32,24 +31,28 @@ namespace AdrPlus.Infrastructure.UI
         (bool IsAborted, string Content) PromptEditScopeAdr(string defaultScope, string[] sugestscopes, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts to retrieve the array of available domains from existing ADR files.
+        /// Prompts to retrieve the array of available domains from an already-read set of ADR files.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use for file operations.</param>
-        /// <param name="path">The directory path to search for ADR files.</param>
-        /// <param name="adrPlusRepo">The repository configuration.</param>
+        /// <param name="adrFiles">
+        /// A previously read set of ADR files (e.g. via <c>IAdrServices.ReadAllAdr</c>) - callers own the
+        /// single read shared across scope/domain/title-uniqueness/next-number lookups; this method never
+        /// reads the repository itself.
+        /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing abort status, array of domains, and any exception that occurred.</returns>
-        (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(AdrFileNameComponents[] adrFiles, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Prompts to retrieve the array of available scopes from existing ADR files.
+        /// Prompts to retrieve the array of available scopes from an already-read set of ADR files.
         /// </summary>
-        /// <param name="fileSystemService">The file system service to use for file operations.</param>
-        /// <param name="path">The directory path to search for ADR files.</param>
-        /// <param name="adrPlusRepo">The repository configuration.</param>
+        /// <param name="adrFiles">
+        /// A previously read set of ADR files (e.g. via <c>IAdrServices.ReadAllAdr</c>) - callers own the
+        /// single read shared across scope/domain/title-uniqueness/next-number lookups; this method never
+        /// reads the repository itself.
+        /// </param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing abort status, array of scopes, and any exception that occurred.</returns>
-        (bool IsAborted, string[] scopes, Exception? Content) PromptGetArrayScopesAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, string[] scopes, Exception? Content) PromptGetArrayScopesAdr(AdrFileNameComponents[] adrFiles, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to edit the domain of an ADR with suggested domains.

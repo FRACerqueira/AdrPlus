@@ -76,6 +76,47 @@ Instance legend: **R1**, **R2**, **R3** (arrival order — R1 landed first, then
 - **R2 only**: the per-call timeout never actually cancels the plugin's task (no `CancelAfter`-derived token passed to `OnAdrEventAsync`) — this is the mechanistic root cause underneath the R1/R3-confirmed "hook races with dispose" finding above. Code-read only, not separately probed, but consistent with and explanatory of a finding two other instances already confirmed independently.
 - **R2 only**: `adrplus sync --backfill` silently swallows Ctrl+C, reports success, exit code 0. Code-read + points to an existing test (`PluginManagerBackfillTests`) to establish that the manager-level swallow is deliberate, then shows the gap is one layer up in `SyncCommandHandler` never checking `IsCancellationRequested` afterward.
 
+---
+
+# Convergence tracking — Round 3 (3 parallel instances of `auditoria-estabilidade`, 2026-08-26)
+
+Same protocol as Round 2: 3 independent instances of the same pillar, 2-of-3 for Medium severity, disagreement reported as disagreement. Angle: concurrency/shared-state correctness in the plugin system — deliberately not covered by Round 2 (failure-handling only).
+
+## Confirmed by all 3 instances (strongest signal in either audit so far)
+
+| Finding | Confirmed by | Agreement detail |
+|---|---|---|
+| `DispatchAsync`'s parallel fan-out corrupts the shared, unsynchronized `HashSet<IAdrPlugin>` (`_initializedPlugins`/`_initFailedPlugins`) when 2+ never-initialized plugins share a subscribed event | **R1, R2, R3** (all three) | Each independently wrote and ran a disposable probe reproducing it empirically across net8/net9/net10 — R1 and R2 both hit an uncaught `InvalidOperationException` escaping `Task.WhenAll` (command-level exit-code-1 failure contradicting the class's own "fail-soft by design" doc); R3's probe instead demonstrated the silent variant (a subscribed plugin never invoked, no exception, no log). Both failure modes stem from the same unsynchronized root cause — a deepening, not a conflict. R1 explicitly noted seeing R2's and R3's uncommitted probe files mid-investigation and treated that as independent corroboration without touching them. |
+
+## Same finding, severity judged differently (not a factual disagreement)
+
+**Is the `PendingStateStore` cross-process read-modify-write race a live bug or a documented/latent gap?**
+
+- **R1: Medium.** Reasons from the code alone (last-writer-wins on `pending.json` between a cron `sync` and an interactive command); no ADR declares cross-process local-file integrity as a guarantee, only "eventual, not transactional" for *external* sync.
+- **R2: Medium, with new empirical evidence.** Found and reproduced (6/6, isolated same-process stress probe) a concrete `IOException` from `WriteAllAsync`'s temp filename being fixed (not unique per writer) — already fail-soft at both call sites, but silently drops the entry being persisted.
+- **R3: Low/Info.** Verified no code path today produces intra-process concurrent writes (sequential command loop, deduped plugin names) — treats the cross-process case as a real but currently-latent gap, not a live bug.
+
+Not logged as a disagreement in the same sense as Round 2's (all three agree on the mechanism and that it's real); the split is purely how severely to weight a risk that's proven in isolation (R2) but not yet observed via any real production code path (R1, R3 agree on this point).
+
+## Single-instance, well-evidenced
+
+- **R1 only**: `_outstandingHooks.TryRemove(plugin, out _)` removes by key, not by value — a plugin instance timing out twice in the same process (e.g. `MigrateCommandHandler`'s per-file loop) can have its second, still-running abandoned hook's tracking entry silently erased by the first hook's completion continuation, letting it escape `DisposeCurrentGenerationAsync`'s grace-period wait.
+
+## What this round did NOT check
+
+- Real third-party plugins still don't exist — every reproduction used synthetic fake plugins (`Substitute.For<IAdrPlugin>()`-style or hand-written fakes), consistent with Round 2's own calibration note.
+- No instance benchmarked lock-based fix candidates for overhead — that's `auditoria-desempenho`'s remit if a fix is chosen that needs it.
+
+---
+
+# Convergence tracking — Round 4 (3 different angles, single pass each, 2026-08-26)
+
+Unlike Rounds 2-3, this round ran 3 *different* pillars once each (like Round 1), not multiple instances of one pillar — each is the first-ever run of that pillar on this project, so none of them carry the "2-of-3" convergence bar internally; each stands as a single, well-evidenced pass.
+
+- **`auditoria-usabilidade`**: 4 findings, all doc-vs-code contradictions with an exact code citation for each (missing `DefaultSettings` wrapper in README's example; wrong file location claimed for `pluginallowlist`; undocumented `revise`-vs-default-profile incompatibility; a config key name that doesn't exist). Also recorded a "not-a-finding" list (things it checked and confirmed correct) for transparency.
+- **`auditoria-complexidade`**: first run ever on this project — produced 3 explicitly unmeasured hypotheses plus one correctness side-note routed elsewhere, and confirmed no ADR anywhere declares a scale target. Per the pillar's own protocol, none of these are "findings" until gated through `auditoria-desempenho` (real measurement) and `auditoria-estabilidade` (correctness check on any proposed fix) — that gating hasn't happened yet.
+- **`auditoria-observabilidade`**: 6 findings, empirically grounded in confirming the app's file-log sink actually captures Information-level messages by default (so "only in the log" is a real, reachable signal, not moot). Two are High: `SyncSummary` can read as a clean "0/0/0/0" success when `--backfill`'s `ShouldHandle` throws on every item, and the public `CorrelationId` contract promises log cross-referencing that doesn't structurally exist in any current log call site.
+
 ## No other disagreements found
 
 All three instances independently agreed `attempts = 0` on timeout is intentional/documented, and that

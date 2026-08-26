@@ -1282,26 +1282,26 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string[] domains, Exception? Content) PromptGetArrayDomainsAdr(AdrFileNameComponents[] adrFiles, CancellationToken cancellationToken = default)
         {
             var defarrdomain = Array.Empty<string>();
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredDomains}";
             var resuldefarrdomain = PromptPlus.Controls
                 .Task(message)
-                .Action(_ => defarrdomain = _adrServices.GetDomains(fileSystemService, path, adrPlusRepo).Result)
+                .Action(_ => defarrdomain = _adrServices.GetDomainsFrom(adrFiles))
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
             return (resuldefarrdomain.IsAborted, defarrdomain, resuldefarrdomain.IsAborted ? null : resuldefarrdomain.Content!.Exception);
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, string[] scopes, Exception? Content) PromptGetArrayScopesAdr(IFileSystemService fileSystemService, string path, AdrPlusRepoConfig adrPlusRepo, CancellationToken cancellationToken = default)
+        public (bool IsAborted, string[] scopes, Exception? Content) PromptGetArrayScopesAdr(AdrFileNameComponents[] adrFiles, CancellationToken cancellationToken = default)
         {
             var defarrscope = Array.Empty<string>();
             var message = $"{Resources.AdrPlus.PromptReadingRegisteredScopes}";
             var resuldefarrscope = PromptPlus.Controls
                 .Task(message)
-                .Action(_ => defarrscope = _adrServices.GetScopes(fileSystemService, path, adrPlusRepo).Result)
+                .Action(_ => defarrscope = _adrServices.GetScopesFrom(adrFiles))
                 .Spinner(SpinnersType.Ascii)
                 .Run(cancellationToken);
             return (resuldefarrscope.IsAborted, defarrscope, resuldefarrscope.IsAborted ? null : resuldefarrscope.Content!.Exception);

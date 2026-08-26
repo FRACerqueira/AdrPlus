@@ -99,6 +99,7 @@ namespace AdrPlus.Commands.NewAdr
 
 
                 var hasWizard = parsedArgs.ContainsKey(Arguments.WizardNew);
+                AdrFileNameComponents[]? wizardAdrFiles = null;
                 if (hasWizard)
                 {
                     var openafter = parsedArgs.ContainsKey(Arguments.OpenFile);
@@ -106,7 +107,7 @@ namespace AdrPlus.Commands.NewAdr
                     {
                         openafter = true;
                     }
-                    parsedArgs = await NewAdrWizard(openafter, cancellationToken);
+                    (parsedArgs, wizardAdrFiles) = await NewAdrWizard(openafter, cancellationToken);
                 }
 
                 var targetPath = Path.GetFullPath(parsedArgs[Arguments.TargetRepo]);
@@ -135,32 +136,25 @@ namespace AdrPlus.Commands.NewAdr
                 var (isActive, missingNames) = PluginActivationGate.Resolve(_pluginManager, repoconfig);
 
                 var title = parsedArgs[Arguments.TitleAdr];
-                var existfile = string.Empty;
                 var curpos = _prompt.PromptGetCursorPosition();
-                if (hasWizard)
+                if (hasWizard && wizardAdrFiles is null)
                 {
                     _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
                 }
-                existfile = await _adrServices.GetFileByUniqueTitle(title, _filesystem, targetPath,  repoconfig);
-                if (hasWizard)
+                // Reuses the wizard's own read (for the confirmed folder) instead of reading the repository
+                // again here - title-uniqueness and next-number both come from the same single read.
+                var adrFiles = wizardAdrFiles ?? await _adrServices.ReadAllAdr(_filesystem, targetPath, repoconfig, includeContent: false);
+                if (hasWizard && wizardAdrFiles is null)
                 {
                     _prompt.PromptClearWaitText(curpos);
                 }
+                var existfile = _adrServices.GetFileByUniqueTitleFrom(title, adrFiles, repoconfig);
                 if (!string.IsNullOrEmpty(existfile))
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrAdrUniqueTitleAlreadyExists, Path.GetFileName(existfile)));
                 }
 
-                curpos = _prompt.PromptGetCursorPosition();
-                if (hasWizard)
-                {
-                    _prompt.PromptWriteWait(Resources.AdrPlus.WaitReadFiles);
-                }
-                var nextNumber = await _adrServices.GetNextNumber(_filesystem, targetPath, repoconfig);
-                if (hasWizard)
-                {
-                    _prompt.PromptClearWaitText(curpos);
-                }
+                var nextNumber = _adrServices.GetNextNumberFrom(adrFiles);
 
                 // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
@@ -177,7 +171,7 @@ namespace AdrPlus.Commands.NewAdr
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 LogMessages.LogCommandSuccessful(_logger, filePath);
                 _prompt.PromptWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
@@ -308,21 +302,25 @@ namespace AdrPlus.Commands.NewAdr
         /// </summary>
         /// <param name="isOpenAdr">When <see langword="true"/>, the <see cref="Arguments.OpenFile"/> flag is pre-populated in the result.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A dictionary of parsed arguments ready to be consumed by <see cref="ExecuteAsync"/>.</returns>
+        /// <returns>
+        /// The parsed arguments ready to be consumed by <see cref="ExecuteAsync"/>, alongside the
+        /// <see cref="AdrFileNameComponents"/> array already read for the confirmed folder - reused by
+        /// <see cref="ExecuteAsync"/> for the title-uniqueness/next-number checks instead of reading again.
+        /// </returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the repository configuration at the selected folder is invalid.</exception>
-        private async Task<Dictionary<Arguments, string>> NewAdrWizard(bool isOpenAdr, CancellationToken cancellationToken)
+        private async Task<(Dictionary<Arguments, string> ParsedArgs, AdrFileNameComponents[] AdrFiles)> NewAdrWizard(bool isOpenAdr, CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
-            var defDrive = string.Empty;
-            var defFolder = string.Empty;
-            var defTitle = string.Empty;
-            var defScope = string.Empty;
-            var defDomain = string.Empty;
-            var defDateRef = DateTime.UtcNow;
+            string defFolder;
+            string defTitle = string.Empty;
+            string defScope = string.Empty;
+            string defDomain = string.Empty;
+            DateTime defDateRef = DateTime.UtcNow;
             var oldDefFolder = string.Empty;
             string[] defArrScope = [];
             string[] defArrDomain = [];
+            AdrFileNameComponents[] defArrAdrFiles = [];
 
             while (true)
             {
@@ -339,7 +337,6 @@ namespace AdrPlus.Commands.NewAdr
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
                     rootPath = Content;
-                    defDrive = rootPath;
                 }
 
                 // Select folder
@@ -352,7 +349,7 @@ namespace AdrPlus.Commands.NewAdr
                 // Validate repo config
                 var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
-                var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
+                var (IsValid, _) = _validateconfig.ValidateRepoStructure(jsonString);
 
                 if (!IsValid)
                 {
@@ -383,10 +380,14 @@ namespace AdrPlus.Commands.NewAdr
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
                 // Get scope and domain (free-text header fields, always optional; suggestions from
-                // values already used in this repo are advisory only and never restrict the input)
+                // values already used in this repo are advisory only and never restrict the input).
+                // Reads the repository once per folder selection - the array is reused below for
+                // title-uniqueness/next-number too, instead of each lookup re-reading the same directory.
                 if (oldDefFolder != defFolder)
                 {
-                    var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    defArrAdrFiles = await _adrServices.ReadAllAdr(_filesystem, folderPrompt.Content, auxconfig, includeContent: false);
+
+                    var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(defArrAdrFiles, cancellationToken);
                     if (ScopesAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -395,7 +396,7 @@ namespace AdrPlus.Commands.NewAdr
                     {
                         LogMessages.LogError(_logger, $"Failed to read registered scopes for suggestions: {scopesException.Message}");
                     }
-                    var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(defArrAdrFiles, cancellationToken);
                     if (DomainsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -442,7 +443,7 @@ namespace AdrPlus.Commands.NewAdr
 
                 if (resultCnf.ConfirmYes)
                 {
-                    return parsedArgs;
+                    return (parsedArgs, defArrAdrFiles);
                 }
             }
         }

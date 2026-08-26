@@ -128,7 +128,7 @@ namespace AdrPlus.Core
             return config;
         }
 
-        public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
+        public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true)
         {
             var lines = await fileSystemService.ReadAllLinesAsync(filePath);
 
@@ -405,6 +405,13 @@ namespace AdrPlus.Core
                 result.IsValid = false;
                 result.ErrorMessage = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrMsgAdrHeaderParsingError), ex.Message);
             }
+            // Rejoining every line past the header into one string is wasted work (allocated, then
+            // immediately discarded) for a caller that only needs header fields (e.g. scope/domain/number
+            // lookups) - skip it entirely when the caller says it doesn't need the body.
+            if (!includeContent)
+            {
+                return (result, string.Empty);
+            }
             var content = string.Join(Environment.NewLine, lines.Skip(AppConstants.LenghtHeader));
             if (lines.Length > AppConstants.LenghtHeader)
             {
@@ -413,7 +420,31 @@ namespace AdrPlus.Core
             return (result, content);
         }
 
-        public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
+        public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true)
+        {
+            var result = ParseFileNameOnly(filePath, config);
+            if (!result.IsValid)
+            {
+                // If filename parsing failed, try to load the file header anyway to report header errors ?
+                return result;
+            }
+
+            var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService, includeContent);
+            result.Header = header;
+            result.ContentAdr = content;
+            return result;
+        }
+
+        /// <summary>
+        /// Parses only the filename-derived fields (<see cref="AdrFileNameComponents.Number"/>/<c>Version</c>/
+        /// <c>Revision</c>/<c>Title</c>/<c>Prefix</c>) — no file I/O, since those fields always come from the
+        /// filename itself (for both adrplus-created and migrated files), never the header. Used as a cheap
+        /// pre-filter by <see cref="ReadAllAdrByNumber"/> before paying for a full <see cref="ParseFileName"/> —
+        /// narrowing the glob pattern itself isn't safe (a migrated file's name doesn't follow adrplus's own
+        /// naming convention, so it wouldn't match a stricter glob), but filtering by the already-known-cheap
+        /// <see cref="AdrFileNameComponents.Number"/> before the expensive header+content read is.
+        /// </summary>
+        private static AdrFileNameComponents ParseFileNameOnly(string filePath, AdrPlusRepoConfig config)
         {
             var result = new AdrFileNameComponents
             {
@@ -434,9 +465,6 @@ namespace AdrPlus.Core
             if (parseResult.Success)
             {
                 result = parseResult.Result;
-                var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
-                result.Header = header;
-                result.ContentAdr = content;
                 result.IsValid = true;
                 return result;
             }
@@ -450,9 +478,6 @@ namespace AdrPlus.Core
                 if (Success)
                 {
                     result = resultMigration;
-                    var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
-                    result.Header = header;
-                    result.ContentAdr = content;
                     result.IsValid = true;
                     return result;
                 }
@@ -461,7 +486,6 @@ namespace AdrPlus.Core
                     result = resultMigration;
                 }
             }
-            // If filename parsing failed, try to load the file header anyway to report header errors ?
             return result;
         }
 
@@ -624,6 +648,16 @@ namespace AdrPlus.Core
 
             foreach (var filePath in mdFiles)
             {
+                // Cheap, I/O-free pre-filter: Number always comes from the filename (never the header), so
+                // files that don't actually match `sequence` - the vast majority, since the substring glob
+                // above isn't selective (e.g. every ADR whose filename embeds "V01" matches a search for
+                // sequence "1") - are excluded before paying for the expensive header+content read below.
+                var nameOnly = ParseFileNameOnly(filePath, config);
+                if (!nameOnly.IsValid || nameOnly.Number != sequence)
+                {
+                    continue;
+                }
+
                 var aux = await ParseFileName(filePath, config, fileSystemService);
                 if (aux.IsValid && (aux.Header.IsValid || aux.Header.IsMigrated) && aux.Number == sequence)
                 {
@@ -633,7 +667,7 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
-        public async Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false)
+        public async Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false, bool includeContent = true)
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
@@ -657,7 +691,7 @@ namespace AdrPlus.Core
 
             foreach (var filePath in mdFiles)
             {
-                var parsedComponents = await ParseFileName(filePath, config, fileSystemService);
+                var parsedComponents = await ParseFileName(filePath, config, fileSystemService, includeContent);
                 if (!parsedComponents.IsValid && !includeNotMatched)
                 {
                     continue;
@@ -674,48 +708,65 @@ namespace AdrPlus.Core
 
         public async Task<string> GetFileByUniqueTitle(string title, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
         {
+            // UniqueTitle is derived purely from the filename-parsed Title - the body is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, rootrepo, config, includeContent: false);
+            return GetFileByUniqueTitleFrom(title, adrFiles, config);
+        }
+
+        public string GetFileByUniqueTitleFrom(string title, AdrFileNameComponents[] adrFiles, AdrPlusRepoConfig config)
+        {
             var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform));
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, rootrepo, config);
-            var aux = adrFiles
-                .FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
+            var aux = adrFiles.FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
             return aux?.FileName ?? string.Empty;
         }
 
         public async Task<int> GetNextNumber(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
-            return adrFiles.Length == 0 ? 1 : adrFiles.Max(f => f.Number) + 1;
+            // Number is derived purely from the filename - the body is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetNextNumberFrom(adrFiles);
         }
+
+        public int GetNextNumberFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0 ? 1 : adrFiles.Max(f => f.Number) + 1;
 
         public async Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string rootpath, AdrPlusRepoConfig config)
         {
             return (await ReadAllAdrByNumber(sequence, fileSystemService, rootpath, config))
                 .OrderBy(x => x.Version)
                 .ThenBy(x => x.Revision ?? 0)
-                .Last();
+                .LastOrDefault();
         }
 
         public async Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
-            return adrFiles.Length == 0
+            // Only Header.Domain is read below - the body past the header table is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetDomainsFrom(adrFiles);
+        }
+
+        public string[] GetDomainsFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0
                 ? []
                 : [.. adrFiles
                     .Where(f => !string.IsNullOrWhiteSpace(f.Header.Domain))
                     .DistinctBy(x => x.Header.Domain!.ToPascalCase())
                     .Select(f => f.Header.Domain!)];
-        }
 
         public async Task<string[]> GetScopes(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
-            return adrFiles.Length == 0
+            // Only Header.Scope is read below - the body past the header table is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetScopesFrom(adrFiles);
+        }
+
+        public string[] GetScopesFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0
                 ? []
                 : [.. adrFiles
                     .Where(f => !string.IsNullOrWhiteSpace(f.Header.Scope))
                     .DistinctBy(x => x.Header.Scope!.ToPascalCase())
                     .Select(f => f.Header.Scope!)];
-        }
 
         public async Task<(bool Isvalid, string Error, AdrRecord? Record, string? Content)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
