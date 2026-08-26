@@ -70,7 +70,9 @@ namespace AdrPlus.Tests.Core
         [InlineData("HTTPResponseCode")]
         [InlineData("XMLData")]
         [InlineData("URL")]
-        public void ConvertName_WithAcronyms_ReturnsLowercase(string input)
+        [InlineData("PropertyWithNumbers123AndMore")]
+        [InlineData("HTTPSConnectionData")]
+        public void ConvertName_WithAcronymsOrComplexNames_ReturnsFullyLowercase(string input)
         {
             // Act
             var result = _policy.ConvertName(input);
@@ -92,18 +94,6 @@ namespace AdrPlus.Tests.Core
 
             // Assert
             first.Should().Be(second).And.Be(third);
-        }
-
-        [Theory]
-        [InlineData("PropertyWithNumbers123AndMore")]
-        [InlineData("HTTPSConnectionData")]
-        public void ConvertName_WithComplexNames_ReturnsFullyLowercase(string input)
-        {
-            // Act
-            var result = _policy.ConvertName(input);
-
-            // Assert
-            result.Should().Be(input.ToLowerInvariant());
         }
     }
 }

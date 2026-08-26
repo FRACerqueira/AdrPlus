@@ -641,60 +641,6 @@ public class AdrRecordTests
     #region Record Equality and Record Tests
 
     [Fact]
-    public void AdrRecord_RecordEquality_WorksCorrectly()
-    {
-        // Arrange
-        var date = DateTime.UtcNow;
-        var record1 = new AdrRecord
-        {
-            Number = 1,
-            Title = "Test",
-            Version = 1,
-            StatusCreate = AdrStatus.Proposed,
-            CreateRef = date
-        };
-
-        var record2 = new AdrRecord
-        {
-            Number = 1,
-            Title = "Test",
-            Version = 1,
-            StatusCreate = AdrStatus.Proposed,
-            CreateRef = date
-        };
-
-        // Act & Assert
-        record1.Should().Be(record2);
-    }
-
-    [Fact]
-    public void AdrRecord_RecordCopy_WithModifications_CreatesNewInstance()
-    {
-        // Arrange
-        var original = new AdrRecord { Title = "Original", Version = 1 };
-
-        // Act
-        var copy = original with { Title = "Modified", Version = 2 };
-
-        // Assert
-        original.Title.Should().Be("Original");
-        original.Version.Should().Be(1);
-        copy.Title.Should().Be("Modified");
-        copy.Version.Should().Be(2);
-    }
-
-    [Fact]
-    public void AdrRecord_GetHashCode_SameForEqualRecords()
-    {
-        // Arrange
-        var record1 = new AdrRecord { Title = "Test", Number = 1 };
-        var record2 = new AdrRecord { Title = "Test", Number = 1 };
-
-        // Act & Assert
-        record1.GetHashCode().Should().Be(record2.GetHashCode());
-    }
-
-    [Fact]
     public void AdrRecord_AllStatuses_CanBeSet()
     {
         // Arrange

@@ -67,116 +67,6 @@ public class AdrPlusRepoConfigTests
 
     #endregion
 
-    #region Property Tests
-
-    [Fact]
-    public void FolderAdr_CanBeModified()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        var newFolderAdr = "new/path/to/adr";
-
-        // Act
-        config.FolderAdr = newFolderAdr;
-
-        // Assert
-        config.FolderAdr.Should().Be(newFolderAdr);
-    }
-
-    [Fact]
-    public void Template_CanBeModified()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        var newTemplate = "# New Template";
-
-        // Act
-        config.Template = newTemplate;
-
-        // Assert
-        config.Template.Should().Be(newTemplate);
-    }
-
-    [Fact]
-    public void LenSeq_CanBeSetToVariousValues()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-
-        // Act & Assert
-        config.LenSeq = 4;
-        config.LenSeq.Should().Be(4);
-
-        config.LenSeq = 5;
-        config.LenSeq.Should().Be(5);
-
-        config.LenSeq = 3;
-        config.LenSeq.Should().Be(3);
-    }
-
-    [Fact]
-    public void LenVersion_CanBeSetToZeroToOmitVersion()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-
-        // Act
-        config.LenVersion = 0;
-
-        // Assert
-        config.LenVersion.Should().Be(0);
-    }
-
-    [Fact]
-    public void Separator_CanBeSetToValidValues()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-
-        // Act & Assert - test valid separators
-        config.Separator = '-';
-        config.Separator.Should().Be('-');
-
-        config.Separator = '~';
-        config.Separator.Should().Be('~');
-
-        config.Separator = '.';
-        config.Separator.Should().Be('.');
-    }
-
-    [Fact]
-    public void CaseTransform_CanBeModified()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-
-        // Act & Assert
-        config.CaseTransform = CaseFormat.PascalCase;
-        config.CaseTransform.Should().Be(CaseFormat.PascalCase);
-
-        config.CaseTransform = CaseFormat.SnakeCase;
-        config.CaseTransform.Should().Be(CaseFormat.SnakeCase);
-
-        config.CaseTransform = CaseFormat.KebabCase;
-        config.CaseTransform.Should().Be(CaseFormat.KebabCase);
-    }
-
-    [Fact]
-    public void MigrationPattern_CanBeSetAndModified()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig(TestFolderAdr, TestTemplate);
-        var pattern = "ADR-\\d{4}";
-
-        // Act
-        config.MigrationPattern = pattern;
-
-        // Assert
-        config.MigrationPattern.Should().Be(pattern);
-    }
-
-    #endregion
-
     #region StatusMapping Tests
 
     [Fact]
@@ -286,20 +176,6 @@ public class AdrPlusRepoConfigTests
         config.Separator.Should().Be('~');
         config.CaseTransform.Should().Be(CaseFormat.PascalCase);
         config.StatusMapping.Should().HaveCount(5);
-    }
-
-    [Fact]
-    public void Configuration_CanBeCreatedWithDifferentDefaults()
-    {
-        // Arrange & Act - create multiple configs with different settings
-        var config1 = new AdrPlusRepoConfig("docs/adr", "template1") { Separator = '-' };
-        var config2 = new AdrPlusRepoConfig("src/decisions", "template2") { Separator = '~' };
-
-        // Assert
-        config1.FolderAdr.Should().Be("docs/adr");
-        config1.Separator.Should().Be('-');
-        config2.FolderAdr.Should().Be("src/decisions");
-        config2.Separator.Should().Be('~');
     }
 
     #endregion

@@ -42,9 +42,6 @@ public class NewAdrCommandHandlerTests
     private static readonly string BasicJsonConfig =
         """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
 
-    private static readonly string ScopedJsonConfig =
-        """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
-
     public NewAdrCommandHandlerTests()
     {
         _mockLogger = Substitute.For<ILogger<NewAdrCommandHandler>>();
@@ -648,8 +645,8 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
-        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
-        _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
         _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);
@@ -679,8 +676,8 @@ public class NewAdrCommandHandlerTests
         _mockFileSystem.GetDrives().Returns(drives);
         _mockConsole.PromptSelectFolderPath(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), _mockFileSystem, _mockValidateConfig, Arg.Any<CancellationToken>())
             .Returns((false, RepoPath));
-        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(ScopedJsonConfig);
-        _mockValidateConfig.ValidateRepoStructure(ScopedJsonConfig).Returns((true, []));
+        _mockFileSystem.ReadAllTextAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(BasicJsonConfig);
+        _mockValidateConfig.ValidateRepoStructure(BasicJsonConfig).Returns((true, []));
         _mockConsole.PromptWriteWait(Arg.Any<string>());
         var cursorPos = (0, 0);
         _mockConsole.PromptGetCursorPosition().Returns(cursorPos);

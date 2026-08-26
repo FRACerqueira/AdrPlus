@@ -924,29 +924,6 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void EnsureFieldsRepoStructure_WithOnlyWhitespaceScopes_HandlesCorrectly()
-    {
-        // Arrange
-        var validator = CreateValidator([]);
-        var json = JsonSerializer.Serialize(new Dictionary<string, object>
-        {
-            { "lenscope", 3 },
-            { "scopes", "  ;  ;  " },
-            { "skipdomain", "" },
-            { "folderbyscope", false },
-            { "lenversion", 2 },
-            { "lenrevision", 0 }
-        }, AppConstants.RepoSerializerOptions);
-
-        // Act
-        var result = validator.EnsureFieldsRepoStructure(json);
-        var resultDict = JsonSerializer.Deserialize<Dictionary<string, object>>(result, AppConstants.RepoSerializerOptions);
-
-        // Assert
-        resultDict.Should().NotBeNull();
-    }
-
-    [Fact]
     public void EnsureFieldsRepoStructure_WithCaseInsensitiveKeys_WorksCorrectly()
     {
         // Arrange

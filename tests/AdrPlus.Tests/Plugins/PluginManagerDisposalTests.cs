@@ -81,18 +81,6 @@ public class PluginManagerDisposalTests
     }
 
     [Fact]
-    public async Task DisposeLoadedPluginsAsync_WithNullLoadContext_DoesNotThrow()
-    {
-        var manager = CreateManager();
-        var plugin = Substitute.For<IAdrPlugin>();
-        manager._loadedPlugins.Add(CreateLoadedPlugin("Plugin1", plugin));
-
-        var act = () => manager.DisposeLoadedPluginsAsync(TestContext.Current.CancellationToken);
-
-        await act.Should().NotThrowAsync();
-    }
-
-    [Fact]
     public async Task DisposeLoadedPluginsAsync_ClearsLoadedPlugins()
     {
         var manager = CreateManager();

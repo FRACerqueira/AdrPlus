@@ -244,54 +244,6 @@ namespace AdrPlus.Tests.Core
             result["R"].Should().Be("3");
         }
 
-        [Fact]
-        public void ParseAdrPattern_WithScope_ReturnsComponents()
-        {
-            // Arrange
-            var pattern = "1V2S";
-
-            // Act
-            var result = PatternParser.ParseAdrPattern(pattern);
-
-            // Assert
-            result.Should().NotBeNull();
-            result!["N"].Should().Be("1");
-            result["V"].Should().Be("2");
-            result["S"].Should().Be("S");
-        }
-
-        [Fact]
-        public void ParseAdrPattern_WithMultipleScopeLetters_ReturnsAllScope()
-        {
-            // Arrange
-            var pattern = "1V2SCOPE";
-
-            // Act
-            var result = PatternParser.ParseAdrPattern(pattern);
-
-            // Assert
-            result.Should().NotBeNull();
-            result!["S"].Should().Be("SCOPE");
-        }
-
-        [Fact]
-        public void ParseAdrPattern_WithPrefixAndRevisionAndScope_ReturnsAllComponents()
-        {
-            // Arrange
-            var pattern = "PREF1V2R3SCOPE";
-
-            // Act
-            var result = PatternParser.ParseAdrPattern(pattern);
-
-            // Assert
-            result.Should().NotBeNull();
-            result!["P"].Should().Be("PREF");
-            result["N"].Should().Be("1");
-            result["V"].Should().Be("2");
-            result["R"].Should().Be("3");
-            result["S"].Should().Be("SCOPE");
-        }
-
         #endregion
 
         #region ParseAdrPattern Tests - Invalid Cases

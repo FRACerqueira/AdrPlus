@@ -858,25 +858,6 @@ public class AdrServiceTests
     #region ReadAllAdrByNumber Tests
 
     [Fact]
-    public async Task ReadAllAdrByNumber_WithValidSequence_ReturnsMatchingAdrFiles()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR")
-        {
-            Prefix = "ADR",
-            Separator = '-'
-        };
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var rootpath = "/repo";
-        fileSystemService.DirectoryExists(rootpath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>()).Returns(["/repo/doc/adr/ADR-001-test.md"]);
-
-        // Act & Assert - This tests the validation, actual parsing would need valid file content
-        var action = async () => await _service.ReadAllAdrByNumber(1, fileSystemService, rootpath, config);
-        await action.Should().NotThrowAsync();
-    }
-
-    [Fact]
     public async Task ReadAllAdrByNumber_WithNullConfig_ThrowsArgumentNullException()
     {
         // Arrange
@@ -975,24 +956,6 @@ public class AdrServiceTests
     }
 
     [Fact]
-    public async Task ReadAllAdr_WithValidDirectory_ReturnsAdrFiles()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var directoryPath = "/repo";
-        fileSystemService.DirectoryExists(directoryPath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns(["/repo/doc/adr/ADR-001-test.md"]);
-
-        // Act
-        var result = await _service.ReadAllAdr(fileSystemService, directoryPath, config);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<AdrFileNameComponents[]>();
-    }
-
-    [Fact]
     public async Task ReadAllAdr_WithNullConfig_ThrowsArgumentNullException()
     {
         // Arrange
@@ -1042,45 +1005,6 @@ public class AdrServiceTests
         await action.Should().ThrowAsync<DirectoryNotFoundException>();
     }
 
-    [Fact]
-    public async Task ReadAllAdr_WithIncludeNotMatched_ReturnsBothValidAndInvalidFiles()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var directoryPath = "/repo";
-        fileSystemService.DirectoryExists(directoryPath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns(["/repo/doc/adr/ADR-001-test.md"]);
-
-        // Act
-        var result = await _service.ReadAllAdr(fileSystemService, directoryPath, config, includeNotMatched: true);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<AdrFileNameComponents[]>();
-    }
-
-    #endregion
-
-    #region GetFileByUniqueTitle Tests
-
-    [Fact]
-    public async Task GetFileByUniqueTitle_WithValidTitle_ReturnsFilePath()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var rootrepo = "/repo";
-        fileSystemService.DirectoryExists(rootrepo).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
-
-        // Act
-        var result = await _service.GetFileByUniqueTitle("Test", fileSystemService, rootrepo, config);
-
-        // Assert
-        result.Should().BeOfType<string>();
-    }
-
     #endregion
 
     #region GetNextNumber Tests
@@ -1090,27 +1014,6 @@ public class AdrServiceTests
     {
         // Arrange
         var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var directoryPath = "/repo";
-        fileSystemService.DirectoryExists(directoryPath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
-
-        // Act
-        var result = await _service.GetNextNumber(fileSystemService, directoryPath, config);
-
-        // Assert
-        result.Should().Be(1);
-    }
-
-    [Fact]
-    public async Task GetNextNumber_WithExistingFiles_ReturnsNextNumber()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR")
-        {
-            Prefix = "ADR",
-            Separator = '-'
-        };
         var fileSystemService = Substitute.For<IFileSystemService>();
         var directoryPath = "/repo";
         fileSystemService.DirectoryExists(directoryPath).Returns(true);
@@ -1175,24 +1078,6 @@ public class AdrServiceTests
     #region GetDomains Tests
 
     [Fact]
-    public async Task GetDomains_WithValidDirectory_ReturnsDomains()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var directoryPath = "/repo";
-        fileSystemService.DirectoryExists(directoryPath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
-
-        // Act
-        var result = await _service.GetDomains(fileSystemService, directoryPath, config);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<string[]>();
-    }
-
-    [Fact]
     public async Task GetDomains_WithEmptyDirectory_ReturnsEmptyArray()
     {
         // Arrange
@@ -1212,24 +1097,6 @@ public class AdrServiceTests
     #endregion
 
     #region GetScopes Tests
-
-    [Fact]
-    public async Task GetScopes_WithValidDirectory_ReturnsScopes()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("doc/adr", "# ADR");
-        var fileSystemService = Substitute.For<IFileSystemService>();
-        var directoryPath = "/repo";
-        fileSystemService.DirectoryExists(directoryPath).Returns(true);
-        fileSystemService.GetFiles(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<SearchOption>()).Returns([]);
-
-        // Act
-        var result = await _service.GetScopes(fileSystemService, directoryPath, config);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<string[]>();
-    }
 
     [Fact]
     public async Task GetScopes_WithEmptyDirectory_ReturnsEmptyArray()

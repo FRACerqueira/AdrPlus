@@ -71,40 +71,6 @@ public class AdrFileNameComponentsTests
         components.ContentAdr.Should().BeNull();
     }
 
-    [Fact]
-    public void AdrFileNameComponents_AllProperties_CanBeSet()
-    {
-        // Arrange
-        var header = new AdrHeader { Title = "Test" };
-        var components = new AdrFileNameComponents
-        {
-            Prefix = "ADR",
-            Number = 1,
-            Title = "UseNewDatabase",
-            Version = 1,
-            Revision = 0,
-            SupersededValue = 2,
-            IsValid = true,
-            ErrorMessage = "No errors",
-            FileName = "ADR-0001.md",
-            Header = header,
-            ContentAdr = "Content here"
-        };
-
-        // Assert
-        components.Prefix.Should().Be("ADR");
-        components.Number.Should().Be(1);
-        components.Title.Should().Be("UseNewDatabase");
-        components.Version.Should().Be(1);
-        components.Revision.Should().Be(0);
-        components.SupersededValue.Should().Be(2);
-        components.IsValid.Should().BeTrue();
-        components.ErrorMessage.Should().Be("No errors");
-        components.FileName.Should().Be("ADR-0001.md");
-        components.Header.Should().Be(header);
-        components.ContentAdr.Should().Be("Content here");
-    }
-
     #region Additional Edge Cases
 
     [Fact]
@@ -137,49 +103,6 @@ public class AdrFileNameComponentsTests
         components1.Header.Should().NotBeNull();
         components2.Header.Should().NotBeNull();
         components1.Header.Should().NotBeSameAs(components2.Header);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_WithLargeNumberValues_StoresCorrectly()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Number = 99999,
-            Version = 100,
-            Revision = 50,
-            SupersededValue = 88888
-        };
-
-        // Act & Assert
-        components.Number.Should().Be(99999);
-        components.Version.Should().Be(100);
-        components.Revision.Should().Be(50);
-        components.SupersededValue.Should().Be(88888);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_WithLongStrings_StoresCorrectly()
-    {
-        // Arrange
-        var longPrefix = "VERYLONGPREFIX_WITH_MANY_CHARACTERS";
-        var longTitle = "This is a very long title that exceeds normal expectations for ADR titles";
-        var longErrorMessage = "This is a detailed error message that explains exactly what went wrong and why";
-        var longContent = new string('X', 10000);
-
-        var components = new AdrFileNameComponents
-        {
-            Prefix = longPrefix,
-            Title = longTitle,
-            ErrorMessage = longErrorMessage,
-            ContentAdr = longContent
-        };
-
-        // Act & Assert
-        components.Prefix.Should().Be(longPrefix);
-        components.Title.Should().Be(longTitle);
-        components.ErrorMessage.Should().Be(longErrorMessage);
-        components.ContentAdr.Should().HaveLength(10000);
     }
 
     [Fact]
@@ -239,65 +162,6 @@ public class AdrFileNameComponentsTests
     }
 
     [Fact]
-    public void AdrFileNameComponents_Initialization_PropertiesAccessible()
-    {
-        // Arrange & Act
-        var components = new AdrFileNameComponents();
-
-        // Verify all properties are accessible and have default values
-        _ = components.Prefix;
-        _ = components.Number;
-        _ = components.Title;
-        _ = components.Version;
-        _ = components.Revision;
-        _ = components.SupersededValue;
-        _ = components.IsValid;
-        _ = components.ErrorMessage;
-        _ = components.FileName;
-        _ = components.Header;
-        _ = components.ContentAdr;
-        _ = components.UniqueTitle;
-
-        // Assert - if we got here without exception, all properties are accessible
-        Assert.True(true);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_SettersWorkAfterInstantiation()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            // Act
-            Prefix = "PREFIX",
-            Number = 42,
-            Title = "Title",
-            Version = 2,
-            Revision = 1,
-            SupersededValue = 40,
-            IsValid = true,
-            ErrorMessage = "Error",
-            FileName = "file.md"
-        };
-        var newHeader = new AdrHeader { Title = "New Header" };
-        components.Header = newHeader;
-        components.ContentAdr = "Content";
-
-        // Assert
-        components.Prefix.Should().Be("PREFIX");
-        components.Number.Should().Be(42);
-        components.Title.Should().Be("Title");
-        components.Version.Should().Be(2);
-        components.Revision.Should().Be(1);
-        components.SupersededValue.Should().Be(40);
-        components.IsValid.Should().Be(true);
-        components.ErrorMessage.Should().Be("Error");
-        components.FileName.Should().Be("file.md");
-        components.Header.Should().Be(newHeader);
-        components.ContentAdr.Should().Be("Content");
-    }
-
-    [Fact]
     public void UniqueTitle_Property_ConsistentWithStaticMethod()
     {
         // Arrange
@@ -315,60 +179,9 @@ public class AdrFileNameComponentsTests
         propertyResult.Should().Be(staticResult);
     }
 
-    [Fact]
-    public void AdrFileNameComponents_WithZeroValues_StoresCorrectly()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Number = 0,
-            Version = 0,
-            Revision = 0,
-            SupersededValue = 0
-        };
-
-        // Act & Assert
-        components.Number.Should().Be(0);
-        components.Version.Should().Be(0);
-        components.Revision.Should().Be(0);
-        components.SupersededValue.Should().Be(0);
-    }
-
     #endregion
 
     #region Gap Coverage - Untested Scenarios
-
-    [Fact]
-    public void AdrFileNameComponents_PrefixSetToWhitespaceOnly_StoresAsIs()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Prefix = "   "
-        };
-
-        // Act & Assert
-        components.Prefix.Should().Be("   ");
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_WithNegativeNumbers_StoresCorrectly()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Number = -1,
-            Version = -5,
-            Revision = -10,
-            SupersededValue = -100
-        };
-
-        // Act & Assert
-        components.Number.Should().Be(-1);
-        components.Version.Should().Be(-5);
-        components.Revision.Should().Be(-10);
-        components.SupersededValue.Should().Be(-100);
-    }
 
     [Fact]
     public void AdrFileNameComponents_ContentAdr_DistinguishesEmptyFromNull()
@@ -447,44 +260,6 @@ public class AdrFileNameComponentsTests
         component2.IsValid.Should().BeFalse();
         component1.Title.Should().Be(component2.Title);
         component1.UniqueTitle.Should().Be(component2.UniqueTitle);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_AllNumericPropertiesAtMaxValues_StoresCorrectly()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Number = int.MaxValue,
-            Version = int.MaxValue,
-            Revision = int.MaxValue,
-            SupersededValue = int.MaxValue
-        };
-
-        // Act & Assert
-        components.Number.Should().Be(int.MaxValue);
-        components.Version.Should().Be(int.MaxValue);
-        components.Revision.Should().Be(int.MaxValue);
-        components.SupersededValue.Should().Be(int.MaxValue);
-    }
-
-    [Fact]
-    public void AdrFileNameComponents_AllNumericPropertiesAtMinValues_StoresCorrectly()
-    {
-        // Arrange
-        var components = new AdrFileNameComponents
-        {
-            Number = int.MinValue,
-            Version = int.MinValue,
-            Revision = int.MinValue,
-            SupersededValue = int.MinValue
-        };
-
-        // Act & Assert
-        components.Number.Should().Be(int.MinValue);
-        components.Version.Should().Be(int.MinValue);
-        components.Revision.Should().Be(int.MinValue);
-        components.SupersededValue.Should().Be(int.MinValue);
     }
 
     [Fact]

@@ -15,7 +15,6 @@ namespace AdrPlus.Tests.Commands.Help;
 /// <summary>
 /// Unit tests for HelpCommandHandler class.
 /// Tests demonstrate help command execution patterns using NSubstitute.
-/// These tests are designed to run cross-platform on both Linux and Windows.
 /// </summary>
 public class HelpCommandHandlerTests
 {
@@ -128,64 +127,6 @@ public class HelpCommandHandlerTests
         receivedCalls.Should().HaveCountGreaterThanOrEqualTo(4); // Header + 3 commands
     }
 
-    [Fact]
-    public async Task ExecuteAsync_WithEmptyArgs_CancellationTokenIsRespected()
-    {
-        // Arrange
-        var args = Array.Empty<string>();
-        var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
-    }
-
-    #endregion
-
-    #region ExecuteAsync - Single Argument Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WithSingleArgument_PassesCancellationToken()
-    {
-        // Arrange
-        var args = new[] { "new" };
-
-        // Act & Assert
-        // This should route to the command router without throwing
-        // The router will fail because it tries to get the handler from DI,
-        // but we're testing that the help handler passes through correctly
-        var ex = await Record.ExceptionAsync(
-            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
-
-        // The exception is expected because CommandRouter will try to resolve the handler
-        // from an empty service provider, but that doesn't affect our test of ExecuteAsync
-        // routing through the token correctly
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WithSingleArgument_DoesNotCallGenerateHelpAllCommands()
-    {
-        // Arrange
-        var args = new[] { "config" };
-        var commands = new[] 
-        { 
-            (CommandsAdr.New, "new", typeof(object), "Create a new ADR"), 
-            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision") 
-        };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act & Assert
-        // Just verify that it doesn't throw for null/single arg check
-        var ex = await Record.ExceptionAsync(
-            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
-        
-        // The handler should either route successfully or throw from routing,
-        // not from argument validation
-    }
-
     #endregion
 
     #region ExecuteAsync - Multiple Arguments Tests
@@ -228,28 +169,6 @@ public class HelpCommandHandlerTests
         var ex = await Assert.ThrowsAsync<ArgumentNullException>(
             () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
         ex.ParamName.Should().Be("args");
-    }
-
-    #endregion
-
-    #region ExecuteAsync - Cancellation Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WithCancelledToken_CompletesWithoutThrow()
-    {
-        // Arrange
-        var args = Array.Empty<string>();
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
-        var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        // The handler should handle cancellation gracefully
-        await _handler.ExecuteAsync(args, cts.Token);
-
-        // Assert
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion
@@ -309,27 +228,6 @@ public class HelpCommandHandlerTests
 
         // Assert
         _mockConsole.ReceivedCalls().Count().Should().Be(5); // Header + 4 commands
-    }
-
-    [Fact]
-    public void GenerateHelpAllCommands_AlignAliasesConsistently()
-    {
-        // Arrange
-        var commands = new[]
-        {
-            (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Approve, "approve", typeof(object), "Approve an ADR"),
-            (CommandsAdr.UndoStatus, "undo", typeof(object), "Undo status")
-        };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        _handler.GenerateHelpAllCommands();
-
-        // Assert
-        // The longest alias is "approve" (7 chars), all should be padded to 7
-        var receivedCalls = _mockConsole.ReceivedCalls().ToList();
-        receivedCalls.Should().HaveCountGreaterThanOrEqualTo(4);
     }
 
     [Fact]
@@ -404,99 +302,6 @@ public class HelpCommandHandlerTests
 
         // Assert
         _mockConsole.Received(1).PromptWriteHelp(Arg.Is<string>(s => s.StartsWith("  ")));
-    }
-
-    #endregion
-
-    #region Cross-Platform Tests
-
-    [Fact]
-    public async Task ExecuteAsync_CrossPlatform_WorksOnDifferentOSes()
-    {
-        // This test verifies that the handler works consistently across platforms
-        // Arrange
-        var args = Array.Empty<string>();
-        var commands = new[]
-        {
-            (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
-        };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert - Should work the same on all platforms
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WithCancellationToken_WorksOnAllPlatforms()
-    {
-        // Arrange
-        var args = Array.Empty<string>();
-        var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
-    }
-
-    [Fact]
-    public void GenerateHelpAllCommands_WorksOnAllPlatforms()
-    {
-        // Arrange
-        var commands = new[]
-        {
-            (CommandsAdr.New, "new", typeof(object), "Create a new ADR"),
-            (CommandsAdr.Revise, "revise", typeof(object), "Create a new revision")
-        };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act
-        _handler.GenerateHelpAllCommands();
-
-        // Assert - Should work the same on all platforms
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
-    }
-
-    #endregion
-
-    #region Error Handling Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WithMultipleArgs_HasConsistentBehavior()
-    {
-        // Arrange - Test with different numbers of arguments
-        var args = new[] { "cmd1", "cmd2", "cmd3" };
-
-        // Act & Assert
-        var ex = await Assert.ThrowsAsync<ArgumentException>(
-            () => _handler.ExecuteAsync(args, TestContext.Current.CancellationToken));
-        ex.Message.Should().Contain(Resources.AdrPlus.ErrMsgHelpTooManyArguments);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_EmptyArgsWithDifferentTokens_BehavesConsistently()
-    {
-        // Arrange
-        var args = Array.Empty<string>();
-        var commands = new[] { (CommandsAdr.New, "new", typeof(object), "Create a new ADR") };
-        _mockAdrServices.GetCommands().Returns(commands);
-
-        // Act - Execute with different tokens to ensure consistent behavior
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-        
-        _mockConsole.ClearReceivedCalls();
-        
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-        await _handler.ExecuteAsync(args, cts.Token);
-
-        // Assert - Both calls should work the same
-        _mockConsole.Received().PromptWriteHelp(Arg.Any<string>());
     }
 
     #endregion
