@@ -3,6 +3,9 @@
 // The maintenance and evolution is maintained by the AdrPlus project under MIT license
 // ***************************************************************************************
 
+using System.Globalization;
+using System.Text;
+
 namespace AdrPlus.Core
 {
     /// <summary>
@@ -25,7 +28,9 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Computes the Jaro-Winkler similarity between <paramref name="source"/> and <paramref name="target"/>,
-        /// case-insensitively.
+        /// case- and diacritic-insensitively (e.g. <c>"Não"</c> and <c>"Nao"</c> compare as equal letters).
+        /// Compares by Unicode codepoint, not UTF-16 code unit, so an astral-plane character (e.g. an emoji
+        /// surrogate pair) is never split into two independent "characters".
         /// </summary>
         /// <param name="source">The first string to compare.</param>
         /// <param name="target">The second string to compare.</param>
@@ -35,8 +40,8 @@ namespace AdrPlus.Core
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(target);
 
-            var a = source.ToUpperInvariant();
-            var b = target.ToUpperInvariant();
+            var a = ToComparableRunes(source);
+            var b = ToComparableRunes(target);
 
             var jaro = JaroSimilarity(a, b);
             if (jaro == 0)
@@ -54,7 +59,27 @@ namespace AdrPlus.Core
             return jaro + (prefixLength * PrefixScalingFactor * (1 - jaro));
         }
 
-        private static double JaroSimilarity(string a, string b)
+        /// <summary>
+        /// Case-folds, decomposes accented letters into base letter + combining mark (Unicode NFD) and drops
+        /// the combining marks, then enumerates by Unicode codepoint (<see cref="Rune"/>) rather than UTF-16
+        /// code unit.
+        /// </summary>
+        private static Rune[] ToComparableRunes(string value)
+        {
+            var normalized = value.ToUpperInvariant().Normalize(NormalizationForm.FormD);
+            var runes = new List<Rune>(normalized.Length);
+            foreach (var rune in normalized.EnumerateRunes())
+            {
+                if (Rune.GetUnicodeCategory(rune) == UnicodeCategory.NonSpacingMark)
+                {
+                    continue;
+                }
+                runes.Add(rune);
+            }
+            return [.. runes];
+        }
+
+        private static double JaroSimilarity(Rune[] a, Rune[] b)
         {
             if (a.Length == 0 && b.Length == 0)
             {

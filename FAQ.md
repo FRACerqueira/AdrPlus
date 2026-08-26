@@ -22,7 +22,7 @@ No. AdrPlus manages ADR Markdown files and can be used in repositories of any la
 
 ### Is it possible to have multiple ADRs with the same title but different scopes?
 
-Yes. If scopes are enabled, ADRs with the same title can coexist as long as they are in different scopes.
+No. Title uniqueness is based on the title alone — Scope and Domain are free-text header fields and don't factor into it. Give ADRs that cover different areas a distinct title.
 
 ### Is the wizard mandatory to use AdrPlus?
 
@@ -65,11 +65,11 @@ Yes. You can customize status labels in `adr-config.adrplus` with `statusnew`, `
 
 ### Can I organize ADRs by scope folders?
 
-Yes. Set `folderbyscope` to `true` but ensure your workflow and team conventions align with this structure.
+No. Scope is a free-text header field with no folder or naming behavior tied to it. If you want ADRs physically grouped by area, organize `folderadr` subfolders yourself.
 
 ### When is `--domain` required for `new`?
 
-When scope is enabled and the selected scope is not listed in `skipdomain`.
+Never — `--scope` and `--domain` are both optional, free-text fields with no validation.
 
 ### Can I change the date format in ADR metadata?
 
@@ -147,5 +147,5 @@ Depends on which one:
 
 ### Can I use AdrPlus in a monorepo with multiple projects?
 
-Yes. Use scopes to organize ADRs by project, and ensure your team conventions align with this structure.
+Yes. There's no built-in per-project folder organization, but you can point each project at its own `adr-config.adrplus`/`folderadr`, or use the free-text Scope/Domain header fields to note which project an ADR belongs to.
 

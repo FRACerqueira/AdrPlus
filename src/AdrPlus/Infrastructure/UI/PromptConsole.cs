@@ -573,10 +573,6 @@ namespace AdrPlus.Infrastructure.UI
                 { AppConstants.FieldLenSeq, Resources.AdrPlus.FieldTitleLenSeq },
                 { AppConstants.FieldLenVersion, Resources.AdrPlus.FieldTitleLenVersion },
                 { AppConstants.FieldLenRevision, Resources.AdrPlus.FieldTitleLenRevision },
-                { AppConstants.FieldLenScope, Resources.AdrPlus.FieldTitleLenScope },
-                { AppConstants.FieldScopes, Resources.AdrPlus.FieldTitleScopes },
-                { AppConstants.FieldFolderByScope, Resources.AdrPlus.FieldTitleFolderByScope },
-                { AppConstants.FieldSkipDomain, Resources.AdrPlus.FieldTitleSkipDomain },
                 { AppConstants.FieldSeparator, Resources.AdrPlus.FieldTitleSeparator },
                 { AppConstants.FieldCaseTransform, Resources.AdrPlus.FieldTitleCaseTransform },
                 { AppConstants.FieldStatusNew, Resources.AdrPlus.FieldTitleStatusNew },
@@ -1236,21 +1232,29 @@ namespace AdrPlus.Infrastructure.UI
         /// Minimum Jaro-Winkler similarity for an existing value to be surfaced as a suggestion.
         /// Advisory only: never blocks or rejects what the user types.
         /// </summary>
-        private const double SimilaritySuggestionThreshold = 0.80;
+        /// <remarks>Internal (not private) so <c>SuggestSimilar</c>'s behavior is directly unit-testable.</remarks>
+        internal const double SimilaritySuggestionThreshold = 0.80;
 
         /// <summary>
         /// Ranks <paramref name="candidates"/> against <paramref name="input"/>, keeping those that either
-        /// contain <paramref name="input"/> as a substring or are similar enough by Jaro-Winkler distance.
+        /// contain <paramref name="input"/> as a substring (case-insensitive, exact letters) or are similar
+        /// enough by Jaro-Winkler distance (case- and diacritic-insensitive, tolerates typos) — the two checks
+        /// are deliberately different: one is a literal substring test, the other a fuzzy one. Substring
+        /// matches are listed first (a stronger signal), then the rest by descending similarity, so the best
+        /// match always has priority instead of just filtering in file-scan order.
         /// </summary>
-        private static string[] SuggestSimilar(string input, string[] candidates)
+        internal static string[] SuggestSimilar(string input, string[] candidates)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 return candidates;
             }
-            return [.. candidates.Where(x =>
-                x.Contains(input, StringComparison.OrdinalIgnoreCase) ||
-                x.JaroWinklerSimilarity(input) >= SimilaritySuggestionThreshold)];
+            return [.. candidates
+                .Select(x => (Value: x, IsSubstringMatch: x.Contains(input, StringComparison.OrdinalIgnoreCase), Similarity: x.JaroWinklerSimilarity(input)))
+                .Where(x => x.IsSubstringMatch || x.Similarity >= SimilaritySuggestionThreshold)
+                .OrderByDescending(x => x.IsSubstringMatch)
+                .ThenByDescending(x => x.Similarity)
+                .Select(x => x.Value)];
         }
 
         /// <inheritdoc/>
@@ -1404,10 +1408,6 @@ namespace AdrPlus.Infrastructure.UI
                 AppConstants.FieldLenSeq => Resources.AdrPlus.ConfigFieldDescLenSeq,
                 AppConstants.FieldLenVersion => Resources.AdrPlus.ConfigFieldDescLenVersion,
                 AppConstants.FieldLenRevision => Resources.AdrPlus.ConfigFieldDescLenRevision,
-                AppConstants.FieldScopes => Resources.AdrPlus.ConfigFieldDescScopes,
-                AppConstants.FieldLenScope => Resources.AdrPlus.ConfigFieldDescLenScope,
-                AppConstants.FieldSkipDomain => Resources.AdrPlus.ConfigFieldDescSkipDomain,
-                AppConstants.FieldFolderByScope => Resources.AdrPlus.ConfigFieldDescFolderByScope,
                 AppConstants.FieldCaseTransform => Resources.AdrPlus.ConfigFieldDescCaseTransform,
                 AppConstants.FieldSeparator => Resources.AdrPlus.ConfigFieldDescSeparator,
                 AppConstants.FieldStatusNew => Resources.AdrPlus.ConfigFieldDescStatusNew,

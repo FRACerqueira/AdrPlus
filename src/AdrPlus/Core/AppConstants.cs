@@ -192,10 +192,10 @@ namespace AdrPlus.Core
         /// <summary>
         /// Repository config field names removed in 1.0.0-rc5 (ADR006: Scope/Domain became free-text header-only
         /// fields, no longer governed). <see cref="ValidateConfig.ValidateRepoStructure"/> tolerates these when
-        /// present in a config written by an older version instead of reporting them as unexpected fields; they are
-        /// dropped the next time that config is rewritten (host default on version-bump migration, or a repository
-        /// config explicitly rewritten via <c>adrplus config --repository</c>), since the current
-        /// <see cref="AdrPlusRepoConfig"/> type no longer declares them.
+        /// present in a config written by an older version instead of reporting them as unexpected fields — this is
+        /// the only guarantee: a config carrying them is silently ignored, indefinitely, not rejected. There is no
+        /// guarantee they get removed from the file; <see cref="ValidateConfig.EnsureFieldsRepoStructure"/> strips
+        /// them as a best-effort cleanup, but only for the callers that actually invoke it.
         /// </summary>
         public static readonly IReadOnlySet<string> ObsoleteRepoConfigFields = new HashSet<string>(
             [FieldLenScope, FieldScopes, FieldFolderByScope, FieldSkipDomain],

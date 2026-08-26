@@ -242,7 +242,6 @@ adrplus init --path "."
 ```
 
 This is useful when:
-- You need to update the folder structure for scope changes
 - You want to recreate default configuration files
 - You're adjusting naming conventions or patterns
 
@@ -354,7 +353,7 @@ The rules below describe what must be true for a command to select its target su
 
 | Command | Successful selection rules |
 |---|---|
-| `new` | `title + domain` must be unique. When scope is enabled , `--scope` must be valid; `--domain` is required unless scope is listed in `skipdomain`. |
+| `new` | `title` must be unique. `--scope`/`--domain` are optional free-text fields with no validation. |
 | `approve` | ADR must be eligible: not already approved/rejected and for the same sequence number not superseded.|
 | `reject` | ADR must be eligible: not already approved/rejected.|
 | `undo` | ADR must be eligible: already approved/rejected and for the same sequence not a superseded and not proposed.|
@@ -457,16 +456,12 @@ adrplus config --repository
   "lenseq": 4,
   "lenversion": 2,
   "lenrevision": 0,
-  "lenscope": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "statusnew": "Proposed",
   "statusacc": "Accepted",
   "statusrej": "Rejected",
   "statussup": "Superseded",
-  "scopes": "",
-  "folderbyscope": false,
-  "skipdomain": "",
   "headerdisclaimer": "Do not remove this comment, lines and table",
   "headertitlefile": "ADR",
   "headerversion": "Version",
@@ -493,16 +488,12 @@ adrplus config --repository
 | `lenseq` | Number of digits for the sequential ADR number (for example: `4` => `0001`). |
 | `lenversion` | Number of digits for major version formatting (for example: `2` => `01`). |
 | `lenrevision` | Number of digits for revision formatting (for example: `2` => `01`; `0` disables revision numbering). |
-| `lenscope` | Maximum scope segment length used in generated names (when scope is enabled, value > 0). |
 | `separator` | Separator character used in generated file names (valid values: `-`, `_`, or `.`). |
 | `casetransform` | Case style applied to generated name segments (for example: `PascalCase`, `CamelCase`, `SnakeCase`, or `KebabCase`). |
 | `statusnew` | Label used for newly created ADRs. |
 | `statusacc` | Label used for accepted ADRs. |
 | `statusrej` | Label used for rejected ADRs. |
 | `statussup` | Label used for superseded ADRs. |
-| `scopes` | Semicolon-separated list of allowed scopes for organizing ADRs (for example: `Enterprise;Domain;Project`; can be empty when `lenscope = 0`). |
-| `folderbyscope` | If `true`, ADR files are grouped by scope folders; if `false`, all ADRs remain in the flat `folderadr` directory. |
-| `skipdomain` | Semicolon-separated list of scope names for which the domain segment should be omitted from the generated filename (must be a subset of `scopes`). |
 | `headerdisclaimer` | Disclaimer header added to ADR template output. |
 | `headertitlefile` | Header label for the ADR file name field in the header. |
 | `headerversion` | Header label for ADR version field. |
@@ -524,11 +515,7 @@ adrplus config --repository
 
 Before selecting a team profile, understand these key concepts:
 
-- **Scopes**: Define organizational boundaries for your ADRs (e.g., "Enterprise", "Backend", "Frontend"). Scopes help organize decisions by domain or team responsibility. When enabled (`lenscope > 0`), the scope appears in the ADR filename.
-
-- **Folder by Scope**: When enabled, ADRs are organized into separate folders for each scope (e.g., `doc/adr/enterprise/`, `doc/adr/backend/`). When disabled, all ADRs stay in a flat structure under the configured `folderadr` folder.
-
-- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "Corporate" scope might skip the domain to keep filenames shorter. You can list multiple scopes separated by semicolons.
+- **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful — e.g. noting which area or team a decision belongs to — AdrPlus does not enforce or interpret their values.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
   - `PascalCase`: `UsePostgreSQLAsDatabase`
@@ -545,37 +532,12 @@ Before selecting a team profile, understand these key concepts:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
   - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
-#### 1) Monorepo (multiple apps/domains or enterprise architecture)
+#### 1) Simple repository
 
-Use scopes and folder grouping to keep ADRs organized by area. Each team or domain maintains its own ADR sequence.
-
-```json
-{
-  "scopes": "Enterprise;Project;Backend;Frontend;Mobile;Data",
-  "skipdomain": "Enterprise",
-  "folderbyscope": true,
-  "lenscope": 1,
-  "separator": "-",
-  "casetransform": "PascalCase",
-  "lenversion": 2,
-  "lenrevision": 0
-}
-```
-
-**Example filenames generated**:
-- `doc/adr/Enterprise/ADR0001V01E-UnifyAuthenticationStrategy.md`
-- `doc/adr/Backend/ADR0001V01B-UsePostgreSQ@MyBackEndScope.md`
-- `doc/adr/Frontend/ADR0001V01F-AdoptReactFramework@MyFrontEndScope.md`
-
-#### 2) Simple repository
-
-Use a simple flat structure with no scope folder split. Ideal for smaller projects or single-domain repositories.
+The default shape: a flat `folderadr` directory, no scope/domain-based organization (there isn't one anymore — see [Scope and Domain](#understanding-configuration-concepts) above). Fits most projects, single-domain or not.
 
 ```json
 {
-  "scopes": "",
-  "folderbyscope": false,
-  "lenscope": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "lenversion": 2,
@@ -587,7 +549,7 @@ Use a simple flat structure with no scope folder split. Ideal for smaller projec
 - `doc/adr/ADR0001V01-UsePostgreSQL.md`
 - `doc/adr/ADR0002V01-AdoptReactFramework.md`
 
-#### 3) Product team with frequent revisions
+#### 2) Product team with frequent revisions
 
 Keep revision metadata visible and standardized. Useful for teams that frequently update ADR documentation or maintain multiple versions.
 
@@ -604,28 +566,6 @@ Keep revision metadata visible and standardized. Useful for teams that frequentl
 - `doc/adr/ADR0001V02R01-DecisionTitle.md` (after revision)
 - `doc/adr/ADR0001V03R02-DecisionTitle.md` (after version bump)
 - `doc/adr/ADR0002V01R01-DecisionTitle--0001.md` (after superseded bump)
-
-#### 4) Enterprise with department scopes
-
-Organize ADRs by department with custom headers and folder structure.
-
-```json
-{
-  "scopes": "Infrastructure;Database;Platform;Security",
-  "skipdomain": "Platform",
-  "folderbyscope": true,
-  "lenscope": 3,
-  "separator": "-",
-  "casetransform": "PascalCase",
-  "lenversion": 2,
-  "lenrevision": 0
-}
-```
-
-**Example filenames generated**:
-- `doc/adr/Infrastructure/ADR0001V01Inf-UseDockerContainers.md` (Infrastructure)
-- `doc/adr/Database/ADR0001V01Dat-AdoptPostgresql.md` (Database)
-
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.
 
@@ -658,9 +598,14 @@ dotnet tool update -g adrplus
 
 Your configuration persists automatically:
 - ✅ **Application settings** (`adrplus.json`): Language, editor preferences, and interface behavior remain unchanged
-- ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns, folder structure, and scope definitions are maintained
+- ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns and folder structure are maintained
 
 No manual reconfiguration is needed after upgrading — simply update the tool and continue using it as before.
+
+> This project is still pre-1.0 (release candidate). A breaking change occasionally requires more than an
+> in-place update — check `CHANGELOG.md`'s `[Unreleased]`/latest section for a "Breaking change - action
+> required" note before running `dotnet tool update`. For example, upgrading past `1.0.0-rc5` requires
+> uninstalling and reinstalling rather than updating in place (see the changelog for why).
 
 ---
 

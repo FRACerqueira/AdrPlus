@@ -312,7 +312,10 @@ namespace AdrPlus.Core
         /// Validates and normalizes the repository configuration JSON to ensure all required fields are present and consistent.
         /// Clamps <c>lenversion</c> and <c>lenrevision</c> to their valid ranges, and drops repository config fields
         /// removed in 1.0.0-rc5 (ADR006: <see cref="AppConstants.ObsoleteRepoConfigFields"/>) when a legacy config still
-        /// carries them, so the next write of this config no longer contains them.
+        /// carries them. This is a best-effort cleanup limited to callers of this method (the interactive
+        /// <c>adrplus config --repository</c> wizard and the host's own version-bump migration) — it is not a
+        /// guarantee that these fields disappear from every config on disk; <see cref="ValidateRepoStructure"/> is
+        /// what actually guarantees a config carrying them is never rejected, regardless of whether this method ran.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate and normalize.</param>
         /// <returns>The normalized JSON content as a string.</returns>

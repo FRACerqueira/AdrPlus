@@ -193,16 +193,12 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "lenseq": 4,
   "lenversion": 2,
   "lenrevision": 2,
-  "lenscope": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "statusnew": "Proposed",
   "statusacc": "Accepted",
   "statusrej": "Rejected",
   "statussup": "Superseded",
-  "scopes": "",
-  "folderbyscope": false,
-  "skipdomain": "",
   "headerdisclaimer": "Do not remove this comment, lines and table",
   "headertitlefile": "ADR",
   "headerversion": "Version",
@@ -231,12 +227,8 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
 | `lenversion` | Digits for major version (0 disables) | `2` → `V01`, `V02`, etc. |
 | `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `R01`, `R02` |
-| `lenscope` | Number of characters for scope abbreviation (0 disables) | `1` → `B`, `F`, etc. |
 | `separator` | Character between name parts | `-`, `_`, or `.` |
 | `casetransform` | Case style for names | `PascalCase`, `CamelCase`, `SnakeCase`, `KebabCase` |
-| `scopes` | Semicolon-separated list of allowed scopes | `Backend;Frontend;Data` |
-| `folderbyscope` | Create separate folders per scope | `true` or `false` |
-| `skipdomain` | Scopes that skip domain in filenames | `data;platform` |
 | `statusnew` | Label for new ADRs | `Proposed` |
 | `statusacc` | Label for approved ADRs | `Accepted` |
 | `statusrej` | Label for rejected ADRs | `Rejected` |
@@ -258,11 +250,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 Before initializing your repository, let's understand some important concepts:
 
-- **Scopes**: Define organizational boundaries for your ADRs (e.g., "backend", "frontend", "data"). When enabled (`lenscope > 0`), scopes help organize decisions by domain or team responsibility.
-
-- **Folder by Scope**: When `folderbyscope` is `true`, ADRs are organized into separate folders for each scope. When `false`, all ADRs stay in a flat structure under the `folderadr` folder.
-
-- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "data" scope might skip the domain to keep filenames shorter. List multiple scopes separated by semicolons.
+- **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
   - `PascalCase`: `UsePostgreSQLAsDatabase`
@@ -350,7 +338,7 @@ adrplus new --wizard
 The wizard will prompt you for:
 1. **Title**: A clear, concise decision title
    - Example: "Use PostgreSQL as primary database"
-2. **Domain/Scope**: Category or module (if enabled)
+2. **Domain/Scope**: Optional free-text category or module
    - Example: "backend", "data", etc.
 
 The tool will then:
@@ -664,20 +652,13 @@ adrplus help supersede
 - Raise the digit count back to at least what the highest existing number/version/revision requires
 - Or manually rename the affected ADR file(s) before lowering it
 
-#### Issue: Scope-related validation errors
-
-**Problem:** `scopes`, `lenscope`, `folderbyscope`, and `skipdomain` are interdependent — e.g. `scopes` must be empty when `lenscope` is `0`, `folderbyscope: true` requires at least one scope, and `skipdomain` entries must be a subset of `scopes`.
-
-**Solution:**
-- Use `adrplus config --repository --wizard` rather than hand-editing `adr-config.adrplus`, so these rules are enforced as you go
-
 ### Next: Commit Your Changes
 
 After upgrading, always commit your updated configuration:
 
 ```bash
 git add adr-config.adrplus
-git commit -m "chore: upgrade ADR repository settings - add scope support"
+git commit -m "chore: upgrade ADR repository settings"
 ```
 
 ---
@@ -734,7 +715,7 @@ Congratulations! You've successfully:
 
 1. **Create more ADRs** for other important architectural decisions
 2. **Commit to version control**: `git add doc/adr && git commit -m "docs: Add initial ADRs"`
-3. **Plan for growth**: Review the [Troubleshooting Upgrade](#troubleshooting-upgrade) section to see if scopes would help organize your ADRs
+3. **Plan for growth**: Review the [Troubleshooting Upgrade](#troubleshooting-upgrade) section as your naming/versioning needs change
 4. **Share with your team**: Make ADRs part of your project documentation
 5. **Review regularly**: Keep ADRs updated as your architecture evolves
 6. **Check the FAQ**: See [FAQ.md](FAQ.md) for common questions

@@ -386,15 +386,23 @@ namespace AdrPlus.Commands.NewAdr
                 // values already used in this repo are advisory only and never restrict the input)
                 if (oldDefFolder != defFolder)
                 {
-                    var (ScopesAborted, scopes, _) = _newAdrPrompts.PromptGetArrayScopesAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
                     if (ScopesAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                     }
-                    var (DomainsAborted, domains, _) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
+                    if (scopesException != null)
+                    {
+                        LogMessages.LogError(_logger, $"Failed to read registered scopes for suggestions: {scopesException.Message}");
+                    }
+                    var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(_filesystem, folderPrompt.Content, auxconfig, cancellationToken);
                     if (DomainsAborted)
                     {
                         throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                    }
+                    if (domainsException != null)
+                    {
+                        LogMessages.LogError(_logger, $"Failed to read registered domains for suggestions: {domainsException.Message}");
                     }
                     oldDefFolder = defFolder;
                     defArrScope = scopes;

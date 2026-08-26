@@ -73,6 +73,52 @@ public class StringSimilarityExtensionsTests
     }
 
     [Fact]
+    public void JaroWinklerSimilarity_FoldsDiacritics()
+    {
+        // Realistic pt-BR case: a user typing an unaccented variant of an existing scope/domain value.
+        // Regression guard for a bug where this landed at exactly 0.7999999999999999 (one ULP under the
+        // 0.80 suggestion threshold) because accented letters weren't folded before comparison.
+        "Não".JaroWinklerSimilarity("Nao").Should().Be(1.0);
+        "Autenticação".JaroWinklerSimilarity("Autenticacao").Should().Be(1.0);
+    }
+
+    [Fact]
+    public void JaroWinklerSimilarity_EmojiPrefixDoesNotInflateScore_ViaSharedSurrogate()
+    {
+        // Regression guard: comparing by `char` (UTF-16 code unit) instead of Unicode codepoint splits an
+        // astral-plane character (e.g. an emoji surrogate pair) into two independent "characters". "😀" and
+        // "😻" share the same UTF-16 lead surrogate (both are outside the Basic Multilingual Plane), so a
+        // code-unit comparison would count that lead surrogate as one matching "character" even though the
+        // two emoji are completely unrelated. A codepoint-aware comparison must score this exactly the same
+        // as swapping in two ASCII letters that share no such accidental relationship.
+        var withSharedSurrogatePrefix = "😀Security".JaroWinklerSimilarity("😻Payments");
+        var withUnrelatedAsciiPrefix = "ZSecurity".JaroWinklerSimilarity("QPayments");
+        withSharedSurrogatePrefix.Should().Be(withUnrelatedAsciiPrefix);
+    }
+
+    [Fact]
+    public void JaroWinklerSimilarity_UnrelatedSingleEmoji_ScoresZero()
+    {
+        // A codepoint-aware comparison of two completely different single characters (even ones that
+        // happen to share a UTF-16 lead surrogate) must score 0, not a partial match.
+        "😀".JaroWinklerSimilarity("😻").Should().Be(0.0);
+    }
+
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("A", "")]
+    [InlineData("A", "A")]
+    [InlineData("Security", "Secuity")]
+    [InlineData("Frontend", "Payments")]
+    [InlineData("😀", "😻")]
+    [InlineData("Não", "Nao")]
+    public void JaroWinklerSimilarity_AlwaysStaysWithinZeroToOneRange(string a, string b)
+    {
+        var score = a.JaroWinklerSimilarity(b);
+        score.Should().BeInRange(0.0, 1.0);
+    }
+
+    [Fact]
     public void JaroWinklerSimilarity_NullSource_Throws()
     {
         string? source = null;

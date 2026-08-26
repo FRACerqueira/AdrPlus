@@ -967,6 +967,8 @@ public class ValidateJsonConfigTests
 
         // Assert
         resultDict.Should().NotBeNull();
+        // The four obsolete fields must be stripped regardless of the casing they were written in.
+        resultDict.Should().NotContainKeys("lenscope", "scopes", "skipdomain", "folderbyscope");
     }
 
     #endregion
@@ -1583,17 +1585,53 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateRepoStructure_WithScopesMissingWhenLenScopeZero_IsValid()
+    public void ValidateRepoStructure_WithLegacyObsoleteFieldsPopulated_IsStillValid()
     {
-        // Arrange - Scopes is empty when LenScope is 0, which is valid
+        // Arrange - a config written by a pre-1.0.0-rc5 version, with the four fields ADR006 removed
+        // (scopes/lenscope/skipdomain/folderbyscope) still populated with realistic, non-default values -
+        // not just empty/zero/false. ValidateRepoStructure must tolerate this indefinitely (see
+        // AppConstants.ObsoleteRepoConfigFields), not silently reject it as having "unexpected fields".
         var validator = CreateValidator([]);
-        var validJson = CreateValidRepoJson();
+        var legacyJson = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            { AppConstants.FieldFolderAdr, "doc/adr" },
+            { AppConstants.FieldMigrationPattern, "" },
+            { AppConstants.FieldTemplate, "# ADR {0}" },
+            { AppConstants.FieldPrefix, "ADR" },
+            { AppConstants.FieldLenSeq, 4 },
+            { AppConstants.FieldLenVersion, 2 },
+            { AppConstants.FieldLenRevision, 0 },
+            { AppConstants.FieldLenScope, 1 },
+            { AppConstants.FieldScopes, "Enterprise;Domain;Project" },
+            { AppConstants.FieldFolderByScope, true },
+            { AppConstants.FieldSkipDomain, "Enterprise" },
+            { AppConstants.FieldSeparator, "-" },
+            { AppConstants.FieldCaseTransform, "CamelCase" },
+            { AppConstants.FieldStatusNew, "New" },
+            { AppConstants.FieldStatusAccepted, "Accepted" },
+            { AppConstants.FieldStatusRejected, "Rejected" },
+            { AppConstants.FieldStatusSuperseded, "Superseded" },
+            { AppConstants.FieldHeaderDisclaimer, "# Disclaimer" },
+            { AppConstants.FieldHeaderTitleFile, "# Title" },
+            { AppConstants.FieldHeaderVersion, "## Version" },
+            { AppConstants.FieldHeaderRevision, "## Revision" },
+            { AppConstants.FieldHeaderScope, "## Scope" },
+            { AppConstants.FieldHeaderDomain, "## Domain" },
+            { AppConstants.FieldHeaderStatusCreated, "## Status (Created)" },
+            { AppConstants.FieldHeaderStatusChanged, "## Status (Changed)" },
+            { AppConstants.FieldHeaderStatusSuperseded, "## Status (Superseded)" },
+            { AppConstants.FieldHeaderTableFields, "## Fields" },
+            { AppConstants.FieldHeaderTableValues, "## Values" },
+            { AppConstants.FieldHeaderMigrated, "## Migrated" },
+            { AppConstants.FieldActivePlugins, Array.Empty<string>() },
+            { AppConstants.FieldDisablePlugins, false }
+        }, AppConstants.RepoSerializerOptions);
 
         // Act
-        var (IsValid, _) = validator.ValidateRepoStructure(validJson);
+        var (IsValid, ErrorReport) = validator.ValidateRepoStructure(legacyJson);
 
-        // Assert - should be valid because scopes is empty when lenscope = 0
-        IsValid.Should().BeTrue();
+        // Assert
+        IsValid.Should().BeTrue(string.Join(", ", ErrorReport));
     }
 
     #endregion

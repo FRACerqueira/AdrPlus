@@ -34,7 +34,6 @@ namespace AdrPlus.Tests.Commands.Supersede;
 /// - ExecuteAsync Template File Tests: Verify template repository validation
 /// - ExecuteAsync Direct File Tests: Core supersede logic with various file and date scenarios
 /// - ExecuteAsync Wizard Mode Tests: Interactive wizard flows and cancellation points
-/// - FolderByScope Tests: Configuration-based folder organization
 /// - Revision Handling Tests: Version/revision component handling
 /// - Exception Handling Tests: Error propagation and logging
 /// </summary>
@@ -838,64 +837,6 @@ public class SupersedeCommandHandlerTests
         // Act & Assert
         await _handler.Invoking(h => h.ExecuteAsync(args, cts.Token))
             .Should().ThrowAsync<OperationCanceledException>();
-    }
-
-    #endregion
-
-    #region ExecuteAsync - FolderByScope Tests
-
-    [Fact]
-    public async Task ExecuteAsync_WhenFolderByScopeEnabled_CreatesFolderForScope()
-    {
-        // Arrange
-        var args = new[] { "--file", ValidAdrFilePath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "FolderByScope": true, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
-
-        SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
-
-        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, "security");
-        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-            .Returns(adrInfo);
-        _mockAdrServices.StatusChangeSupersedeAdrAsync(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
-                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
-            .Returns((true, string.Empty, new AdrRecord(), "content"));
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WhenFolderByScopeDisabled_NoScopeFolderCreated()
-    {
-        // Arrange
-        var args = new[] { "--file", ValidAdrFilePath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "FolderByScope": false, "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
-
-        SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
-
-        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown, "security");
-        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-            .Returns(adrInfo);
-        _mockAdrServices.StatusChangeSupersedeAdrAsync(
-                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
-                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
-            .Returns((true, string.Empty, new AdrRecord(), "content"));
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
-        _mockConsole.Received(2).PromptWriteSuccess(Arg.Any<string>());
     }
 
     #endregion

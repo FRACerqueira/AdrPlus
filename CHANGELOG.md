@@ -23,13 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Scope and Domain are now plain free-text header fields with no host-enforced rules
-  (see [ADR006](doc/adr/ADR006V01-remove-scope-and-domain-specific-rules.md)). Removed from
+  (see [ADR006](doc/adr/ADR006V02-remove-scope-and-domain-specific-rules.md)). Removed from
   `adr-config.adrplus`: `scopes` (whitelist), `lenscope` (filename participation/truncation),
   `skipdomain` (per-scope domain skipping), `folderbyscope` (per-scope subfolders). Removed from the
   public `AdrPlus.Abstractions` contract: `RepoInfoSnapshot.Scopes`. A legacy `adr-config.adrplus` that
-  still carries these fields is tolerated (no validation error) and self-heals - they're dropped the
-  next time that config is rewritten, either via `adrplus config --repository` or the host's own
-  version-bump migration.
+  still carries these fields is tolerated - it's never rejected as invalid, they're just ignored - but
+  the host does not guarantee removing them from the file for you; that's a manual cleanup if you want it.
 
 ### Changed
 
@@ -38,6 +37,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `new` wizard's Scope prompt is now free text (previously a picklist sourced from the repository's
   configured scope whitelist), matching Domain's existing free-text-with-autocomplete behavior.
 - Bumped to `1.0.0-rc5` (`AdrPlus.Abstractions` to `1.0.0-rc2`) for this breaking config/contract change.
+
+### Breaking change - action required
+
+- This is a pre-1.0 release-candidate breaking change with no compatibility shim, by design (see ADR006).
+  **If you have `adrplus` installed globally at a version older than `1.0.0-rc5`, uninstall it and
+  reinstall `1.0.0-rc5` rather than upgrading in place** (`dotnet tool uninstall -g adrplus` then
+  `dotnet tool install -g adrplus`). **If you maintain a plugin built against `AdrPlus.Abstractions`
+  older than `1.0.0-rc2`, rebuild it against `1.0.0-rc2`** - the host's plugin-loader compatibility
+  check only compares the major version number, so an un-rebuilt plugin referencing the removed
+  `RepoInfoSnapshot.Scopes` will load successfully and then fail at runtime the first time it's
+  dispatched an event, rather than being rejected up front.
 
 ---
 
