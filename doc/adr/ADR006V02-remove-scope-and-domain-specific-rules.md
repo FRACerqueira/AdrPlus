@@ -57,4 +57,4 @@ Key characteristics of the chosen design:
 
 ## Links
 
-* Amends [ADR006V01](ADR006V01-remove-scope-and-domain-specific-rules.md) — corrects the Negative Consequences to reflect the legacy-config tolerance/self-heal mechanism actually shipped (V01 said "no compatibility shim is provided," which is no longer accurate for existing configs), and documents that Domain's own suggestion matching was also changed (not just Scope's), both found by the `adr-decision-check` review of commit `4ea5c2a`.
+* Amends [ADR006V01](ADR006V01-remove-scope-and-domain-specific-rules.md) — corrects the Negative Consequences on two points found by the `adr-decision-check` review of commit `4ea5c2a`: (1) documents the config-validation-level tolerance for the four removed fields that V01 didn't mention at all (a legacy config is never rejected for still carrying them — V01's "no compatibility shim is provided" remains accurate for the schema itself and for `AdrPlus.Abstractions`, this only adds that *reading* an old config never hard-fails), and (2) documents that Domain's own suggestion matching was also changed (not just Scope's).
