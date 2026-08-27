@@ -192,7 +192,7 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
-  "lenrevision": 2,
+  "lenrevision": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "statusnew": "Proposed",
@@ -253,10 +253,10 @@ Before initializing your repository, let's understand some important concepts:
 - **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
-  - `PascalCase`: `UsePostgreSQLAsDatabase`
-  - `CamelCase`: `usePostgreSQLAsDatabase`
-  - `SnakeCase`: `use_postgresql_as_database`
-  - `KebabCase`: `use-postgresql-as-database`
+  - `PascalCase`: `UsePostgreSqlAsDatabase`
+  - `CamelCase`: `usePostgreSqlAsDatabase`
+  - `SnakeCase`: `use_postgre_sql_as_database`
+  - `KebabCase`: `use-postgre-sql-as-database`
 
 - **Separator**: The character separating different parts of the filename:
   - `-` (hyphen): Recommended, most readable
@@ -343,7 +343,7 @@ The wizard will prompt you for:
 
 The tool will then:
 - Generate a unique number (e.g., `0001`)
-- Create the file: `doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md`
+- Create the file: `doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md`
 - Open the file in your configured editor (if set)
 
 ### Option 2: Direct Creation from Command Line
@@ -539,7 +539,7 @@ The approved ADR file will now show:
 If you know the file path:
 
 ```bash
-adrplus approve --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus approve --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 ---
@@ -585,7 +585,7 @@ Revert the last status change:
 
 ```bash
 adrplus undo --wizard
-adrplus undo --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus undo --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 ### Version an ADR (Major Change)
@@ -594,10 +594,10 @@ Create a new version when making significant updates:
 
 ```bash
 adrplus version --wizard
-adrplus version --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus version --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
-Creates: `ADR0001V02-UsePostgresqlAsPrimaryDatabase.md`
+Creates: `ADR0001V02-UsePostgreSqlAsPrimaryDatabase.md`
 
 ### Revise an ADR (Minor Change)
 
@@ -606,10 +606,10 @@ Create a revision for minor updates. Requires revision support enabled (`lenrevi
 
 ```bash
 adrplus revise --wizard
-adrplus revise --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus revise --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
-Creates: `ADR0001V01R01-UsePostgresqlAsPrimaryDatabase.md`
+Creates: `ADR0001V01R01-UsePostgreSqlAsPrimaryDatabase.md`
 
 ### Supersede an ADR (Replace with New One)
 
@@ -617,13 +617,13 @@ When a decision is replaced by a new one, supersede it:
 
 ```bash
 adrplus supersede --wizard
-adrplus supersede --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus supersede --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 This creates a new ADR (e.g., `ADR0002`) and marks the old one as `Superseded`.
 
 ```bash
-./doc/adr/ADR0002V01-UsePostgresqlAsPrimaryDatabase--0001.md"
+./doc/adr/ADR0002V01-UsePostgreSqlAsPrimaryDatabase--0001.md"
 ```
 
 ### View Help

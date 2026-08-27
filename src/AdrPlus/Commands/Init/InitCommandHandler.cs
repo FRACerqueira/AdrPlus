@@ -157,12 +157,22 @@ namespace AdrPlus.Commands.Init
             if (_fileSystem.FileExists(configPath) && fileConfig.Length == 0)
             {
                 filecfg = configPath;
-                var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
-                if (IsAborted)
+                // No interactive console to confirm with (CI, scripts, an automation agent) - refuse
+                // cleanly instead of blocking on a prompt that can never be answered. Re-running `init`
+                // to intentionally reset a repository's config is still possible non-interactively via
+                // `--file`, which bypasses this confirmation entirely (see the branch below).
+                var isNonInteractive = Console.IsInputRedirected || Console.IsOutputRedirected;
+                var confirmYes = false;
+                if (!isNonInteractive)
                 {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                    var (IsAborted, ConfirmResult) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
+                    if (IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                    }
+                    confirmYes = ConfirmResult;
                 }
-                if (!ConfirmYes)
+                if (!confirmYes)
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrConfigFileAlreadyExists, configPath));
                 }

@@ -38,6 +38,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   configured scope whitelist), matching Domain's existing free-text-with-autocomplete behavior.
 - Bumped to `1.0.0-rc5` (`AdrPlus.Abstractions` to `1.0.0-rc2`) for this breaking config/contract change.
 
+### Fixed
+
+- `adrplus init --path <dir>` (no `--file`) on an already-initialized directory used to always prompt
+  for overwrite confirmation, even with no interactive console to answer it (CI, scripts, an AI agent) -
+  it crashed with `Cannot run an interactive control: console input is redirected...` instead of
+  reinitializing or failing cleanly. It now detects the redirected console and skips the prompt,
+  failing with the same clean `Configuration file already exists at: <path>` error a declined
+  confirmation already produced. Reinitializing non-interactively still works via `--file`, which
+  already bypassed this confirmation entirely.
+- `revise` never actually incremented the revision number - a C# operator-precedence bug
+  (`Revision??0 + 1`, which binds as `Revision ?? (0 + 1)` instead of `(Revision ?? 0) + 1`) meant the
+  new revision was always identical to the source ADR's, so `revise` on any ADR already at revision 1
+  or higher failed with `The file already exists`. Only the very first revision of an ADR (revision 0)
+  ever succeeded.
+- `migrate` accepted any `.md` file long enough to cover the configured `migrationpattern`'s field
+  positions, even when the sequence-number, version, or revision segment it extracted from the filename
+  wasn't actually numeric - the bad segment was silently treated as `0` instead of the file being
+  rejected. A legacy file that didn't genuinely match the pattern (e.g. `DECISION-001.md` under a
+  pattern expecting a leading numeric sequence) could migrate anyway and collide with any other
+  non-matching file on `Number == 0`. Such files are now rejected as invalid, matching the "Files NOT
+  Migrated" behavior documented in `MigrationGuide.md`.
+- Omitting a command's own required argument (e.g. `--file` for `approve`/`reject`/`undo`/`revise`/
+  `version`/`supersede`, `--title` for `new`) without `--wizard` used to crash with a raw, internal
+  `The given key '...' was not present in the dictionary` error instead of a real validation message -
+  the "Required When not in wizard mode" check only ever inspected arguments that were already present,
+  so a fully-omitted one was never actually caught. It's now reported as a clean
+  `Required argument '--x' (-x) is missing` error, for every command, consistently.
+- A command run with none of its own flags used to silently re-consult the global `withoutargs` setting
+  (meant only for the truly argument-less `adrplus` invocation) a second time, at the individual-command
+  level - this broke `adrplus help <command>` under `withoutargs: Wizard` (crashed trying to launch an
+  interactive wizard for a non-interactive help request) or `None` (crashed with the same raw dictionary
+  error above), and made any command silently exit `0` with just its help text under the default `Help`
+  setting instead of failing when a required argument was missing. `adrplus help <command>` now always
+  shows that command's help, and a bare command with missing required arguments now always fails with
+  the same clean, real error, independent of `withoutargs`.
+- `--path` (`--domain`/`--scope` for `new`, `--file` for `explore`'s report path) was mislabeled
+  "Required When not in wizard mode" in every command's help text, even though `init`/`explore`/
+  `migrate`/`sync`/`plugins` already treated it as genuinely optional (with their own clean
+  `DirectoryNotFoundException`-style validation) and `new`'s Domain/Scope have never been validated at
+  all (see `FAQ.md`). Only `new`'s `--path` access was actually crash-prone if omitted - it now uses the
+  same safe pattern as the other five commands. Help text for all of these now correctly reads
+  "(Optional)".
+
 ### Breaking change - action required
 
 - This is a pre-1.0 release-candidate breaking change with no compatibility shim, by design (see ADR006).

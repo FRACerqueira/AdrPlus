@@ -152,6 +152,26 @@ public class NewAdrCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTargetRepoAbsentFromParsedArgs_ThrowsDirectoryNotFoundException()
+    {
+        // Arrange: --path is genuinely optional at the parser level (matches init/explore/migrate/
+        // sync/plugins) - an omitted --path must surface as a clean DirectoryNotFoundException here
+        // too, not a raw "key not present in the dictionary" crash.
+        var args = new[] { "--title", "My ADR" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.TitleAdr, "My ADR" }
+        };
+        _mockAdrServices.ParseArgs(args, Arg.Any<Arguments[]>()).Returns(parsedArgs);
+        _mockValidateConfig.HasTemplateRepoFile().Returns(true);
+        _mockFileSystem.DirectoryExists(Arg.Any<string>()).Returns(false);
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<DirectoryNotFoundException>();
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenRepoConfigFileNotFound_ThrowsFileNotFoundException()
     {
         // Arrange

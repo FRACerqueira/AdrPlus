@@ -360,9 +360,9 @@ git commit -m "docs: migrate ADRs to AdrPlus format"
 
 ## Troubleshooting
 
-### Issue: "Migration configuration not found"
+### Issue: Migration settings not configured
 
-**Problem**: Migration command fails because migration settings haven't been configured.
+**Problem**: Migration command fails with `No ADRs were found with valid criteria for migration` because migration settings haven't been configured (the default, empty `migrationpattern` never matches any file).
 
 **Solution**:
 - Run migration configuration first:
@@ -375,7 +375,7 @@ git commit -m "docs: migrate ADRs to AdrPlus format"
 
 ---
 
-### Issue: "Cannot migrate: existing tool-created ADRs detected"
+### Issue: "There are already ADRs that were created using this tool"
 
 **Problem**: You already have ADRs created with `adrplus new` command, blocking migration. This check only blocks `adrplus migrate --path`; `--wizard` mode doesn't throw this error, it just skips any file already in AdrPlus format.
 
@@ -396,19 +396,29 @@ Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-ti
 
 ---
 
-### Issue: "No ADRs found to migrate"
+### Issue: "No ADRs found"
 
-**Problem**: Migration command found no ADR files.
+**Problem**: Migration command found no `.md` files at all in the target folder.
+
+**Solution**: Verify files are in `doc/adr/` or the configured folder.
+
+---
+
+### Issue: "No ADRs were found with valid criteria for migration"
+
+**Problem**: `.md` files exist in the folder, but none of them matched the configured migration pattern.
 
 **Causes & Solutions**:
-- ADR files don't exist in the specified path
-  - **Solution**: Verify files are in `doc/adr/` or the configured folder
+- `migrationpattern` was never configured (empty by default)
+  - **Solution**: See [Migration settings not configured](#issue-migration-settings-not-configured) above
 
-- Files don't match the naming convention
-  - **Solution**: Check filename format matches your config (e.g., `ADR0001-*.md`)
+- A file is too short for the configured pattern's positions, or a segment the pattern expects to be
+  numeric (the sequence number, version, or revision) isn't actually digits
+  - **Solution**: Check the filename format matches your config's `migrationpattern` (e.g., `ADR0001-*.md`).
+    A file that doesn't genuinely match is rejected rather than silently assigned a wrong number.
 
-- All ADRs already migrated
-  - **Solution**: This is normal if you've run migration before; all files have valid headers
+> **Note**: If every file in the folder is already migrated (has a valid AdrPlus header), `migrate`
+> completes successfully with no output rather than an error — this is normal, not a failure.
 
 ---
 

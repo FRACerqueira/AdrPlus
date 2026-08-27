@@ -47,7 +47,7 @@ namespace AdrPlus.Commands.Help
                 }
                 else if (args.Length == 1)
                 {
-                    await _commandRouter.RouteAsync(args[0], [], cancellationToken);
+                    await _commandRouter.RouteAsync(args[0], ["-h"], cancellationToken);
                 }
             }
             catch (Exception ex)

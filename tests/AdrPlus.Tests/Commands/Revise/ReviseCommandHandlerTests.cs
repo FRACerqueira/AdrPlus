@@ -775,6 +775,40 @@ public class ReviseCommandHandlerTests
         await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithValidAcceptedAdr_IncrementsRevisionNumberPastCurrentValue()
+    {
+        // Arrange: the source ADR is already at revision 1, so the new revision must be 2.
+        var configPath = "/repo/.adrplus";
+        var args = new[] { "--file", AdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, AdrFilePath }
+        };
+
+        SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
+        var infoadr = CommandHandlerMockHelper.CreateCompleteAdrFileNameComponents(
+            AdrFileName, AdrStatus.Accepted, number: 1, version: 1, revision: 1, title: "test", domain: "");
+
+        _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(Task.FromResult(infoadr));
+        _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult(Array.Empty<AdrFileNameComponents>()));
+        _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+            .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+        string? capturedFilePath = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Do<string>(p => capturedFilePath = p), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert: revision must advance from 1 to 2, not stay at 1 (which would collide with the source file's own revision).
+        capturedFilePath.Should().NotBeNull();
+        capturedFilePath.Should().Contain("R2", because: "revising an ADR already at revision 1 must produce revision 2");
+    }
+
     #endregion
 
     #region ExecuteAsync - Date Parsing Tests

@@ -200,7 +200,7 @@ namespace AdrPlus.Commands.Revise
                 {
                     throw new InvalidOperationException(string.Format(null,FormatMessages.ErrAdrSequenceNotFound,infoadr.Number, infolastadr.FileName));
                 }
-                if ((infolastadr.Revision??0 + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
+                if (((infolastadr.Revision??0) + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenRevisionGreaterThanConfig, infolastadr.Revision + 1, repoconfig.LenRevision));
                 }
@@ -233,7 +233,7 @@ namespace AdrPlus.Commands.Revise
                     StatusCreate = AdrStatus.Proposed,
                     CreateRef = dateAdr,
                     Version = infoadr.Header.Version,
-                    Revision = infoadr.Header.Revision??0 + 1,
+                    Revision = (infoadr.Header.Revision??0) + 1,
                     Template = emptyard ? repoconfig.Template : infoadr.ContentAdr!,
                 };
 

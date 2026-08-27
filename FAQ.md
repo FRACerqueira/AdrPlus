@@ -53,6 +53,16 @@ The behavior is controlled by the `withoutargs` setting in `adrplus.json`:
 
 You can change this behavior anytime by running `adrplus config --application`.
 
+### What happens if I run a command but omit one of its required arguments?
+
+The `withoutargs` setting only governs what happens when **no command** is given at all (the case
+above) — it does not apply once you've named a specific command. If that command has a required
+argument (marked "Required When not in wizard mode" in `adrplus help <command>` — for example
+`--file` for `approve`/`reject`/`undo`/`revise`/`version`/`supersede`, or `--title` for `new`) and
+you omit it without `--wizard`, AdrPlus fails immediately with a clear
+`Required argument '--x' (-x) is missing` error, regardless of `withoutargs`. This also means
+`adrplus help <command>` always shows that command's help text, independent of `withoutargs`.
+
 ## Configuration
 
 ### Can I customize ADR headers?

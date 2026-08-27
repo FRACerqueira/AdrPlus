@@ -129,6 +129,35 @@ public class HelpCommandHandlerTests
 
     #endregion
 
+    #region ExecuteAsync - Single Argument Tests
+
+    [Fact]
+    public async Task ExecuteAsync_WithSingleArgument_RoutesToCommandWithHelpFlag()
+    {
+        // Arrange: `adrplus help approve` must make the routed command show ITS OWN help text.
+        // It must pass an explicit "-h" flag rather than an empty array - an empty array no longer
+        // implicitly means "show help" now that ParseArgs' withoutargs fallback has been removed;
+        // it would instead run that command's normal (and here, failing) argument validation.
+        var mockApproveHandler = Substitute.For<ICommandHandler>();
+        _mockAdrServices.GenerateCommandsMap().Returns(new Dictionary<string, Type> { { "approve", typeof(ICommandHandler) } });
+        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        mockServiceProvider.GetService(typeof(ICommandHandler)).Returns(mockApproveHandler);
+        var mockRouterLogger = Substitute.For<ILogger<CommandRouter>>();
+        var mockConfiguration = Substitute.For<IConfiguration>();
+        var commandRouter = new CommandRouter(mockConfiguration, mockServiceProvider, mockRouterLogger, _mockConsole, _mockAdrServices);
+        var handler = new HelpCommandHandler(Substitute.For<ILogger<HelpCommandHandler>>(), _mockConsole, commandRouter, _mockAdrServices);
+
+        // Act
+        await handler.ExecuteAsync(["approve"], TestContext.Current.CancellationToken);
+
+        // Assert
+        await mockApproveHandler.Received(1).ExecuteAsync(
+            Arg.Is<string[]>(a => a.Length == 1 && (a[0] == "-h" || a[0] == "--help")),
+            Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
     #region ExecuteAsync - Multiple Arguments Tests
 
     [Fact]

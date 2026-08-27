@@ -7,7 +7,6 @@ using AdrPlus.Commands;
 using AdrPlus.Core;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace AdrPlus.Tests.Core;
@@ -18,41 +17,18 @@ namespace AdrPlus.Tests.Core;
 /// </summary>
 public class AdrServiceTests
 {
-    private readonly IConfiguration _configuration;
-    private readonly AdrService _service;
-
-    public AdrServiceTests()
-    {
-        var configValues = new Dictionary<string, string?>
-        {
-            { "AdrPlus:Language", "en-US" }
-        };
-        _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(configValues)
-            .Build();
-
-        _service = new AdrService(_configuration);
-    }
+    private readonly AdrService _service = new();
 
     #region Constructor Tests
 
     [Fact]
-    public void Constructor_WithValidConfiguration_CreatesInstance()
+    public void Constructor_CreatesInstance()
     {
         // Arrange & Act
-        var service = new AdrService(_configuration);
+        var service = new AdrService();
 
         // Assert
         service.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void Constructor_WithNullConfiguration_ThrowsArgumentNullException()
-    {
-        // Arrange, Act & Assert
-        var action = () => new AdrService(null!);
-        action.Should().Throw<ArgumentNullException>()
-            .WithParameterName("configuration");
     }
 
     #endregion
@@ -501,6 +477,78 @@ public class AdrServiceTests
         result[Arguments.DateRefAdr].Should().Be("2026-01-01");
     }
 
+    [Fact]
+    public void ParseArgs_WithRequiredWhenNotWizardArgTotallyAbsent_ThrowsArgumentException()
+    {
+        // Arrange: --file is "Required When not in wizard mode" for approve-style commands, but is
+        // entirely omitted here (not just present-with-an-empty-value) and no --wizard flag is given either.
+        var args = new[] { "--refdate", "2026-01-01" };
+        Arguments[] argsForCommand = [Arguments.WizardApprove, Arguments.FileAdr, Arguments.DateRefAdr];
+
+        // Act & Assert
+        var action = () => _service.ParseArgs(args, argsForCommand);
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void ParseArgs_WithNoArgsAndARequiredWhenNotWizardArgInCommand_ThrowsArgumentException()
+    {
+        // Arrange: a bare invocation (no flags at all) of a command that has a mandatory,
+        // required-when-not-wizard argument must fail validation, not silently succeed.
+        Arguments[] argsForCommand = [Arguments.WizardApprove, Arguments.FileAdr];
+
+        // Act & Assert
+        var action = () => _service.ParseArgs([], argsForCommand);
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void ParseArgs_WithWizardFlagAndRequiredWhenNotWizardArgAbsent_DoesNotThrow()
+    {
+        // Arrange: --wizard exempts "Required When not in wizard mode" arguments from validation.
+        var args = new[] { "-w" };
+        Arguments[] argsForCommand = [Arguments.WizardApprove, Arguments.FileAdr];
+
+        // Act
+        var result = _service.ParseArgs(args, argsForCommand);
+
+        // Assert
+        result.Should().ContainKey(Arguments.WizardApprove);
+        result.Should().NotContainKey(Arguments.FileAdr);
+    }
+
+    [Fact]
+    public void ParseArgs_WithPluginsListOnlyAndNoTargetRepo_DoesNotThrow()
+    {
+        // Arrange: `plugins --list` without `--path` is a legitimate, documented host-wide mode -
+        // --path must not be treated as unconditionally required just because it shares the
+        // "OptionalWithValueWhenWizard" tag with genuinely mandatory arguments like --file/--title.
+        var args = new[] { "--list" };
+        Arguments[] argsForCommand =
+            [Arguments.TargetRepo, Arguments.PluginsList, Arguments.PluginsValidate, Arguments.WizardPlugins];
+
+        // Act
+        var result = _service.ParseArgs(args, argsForCommand);
+
+        // Assert
+        result.Should().ContainKey(Arguments.PluginsList);
+        result.Should().NotContainKey(Arguments.TargetRepo);
+    }
+
+    [Fact]
+    public void ParseArgs_WithNoArgsAndNoRequiredWhenNotWizardArgInCommand_ReturnsEmptyDictionary()
+    {
+        // Arrange: a bare invocation of a command with no mandatory arguments (e.g. only --help
+        // is valid for it) must simply return an empty result, not consult any global fallback.
+        Arguments[] argsForCommand = [Arguments.Help];
+
+        // Act
+        var result = _service.ParseArgs([], argsForCommand);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
     #endregion
 
     #region GetHelpText Tests
@@ -850,6 +898,30 @@ public class AdrServiceTests
 
         // Assert
         result.Title.Should().Be("UseMongoDB");
+    }
+
+    [Fact]
+    public async Task ParseFileName_WithMigrationPatternNonNumericNumberSegment_ReturnsErrorMessage()
+    {
+        // Arrange
+        var config = new AdrPlusRepoConfig("doc/adr", "# ADR")
+        {
+            Prefix = "ADR",
+            Separator = '-',
+            MigrationPattern = "N00:04T04"
+        };
+        var fileSystemService = Substitute.For<IFileSystemService>();
+
+        // "DECI" occupies the configured Number position (0..4) but is not numeric, so this file
+        // does not actually match the pattern and must not be accepted as a migratable ADR.
+        var filePath = "DECISION-001.md";
+
+        // Act
+        var result = await _service.ParseFileName(filePath, config, fileSystemService);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ErrorMessage.Should().NotBeNullOrEmpty();
     }
 
     #endregion

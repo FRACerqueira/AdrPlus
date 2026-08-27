@@ -100,7 +100,8 @@ namespace AdrPlus.Commands.NewAdr
                     (parsedArgs, wizardAdrFiles) = await NewAdrWizard(openafter, cancellationToken);
                 }
 
-                var targetPath = Path.GetFullPath(parsedArgs[Arguments.TargetRepo]);
+                parsedArgs.TryGetValue(Arguments.TargetRepo, out var targetPath);
+                targetPath ??= string.Empty;
 
                 if (!_filesystem.DirectoryExists(targetPath))
                 {

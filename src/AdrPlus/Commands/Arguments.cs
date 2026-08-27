@@ -53,7 +53,7 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.Wizard, "HelpUsageWizardConfigRepo")]
         WizardConfigRepository,
         [CommandArgument("-p", "--path")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTargetRepoPath")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageTargetRepoPath")]
         TargetRepo,
         [CommandArgument("-f", "--file")]
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileConfig")]
@@ -65,10 +65,10 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageTitleAdr")]
         TitleAdr,
         [CommandArgument("-d", "--domain")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageDomainAdr")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageDomainAdr")]
         DomainAdr,
         [CommandArgument("-s", "--scope")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageScopeAdr")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageScopeAdr")]
         ScopeAdr,
         [CommandArgument("-o", "--open")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageOpenFile")]
@@ -80,7 +80,7 @@ namespace AdrPlus.Commands
         [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageDateRefAdr")]
         DateRefAdr,
         [CommandArgument("-f", "--file")]
-        [HelpUsage(UsageArgumments.OptionalWithValueWhenWizard, "HelpUsageFileReport")]
+        [HelpUsage(UsageArgumments.OptionalWithValue, "HelpUsageFileReport")]
         FileReport,
         [CommandArgument("-h", "--help")]
         [HelpUsage(UsageArgumments.Optional, "HelpUsageHelp")]

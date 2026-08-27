@@ -181,7 +181,7 @@ After initial setup completes, you can use any command directly:
 adrplus new --wizard
 
 # Or explore and manage your ADRs
-adrplus explore --path "path/to/repository"
+adrplus explore --path "path/to/repository" --file "path/to/report.md"
 adrplus approve --file "path/to/adr/ADR0001.md"
 ```
 
@@ -234,7 +234,7 @@ The `init` command can be run multiple times to reinitialize or update your ADR 
 # Initialize repository for the first time (or with wizard guidance)
 adrplus init --wizard
 
-# Reinitialize with specific configuration file
+# Reinitialize with specific configuration file (scriptable, no confirmation needed)
 adrplus init --path "path/to/repository" --file "path/to/config"
 
 # Reinitialize current directory
@@ -245,6 +245,13 @@ This is useful when:
 - You want to recreate default configuration files
 - You're adjusting naming conventions or patterns
 
+> **Note**: Re-running `init --path <dir>` **without** `--file` on a directory that already has a
+> config asks for confirmation before overwriting it. In a real interactive terminal you'll be
+> prompted as usual; in a non-interactive context (CI, scripts, an AI agent) there's no one to
+> confirm, so it fails cleanly with `Configuration file already exists at: <path>` instead of
+> overwriting silently. To reinitialize non-interactively, pass `--file` pointing at the
+> configuration you want — that always skips the confirmation, as shown above.
+
 ---
 
 ## Individual Commands (without the wizard)
@@ -253,16 +260,17 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 ```bash
 # Configure the tool (optional, you can edit the config file directly or use the config command later)
+# --file reads its content as a SEED for this machine's shared default template (used by future
+# `init` runs on this host) - it does not edit an existing repository's own config file in place.
 
     adrplus config --application --file "path/to/file-tool-config"
     adrplus config --template --file "path/to/file-template.md"
-    # any mode can be used for repository config, the important part is to point to the correct file
     adrplus config --repository --file "path/to/file-adr-config"
     adrplus config --migrate --file "path/to/file-ard-config"
 
-# Launch the ADR file viewer explorer
+# Launch the ADR file viewer explorer (--file is the path to write the generated report to)
 
-    adrplus explore --path "path/to/repository"
+    adrplus explore --path "path/to/repository" --file "path/to/report.md"
 
 # Initialize ADR structure (if the first time you set up the repository)
 
@@ -522,15 +530,15 @@ Before selecting a team profile, understand these key concepts:
 - **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful — e.g. noting which area or team a decision belongs to — AdrPlus does not enforce or interpret their values.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
-  - `PascalCase`: `UsePostgreSQLAsDatabase`
-  - `CamelCase`: `usePostgreSQLAsDatabase`
-  - `SnakeCase`: `use_postgresql_as_database`
-  - `KebabCase`: `use-postgresql-as-database` (default)
+  - `PascalCase`: `UsePostgreSqlAsDatabase`
+  - `CamelCase`: `usePostgreSqlAsDatabase`
+  - `SnakeCase`: `use_postgre_sql_as_database`
+  - `KebabCase`: `use-postgre-sql-as-database` (default)
 
 - **Separator**: The character separating different parts of the filename:
-  - `-` (hyphen): `ADR0001V01-UsePostgreSQL.md`
-  - `_` (underscore): `ADR0001_UsePostgreSQL.md`
-  - `.` (period): `ADR0001V01.UsePostgreSQL.md`
+  - `-` (hyphen): `ADR0001V01-UsePostgreSql.md`
+  - `_` (underscore): `ADR0001_UsePostgreSql.md`
+  - `.` (period): `ADR0001V01.UsePostgreSql.md`
 
 - **Version vs. Revision**:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
@@ -553,7 +561,7 @@ The default shape: a flat `folderadr` directory, no scope/domain-based organizat
 ```
 
 **Example filenames generated**:
-- `doc/adr/ADR0001V01-UsePostgreSQL.md`
+- `doc/adr/ADR0001V01-UsePostgreSql.md`
 - `doc/adr/ADR0002V01-AdoptReactFramework.md`
 
 #### 2) Product team with frequent revisions
@@ -570,8 +578,8 @@ Keep revision metadata visible and standardized. Useful for teams that frequentl
 
 **Example filenames generated**:
 - `doc/adr/ADR0001V01R01-DecisionTitle.md` (created)
-- `doc/adr/ADR0001V02R01-DecisionTitle.md` (after revision)
-- `doc/adr/ADR0001V03R02-DecisionTitle.md` (after version bump)
+- `doc/adr/ADR0001V01R02-DecisionTitle.md` (after revision - revision increments, version stays)
+- `doc/adr/ADR0001V02R01-DecisionTitle.md` (after version bump - version increments, revision resets to 01)
 - `doc/adr/ADR0002V01R01-DecisionTitle--0001.md` (after superseded bump)
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.

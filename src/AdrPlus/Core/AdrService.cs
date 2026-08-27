@@ -7,16 +7,14 @@ using AdrPlus.Commands;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
-using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
 namespace AdrPlus.Core
 {
-    internal class AdrService(IConfiguration configuration) : IAdrServices
+    internal class AdrService : IAdrServices
     {
-        private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         private const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
 
         public AdrPlusRepoConfig FromJson(string jsonString,string template)
@@ -520,10 +518,27 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
+            if (!int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length), CultureInfo.InvariantCulture, out var numberseq))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            var numberver = 0;
+            if (valueversion.Length > 0 && !int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out numberver))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            var numberrev = 0;
+            if (valuerevison.Length > 0 && !int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out numberrev))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
             result.Prefix = valueprefix.Length > 0 ? nameWithoutExtension.Substring(valueprefix.Position, valueprefix.Length) : string.Empty;
-            result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length), CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
-            result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
-            result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
+            result.Number = numberseq;
+            result.Version = numberver;
+            result.Revision = numberrev;
             result.Title = valuetitle.Position < nameWithoutExtension.Length ? nameWithoutExtension[valuetitle.Position..] : string.Empty;
             return (true, result);
         }
@@ -864,42 +879,13 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
-        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null)
+        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand)
         {
             ArgumentNullException.ThrowIfNull(args);
             ArgumentNullException.ThrowIfNull(argsForCommand);
 
             var parsedArgs = new Dictionary<Arguments, string>(args.Length);
 
-            if (args.Length == 0)
-            {
-                var section = _configuration.GetSection(AppConstants.DefaultSettingsRoot);
-                if (!section.Exists())
-                {
-                    throw new InvalidDataException(Resources.AdrPlus.ErrMsgDefaultSettingsMissing);
-                }
-                var behaviorWithoutArgs = section[AppConstants.FieldWithoutArgs];
-                Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out var behavior);
-                switch (behavior)
-                {
-                    case BehaviorWithoutArg.Help:
-                        args = ["-h"];
-                        break;
-                    case BehaviorWithoutArg.Wizard:
-                        if (defaultarg != null)
-                        {
-                            if (!string.IsNullOrWhiteSpace(defaultarg))
-                            {
-                                args = [defaultarg];
-                            }
-                        }
-                        else
-                        {
-                            args = ["-w"];
-                        }
-                        break;
-                }
-            }
             if (Array.IndexOf(args, "-h") >= 0 || Array.IndexOf(args, "--help") >= 0)
             {
                 parsedArgs[Arguments.Help] = string.Empty;
@@ -959,10 +945,10 @@ namespace AdrPlus.Core
             }
             if (!haswizard)
             {
-                foreach (var metadata in parsedArgs.Keys)
+                foreach (var required in argsForCommand)
                 {
-                    var argMetadata = s_argumentMetadata.First(x => x.CommandArg == metadata);
-                    if (parsedArgs[argMetadata.CommandArg].Length == 0 && argMetadata.Usage == UsageArgumments.OptionalWithValueWhenWizard)
+                    var argMetadata = s_argumentMetadata.First(x => x.CommandArg == required);
+                    if (argMetadata.Usage == UsageArgumments.OptionalWithValueWhenWizard && !parsedArgs.ContainsKey(required))
                     {
                         throw new ArgumentException(
                             string.Format(null, s_exceptionMissingRequiredArgumentFormat,
