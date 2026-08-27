@@ -8,7 +8,8 @@ using AdrPlus.Domain;
 namespace AdrPlus.Infrastructure.UI
 {
     /// <summary>
-    /// Prompts used exclusively by the <c>new</c> command's wizard flow.
+    /// Prompts for editing an ADR's Title/Scope/Domain, used by the <c>new</c>, <c>version</c>, and
+    /// <c>supersede</c> commands' wizard flows.
     /// </summary>
     internal interface INewAdrPrompts
     {

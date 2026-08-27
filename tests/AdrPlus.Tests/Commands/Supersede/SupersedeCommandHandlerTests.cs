@@ -42,6 +42,7 @@ public class SupersedeCommandHandlerTests
     private readonly ILogger<SupersedeCommandHandler> _mockLogger;
     private readonly IFileSystemService _mockFileSystem;
     private readonly IConsoleWriter _mockConsole;
+    private readonly INewAdrPrompts _mockNewAdrPrompts;
     private readonly IValidateConfig _mockValidateConfig;
     private readonly IAdrServices _mockAdrServices;
     private readonly IPluginManager _mockPluginManager;
@@ -53,6 +54,7 @@ public class SupersedeCommandHandlerTests
         _mockLogger = Substitute.For<ILogger<SupersedeCommandHandler>>();
         _mockFileSystem = Substitute.For<IFileSystemService>();
         _mockConsole = Substitute.For<IConsoleWriter>();
+        _mockNewAdrPrompts = Substitute.For<INewAdrPrompts>();
         _mockValidateConfig = Substitute.For<IValidateConfig>();
         _mockAdrServices = Substitute.For<IAdrServices>();
         _mockPluginManager = Substitute.For<IPluginManager>();
@@ -68,6 +70,7 @@ public class SupersedeCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices,
             _mockPluginManager);
     }
@@ -84,6 +87,7 @@ public class SupersedeCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices,
             _mockPluginManager);
 
@@ -255,6 +259,113 @@ public class SupersedeCommandHandlerTests
             Arg.Any<AdrPlusRepoConfig>(),
             _mockFileSystem,
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithScopeAndDomainArgs_UsesProvidedValuesInsteadOfPredecessorAdr()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath, "--scope", "NewScope", "--domain", "NewDomain" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, ValidAdrFilePath },
+            { Arguments.ScopeAdr, "NewScope" },
+            { Arguments.DomainAdr, "NewDomain" }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
+
+        var adrInfo = new AdrFileNameComponents
+        {
+            FileName = ValidAdrFilePath,
+            IsValid = true,
+            Number = 1,
+            ContentAdr = "## Context\n\nDecision content.",
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                Title = "Use New Database",
+                Scope = "OldScope",
+                Domain = "OldDomain",
+                StatusUpdate = AdrStatus.Accepted,
+                StatusChange = AdrStatus.Unknown,
+                StatusCreate = AdrStatus.Proposed,
+                Version = 1,
+                Revision = 0
+            }
+        };
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusChangeSupersedeAdrAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
+                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        string? capturedContent = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert
+        capturedContent.Should().NotBeNull();
+        capturedContent.Should().Contain("NewScope");
+        capturedContent.Should().Contain("NewDomain");
+        capturedContent.Should().NotContain("OldScope");
+        capturedContent.Should().NotContain("OldDomain");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithoutScopeAndDomainArgs_CarriesForwardPredecessorAdrValues()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath };
+        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded", "template":"# ADR"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
+
+        var adrInfo = new AdrFileNameComponents
+        {
+            FileName = ValidAdrFilePath,
+            IsValid = true,
+            Number = 1,
+            ContentAdr = "## Context\n\nDecision content.",
+            Header = new AdrHeader
+            {
+                IsValid = true,
+                Title = "Use New Database",
+                Scope = "PredecessorScope",
+                Domain = "PredecessorDomain",
+                StatusUpdate = AdrStatus.Accepted,
+                StatusChange = AdrStatus.Unknown,
+                StatusCreate = AdrStatus.Proposed,
+                Version = 1,
+                Revision = 0
+            }
+        };
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusChangeSupersedeAdrAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
+                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        string? capturedContent = null;
+        _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+        // Assert
+        capturedContent.Should().NotBeNull();
+        capturedContent.Should().Contain("PredecessorScope");
+        capturedContent.Should().Contain("PredecessorDomain");
     }
 
     [Fact]
@@ -545,6 +656,7 @@ public class SupersedeCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices,
             _mockPluginManager);
 
@@ -590,6 +702,7 @@ public class SupersedeCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices,
             _mockPluginManager);
 
@@ -635,6 +748,7 @@ public class SupersedeCommandHandlerTests
             _mockFileSystem,
             _mockValidateConfig,
             _mockConsole,
+            _mockNewAdrPrompts,
             _mockAdrServices,
             _mockPluginManager);
 
@@ -779,6 +893,14 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
         _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
+        _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+            .Returns((false, Array.Empty<string>(), (Exception?)null));
+        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+            .Returns((false, Array.Empty<string>(), (Exception?)null));
+        _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => (false, callInfo.Arg<string>()));
+        _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => (false, callInfo.Arg<string>()));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
@@ -808,6 +930,14 @@ public class SupersedeCommandHandlerTests
         _mockAdrServices.ReadAllAdr(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), false).Returns(filesAdrs);
         _mockConsole.PromptSelecAdrs(filesAdrs, Arg.Any<AdrPlusRepoConfig>(), Arg.Any<Func<AdrFileNameComponents, (bool, string?)>>(), Arg.Any<CancellationToken>())
             .Returns((false, filesAdrs[0]));
+        _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+            .Returns((false, Array.Empty<string>(), (Exception?)null));
+        _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+            .Returns((false, Array.Empty<string>(), (Exception?)null));
+        _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => (false, callInfo.Arg<string>()));
+        _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo => (false, callInfo.Arg<string>()));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())

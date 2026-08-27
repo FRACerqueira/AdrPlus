@@ -48,7 +48,6 @@ namespace AdrPlus.Commands.Revise
              Arguments.FileAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
-             Arguments.EmptyAdr,
              Arguments.Help];
 
         /// <summary>
@@ -218,12 +217,6 @@ namespace AdrPlus.Commands.Revise
                         throw new InvalidOperationException(Resources.AdrPlus.NotLatestVersion);
                     }
                 }
-                var emptyard = false;
-                if (parsedArgs.ContainsKey(Arguments.EmptyAdr))
-                {
-                    emptyard = true;
-                }
-
                 var adrRecord = new AdrRecord
                 {
                     Number = infoadr.Number,
@@ -234,7 +227,7 @@ namespace AdrPlus.Commands.Revise
                     CreateRef = dateAdr,
                     Version = infoadr.Header.Version,
                     Revision = (infoadr.Header.Revision??0) + 1,
-                    Template = emptyard ? repoconfig.Template : infoadr.ContentAdr!,
+                    Template = infoadr.ContentAdr!,
                 };
 
                 var filename = adrRecord.GetFileName(repoconfig);
@@ -437,16 +430,6 @@ namespace AdrPlus.Commands.Revise
                 if (isOpenAdr)
                 {
                     parsedArgs[Arguments.OpenFile] = string.Empty;
-                }
-
-                var emptyadr = _prompt.PromptEmptyTemplate(cancellationToken);
-                if (emptyadr.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                if (emptyadr.Content)
-                {
-                    parsedArgs[Arguments.EmptyAdr] = string.Empty;
                 }
 
                 var (_, Top) = _prompt.PromptCursorPosition();

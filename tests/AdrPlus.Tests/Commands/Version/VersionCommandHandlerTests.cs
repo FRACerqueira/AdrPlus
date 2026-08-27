@@ -25,6 +25,7 @@ namespace AdrPlus.Tests.Commands.Version
         private readonly ILogger<VersionCommandHandler> _mockLogger;
         private readonly IFileSystemService _mockFileSystem;
         private readonly IConsoleWriter _mockConsole;
+        private readonly INewAdrPrompts _mockNewAdrPrompts;
         private readonly IValidateConfig _mockValidateConfig;
         private readonly IAdrServices _mockAdrServices;
         private readonly IPluginManager _mockPluginManager;
@@ -44,6 +45,7 @@ namespace AdrPlus.Tests.Commands.Version
             _mockLogger = Substitute.For<ILogger<VersionCommandHandler>>();
             _mockFileSystem = Substitute.For<IFileSystemService>();
             _mockConsole = Substitute.For<IConsoleWriter>();
+            _mockNewAdrPrompts = Substitute.For<INewAdrPrompts>();
             _mockValidateConfig = Substitute.For<IValidateConfig>();
             _mockAdrServices = Substitute.For<IAdrServices>();
             _mockPluginManager = Substitute.For<IPluginManager>();
@@ -62,6 +64,7 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
+                _mockNewAdrPrompts,
                 _mockAdrServices,
                 _mockPluginManager);
         }
@@ -78,6 +81,7 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
+                _mockNewAdrPrompts,
                 _mockAdrServices,
                 _mockPluginManager);
 
@@ -1027,6 +1031,139 @@ namespace AdrPlus.Tests.Commands.Version
             await _mockFileSystem.Received(1).WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
         }
 
+        [Fact]
+        public async Task ExecuteAsync_WithScopeAndDomainArgs_UsesProvidedValuesInsteadOfSourceAdr()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath, "--scope", "NewScope", "--domain", "NewDomain" };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath },
+                { Arguments.ScopeAdr, "NewScope" },
+                { Arguments.DomainAdr, "NewDomain" }
+            };
+
+            var infoadr = new AdrFileNameComponents
+            {
+                FileName = AdrFileName,
+                Number = 1,
+                IsValid = true,
+                Revision = 1,
+                Title = "test",
+                Header = new AdrHeader
+                {
+                    IsValid = true,
+                    StatusUpdate = AdrStatus.Accepted,
+                    StatusCreate = AdrStatus.Proposed,
+                    StatusChange = AdrStatus.Unknown,
+                    Title = "Test ADR",
+                    Scope = "OldScope",
+                    Domain = "OldDomain"
+                },
+                ContentAdr = "Test content"
+            };
+
+            _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(infoadr);
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
+
+            string? capturedContent = null;
+            _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            // Act
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+            // Assert
+            capturedContent.Should().NotBeNull();
+            capturedContent.Should().Contain("NewScope");
+            capturedContent.Should().Contain("NewDomain");
+            capturedContent.Should().NotContain("OldScope");
+            capturedContent.Should().NotContain("OldDomain");
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_WithoutScopeAndDomainArgs_FallsBackToLatestAdrValuesNotFileAdr()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath }
+            };
+
+            var infoadr = new AdrFileNameComponents
+            {
+                FileName = AdrFileName,
+                Number = 1,
+                IsValid = true,
+                Revision = 1,
+                Title = "test",
+                Header = new AdrHeader
+                {
+                    IsValid = true,
+                    StatusUpdate = AdrStatus.Accepted,
+                    StatusCreate = AdrStatus.Proposed,
+                    StatusChange = AdrStatus.Unknown,
+                    Title = "Test ADR",
+                    Scope = "FileScope",
+                    Domain = "FileDomain"
+                },
+                ContentAdr = "Test content"
+            };
+            var latestadr = new AdrFileNameComponents
+            {
+                FileName = AdrFileName,
+                Number = 1,
+                IsValid = true,
+                Revision = 1,
+                Title = "test",
+                Header = new AdrHeader
+                {
+                    IsValid = true,
+                    StatusUpdate = AdrStatus.Accepted,
+                    StatusCreate = AdrStatus.Proposed,
+                    StatusChange = AdrStatus.Unknown,
+                    Title = "Test ADR",
+                    Scope = "LatestScope",
+                    Domain = "LatestDomain"
+                },
+                ContentAdr = "Test content"
+            };
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
+
+            // fileadr/rootPath are normalized via Path.GetFullPath inside the handler before being passed
+            // to these calls, so the literal test constants never match - use Arg.Any<string>() for those.
+            _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(infoadr);
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(latestadr));
+
+            string? capturedContent = null;
+            _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
+                .Returns(Task.CompletedTask);
+
+            // Act
+            await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
+
+            // Assert
+            capturedContent.Should().NotBeNull();
+            capturedContent.Should().Contain("LatestScope");
+            capturedContent.Should().Contain("LatestDomain");
+            capturedContent.Should().NotContain("FileScope");
+            capturedContent.Should().NotContain("FileDomain");
+        }
+
         #endregion
 
         #region ExecuteAsync - Date Parsing Tests
@@ -1457,6 +1594,14 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns((false, selectedAdr));
             _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns([]);
+            _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+                .Returns((false, Array.Empty<string>(), (Exception?)null));
+            _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+                .Returns((false, Array.Empty<string>(), (Exception?)null));
+            _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo => (false, callInfo.Arg<string>()));
+            _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo => (false, callInfo.Arg<string>()));
             _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
                 .Returns((true, DateTime.UtcNow));
 
@@ -1554,7 +1699,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Should().ThrowAsync<OperationCanceledException>();
 
             // Assert
-            _mockConsole.Received(4).PromptWriteSummary(Arg.Any<string>());
+            _mockConsole.Received(6).PromptWriteSummary(Arg.Any<string>());
         }
 
         [Fact]
@@ -1800,6 +1945,14 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns([selectedAdr]);
             _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
                 .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(selectedAdr));
+            _mockNewAdrPrompts.PromptGetArrayScopesAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+                .Returns((false, Array.Empty<string>(), (Exception?)null));
+            _mockNewAdrPrompts.PromptGetArrayDomainsAdr(Arg.Any<AdrFileNameComponents[]>(), Arg.Any<CancellationToken>())
+                .Returns((false, Array.Empty<string>(), (Exception?)null));
+            _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo => (false, callInfo.Arg<string>()));
+            _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+                .Returns(callInfo => (false, callInfo.Arg<string>()));
             _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
                 .Returns((false, new DateTime(2026, 1, 15)));
             _mockConsole.PromptEmptyTemplate(Arg.Any<CancellationToken>())
@@ -1831,6 +1984,7 @@ namespace AdrPlus.Tests.Commands.Version
                 _mockFileSystem,
                 _mockValidateConfig,
                 _mockConsole,
+                _mockNewAdrPrompts,
                 _mockAdrServices,
                 _mockPluginManager);
         }

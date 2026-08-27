@@ -23,6 +23,13 @@ this point on; a breaking change to the CLI or to `AdrPlus.Abstractions` is now 
   blocks, rejects, or silently rewrites what the user types, keeping this consistent with ADR006 (no
   host-enforced rules on these fields). Not applied in non-interactive/CLI-flag mode, where a value the
   caller explicitly passed is always used exactly as given (important for scripted/CI/AI-agent usage).
+- `adrplus version` now accepts `-s/--scope`/`-d/--domain` (matching `new`) and prompts for them in
+  `--wizard` mode, pre-filled with the source ADR's current values with the same suggestion behavior as
+  `new`'s prompts. Omitting them keeps the new version's Scope/Domain unchanged from the source ADR, same
+  as before this change - see [ADR008](doc/adr/ADR008V01-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md).
+- `adrplus supersede` accepts the same `-s/--scope`/`-d/--domain` flags and `--wizard` prompts as
+  `version`, pre-filled with the predecessor ADR's current values - see
+  [ADR008V02](doc/adr/ADR008V02-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md).
 
 ### Removed
 
@@ -43,6 +50,11 @@ this point on; a breaking change to the CLI or to `AdrPlus.Abstractions` is now 
   `config --repository` can clean an existing dirty file for you (the field-stripping step was removed
   together with the tolerance it served; `config --repository` also always writes to the machine's
   shared install-level template, never a specific repository's file).
+- `-e/--empty` removed from `adrplus revise` (both the CLI flag and the `--wizard` prompt) - `revise` now
+  always copies the source ADR's content forward. Per
+  [ADR008](doc/adr/ADR008V01-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md),
+  starting a revision blank doesn't fit `revise`'s purpose ("fix/clarify wording, same decision"); use
+  `adrplus version --empty` instead when the decision itself has changed enough to warrant a fresh start.
 
 ### Changed
 

@@ -1058,45 +1058,10 @@ public class ReviseCommandHandlerTests
 
     #endregion
 
-    #region ExecuteAsync - Empty Template Tests
+    #region ExecuteAsync - Content Copy Tests
 
     [Fact]
-    public async Task ExecuteAsync_WithEmptyTemplateArg_UsesEmptyTemplate()
-    {
-        // Arrange
-        var configPath = "/repo/.adrplus";
-        var args = new[] { "--file", AdrFilePath, "--empty" };
-        var parsedArgs = new Dictionary<Arguments, string>
-        {
-            { Arguments.FileAdr, AdrFilePath },
-            { Arguments.EmptyAdr, string.Empty }
-        };
-
-        SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
-        var infoadr = CommandHandlerMockHelper.CreateCompleteAdrFileNameComponents(
-            AdrFileName, AdrStatus.Accepted, number: 1, version: 1, revision: 1, title: "test", domain: "");
-
-        _mockAdrServices.ParseFileName(AdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-            .Returns(Task.FromResult(infoadr));
-        _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-            .Returns(Task.FromResult(Array.Empty<AdrFileNameComponents>()));
-        _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, RepoPath, Arg.Any<AdrPlusRepoConfig>())
-            .Returns(Task.FromResult<AdrFileNameComponents?>(infoadr));
-
-        string? capturedContent = null;
-        _mockFileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Do<string>(c => capturedContent = c), Arg.Any<CancellationToken>())
-            .Returns(Task.CompletedTask);
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        capturedContent.Should().NotBeNull();
-        capturedContent.Should().Contain("# ADR");
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WithoutEmptyTemplateArg_UsesOriginalContent()
+    public async Task ExecuteAsync_AlwaysCopiesSourceContentForward()
     {
         // Arrange
         var configPath = "/repo/.adrplus";
@@ -1616,8 +1581,6 @@ public class ReviseCommandHandlerTests
             .Returns(Task.FromResult<AdrFileNameComponents?>(selectedAdr));
         _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
-        _mockConsole.PromptEmptyTemplate(Arg.Any<CancellationToken>())
-            .Returns((false, false));
         var (_, Top) = ((0, 10));
         _mockConsole.PromptCursorPosition().Returns((0, Top));
         _mockConsole.PromptMovePosition(0, Top);

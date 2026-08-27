@@ -31,6 +31,7 @@ namespace AdrPlus.Commands.Supersede
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
+        INewAdrPrompts newAdrPrompts,
         IAdrServices adrServices,
         IPluginManager pluginManager) : ICommandHandler
     {
@@ -38,12 +39,15 @@ namespace AdrPlus.Commands.Supersede
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
+        private readonly INewAdrPrompts _newAdrPrompts = newAdrPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardSupersede,
              Arguments.FileAdr,
+             Arguments.DomainAdr,
+             Arguments.ScopeAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
              Arguments.Help];
@@ -100,6 +104,7 @@ namespace AdrPlus.Commands.Supersede
                         [
                             "adrplus supersede --wizard --open",
                             "adrplus supersede --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
+                            "adrplus supersede --file \"path/to/File-ADR\" --scope \"Backend\" --domain \"Payments\"",
                         ]));
                     return;
                 }
@@ -173,12 +178,15 @@ namespace AdrPlus.Commands.Supersede
                     _prompt.PromptClearWaitText(curpos);
                 }
 
+                var scope = parsedArgs.TryGetValue(Arguments.ScopeAdr, out string? scopeValue) ? scopeValue : (infoadr.Header.Scope ?? string.Empty);
+                var domain = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? domainValue) ? domainValue : (infoadr.Header.Domain ?? string.Empty);
+
                 var adrRecord = new AdrRecord
                 {
                     Number = nextNumber,
                     Title = infoadr.Title,
-                    Scope = infoadr.Header.Scope ?? string.Empty,
-                    Domain = infoadr.Header.Domain ?? string.Empty,
+                    Scope = scope,
+                    Domain = domain,
                     StatusCreate = AdrStatus.Proposed,
                     CreateRef = dateAdr,
                     Version = 1,
@@ -359,6 +367,39 @@ namespace AdrPlus.Commands.Supersede
                 }
                 parsedArgs[Arguments.FileAdr] = filenewsup.info!.FileName;
 
+                var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(filesadrs, cancellationToken);
+                if (ScopesAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (scopesException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered scopes for suggestions: {scopesException.Message}");
+                }
+                var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(filesadrs, cancellationToken);
+                if (DomainsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (domainsException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered domains for suggestions: {domainsException.Message}");
+                }
+
+                var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(filenewsup.info.Header.Scope ?? string.Empty, scopes, cancellationToken);
+                if (scopePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
+
+                var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(filenewsup.info.Header.Domain ?? string.Empty, domains, cancellationToken);
+                if (domainPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
+
                 var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
@@ -368,7 +409,7 @@ namespace AdrPlus.Commands.Supersede
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
                 var (_, Top) = _prompt.PromptCursorPosition();
-                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef);
+                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef, scopePrompt.Content.Trim(), domainPrompt.Content.Trim());
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
                 _prompt.PromptMovePosition(0, Top);
 
@@ -392,11 +433,13 @@ namespace AdrPlus.Commands.Supersede
             }
         }
 
-        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
+        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef, string scope, string domain)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
             _prompt.PromptWriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _prompt.PromptWriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Scope + ": " + scope);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Domain + ": " + domain);
             _prompt.PromptWriteSummary("");
         }
     }
