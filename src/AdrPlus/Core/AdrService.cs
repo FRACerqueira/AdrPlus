@@ -425,7 +425,6 @@ namespace AdrPlus.Core
             var result = ParseFileNameOnly(filePath, config);
             if (!result.IsValid)
             {
-                // If filename parsing failed, try to load the file header anyway to report header errors ?
                 return result;
             }
 
