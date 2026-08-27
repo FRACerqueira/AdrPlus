@@ -367,9 +367,9 @@ The rules below describe what must be true for a command to select its target su
 | `approve` | ADR must be eligible: not already approved/rejected and for the same sequence number not superseded.|
 | `reject` | ADR must be eligible: not already approved/rejected.|
 | `undo` | ADR must be eligible: already approved/rejected and for the same sequence not a superseded and not proposed.|
-| `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded.|
-| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
-| `supersede` | ADR must be eligible: already approved and not superseded.|
+| `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded. `--scope`/`--domain` are optional — omitted, the new version keeps the source ADR's current values; provided, it uses the given value instead.|
+| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled. Scope/Domain always carry forward unchanged — `revise` has no `--scope`/`--domain`.|
+| `supersede` | ADR must be eligible: already approved and not superseded. `--scope`/`--domain` are optional — omitted, the new ADR keeps the superseded ADR's current values; provided, it uses the given value instead.|
 
 ---
 

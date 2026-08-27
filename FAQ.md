@@ -89,9 +89,9 @@ No. The date format is fixed in the tool's metadata handling and cannot be custo
 
 ### What is the difference between `version`, `revise`, and `supersede`?
 
-- `version`: creates a new major version of the same ADR sequence.
-- `revise`: creates a revision of the same ADR version (when revision is enabled).
-- `supersede`: creates a successor ADR with a new sequence number.
+- `version`: creates a new major version of the same ADR sequence. Accepts `--scope`/`--domain` to reclassify the topic if it changed; omitted, it keeps the source ADR's current values.
+- `revise`: creates a revision of the same ADR version (when revision is enabled). Always carries Scope/Domain forward unchanged — no `--scope`/`--domain` flags, since a revision is a wording fix to the same decision, not a reclassification.
+- `supersede`: creates a successor ADR with a new sequence number. Also accepts `--scope`/`--domain`, same as `version` — a genuinely different decision is at least as likely to belong elsewhere.
 
 ### How does the tool determine the next ADR number when creating a new ADR?
 
