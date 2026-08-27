@@ -107,7 +107,7 @@ namespace AdrPlus.Domain
         /// </summary>
         /// <param name="config">The ADR Plus configuration containing header format, date format, and status string mappings.</param>
         /// <param name="supersedefile">When <see cref="StatusChange"/> is <see cref="AdrStatus.Superseded"/>, the filename of the superseding ADR to append after the status date.</param>
-        /// <param name="migrated">Flag for migrated option</param>
+        /// <param name="migrated">When <see langword="true"/>, marks the header with the migrated marker and leaves the Version/Revision cells blank instead of writing their actual values.</param>
         /// <returns>A formatted multi-line header string.</returns>
         public string GetHeader(AdrPlusRepoConfig config, string? supersedefile = null, bool migrated = false)
         {

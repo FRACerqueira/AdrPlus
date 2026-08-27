@@ -15,7 +15,6 @@ namespace AdrPlus.Tests.Commands;
 /// <summary>
 /// Unit tests for CommandRouter class.
 /// Tests demonstrate command routing patterns using NSubstitute.
-/// These tests are designed to run cross-platform on both Linux and Windows.
 /// </summary>
 public class CommandRouterTests
 {
@@ -164,7 +163,7 @@ public class CommandRouterTests
     #region RouteAsync - Console Output Tests
 
     [Fact]
-    public async Task RouteAsync_WithUnknownCommandName_CallsWriteFinishedCommand()
+    public async Task RouteAsync_WithUnknownCommandName_NeverCallsWriteFinishedCommand()
     {
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
@@ -180,9 +179,9 @@ public class CommandRouterTests
         await Record.ExceptionAsync(
             () => router.RouteAsync("unknown", [], TestContext.Current.CancellationToken));
 
-        // Assert
-        // The finally block should execute and call WriteFinishedCommand
-        // even though we threw an exception earlier
+        // Assert - an unknown command throws before the try/finally is ever entered, so the
+        // "command finished" message (only written in RouteAsync's finally block) must never fire.
+        console.DidNotReceive().PromptWriteFinishedCommand(Arg.Any<string>());
     }
 
     [Fact]

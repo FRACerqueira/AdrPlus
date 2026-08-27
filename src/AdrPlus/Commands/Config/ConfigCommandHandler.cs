@@ -22,15 +22,6 @@ namespace AdrPlus.Commands.Config
     /// (<c>AdrPlus.json</c>), repository (<c>adr-config.adrplus</c>), or ADR template (<c>adr-template.md</c>)
     /// configuration files through an interactive wizard or by supplying an external file.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ConfigCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class ConfigCommandHandler(
         ILogger<ConfigCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -138,14 +129,6 @@ namespace AdrPlus.Commands.Config
             }
         }
 
-        /// <summary>
-        /// Processes the migration configuration 
-        /// </summary>
-        /// <param name="fileConfigPath">Optional path to an external configuration file. Empty string triggers the wizard.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="InvalidDataException"></exception>
         private async Task ProcessMigrationConfigAsync(string fileConfigPath, CancellationToken cancellationToken)
         {
             string? jsoncontent;
@@ -437,7 +420,6 @@ namespace AdrPlus.Commands.Config
         /// <exception cref="FileNotFoundException">Thrown when the selected template file does not exist.</exception>
         private async Task<string> WizardTemplateConfig(CancellationToken cancellationToken)
         {
-            // Select drive
             string[] drives = _fileSystem.GetDrives();
             var rootPath = drives[0];
             if (drives.Length > 1)
@@ -450,7 +432,6 @@ namespace AdrPlus.Commands.Config
                 rootPath = driveContent;
             }
 
-            // Select file template
             var (IsAborted, Content) = _configPrompts.PromptConfigTemplateAdrSelect(rootPath, cancellationToken);
             if (IsAborted)
             {
@@ -552,10 +533,6 @@ namespace AdrPlus.Commands.Config
             _prompt.PromptWriteSuccess(filePath);
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -652,7 +629,7 @@ namespace AdrPlus.Commands.Config
 
         /// <summary>
         /// Parses <paramref name="modifiedConfig"/> and builds a list of editable <see cref="FieldsJson"/> entries
-        /// for all root-level properties. The <c>template</c> field is marked as non-editable.
+        /// for all root-level properties. The <c>template</c> and <c>migrationPattern</c> fields are excluded.
         /// </summary>
         /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         /// <returns>A list of <see cref="FieldsJson"/> entries representing each configuration field.</returns>
@@ -712,10 +689,6 @@ namespace AdrPlus.Commands.Config
             return fields;
         }
 
-        /// <summary>
-        /// Generates and writes sample ADR filenames to the console to help the user preview the effect of the current configuration.
-        /// </summary>
-        /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         private void DisplaySampleFiles(string modifiedConfig)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.ConfigInfoFileNameSample);
@@ -895,11 +868,6 @@ namespace AdrPlus.Commands.Config
             };
         }
 
-        /// <summary>
-        /// Converts a JSON element value to its string representation.
-        /// </summary>
-        /// <param name="element">The JSON element to convert.</param>
-        /// <returns>The string representation of the element value.</returns>
         private static string GetJsonValueAsString(JsonElement element)
         {
             return element.ValueKind switch
@@ -912,14 +880,6 @@ namespace AdrPlus.Commands.Config
             };
         }
 
-        /// <summary>
-        /// Updates a specific field value in the application configuration JSON.
-        /// </summary>
-        /// <param name="jsonContent">The current JSON configuration content.</param>
-        /// <param name="fieldName">The name of the field to update.</param>
-        /// <param name="newValue">The new value for the field.</param>
-        /// <param name="type">The JSON value kind of the field.</param>
-        /// <returns>The updated JSON configuration content.</returns>
         private static string UpdateJsonFieldApp(string jsonContent, string fieldName, string newValue, JsonValueKind type)
         {
             var jsonDoc = JsonDocument.Parse(jsonContent, AppConstants.DocumentOptions);
@@ -948,14 +908,6 @@ namespace AdrPlus.Commands.Config
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        /// <summary>
-        /// Updates a specific field value in the repository configuration JSON.
-        /// </summary>
-        /// <param name="jsonContent">The current JSON configuration content.</param>
-        /// <param name="fieldName">The name of the field to update.</param>
-        /// <param name="newValue">The new value for the field.</param>
-        /// <param name="type">The JSON value kind of the field.</param>
-        /// <returns>The updated JSON configuration content.</returns>
         private static string UpdateJsonFieldRepo(string jsonContent, string fieldName, string newValue, JsonValueKind type)
         {
             using var jsonDoc = JsonDocument.Parse(jsonContent, AppConstants.DocumentOptions);

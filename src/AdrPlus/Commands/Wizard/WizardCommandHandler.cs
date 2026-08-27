@@ -21,16 +21,6 @@ namespace AdrPlus.Commands.Wizard
     /// Presents a hierarchical menu to configure the application, manage ADRs, or access per-command help.
     /// Persists the last-selected menu item across sessions.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="WizardCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="commandRouter">The command router used to dispatch selected commands.</param>
-    /// <param name="configuration">The application configuration for reading version and banner data.</param>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="fileSystem">The file system service for persisting wizard history.</param>
-    /// <param name="validateconfig">The service for checking whether the repository template is configured.</param>
-    /// <param name="prompt">The console writer for displaying menus, banners, and prompts.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
     /// <param name="builtinPluginsRoot">
     /// The folder containing plugins bundled with the adrplus package itself (e.g. <c>plugins-builtin</c> next
     /// to the tool's own assembly), or empty to skip showing them. Unlike the per-repo <c>ActivePlugins</c>
@@ -139,7 +129,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch
                             {
-                                // If an exception occurs , skip excepion.
+                                // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                             }
                             break;
                         case '2':
@@ -156,7 +146,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch
                             {
-                                // If an exception occurs , skip excepion.
+                                // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                             }
                             break;
                         case '3':
@@ -173,7 +163,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch
                             {
-                                // If an exception occurs , skip excepion.
+                                // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                             }
                             break;
                         case '4':
@@ -193,7 +183,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch
                             {
-                                // If an exception occurs , skip excepion.
+                                // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                             }
                             break;
                         case '5':
@@ -211,7 +201,7 @@ namespace AdrPlus.Commands.Wizard
                                 }
                                 catch
                                 {
-                                    // If an exception occurs , skip excepion.
+                                    // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                                 }
                                 break;
                             }
@@ -229,7 +219,7 @@ namespace AdrPlus.Commands.Wizard
                             }
                             catch
                             {
-                                // If an exception occurs , skip excepion.
+                                // deliberately swallowed - a sub-menu command failure returns to the wizard loop instead of exiting it
                             }
                             break;
                         default:
@@ -599,7 +589,7 @@ namespace AdrPlus.Commands.Wizard
         }
 
         /// <summary>
-        /// Returns the top-level group menu items (Configurations, ADRs, Command Help, Exit).
+        /// Returns the top-level group menu items (Configurations, Init/Migrate, ADRs, Command Help, Explore Report, Plugins, Exit).
         /// </summary>
         /// <returns>An array of <see cref="ItemMenuWizard"/> representing the top-level menu options.</returns>
         private static ItemMenuWizard[] GetGroupMenu()
@@ -660,9 +650,9 @@ namespace AdrPlus.Commands.Wizard
         }
 
         /// <summary>
-        /// Returns the top-level group menu items (Configurations, ADRs, Command Help, Exit).
+        /// Returns the init/migrate sub-menu items (init, migrate, back).
         /// </summary>
-        /// <returns>An array of <see cref="ItemMenuWizard"/> representing the top-level menu options.</returns>
+        /// <returns>An array of <see cref="ItemMenuWizard"/> representing the init/migrate menu.</returns>
         private static ItemMenuWizard[] GetMenuInitMigrate()
         {
             return [

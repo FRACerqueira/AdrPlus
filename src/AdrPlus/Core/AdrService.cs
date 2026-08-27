@@ -460,7 +460,6 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
                 return result;
             }
-            //try parse with configured ADRLUS format
             var parseResult = ParseAdrPlusFileNameAsync(filePath, config);
             if (parseResult.Success)
             {

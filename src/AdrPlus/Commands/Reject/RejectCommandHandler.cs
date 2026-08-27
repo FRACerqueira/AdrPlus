@@ -24,16 +24,6 @@ namespace AdrPlus.Commands.Reject
     /// When the ADR superseded a previous one, its supersede status is also undone.
     /// The target ADR must currently have <see cref="AdrStatus.Unknown"/> as its update status.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="RejectCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Rejected</c>/<c>StatusUndone</c> lifecycle events.</param>
     internal sealed class RejectCommandHandler(
         ILogger<RejectCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -71,11 +61,6 @@ namespace AdrPlus.Commands.Reject
                 info.Header.StatusChange == AdrStatus.Unknown);
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow rejection.
-        /// </summary>
-        /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
-        /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForApproveReject, $"{Helper.GetResourceStatus(adrStatus)}");
@@ -203,10 +188,6 @@ namespace AdrPlus.Commands.Reject
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
@@ -338,10 +319,6 @@ namespace AdrPlus.Commands.Reject
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -351,13 +328,6 @@ namespace AdrPlus.Commands.Reject
             }
         }
 
-        /// <summary>
-        /// Displays a formatted summary of the wizard selections before the user confirms the rejection.
-        /// Shows the selected repository path, ADR filename, and reference date.
-        /// </summary>
-        /// <param name="rootpath">The root repository path selected by the user.</param>
-        /// <param name="fileref">The filename of the ADR to be rejected.</param>
-        /// <param name="defDateRef">The reference date for the rejection operation.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);

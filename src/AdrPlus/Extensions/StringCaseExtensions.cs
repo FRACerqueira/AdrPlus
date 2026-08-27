@@ -107,13 +107,8 @@ namespace AdrPlus.Core
             if (string.IsNullOrWhiteSpace(input))
                 return [];
 
-            // Remove leading and trailing spaces
             input = input.Trim();
 
-            // Pattern that identifies transitions between words in different formats
-            // 1. Lowercase to uppercase (camelCase/PascalCase): helloWorld -> hello World
-            // 2. Consecutive uppercase to lowercase (PascalCase): XMLParser -> XML Parser
-            // 3. Separators like _, -, or spaces
             var words = WordSplitRegex().Split(input)
                 .Where(w => !string.IsNullOrWhiteSpace(w))
                 .ToArray();

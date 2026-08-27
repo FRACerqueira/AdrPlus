@@ -22,16 +22,6 @@ namespace AdrPlus.Commands.UndoStatus
     /// <see cref="AdrStatus.Unknown"/>, effectively returning it to its original proposed state.
     /// The target ADR must have a non-unknown update status and no change status set.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="UndoStatusCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>StatusUndone</c> lifecycle event.</param>
     internal sealed partial class UndoStatusCommandHandler(
         ILogger<UndoStatusCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -66,11 +56,6 @@ namespace AdrPlus.Commands.UndoStatus
                 info.Header.StatusChange == AdrStatus.Unknown);
        }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow undo.
-        /// </summary>
-        /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
-        /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUndo, $"{Helper.GetResourceStatus(adrStatus)}");
@@ -184,10 +169,6 @@ namespace AdrPlus.Commands.UndoStatus
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
@@ -196,7 +177,7 @@ namespace AdrPlus.Commands.UndoStatus
 
         /// <summary>
         /// Runs the interactive wizard for the <c>undo</c> command, guiding the user through selecting
-        /// a drive, repository folder, eligible ADR, and reference date.
+        /// a drive, repository folder, and eligible ADR.
         /// The wizard loops until the user confirms the selection.
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
@@ -212,7 +193,6 @@ namespace AdrPlus.Commands.UndoStatus
             {
                 parsedArgs.Clear();
 
-                // Select drive
                 string[] drives = _filesystem.GetDrives();
                 var rootPath = drives[0];
                 if (drives.Length > 1)
@@ -225,14 +205,12 @@ namespace AdrPlus.Commands.UndoStatus
                     rootPath = Content;
                 }
 
-                // Select folder
                 var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                // Validate repo config
                 var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
@@ -279,7 +257,6 @@ namespace AdrPlus.Commands.UndoStatus
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName));
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
@@ -296,10 +273,6 @@ namespace AdrPlus.Commands.UndoStatus
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -309,12 +282,6 @@ namespace AdrPlus.Commands.UndoStatus
             }
         }
 
-        /// <summary>
-        /// Displays a formatted summary of the wizard selections before the user confirms the undo operation.
-        /// Shows the selected repository path, ADR filename, and reference date.
-        /// </summary>
-        /// <param name="rootpath">The root repository path selected by the user.</param>
-        /// <param name="fileref">The filename of the ADR whose status will be undone.</param>
         private void DisplayWizardSummary(string rootpath, string fileref)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);

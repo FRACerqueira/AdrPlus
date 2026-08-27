@@ -12,7 +12,6 @@ namespace AdrPlus.Tests.Commands.Explore;
 /// <summary>
 /// Unit tests for ExploreCommandHandler class.
 /// Tests demonstrate explore command execution, wizard flows, report generation, and file operations.
-/// Tests are cross-platform compatible and use helper methods to reduce boilerplate.
 /// </summary>
 public class ExploreCommandHandlerTests
 {

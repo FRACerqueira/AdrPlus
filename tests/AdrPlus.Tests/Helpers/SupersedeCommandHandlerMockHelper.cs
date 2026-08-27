@@ -129,42 +129,6 @@ internal static class SupersedeCommandHandlerMockHelper
     }
 
     /// <summary>
-    /// Determines if a file path corresponds to an input ADR file from parsed arguments.
-    /// Handles both cases where the input file has .md extension or not.
-    /// </summary>
-    private static bool IsInputFile(string filePath, Dictionary<Arguments, string> parsedArgs)
-    {
-        if (!parsedArgs.TryGetValue(Arguments.FileAdr, out var inputFile))
-            return false;
-
-        // Normalize paths for comparison
-        var normalizedInput = NormalizePath(inputFile).ToLower();
-        var normalizedPath = NormalizePath(filePath).ToLower();
-
-        // Check direct match
-        if (normalizedPath == normalizedInput)
-            return true;
-
-        // Check if input file without .md matches path with .md
-        if (!inputFile.EndsWith(".md"))
-        {
-            var inputWithMd = NormalizePath(inputFile + ".md").ToLower();
-            if (normalizedPath == inputWithMd)
-                return true;
-        }
-
-        // Check if input file with .md matches path without .md
-        if (inputFile.EndsWith(".md"))
-        {
-            var inputWithoutMd = NormalizePath(inputFile[..^3]).ToLower();
-            if (normalizedPath == inputWithoutMd)
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
     /// Normalizes a file path for consistent comparison.
     /// </summary>
     private static string NormalizePath(string path)

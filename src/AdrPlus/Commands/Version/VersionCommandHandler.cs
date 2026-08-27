@@ -25,16 +25,6 @@ namespace AdrPlus.Commands.Version
     /// The target ADR must be the latest version for its sequence number, must have been accepted or rejected,
     /// and versioning (<see cref="AdrPlusRepoConfig.LenVersion"/>) must be enabled in the repository configuration.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="VersionCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Versioned</c> lifecycle event.</param>
     internal sealed partial class VersionCommandHandler(
         ILogger<VersionCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -74,20 +64,11 @@ namespace AdrPlus.Commands.Version
                 info.Header.StatusChange == AdrStatus.Unknown);
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow a new version.
-        /// </summary>
-        /// <returns>A formatted error string listing the required statuses (Accepted/Rejected).</returns>
         private static string MessageNotValidStatusForUpdate()
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}/{Helper.GetResourceStatus(AdrStatus.Rejected)}");
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow a new version, 
-        /// </summary>
-        /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
-        /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(adrStatus)}");
@@ -261,7 +242,6 @@ namespace AdrPlus.Commands.Version
                     }
                 }
 
-                // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
 
                 var emptyard = false;
@@ -270,7 +250,6 @@ namespace AdrPlus.Commands.Version
                     emptyard = true;
                 }
 
-                // Create ADR record and file
                 var adrRecord = new AdrRecord
                 {
                     Number = infoadr.Number,
@@ -300,7 +279,6 @@ namespace AdrPlus.Commands.Version
 
                 await _pluginManager.DispatchAsync(AdrEventType.Versioned, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), Path.Combine(rootPath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
-                // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);
             }
             catch (Exception ex)
@@ -310,20 +288,12 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an error and writes it to the console.
-        /// </summary>
-        /// <param name="message">The error message to log and display.</param>
         private void LogAndWriteError(string message)
         {
             LogMessages.LogError(_logger, message);
@@ -402,7 +372,6 @@ namespace AdrPlus.Commands.Version
             {
                 parsedArgs.Clear();
 
-                // Select drive
                 string[] drives = _filesystem.GetDrives();
                 var rootPath = drives[0];
                 if (drives.Length > 1)
@@ -415,14 +384,12 @@ namespace AdrPlus.Commands.Version
                     rootPath = Content;
                 }
 
-                // Select folder
                 var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                // Validate repo config
                 var configPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig()));
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
@@ -476,7 +443,6 @@ namespace AdrPlus.Commands.Version
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                // Get date
                 var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
@@ -498,7 +464,6 @@ namespace AdrPlus.Commands.Version
                     parsedArgs[Arguments.EmptyAdr] = string.Empty;
                 }
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
@@ -516,10 +481,6 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a failure entry and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -529,12 +490,6 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Displays the wizard summary showing selected options for ADR versioning.
-        /// </summary>
-        /// <param name="rootpath">The root repository path.</param>
-        /// <param name="fileref">The reference file name.</param>
-        /// <param name="defDateRef">The reference date for the operation.</param>
         private void DisplayWizardSummary(string rootpath ,string fileref, DateTime defDateRef)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);

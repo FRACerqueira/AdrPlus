@@ -25,16 +25,6 @@ namespace AdrPlus.Commands.NewAdr
     /// Validates uniqueness of title, resolves the next sequence number, and writes
     /// the new <c>.md</c> file following the configured naming convention.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="NewAdrCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing, ADR file operations, and command metadata.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Created</c> lifecycle event.</param>
     internal sealed class NewAdrCommandHandler(
         ILogger<NewAdrCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -156,10 +146,8 @@ namespace AdrPlus.Commands.NewAdr
 
                 var nextNumber = _adrServices.GetNextNumberFrom(adrFiles);
 
-                // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
-    
-                // Create ADR  
+
                 var adrRecord = CreateAdrRecord(nextNumber, parsedArgs, dateAdr, repoconfig);
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(targetPath, repoconfig.FolderAdr));
@@ -177,7 +165,6 @@ namespace AdrPlus.Commands.NewAdr
 
                 await _pluginManager.DispatchAsync(AdrEventType.Created, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), Path.Combine(targetPath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
-                // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);
             }
             catch (Exception ex)
@@ -188,10 +175,6 @@ namespace AdrPlus.Commands.NewAdr
         }
 
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -201,10 +184,6 @@ namespace AdrPlus.Commands.NewAdr
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as a command failure and writes it to the console as an error.
-        /// </summary>
-        /// <param name="message">The error message to log and display.</param>
         private void LogAndWriteError(string message)
         {
             LogMessages.LogCommandFailure(_logger, message);
@@ -326,7 +305,6 @@ namespace AdrPlus.Commands.NewAdr
             {
                 parsedArgs.Clear();
 
-                // Select drive
                 string[] drives = _filesystem.GetDrives();
                 var rootPath = drives[0];
                 if (drives.Length > 1)
@@ -339,14 +317,12 @@ namespace AdrPlus.Commands.NewAdr
                     rootPath = Content;
                 }
 
-                // Select folder
                 var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig,  cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                // Validate repo config
                 var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, _) = _validateconfig.ValidateRepoStructure(jsonString);
@@ -361,7 +337,6 @@ namespace AdrPlus.Commands.NewAdr
                 parsedArgs[Arguments.TargetRepo] = folderPrompt.Content;
                 defFolder = folderPrompt.Content;
 
-                // Get title
                 var titlePrompt = _newAdrPrompts.PromptEditTitleAdr(defTitle, cancellationToken);
                 if (titlePrompt.IsAborted)
                 {
@@ -370,7 +345,6 @@ namespace AdrPlus.Commands.NewAdr
                 parsedArgs[Arguments.TitleAdr] = titlePrompt.Content.Trim();
                 defTitle = titlePrompt.Content.Trim();
 
-                // Get date
                 var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, defDateRef, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
@@ -431,7 +405,6 @@ namespace AdrPlus.Commands.NewAdr
                     parsedArgs[Arguments.OpenFile] = string.Empty;
                 }
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(parsedArgs, defDateRef);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
@@ -448,12 +421,6 @@ namespace AdrPlus.Commands.NewAdr
             }
         }
 
-        /// <summary>
-        /// Displays a summary of the wizard selections (repository, date, title, and optional scope/domain)
-        /// before the user confirms the ADR creation.
-        /// </summary>
-        /// <param name="parsedArgs">The parsed command arguments containing the selected values.</param>
-        /// <param name="defDateRef">The reference date for the new ADR.</param>
         private void DisplayWizardSummary(Dictionary<Arguments, string> parsedArgs, DateTime defDateRef)
         {
             _prompt.PromptWriteInfo($"{Resources.AdrPlus.SelectRepo} : {parsedArgs[Arguments.TargetRepo]}");

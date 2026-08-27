@@ -20,12 +20,6 @@ namespace AdrPlus.Commands.Explore
     /// <summary>
     /// Handles the <c>explore</c> command, which allows users to interactively explore their ADR repository, 
     /// </summary>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateConfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class ExploreCommandHandler(
         ILogger<ExploreCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -126,7 +120,6 @@ namespace AdrPlus.Commands.Explore
                     file = await CreateFileAdrReport(foundfiles, fields, targetreport, targetPath, repoconfig, cancellationToken);
                     LogMessages.LogCommandSuccessful(_logger, file);
                     _prompt.PromptWriteSuccess(file);
-                    // Open file if requested
                     OpenFileIfRequested(parsedArgs, file);
                 }
 
@@ -463,7 +456,6 @@ namespace AdrPlus.Commands.Explore
                     }
                 }
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(parsedArgs, fieldsseleted.FieldsExplore);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmExplore, cancellationToken);
@@ -504,10 +496,6 @@ namespace AdrPlus.Commands.Explore
         }
 
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)

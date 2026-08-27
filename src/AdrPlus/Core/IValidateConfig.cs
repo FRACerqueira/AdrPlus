@@ -26,9 +26,9 @@ namespace AdrPlus.Core
         Task RecreateVersionFileAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Gets the path to the template.
+        /// Gets the path to the version-history directory.
         /// </summary>
-        /// <returns>The template path.</returns>
+        /// <returns>The version-history directory path.</returns>
         string GetHistoryPath();
 
         /// <summary>

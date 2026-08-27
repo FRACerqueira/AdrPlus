@@ -13,8 +13,7 @@ using System.Text.Json;
 namespace AdrPlus.Tests.Core;
 
 /// <summary>
-/// Unit tests for AdrService class.
-/// Tests cover OpenFile method, FromJson parsing, and initialization logic.
+/// Unit tests for AdrService class: parsing, ADR repository reads/writes, and argument/help handling.
 /// Follows xUnit + NSubstitute + FluentAssertions patterns per TEST_ARCHITECTURE.md.
 /// </summary>
 public class AdrServiceTests

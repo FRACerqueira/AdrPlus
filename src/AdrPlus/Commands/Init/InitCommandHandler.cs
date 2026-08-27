@@ -20,15 +20,6 @@ namespace AdrPlus.Commands.Init
     /// Handles the <c>init</c> command, which initializes the ADR repository structure by creating
     /// the configuration file and optional scope sub-folders at the specified target path.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="InitCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
-    /// <param name="pluginManager">The plugin manager used to discover whatever is available on the host to record the new repo's <c>activeplugins</c> baseline.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -204,7 +195,7 @@ namespace AdrPlus.Commands.Init
             }
             var newrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonrepoconfig, AppConstants.RepoSerializerOptions)!;
 
-            //ensure if new configutation is valid (check existent number,version and revision)
+            // ensure the new configuration's digit lengths can represent the existing max number/version/revision
             (int maxnumber, int maxversion, int maxrevision) = await _validateconfig.GetMaxNumberVersionRevision(targetPath, newrepoconfig);
             if (maxnumber.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenSeq)
             {

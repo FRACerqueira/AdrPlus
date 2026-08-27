@@ -14,7 +14,11 @@ namespace AdrPlus.Infrastructure.Configuration
         /// Checks for version file in template directory and performs migration if needed.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>True if migration was successful; false otherwise.</returns>
+        /// <returns>
+        /// <see langword="true"/> if a migration was actually performed; <see langword="false"/> if none was
+        /// needed (no baseline version file yet, or already on the current version). Failures are thrown, not
+        /// returned as <see langword="false"/>.
+        /// </returns>
         Task<bool> CheckAndMigrateConfigAsync(CancellationToken cancellationToken = default);
     }
 }

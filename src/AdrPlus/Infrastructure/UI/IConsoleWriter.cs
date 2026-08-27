@@ -65,9 +65,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <summary>
         /// Ensures that the console culture settings are properly configured based on the provided application configuration.
         /// </summary>
-        /// <param name="config">
-        /// The application configuration containing culture settings to apply to the console. This may include settings such as language, date formats, and other culture-specific configurations that affect how information is displayed in the console.
-        /// </param>
+        /// <param name="config">The application configuration containing the culture settings to apply.</param>
         void PromptEnsureCulture(AdrPlusConfig config);
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace AdrPlus.Infrastructure.UI
         void PromptWriteInfo(string message);
 
         /// <summary>
-        /// Writes a message to the console indicating that an operation is being resumed before a wait or pause.
+        /// Writes a summary-styled message to the console.
         /// </summary>
         void PromptWriteSummary(string message);
 
@@ -155,7 +153,7 @@ namespace AdrPlus.Infrastructure.UI
         void PromptWarnMissingActivePlugins(IReadOnlyList<string> missingPluginNames);
 
         /// <summary>
-        ///
+        /// Displays <paramref name="message"/> and waits for a keypress before continuing.
         /// </summary>
         /// <param name="message">The message to display to the user.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
@@ -165,8 +163,7 @@ namespace AdrPlus.Infrastructure.UI
         /// <summary>
         /// Enables or disables the ability for the user to abort an operation by pressing the Escape key during prompts.
         /// </summary>
-        /// <param name="enabled"> A boolean value indicating whether pressing the Escape key should abort the current operation. If set to true, the user can press Escape to cancel prompts; if false, the Escape key will not have any effect on prompt cancellation.
-        /// </param>
+        /// <param name="enabled">Whether pressing Escape should abort the current prompt.</param>
         void PromptEnabledEscToAbort(bool enabled);
 
         /// <summary>

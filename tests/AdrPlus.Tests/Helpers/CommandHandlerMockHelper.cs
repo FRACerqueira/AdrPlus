@@ -101,7 +101,7 @@ internal static class CommandHandlerMockHelper
 
     /// <summary>
     /// Creates an AdrFileNameComponents instance with fully specified properties for testing.
-    /// Ensures all fields are consistently populated to avoid cross-platform test failures.
+    /// Ensures all fields are consistently populated, unlike <see cref="CreateValidAdrFileNameComponents"/>'s fixed defaults.
     /// </summary>
     /// <param name="fileName">The file name for the ADR.</param>
     /// <param name="status">The ADR status update value.</param>

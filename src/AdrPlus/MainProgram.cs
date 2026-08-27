@@ -20,17 +20,6 @@ namespace AdrPlus
     /// <summary>
     /// Main program class that implements lifecycle for AdrPlus application.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="MainProgram"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="optionsconfig">The options monitor for ADR Plus configuration.</param>
-    /// <param name="commandRouter">The command router to route commands.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
-    /// <param name="validateConfig">The JSON configuration validator.</param>
-    /// <param name="prompt">The prompt console for user interactions.</param>
-    /// <param name="pluginManager">The plugin manager, used to dispose loaded plugins on graceful shutdown.</param>
     internal sealed class MainProgram(
             ILogger<MainProgram> logger,
             IOptionsMonitor<AdrPlusConfig> optionsconfig,
@@ -50,11 +39,6 @@ namespace AdrPlus
         private readonly IValidateConfig _validateConfig = validateConfig;
         private readonly IPluginManager _pluginManager = pluginManager;
 
-        /// <summary>
-        /// Executes the background command processing loop for the application host lifecycle.
-        /// </summary>
-        /// <param name="stoppingToken">Indicates that the execution process has been aborted.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var commandName = _configuration[AppConstants.CfgCommandName] ?? string.Empty;

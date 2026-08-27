@@ -32,39 +32,18 @@ namespace AdrPlus.Infrastructure.UI
         IExplorePrompts,
         IWizardMenuPrompts
     {
-        /// <summary>
-        /// Console color for help messages.
-        /// </summary>
         private const string ColorHelp = "Skyblue";
 
-            /// <summary>
-        /// Console color for the welcome banner.
-        /// </summary>
         private static Color ColorWelcomeBanner => Color.Darkorange;
 
-        /// <summary>
-        /// Console color for error messages.
-        /// </summary>
         private const string ColorError = "Red";
 
-        /// <summary>
-        /// Console color for informational messages.
-        /// </summary>
         private const string ColorInfo = "Grey";
 
-        /// <summary>
-        /// Console color for command results.
-        /// </summary>
         private const string ColorResult = "White";
 
-        /// <summary>
-        /// Console color for warning messages.
-        /// </summary>
         private const string ColorWarning = "Gold";
 
-        /// <summary>
-        /// Console color for summary messages.
-        /// </summary>  
         private const string ColorSummary = "Navajowhite";
 
         private readonly IAdrServices _adrServices = adrServices;
@@ -448,7 +427,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <summary>
-        /// Displays an error message to the console using a static method.
+        /// Displays an error message to the console.
         /// </summary>
         /// <param name="message">The error message to display.</param>
         public static void PromptShowError(string message)
@@ -548,11 +527,9 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <summary>
-        /// Gets the display title for a given configuration field name, returning a user-friendly title from resources if available, or the original field name if no title is defined. 
+        /// Gets the display title for a given configuration field name, returning a user-friendly title from resources if available, or the original field name if no title is defined.
         /// </summary>
-        /// <param name="name">
-        /// The configuration field name for which to retrieve the display title. This should correspond to one of the defined configuration keys in AppConstants, such as "folderrepo", "dateformat", etc. 
-        /// </param>
+        /// <param name="name">The configuration field name (one of the <c>AppConstants.Field*</c> keys, e.g. <c>"folderadr"</c>).</param>
         /// <returns>The display title for the specified configuration field name.</returns>
         private static string GetTitleField(string name)
         {
@@ -560,8 +537,7 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <summary>
-        /// A frozen dictionary mapping configuration field names to their corresponding display titles, used for presenting user-friendly titles in the application's user interface when displaying configuration settings.
-        /// Uses FrozenDictionary for optimal read performance.
+        /// Maps configuration field names to their display titles.
         /// </summary>
         private static FrozenDictionary<string, string> TitleFields => new Dictionary<string, string>
         {

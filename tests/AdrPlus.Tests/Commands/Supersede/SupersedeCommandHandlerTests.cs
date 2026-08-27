@@ -417,7 +417,7 @@ public class SupersedeCommandHandlerTests
 
         SetupBasicMocks(parsedArgs, jsonConfig);
 
-        // ADR is Proposed, not Accepted � not eligible for superseding
+        // ADR is Proposed, not Accepted - not eligible for superseding
         var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Proposed, AdrStatus.Unknown);
         _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
             .Returns(adrInfo);

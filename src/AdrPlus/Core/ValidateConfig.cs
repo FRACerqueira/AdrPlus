@@ -32,12 +32,10 @@ namespace AdrPlus.Core
         {
             var historyDirectoryPath = GetHistoryPath();
             var versionFiles = _fileSystem.GetFiles(historyDirectoryPath, $"{AppConstants.VersionFilePrefix}*.txt", SearchOption.TopDirectoryOnly);
-            // Delete all version file
             foreach (var item in versionFiles)
             {
                 _fileSystem.RemoveFile(item);
             }
-            // Create new version file
             await CreateVersionFileAsync(currentVersion, cancellationToken);
         }
 
@@ -274,22 +272,19 @@ namespace AdrPlus.Core
                 {
                     string fullPath;
 
-                    // Handle relative or absolute paths
                     if (Path.IsPathRooted(content))
                     {
                         fullPath = content;
                     }
                     else
                     {
-                        // Get the application base directory
                         var baseDirectory = AppContext.BaseDirectory;
                         fullPath = Path.GetFullPath(Path.Combine(baseDirectory, content));
                     }
 
-                    // Check if the file exists
                     if (!_fileSystem.FileExists(fullPath))
                     {
-                        await InitializeTemplateAsync(culture, cancellationToken); // Ensure template is initialized
+                        await InitializeTemplateAsync(culture, cancellationToken);
                     }
                 }
             }
@@ -335,7 +330,6 @@ namespace AdrPlus.Core
                 jsonObject.Remove(obsoleteField);
             }
 
-            // Ensure lenversion and lenrevision are within valid ranges
             var lenversion = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenVersion].ToString() ?? "0", CultureInfo.InvariantCulture), 2, 3);
             var lenrevision = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenRevision].ToString() ?? "0", CultureInfo.InvariantCulture), 0, 3);
 
@@ -371,7 +365,6 @@ namespace AdrPlus.Core
             var baseDirectory = AppContext.BaseDirectory;
             var fullBasePathTemplate = Path.GetFullPath(Path.Combine(baseDirectory, AppConstants.TemplateDirectoryName));
 
-            // Define template names to process
             var templateNames = new[]
             {
                 AppConstants.AdrTemplateFileName,
@@ -465,12 +458,10 @@ namespace AdrPlus.Core
                 var originalRoot = originalJsonDocument.RootElement;
 
                 var normalizedJson = NormalizeJsonKeysToLowerInvariant(jsonContent);
-                // Parse the JSON content
                 using var jsonDocument = JsonDocument.Parse(normalizedJson, AppConstants.DocumentOptions);
 
                 var root = jsonDocument.RootElement;
 
-                // Define all required fields with their expected types
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
                     { AppConstants.FieldFolderAdr, JsonValueKind.String },
@@ -502,7 +493,6 @@ namespace AdrPlus.Core
                     { AppConstants.FieldDisablePlugins, JsonValueKind.True | JsonValueKind.False },
              };
 
-                // Check for missing required fields
                 foreach (var field in requiredFields)
                 {
                     if (!root.TryGetProperty(field.Key, out var property))
@@ -546,7 +536,6 @@ namespace AdrPlus.Core
                     }
                 }
 
-                // Check for extra fields that shouldn't be there
                 var actualFields = new List<string>();
                 foreach (var property in originalRoot.EnumerateObject())
                 {
@@ -563,7 +552,6 @@ namespace AdrPlus.Core
                 }
                 if (errors.Count == 0)
                 {
-                    // Validate specific field values
                     errors.AddRange(ValidateConfigRepoFieldValues(root));
                 }
             }
@@ -919,11 +907,9 @@ namespace AdrPlus.Core
             var errors = new List<string>();
             try
             {
-                // Parse the JSON content
                 var jsonDocument = JsonDocument.Parse(jsonContent, AppConstants.DocumentOptions);
                 var root = jsonDocument.RootElement;
 
-                // Define all required fields with their expected types
                 var requiredFields = new Dictionary<string, JsonValueKind>(StringComparer.OrdinalIgnoreCase)
                 {
                     { AppConstants.FieldLanguage, JsonValueKind.String },
@@ -931,7 +917,6 @@ namespace AdrPlus.Core
                     { AppConstants.FieldWithoutArgs, JsonValueKind.String },
                 };
 
-                // Check for missing required fields
                 foreach (var field in requiredFields)
                 {
                     if (!root.GetProperty(AppConstants.DefaultSettingsRoot).TryGetProperty(field.Key, out var property))
@@ -946,7 +931,6 @@ namespace AdrPlus.Core
                     }
                 }
 
-                // Check for extra fields that shouldn't be there
                 var actualFields = new List<string>();
                 foreach (var property in root.GetProperty(AppConstants.DefaultSettingsRoot).EnumerateObject())
                 {
@@ -963,7 +947,6 @@ namespace AdrPlus.Core
                 }
                 if (errors.Count == 0)
                 {
-                    // Validate specific field values
                     errors.AddRange(ValidateConfigAppFieldValues(root));
                 }
             }

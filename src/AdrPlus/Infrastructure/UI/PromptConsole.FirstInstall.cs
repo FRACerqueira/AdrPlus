@@ -484,7 +484,7 @@ namespace AdrPlus.Infrastructure.UI
             var currentVersion = _configuration[AppConstants.CfgNameVersionApp] ?? "0.0.0";
             await _validate.RecreateVersionFileAsync(currentVersion, cancellationToken);
 
-            //set init seleceted for menu wizard
+            //set init selected for menu wizard
             var history = new ItemMenuWizard()
             {
                 Id = "5.01",
@@ -692,14 +692,12 @@ namespace AdrPlus.Infrastructure.UI
                 {
                     if (Directory.Exists(directory))
                     {
-                        // Check for Visual Studio (devenv.exe)
                         if (!hasVisualStudio && File.Exists(Path.Combine(directory, "devenv.exe")))
                         {
                             editorcmd += "VST:devenv.exe {0};";
                             hasVisualStudio = true;
                         }
 
-                        // Check for VS Code (code.exe or code.cmd)
                         if (!hasVSCode && (File.Exists(Path.Combine(directory, "code.exe"))))
                         {
                             editorcmd += "VSC:code.exe {0};";
@@ -710,7 +708,6 @@ namespace AdrPlus.Infrastructure.UI
                             editorcmd += "VSC:code.cmd {0};";
                             hasVSCode = true;
                         }
-                        // Check for Rider (rider64.exe or rider.exe)
                         if (!hasRider && File.Exists(Path.Combine(directory, "rider64.exe")))
                         {
                             editorcmd += "RDR:rider64.exe {0};";

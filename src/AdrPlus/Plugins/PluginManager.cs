@@ -23,9 +23,6 @@ namespace AdrPlus.Plugins
     /// and reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>.
     /// Never throws for a rejected plugin — fail-soft by design.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="PluginManager"/> class.
-    /// </remarks>
     /// <param name="fileSystem">The file system service used to discover plugin subfolders and read manifests.</param>
     /// <param name="config">The application configuration, providing the optional plugin allowlist.</param>
     /// <param name="logger">The logger for recording plugin rejections and warnings.</param>

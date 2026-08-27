@@ -15,12 +15,8 @@ using Microsoft.Extensions.Logging;
 namespace AdrPlus.Commands
 {
     /// <summary>
-    /// Routes command names to their corresponding handlers and executes them, handling logging and error reporting. 
+    /// Routes command names to their corresponding handlers and executes them, handling logging and error reporting.
     /// </summary>
-    /// <param name="serviceProvider">The service provider for resolving command handlers.</param>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="prompt">The console writer for displaying command execution status and errors.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and command metadata.</param>
     internal class CommandRouter(
         IConfiguration configuration,
         IServiceProvider serviceProvider,
@@ -33,12 +29,7 @@ namespace AdrPlus.Commands
         private readonly ILogger<CommandRouter> _logger = logger;
         private readonly IConsoleWriter _prompt = prompt;
         private readonly Dictionary<string, Type> _commandMap = adrServices.GenerateCommandsMap();
-        /// <summary>
-        /// Routes a command to its handler and executes it.
-        /// </summary>
-        /// <param name="commandName">The name of the command to execute.</param>
-        /// <param name="args">Arguments to pass to the command.</param>
-        /// <param name="cancellationToken">Cancellation token for the async operation.</param>
+
         public async Task RouteAsync(string commandName, string[] args, CancellationToken cancellationToken)
         {
             Helper.CountError = 0; 

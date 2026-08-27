@@ -87,7 +87,7 @@ namespace AdrPlus.Commands
         [Command("reject", typeof(RejectCommandHandler), "CmdDescRejected")]
         Reject,
         /// <summary>
-        /// Updates the status of an ADR to rejected
+        /// Reverts the last status change on an ADR.
         /// </summary>
         [Command("undo", typeof(UndoStatusCommandHandler), "CmdDescUndoStatus")]
         UndoStatus,

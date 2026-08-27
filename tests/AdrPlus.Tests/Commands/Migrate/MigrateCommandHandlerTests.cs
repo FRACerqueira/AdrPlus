@@ -18,7 +18,6 @@ namespace AdrPlus.Tests.Commands.Migrate;
 /// <summary>
 /// Unit tests for MigrateCommandHandler class.
 /// Tests demonstrate migrate command execution, validation, and ADR file migration using NSubstitute.
-/// All tests are designed to run on Windows and Linux with cross-platform path handling.
 /// </summary>
 public class MigrateCommandHandlerTests
 {
