@@ -16,7 +16,7 @@ Many teams still document architectural decisions **inconsistently** (scattered 
 
 AdrPlus was created to **solve this problem with a practical CLI workflow that keeps ADRs standardized, traceable, and easy to evolve over time**.
 
-**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal. 
+**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal.
 
 It supports versioning, revision cycles, status workflows (approve / reject / undo), and an **interactive wizard** — all driven by a lightweight JSON configuration file.
 
@@ -30,9 +30,9 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Migration Guide](MigrationGuide.md)  
-- [Step-by-Step Guide](StepByStepGuide.md)  
-- [Plugin Development Guide](PluginDevelopmentGuide.md)  
+- [Migration Guide](MigrationGuide.md)
+- [Step-by-Step Guide](StepByStepGuide.md)
+- [Plugin Development Guide](PluginDevelopmentGuide.md)
 - [Using AdrPlus with AI Coding Assistants](#using-adrplus-with-ai-coding-assistants)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
@@ -73,7 +73,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🤖 **AI assistant integration** — manage ADRs conversationally via the official [AdrPlus AI Assistant Plugin](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) for Claude Code and GitHub Copilot
 - 🧩 **Plugin support** for integrations that react to ADR lifecycle events — see the [Plugin Development Guide](PluginDevelopmentGuide.md)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
-- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
+- ⚙️ **Config editor** for application, repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 💾 **Preserve settings and configuration** across upgrades and reinitializations
@@ -154,7 +154,7 @@ dotnet tool update -g adrplus --add-source ./nupkg
 
 ## Quick Start
 
-**AdrPlus automates the initial setup on first run!** 
+**AdrPlus automates the initial setup on first run!**
 
 When you run any command for the first time (except `help`), an interactive wizard will automatically guide you through:
 - Selecting your preferred language
@@ -162,7 +162,7 @@ When you run any command for the first time (except `help`), an interactive wiza
 - Setting up your ADR repository structure and naming conventions
 - Creating your ADR folder and configuration files
 
-To get started, simply run run without command, and the setup wizard will appear:
+To get started, simply run without a command, and the setup wizard will appear:
 
 ```bash
 # Just run without command and the first-time setup will run
@@ -532,7 +532,7 @@ Before selecting a team profile, understand these key concepts:
   - `_` (underscore): `ADR0001_UsePostgreSQL.md`
   - `.` (period): `ADR0001V01.UsePostgreSQL.md`
 
-- **Version vs. Revision**: 
+- **Version vs. Revision**:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
   - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 

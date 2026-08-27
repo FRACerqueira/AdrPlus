@@ -90,7 +90,7 @@ The **first time you run an AdrPlus command**, the setup wizard will automatical
 2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
 3. **Set your ADR repository folder** (default: `doc/adr`)
 4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
-5. **Configure migration pattern** 
+5. **Configure migration pattern**
 6. **Create the configuration files**:
    - `adrplus.json` (application settings)
    - `adr-config.adrplus` (repository settings)
@@ -263,7 +263,7 @@ Before initializing your repository, let's understand some important concepts:
   - `_` (underscore): Alternative style
   - `.` (period): Alternative style
 
-- **Version vs. Revision**: 
+- **Version vs. Revision**:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that represents a significant decision update.
   - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
@@ -275,7 +275,7 @@ Before initializing your repository, let's understand some important concepts:
 
 **If your repository already contains ADR files in a different format than the one you just configured**, you MUST execute the migration process **before creating your first ADR with AdrPlus**.
 
-**Why?** 
+**Why?**
 - Migration transforms existing ADRs into the AdrPlus format
 - This must be done before creating any new ADRs with the tool
 - Mixing manually-created ADRs in different formats with tool-created ADRs will cause inconsistencies
@@ -643,9 +643,9 @@ adrplus help supersede
 
 ---
 
-### Troubleshooting Upgrade
+## Troubleshooting Upgrade
 
-#### Issue: "There is a number/version/revision (X) greater than the Configured (Y)"
+### Issue: "There is a number/version/revision (X) greater than the Configured (Y)"
 
 **Problem:** You lowered `lenseq`, `lenversion`, or `lenrevision` in `adr-config.adrplus` to a digit count too small to represent a sequence number, version, or revision already used by an existing ADR in the repository.
 
