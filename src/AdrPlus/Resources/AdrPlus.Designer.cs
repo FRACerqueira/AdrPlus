@@ -320,16 +320,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ConfigFieldDescCaseTransform", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Organize ADRs in separate folders by scope.
-        /// </summary>
-        internal static string ConfigFieldDescFolderByScope {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescFolderByScope", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Relative path to the ADR repository folder.
         /// </summary>
@@ -365,16 +355,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ConfigFieldDescLenRevision", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Length of the scope abbreviation in file names.
-        /// </summary>
-        internal static string ConfigFieldDescLenScope {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescLenScope", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Length of the sequence number in file names.
         /// </summary>
@@ -419,16 +399,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ConfigFieldDescPrefix", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to List of valid scopes for ADRs (separated by semicolon; &apos;*&apos; at the end of each scope to avoid using the domain).
-        /// </summary>
-        internal static string ConfigFieldDescScopes {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescScopes", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Character used to separate file name parts.
         /// </summary>
@@ -437,16 +407,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ConfigFieldDescSeparator", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scopes where domain information is omitted.
-        /// </summary>
-        internal static string ConfigFieldDescSkipDomain {
-            get {
-                return ResourceManager.GetString("ConfigFieldDescSkipDomain", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Text label for the &apos;Accepted&apos; status.
         /// </summary>
@@ -923,16 +883,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ErrMsgOpenAdrMustContainPlaceholder", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Duplicate scope entries found.
-        /// </summary>
-        internal static string ErrMsgScopesDuplicateEntries {
-            get {
-                return ResourceManager.GetString("ErrMsgScopesDuplicateEntries", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to ADR configuration file (template/adr-config.adrplus) not found. .
         /// </summary>
@@ -1013,16 +963,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ErrorInvalidFilenameFormat", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid scope format: {0}.
-        /// </summary>
-        internal static string ErrorInvalidScopeFormat {
-            get {
-                return ResourceManager.GetString("ErrorInvalidScopeFormat", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Filename must be at least {0} characters long.
         /// </summary>
@@ -1247,16 +1187,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("FieldTitleCaseTransform", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Folder By Scope.
-        /// </summary>
-        internal static string FieldTitleFolderByScope {
-            get {
-                return ResourceManager.GetString("FieldTitleFolderByScope", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to ADR Repository Folder.
         /// </summary>
@@ -1391,16 +1321,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("FieldTitleLenRevision", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Length Scope.
-        /// </summary>
-        internal static string FieldTitleLenScope {
-            get {
-                return ResourceManager.GetString("FieldTitleLenScope", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Length Sequence.
         /// </summary>
@@ -1436,16 +1356,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("FieldTitlePrefix", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scopes.
-        /// </summary>
-        internal static string FieldTitleScopes {
-            get {
-                return ResourceManager.GetString("FieldTitleScopes", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Separator.
         /// </summary>
@@ -1454,16 +1364,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("FieldTitleSeparator", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Skip Domain when.
-        /// </summary>
-        internal static string FieldTitleSkipDomain {
-            get {
-                return ResourceManager.GetString("FieldTitleSkipDomain", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Text status Accepted.
         /// </summary>
@@ -2444,16 +2344,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("NewAdrErrorFailedToStartProcess", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid scope &apos;{0}&apos;. Valid scopes are: {1}.
-        /// </summary>
-        internal static string NewAdrErrorInvalidScope {
-            get {
-                return ResourceManager.GetString("NewAdrErrorInvalidScope", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to An ADR with this title already exists: {0}.
         /// </summary>
@@ -3119,7 +3009,16 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("PromptReadingRegisteredDomains", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Reading registered scopes....
+        /// </summary>
+        internal static string PromptReadingRegisteredScopes {
+            get {
+                return ResourceManager.GetString("PromptReadingRegisteredScopes", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select a length for the &apos;Revision&apos; element at filename.
         /// </summary>
@@ -3677,16 +3576,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ValidationFieldWrongType", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Field &apos;{0}&apos; cannot be true when &apos;{1}&apos; is empty.
-        /// </summary>
-        internal static string ValidationFolderByScopeRequiresScopes {
-            get {
-                return ResourceManager.GetString("ValidationFolderByScopeRequiresScopes", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Invalid JSON format: {0}.
         /// </summary>
@@ -3731,43 +3620,6 @@ namespace AdrPlus.Resources {
                 return ResourceManager.GetString("ValidationPluginAllowlistEntryMissingName", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Each scope in &apos;{0}&apos; must be at least as long as the &apos;{1}&apos; value ({2}).
-        /// </summary>
-        internal static string ValidationScopeMinLength {
-            get {
-                return ResourceManager.GetString("ValidationScopeMinLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Field &apos;{0}&apos; must be empty when &apos;{1}&apos; is 0.
-        /// </summary>
-        internal static string ValidationScopesMustBeEmptyWhenLenScopeZero {
-            get {
-                return ResourceManager.GetString("ValidationScopesMustBeEmptyWhenLenScopeZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Field &apos;{0}&apos; must be not empty when &apos;{1}&apos; is greater than 0.
-        /// </summary>
-        internal static string ValidationScopesMustNotBeEmptyWhenLenScopePositive {
-            get {
-                return ResourceManager.GetString("ValidationScopesMustNotBeEmptyWhenLenScopePositive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The following scopes are not defined: {0}.
-        /// </summary>
-        internal static string ValidationskipdomainInvalidScopes {
-            get {
-                return ResourceManager.GetString("ValidationskipdomainInvalidScopes", resourceCulture);
-            }
-        }
-        
         /// <summary>
         ///   Looks up a localized string similar to Unexpected fields found: {0}.
         /// </summary>

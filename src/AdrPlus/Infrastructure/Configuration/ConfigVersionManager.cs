@@ -20,13 +20,6 @@ namespace AdrPlus.Infrastructure.Configuration
     /// <summary>
     /// Manages version tracking for template files and handles configuration migration when versions change.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ConfigVersionManager"/> class.
-    /// </remarks>
-    /// <param name="prompt">The prompt console for user interactions.</param>
-    /// <param name="logger">The logger for recording operations.</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="configuration">The configuration service for accessing application settings.</param>
     internal sealed partial class ConfigVersionManager(
         IConsoleWriter prompt,
         ILogger<ConfigVersionManager> logger,
@@ -42,19 +35,13 @@ namespace AdrPlus.Infrastructure.Configuration
         
 
 
-        /// <summary>
-        /// Checks for version file in template directory and performs migration if needed.
-        /// </summary>
-        /// <param name="currentVersion">The current application version.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>True if migration was performed or version file is up-to-date; false if an error occurred.</returns>
+        /// <inheritdoc/>
         public async Task<bool> CheckAndMigrateConfigAsync(CancellationToken cancellationToken = default)
         {
             try
             {
                 var currentVersion = _configuration[AppConstants.CfgNameVersionApp] ?? "0.0.0";
 
-                // Search for existing version file
                 var existingVersionFile = FindVersionFile();
 
                 if (existingVersionFile == null)
@@ -64,7 +51,6 @@ namespace AdrPlus.Infrastructure.Configuration
                     return false;
                 }
 
-                // Extract version from filename
                 var storedVersion = ExtractVersionFromFilename(existingVersionFile);
 
                 if (storedVersion == null)
@@ -74,17 +60,14 @@ namespace AdrPlus.Infrastructure.Configuration
                     return false;
                 }
 
-                // Compare versions
                 if (storedVersion != currentVersion)
                 {
-                    // Execute migration
                     var migrationSuccess = await MigrateAsync(storedVersion, cancellationToken);
 
                     if (!migrationSuccess)
                     {
                         throw new InvalidOperationException(string.Format(null, FormatMessages.ErrMigrationVersionFailed, storedVersion, currentVersion));
                     }
-                    // Recreate version file with new version
                     await _validateJsonConfig.RecreateVersionFileAsync(currentVersion, cancellationToken);
                     LogAndWriteSuccess(string.Format(null, FormatMessages.MigrationVersionSuccess, storedVersion, currentVersion));
                     Thread.Sleep(3000);
@@ -99,10 +82,6 @@ namespace AdrPlus.Infrastructure.Configuration
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
@@ -147,7 +126,7 @@ namespace AdrPlus.Infrastructure.Configuration
 
             if (fromversionAsNumber < 500)
             {
-                return true; // skip migration for versions below 0.5.0 or above 0.6.0
+                return true; // skip migration for versions below 0.5.0 - nothing to migrate from
             }
 
 

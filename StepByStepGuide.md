@@ -90,7 +90,7 @@ The **first time you run an AdrPlus command**, the setup wizard will automatical
 2. **Configure your editor** (VS Code, Visual Studio, Rider, or custom command)
 3. **Set your ADR repository folder** (default: `doc/adr`)
 4. **Configure ADR naming conventions** (prefix, numbering, versioning, case style)
-5. **Configure migration pattern** 
+5. **Configure migration pattern**
 6. **Create the configuration files**:
    - `adrplus.json` (application settings)
    - `adr-config.adrplus` (repository settings)
@@ -192,17 +192,13 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
   "prefix": "ADR",
   "lenseq": 4,
   "lenversion": 2,
-  "lenrevision": 2,
-  "lenscope": 0,
+  "lenrevision": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "statusnew": "Proposed",
   "statusacc": "Accepted",
   "statusrej": "Rejected",
   "statussup": "Superseded",
-  "scopes": "",
-  "folderbyscope": false,
-  "skipdomain": "",
   "headerdisclaimer": "Do not remove this comment, lines and table",
   "headertitlefile": "ADR",
   "headerversion": "Version",
@@ -231,12 +227,8 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 | `lenseq` | Digits for sequential number | `4` → `0001`, `0002`, etc. |
 | `lenversion` | Digits for major version (0 disables) | `2` → `V01`, `V02`, etc. |
 | `lenrevision` | Digits for revision (0 = disabled) | `0` (disabled) or `2` → `R01`, `R02` |
-| `lenscope` | Number of characters for scope abbreviation (0 disables) | `1` → `B`, `F`, etc. |
 | `separator` | Character between name parts | `-`, `_`, or `.` |
 | `casetransform` | Case style for names | `PascalCase`, `CamelCase`, `SnakeCase`, `KebabCase` |
-| `scopes` | Semicolon-separated list of allowed scopes | `Backend;Frontend;Data` |
-| `folderbyscope` | Create separate folders per scope | `true` or `false` |
-| `skipdomain` | Scopes that skip domain in filenames | `data;platform` |
 | `statusnew` | Label for new ADRs | `Proposed` |
 | `statusacc` | Label for approved ADRs | `Accepted` |
 | `statusrej` | Label for rejected ADRs | `Rejected` |
@@ -258,24 +250,20 @@ This creates/edits `adr-config.adrplus` with ADR naming conventions.
 
 Before initializing your repository, let's understand some important concepts:
 
-- **Scopes**: Define organizational boundaries for your ADRs (e.g., "backend", "frontend", "data"). When enabled (`lenscope > 0`), scopes help organize decisions by domain or team responsibility.
-
-- **Folder by Scope**: When `folderbyscope` is `true`, ADRs are organized into separate folders for each scope. When `false`, all ADRs stay in a flat structure under the `folderadr` folder.
-
-- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "data" scope might skip the domain to keep filenames shorter. List multiple scopes separated by semicolons.
+- **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
-  - `PascalCase`: `UsePostgreSQLAsDatabase`
-  - `CamelCase`: `usePostgreSQLAsDatabase`
-  - `SnakeCase`: `use_postgresql_as_database`
-  - `KebabCase`: `use-postgresql-as-database`
+  - `PascalCase`: `UsePostgreSqlAsDatabase`
+  - `CamelCase`: `usePostgreSqlAsDatabase`
+  - `SnakeCase`: `use_postgre_sql_as_database`
+  - `KebabCase`: `use-postgre-sql-as-database`
 
 - **Separator**: The character separating different parts of the filename:
   - `-` (hyphen): Recommended, most readable
   - `_` (underscore): Alternative style
   - `.` (period): Alternative style
 
-- **Version vs. Revision**: 
+- **Version vs. Revision**:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that represents a significant decision update.
   - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
@@ -287,7 +275,7 @@ Before initializing your repository, let's understand some important concepts:
 
 **If your repository already contains ADR files in a different format than the one you just configured**, you MUST execute the migration process **before creating your first ADR with AdrPlus**.
 
-**Why?** 
+**Why?**
 - Migration transforms existing ADRs into the AdrPlus format
 - This must be done before creating any new ADRs with the tool
 - Mixing manually-created ADRs in different formats with tool-created ADRs will cause inconsistencies
@@ -350,12 +338,12 @@ adrplus new --wizard
 The wizard will prompt you for:
 1. **Title**: A clear, concise decision title
    - Example: "Use PostgreSQL as primary database"
-2. **Domain/Scope**: Category or module (if enabled)
+2. **Domain/Scope**: Optional free-text category or module
    - Example: "backend", "data", etc.
 
 The tool will then:
 - Generate a unique number (e.g., `0001`)
-- Create the file: `doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md`
+- Create the file: `doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md`
 - Open the file in your configured editor (if set)
 
 ### Option 2: Direct Creation from Command Line
@@ -551,7 +539,7 @@ The approved ADR file will now show:
 If you know the file path:
 
 ```bash
-adrplus approve --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus approve --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 ---
@@ -597,7 +585,7 @@ Revert the last status change:
 
 ```bash
 adrplus undo --wizard
-adrplus undo --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus undo --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 ### Version an ADR (Major Change)
@@ -606,21 +594,22 @@ Create a new version when making significant updates:
 
 ```bash
 adrplus version --wizard
-adrplus version --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus version --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
-Creates: `ADR0001V02-UsePostgresqlAsPrimaryDatabase.md`
+Creates: `ADR0001V02-UsePostgreSqlAsPrimaryDatabase.md`
 
 ### Revise an ADR (Minor Change)
 
-Create a revision for minor updates:
+Create a revision for minor updates. Requires revision support enabled (`lenrevision` > 0 in
+`adr-config.adrplus`) — the default profile sets `lenrevision: 0`, which disables this command:
 
 ```bash
 adrplus revise --wizard
-adrplus revise --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus revise --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
-Creates: `ADR0001V01R01-UsePostgresqlAsPrimaryDatabase.md`
+Creates: `ADR0001V01R01-UsePostgreSqlAsPrimaryDatabase.md`
 
 ### Supersede an ADR (Replace with New One)
 
@@ -628,13 +617,13 @@ When a decision is replaced by a new one, supersede it:
 
 ```bash
 adrplus supersede --wizard
-adrplus supersede --file "./doc/adr/ADR0001V01-UsePostgresqlAsPrimaryDatabase.md"
+adrplus supersede --file "./doc/adr/ADR0001V01-UsePostgreSqlAsPrimaryDatabase.md"
 ```
 
 This creates a new ADR (e.g., `ADR0002`) and marks the old one as `Superseded`.
 
 ```bash
-./doc/adr/ADR0002V01-UsePostgresqlAsPrimaryDatabase--0001.md"
+./doc/adr/ADR0002V01-UsePostgreSqlAsPrimaryDatabase--0001.md"
 ```
 
 ### View Help
@@ -654,9 +643,9 @@ adrplus help supersede
 
 ---
 
-### Troubleshooting Upgrade
+## Troubleshooting Upgrade
 
-#### Issue: "There is a number/version/revision (X) greater than the Configured (Y)"
+### Issue: "There is a number/version/revision (X) greater than the Configured (Y)"
 
 **Problem:** You lowered `lenseq`, `lenversion`, or `lenrevision` in `adr-config.adrplus` to a digit count too small to represent a sequence number, version, or revision already used by an existing ADR in the repository.
 
@@ -664,20 +653,13 @@ adrplus help supersede
 - Raise the digit count back to at least what the highest existing number/version/revision requires
 - Or manually rename the affected ADR file(s) before lowering it
 
-#### Issue: Scope-related validation errors
-
-**Problem:** `scopes`, `lenscope`, `folderbyscope`, and `skipdomain` are interdependent — e.g. `scopes` must be empty when `lenscope` is `0`, `folderbyscope: true` requires at least one scope, and `skipdomain` entries must be a subset of `scopes`.
-
-**Solution:**
-- Use `adrplus config --repository --wizard` rather than hand-editing `adr-config.adrplus`, so these rules are enforced as you go
-
 ### Next: Commit Your Changes
 
 After upgrading, always commit your updated configuration:
 
 ```bash
 git add adr-config.adrplus
-git commit -m "chore: upgrade ADR repository settings - add scope support"
+git commit -m "chore: upgrade ADR repository settings"
 ```
 
 ---
@@ -734,7 +716,7 @@ Congratulations! You've successfully:
 
 1. **Create more ADRs** for other important architectural decisions
 2. **Commit to version control**: `git add doc/adr && git commit -m "docs: Add initial ADRs"`
-3. **Plan for growth**: Review the [Troubleshooting Upgrade](#troubleshooting-upgrade) section to see if scopes would help organize your ADRs
+3. **Plan for growth**: Review the [Troubleshooting Upgrade](#troubleshooting-upgrade) section as your naming/versioning needs change
 4. **Share with your team**: Make ADRs part of your project documentation
 5. **Review regularly**: Keep ADRs updated as your architecture evolves
 6. **Check the FAQ**: See [FAQ.md](FAQ.md) for common questions

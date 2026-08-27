@@ -75,7 +75,7 @@ throw, or be invoked a specific number of times\.
 
 `repo` [RepoInfoSnapshot](AdrPlus.Abstractions.Domain.RepoInfoSnapshot.md 'AdrPlus\.Abstractions\.Domain\.RepoInfoSnapshot')
 
-The repository configuration snapshot\. Defaults to [Create\(string, IReadOnlyList&lt;string&gt;, IReadOnlyDictionary&lt;AdrStatus,string&gt;\)](AdrPlus.Abstractions.Testing.RepoInfoSnapshotFactory.md#AdrPlus.Abstractions.Testing.RepoInfoSnapshotFactory.Create(string,System.Collections.Generic.IReadOnlyList_string_,System.Collections.Generic.IReadOnlyDictionary_AdrPlus.Abstractions.Domain.AdrStatus,string_) 'AdrPlus\.Abstractions\.Testing\.RepoInfoSnapshotFactory\.Create\(string, System\.Collections\.Generic\.IReadOnlyList\<string\>, System\.Collections\.Generic\.IReadOnlyDictionary\<AdrPlus\.Abstractions\.Domain\.AdrStatus,string\>\)')'s
+The repository configuration snapshot\. Defaults to [Create\(string, IReadOnlyDictionary&lt;AdrStatus,string&gt;\)](AdrPlus.Abstractions.Testing.RepoInfoSnapshotFactory.md#AdrPlus.Abstractions.Testing.RepoInfoSnapshotFactory.Create(string,System.Collections.Generic.IReadOnlyDictionary_AdrPlus.Abstractions.Domain.AdrStatus,string_) 'AdrPlus\.Abstractions\.Testing\.RepoInfoSnapshotFactory\.Create\(string, System\.Collections\.Generic\.IReadOnlyDictionary\<AdrPlus\.Abstractions\.Domain\.AdrStatus,string\>\)')'s
 own defaults\.
 
 <a name='AdrPlus.Abstractions.Testing.AdrEventContextFactory.Create(AdrPlus.Abstractions.AdrEventType,bool,AdrPlus.Abstractions.Domain.AdrRecordSnapshot,string,string,System.Func_string_,AdrPlus.Abstractions.Domain.RepoInfoSnapshot,string).correlationId'></a>

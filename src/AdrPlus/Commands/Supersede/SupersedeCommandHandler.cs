@@ -25,22 +25,13 @@ namespace AdrPlus.Commands.Supersede
     /// The superseded ADR is marked with <see cref="AdrStatus.Superseded"/> and the new ADR is created
     /// with <see cref="AdrStatus.Proposed"/> status and a back-reference to the superseded sequence number.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="SupersedeCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Superseded</c> lifecycle event.</param>
     internal sealed class SupersedeCommandHandler(
         ILogger<SupersedeCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
+        INewAdrPrompts newAdrPrompts,
         IAdrServices adrServices,
         IPluginManager pluginManager) : ICommandHandler
     {
@@ -48,12 +39,15 @@ namespace AdrPlus.Commands.Supersede
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
+        private readonly INewAdrPrompts _newAdrPrompts = newAdrPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardSupersede,
              Arguments.FileAdr,
+             Arguments.DomainAdr,
+             Arguments.ScopeAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
              Arguments.Help];
@@ -110,6 +104,7 @@ namespace AdrPlus.Commands.Supersede
                         [
                             "adrplus supersede --wizard --open",
                             "adrplus supersede --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
+                            "adrplus supersede --file \"path/to/File-ADR\" --scope \"Backend\" --domain \"Payments\"",
                         ]));
                     return;
                 }
@@ -170,7 +165,6 @@ namespace AdrPlus.Commands.Supersede
                     }
                 }
 
-                // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
 
                 var curpos = _prompt.PromptGetCursorPosition();
@@ -184,13 +178,15 @@ namespace AdrPlus.Commands.Supersede
                     _prompt.PromptClearWaitText(curpos);
                 }
 
-                // Create ADR record and file
+                var scope = parsedArgs.TryGetValue(Arguments.ScopeAdr, out string? scopeValue) ? scopeValue : (infoadr.Header.Scope ?? string.Empty);
+                var domain = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? domainValue) ? domainValue : (infoadr.Header.Domain ?? string.Empty);
+
                 var adrRecord = new AdrRecord
                 {
                     Number = nextNumber,
                     Title = infoadr.Title,
-                    Scope = infoadr.Header.Scope ?? string.Empty,
-                    Domain = infoadr.Header.Domain ?? string.Empty,
+                    Scope = scope,
+                    Domain = domain,
                     StatusCreate = AdrStatus.Proposed,
                     CreateRef = dateAdr,
                     Version = 1,
@@ -202,10 +198,6 @@ namespace AdrPlus.Commands.Supersede
 
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(rootrepo, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
@@ -218,7 +210,7 @@ namespace AdrPlus.Commands.Supersede
                 {
                     throw new InvalidDataException(upderror);
                 }
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 LogAndWriteSuccess($"{repoconfig.StatusSup} : {infoadr.FileName}");
 
                 await _pluginManager.DispatchAsync(AdrEventType.Superseded, oldrecord.ToSnapshot(), infoadr.FileName, () => oldcontent, repoconfig.ToSnapshot(), Path.Combine(rootrepo, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
@@ -228,7 +220,6 @@ namespace AdrPlus.Commands.Supersede
 
                 LogAndWriteSuccess($"{repoconfig.StatusNew} : {filePath}");
 
-                // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);
             }
             catch (Exception ex)
@@ -238,10 +229,6 @@ namespace AdrPlus.Commands.Supersede
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
@@ -269,32 +256,6 @@ namespace AdrPlus.Commands.Supersede
                 throw new FormatException(string.Format(null, FormatMessages.ErrInvalidDateFormat, _config.Language));
             }
             return dateAdr;
-        }
-
-        /// <summary>
-        /// Writes the ADR content (header + template body) to a <c>.md</c> file under the configured
-        /// repository folder, creating a scope sub-folder when <see cref="AdrPlusRepoConfig.FolderByScope"/> is enabled.
-        /// </summary>
-        /// <param name="adrRecord">The ADR record whose filename and content will be generated.</param>
-        /// <param name="rootPath">The root directory of the repository.</param>
-        /// <param name="auxconfig">The repository configuration defining folder structure and naming.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>The fully qualified path of the newly created ADR file.</returns>
-        private async Task<string> CreateAdrFile(AdrRecord adrRecord, string rootPath, AdrPlusRepoConfig auxconfig, CancellationToken cancellationToken)
-        {
-            var filename = adrRecord.GetFileName(auxconfig);
-            var folder = Path.GetFullPath(Path.Combine(rootPath, auxconfig.FolderAdr));
-
-            if (auxconfig.FolderByScope)
-            {
-                folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-            }
-
-            var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
-            var content = $"{adrRecord.GetHeader(auxconfig)}{adrRecord.Template}";
-            await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
-
-            return filePath;
         }
 
         /// <summary>
@@ -351,7 +312,6 @@ namespace AdrPlus.Commands.Supersede
                     parsedArgs[Arguments.OpenFile] = string.Empty;
                 }
 
-                // Select drive
                 string[] drives = _filesystem.GetDrives();
                 var rootPath = drives[0];
                 if (drives.Length > 1)
@@ -364,14 +324,12 @@ namespace AdrPlus.Commands.Supersede
                     rootPath = Content;
                 }
 
-                // Select folder
                 var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                // Validate repo config
                 var configPath = Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig());
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
@@ -409,7 +367,39 @@ namespace AdrPlus.Commands.Supersede
                 }
                 parsedArgs[Arguments.FileAdr] = filenewsup.info!.FileName;
 
-                // Get date
+                var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(filesadrs, cancellationToken);
+                if (ScopesAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (scopesException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered scopes for suggestions: {scopesException.Message}");
+                }
+                var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(filesadrs, cancellationToken);
+                if (DomainsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (domainsException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered domains for suggestions: {domainsException.Message}");
+                }
+
+                var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(filenewsup.info.Header.Scope ?? string.Empty, scopes, cancellationToken);
+                if (scopePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
+
+                var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(filenewsup.info.Header.Domain ?? string.Empty, domains, cancellationToken);
+                if (domainPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
+
                 var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
@@ -418,9 +408,8 @@ namespace AdrPlus.Commands.Supersede
                 var defDateRef = dateRefPrompt.Content;
                 parsedArgs[Arguments.DateRefAdr] = $"{defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language))}";
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
-                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef);
+                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef, scopePrompt.Content.Trim(), domainPrompt.Content.Trim());
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
                 _prompt.PromptMovePosition(0, Top);
 
@@ -435,10 +424,6 @@ namespace AdrPlus.Commands.Supersede
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -448,18 +433,13 @@ namespace AdrPlus.Commands.Supersede
             }
         }
 
-        /// <summary>
-        /// Displays a formatted summary of the wizard selections before the user confirms the supersede operation.
-        /// Shows the selected repository path, ADR filename, and reference date.
-        /// </summary>
-        /// <param name="rootpath">The root repository path selected by the user.</param>
-        /// <param name="fileref">The filename of the ADR that will be superseded.</param>
-        /// <param name="defDateRef">The reference date for the supersede operation.</param>
-        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
+        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef, string scope, string domain)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
             _prompt.PromptWriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _prompt.PromptWriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Scope + ": " + scope);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Domain + ": " + domain);
             _prompt.PromptWriteSummary("");
         }
     }

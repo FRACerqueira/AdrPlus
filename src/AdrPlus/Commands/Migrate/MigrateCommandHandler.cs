@@ -5,11 +5,6 @@
 
 using AdrPlus.Abstractions;
 using AdrPlus.Core;
-// ***************************************************************************************
-// MIT LICENCE
-// The maintenance and evolution is maintained by the AdrPlus project under MIT license
-// ***************************************************************************************
-
 using AdrPlus.Domain;
 using AdrPlus.Extensions;
 using AdrPlus.Infrastructure.FileSystem;
@@ -25,13 +20,6 @@ namespace AdrPlus.Commands.Migrate
     /// <summary>
     /// Handles the <c>migrate</c> command, which migrates existing ADR files in a repository to the new format 
     /// </summary>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateConfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Migrated</c> lifecycle event, once per migrated file.</param>
     internal sealed class MigrateCommandHandler(
         ILogger<MigrateCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -134,7 +122,7 @@ namespace AdrPlus.Commands.Migrate
                 }
 
                 var result = await MigrateRepositoryAsync(foundfiles, repoconfig, isActive, Path.Combine(targetPath, "plugins-state"), cancellationToken);
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 foreach (var item in result)
                 {
                     LogMessages.LogCommandSuccessful(_logger, item);
@@ -166,7 +154,6 @@ namespace AdrPlus.Commands.Migrate
                 }
                 if (file.Header.StatusCreate == AdrStatus.Unknown && !file.Header.IsMigrated && !file.Header.IsValid)
                 {
-                    // Create ADR record and file
                     var content = await _fileSystem.ReadAllTextAsync(file.FileName, cancellationToken);
                     var adrRecord = new AdrRecord
                     {
@@ -196,13 +183,12 @@ namespace AdrPlus.Commands.Migrate
         }
 
         /// <summary>
-        /// Runs the interactive wizard for the <c>init</c> command, prompting the user to select a
-        /// logical drive (when more than one is available) and then a target repository folder.
+        /// Runs the interactive wizard for the <c>migrate</c> command, prompting the user to select a
+        /// logical drive (when more than one is available), a target repository folder, and the ADRs to migrate.
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A dictionary of parsed arguments pre-populated with <see cref="Arguments.TargetRepo"/>.</returns>
+        /// <returns>The parsed arguments pre-populated with <see cref="Arguments.TargetRepo"/>, plus the selected ADR files.</returns>
         /// <exception cref="OperationCanceledException">Thrown when the user cancels any wizard prompt.</exception>
-
         private async Task<(Dictionary<Arguments, string> ArgsWizard, AdrFileNameComponents[] Adrfiles)> MigrateWizardAsync(CancellationToken cancellationToken)
         {
             var parsedArgs = new Dictionary<Arguments, string>();
@@ -279,10 +265,6 @@ namespace AdrPlus.Commands.Migrate
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)

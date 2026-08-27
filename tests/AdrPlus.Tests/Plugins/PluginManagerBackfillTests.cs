@@ -63,7 +63,6 @@ public class PluginManagerBackfillTests
     private static AbstractionsDomain.RepoInfoSnapshot CreateRepoSnapshot() => new()
     {
         FolderAdr = "docs/adr",
-        Scopes = [],
         StatusMapping = new Dictionary<AbstractionsDomain.AdrStatus, string>()
     };
 
@@ -175,6 +174,11 @@ public class PluginManagerBackfillTests
         var summary = await manager.BackfillAsync([Item(1), Item(2)], CreateRepoSnapshot(), isActive: null, cancellationToken: TestContext.Current.CancellationToken);
 
         summary.Succeeded.Should().Be(1);
+        // Regression: a bare `continue` here used to leave every SyncSummary field at zero for item 1 - a
+        // sweep that failed on every item would report "0 succeeded, 0 skipped, 0 permanently failed, 0
+        // exhausted", indistinguishable from "nothing to do".
+        summary.PermanentlyFailed.Should().Be(1);
+        _console.Received(1).PromptWriteError(Arg.Is<string>(s => s.Contains("p1")));
         await plugin.Received(1).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
     }
 

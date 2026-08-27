@@ -16,7 +16,7 @@ Many teams still document architectural decisions **inconsistently** (scattered 
 
 AdrPlus was created to **solve this problem with a practical CLI workflow that keeps ADRs standardized, traceable, and easy to evolve over time**.
 
-**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal. 
+**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal.
 
 It supports versioning, revision cycles, status workflows (approve / reject / undo), and an **interactive wizard** — all driven by a lightweight JSON configuration file.
 
@@ -30,9 +30,9 @@ It supports versioning, revision cycles, status workflows (approve / reject / un
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Migration Guide](MigrationGuide.md)  
-- [Step-by-Step Guide](StepByStepGuide.md)  
-- [Plugin Development Guide](PluginDevelopmentGuide.md)  
+- [Migration Guide](MigrationGuide.md)
+- [Step-by-Step Guide](StepByStepGuide.md)
+- [Plugin Development Guide](PluginDevelopmentGuide.md)
 - [Using AdrPlus with AI Coding Assistants](#using-adrplus-with-ai-coding-assistants)
 - [Advanced Configuration (Optional)](#advanced-configuration-optional)
 - [Individual Commands (without the wizard)](#individual-commands-without-the-wizard)
@@ -73,7 +73,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🤖 **AI assistant integration** — manage ADRs conversationally via the official [AdrPlus AI Assistant Plugin](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) for Claude Code and GitHub Copilot
 - 🧩 **Plugin support** for integrations that react to ADR lifecycle events — see the [Plugin Development Guide](PluginDevelopmentGuide.md)
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
-- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
+- ⚙️ **Config editor** for application, repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 💾 **Preserve settings and configuration** across upgrades and reinitializations
@@ -154,7 +154,7 @@ dotnet tool update -g adrplus --add-source ./nupkg
 
 ## Quick Start
 
-**AdrPlus automates the initial setup on first run!** 
+**AdrPlus automates the initial setup on first run!**
 
 When you run any command for the first time (except `help`), an interactive wizard will automatically guide you through:
 - Selecting your preferred language
@@ -162,7 +162,7 @@ When you run any command for the first time (except `help`), an interactive wiza
 - Setting up your ADR repository structure and naming conventions
 - Creating your ADR folder and configuration files
 
-To get started, simply run run without command, and the setup wizard will appear:
+To get started, simply run without a command, and the setup wizard will appear:
 
 ```bash
 # Just run without command and the first-time setup will run
@@ -181,7 +181,7 @@ After initial setup completes, you can use any command directly:
 adrplus new --wizard
 
 # Or explore and manage your ADRs
-adrplus explore --path "path/to/repository"
+adrplus explore --path "path/to/repository" --file "path/to/report.md"
 adrplus approve --file "path/to/adr/ADR0001.md"
 ```
 
@@ -200,7 +200,7 @@ Prefer managing ADRs in plain language instead of typing commands yourself? The 
 - An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
 - An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
 
-Requires `adrplus` v1.0.0-rc1 or later — earlier pre-releases (including beta1/beta2, which weren't safe to drive non-interactively) are no longer supported.
+Requires `adrplus` v1.0.0 or later — earlier pre-releases (including beta1/beta2, which weren't safe to drive non-interactively) are no longer supported.
 
 ---
 
@@ -234,7 +234,7 @@ The `init` command can be run multiple times to reinitialize or update your ADR 
 # Initialize repository for the first time (or with wizard guidance)
 adrplus init --wizard
 
-# Reinitialize with specific configuration file
+# Reinitialize with specific configuration file (scriptable, no confirmation needed)
 adrplus init --path "path/to/repository" --file "path/to/config"
 
 # Reinitialize current directory
@@ -242,9 +242,15 @@ adrplus init --path "."
 ```
 
 This is useful when:
-- You need to update the folder structure for scope changes
 - You want to recreate default configuration files
 - You're adjusting naming conventions or patterns
+
+> **Note**: Re-running `init --path <dir>` **without** `--file` on a directory that already has a
+> config asks for confirmation before overwriting it. In a real interactive terminal you'll be
+> prompted as usual; in a non-interactive context (CI, scripts, an AI agent) there's no one to
+> confirm, so it fails cleanly with `Configuration file already exists at: <path>` instead of
+> overwriting silently. To reinitialize non-interactively, pass `--file` pointing at the
+> configuration you want — that always skips the confirmation, as shown above.
 
 ---
 
@@ -254,16 +260,17 @@ You can also execute commands directly, one by one, without the wizard and witho
 
 ```bash
 # Configure the tool (optional, you can edit the config file directly or use the config command later)
+# --file reads its content as a SEED for this machine's shared default template (used by future
+# `init` runs on this host) - it does not edit an existing repository's own config file in place.
 
     adrplus config --application --file "path/to/file-tool-config"
     adrplus config --template --file "path/to/file-template.md"
-    # any mode can be used for repository config, the important part is to point to the correct file
     adrplus config --repository --file "path/to/file-adr-config"
     adrplus config --migrate --file "path/to/file-ard-config"
 
-# Launch the ADR file viewer explorer
+# Launch the ADR file viewer explorer (--file is the path to write the generated report to)
 
-    adrplus explore --path "path/to/repository"
+    adrplus explore --path "path/to/repository" --file "path/to/report.md"
 
 # Initialize ADR structure (if the first time you set up the repository)
 
@@ -290,6 +297,8 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus supersede --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
 
 # Create revise/version flows
+# `revise` requires revision support enabled (`lenrevision` > 0 in `adr-config.adrplus`) —
+# the default "Simple repository" profile below sets `lenrevision: 0`, which disables it.
 
     # the parameter --open is optional and depends on the configuration for opening files after creation/update
     adrplus revise --file "./doc/adr/ADR0001V01-use-postgresql.md" --open
@@ -350,17 +359,17 @@ Run `adrplus help <command>` for detailed usage of any command.
 
 The rules below describe what must be true for a command to select its target successfully (especially in wizard mode).
 
-> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `FolderRepo`, and the repository config file must be valid.
+> For file-based commands (`approve`, `reject`, `undo`, `version`, `revise`, `supersede`), the file must exist, be a valid ADR `.md`, be under the configured `folderadr`, and the repository config file must be valid.
 
 | Command | Successful selection rules |
 |---|---|
-| `new` | `title + domain` must be unique. When scope is enabled , `--scope` must be valid; `--domain` is required unless scope is listed in `skipdomain`. |
+| `new` | `title` must be unique. `--scope`/`--domain` are optional free-text fields with no validation. |
 | `approve` | ADR must be eligible: not already approved/rejected and for the same sequence number not superseded.|
 | `reject` | ADR must be eligible: not already approved/rejected.|
 | `undo` | ADR must be eligible: already approved/rejected and for the same sequence not a superseded and not proposed.|
-| `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded.|
-| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled.|
-| `supersede` | ADR must be eligible: already approved and not superseded.|
+| `version` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected and not superseded. `--scope`/`--domain` are optional — omitted, the new version keeps the source ADR's current values; provided, it uses the given value instead.|
+| `revise` | ADR must be eligible: latest(or last approved and last rejected) ADR for the same sequence number approved/rejected , not superseded and revision enabled. Scope/Domain always carry forward unchanged — `revise` has no `--scope`/`--domain`.|
+| `supersede` | ADR must be eligible: already approved and not superseded. `--scope`/`--domain` are optional — omitted, the new ADR keeps the superseded ADR's current values; provided, it uses the given value instead.|
 
 ---
 
@@ -381,12 +390,14 @@ adrplus config --application
 
 ```json
 {
-  "language": "en-US",
-  "comandopenadr": "code {0}",
-  "withoutargs": "Help",
-  "pluginallowlist": [
-    { "name": "AdrIndexer" }
-  ]
+  "DefaultSettings": {
+    "language": "en-US",
+    "comandopenadr": "code {0}",
+    "withoutargs": "Help",
+    "pluginallowlist": [
+      { "name": "AdrIndexer" }
+    ]
+  }
 }
 ```
 
@@ -457,16 +468,12 @@ adrplus config --repository
   "lenseq": 4,
   "lenversion": 2,
   "lenrevision": 0,
-  "lenscope": 0,
   "separator": "-",
   "casetransform": "PascalCase",
   "statusnew": "Proposed",
   "statusacc": "Accepted",
   "statusrej": "Rejected",
   "statussup": "Superseded",
-  "scopes": "",
-  "folderbyscope": false,
-  "skipdomain": "",
   "headerdisclaimer": "Do not remove this comment, lines and table",
   "headertitlefile": "ADR",
   "headerversion": "Version",
@@ -493,16 +500,12 @@ adrplus config --repository
 | `lenseq` | Number of digits for the sequential ADR number (for example: `4` => `0001`). |
 | `lenversion` | Number of digits for major version formatting (for example: `2` => `01`). |
 | `lenrevision` | Number of digits for revision formatting (for example: `2` => `01`; `0` disables revision numbering). |
-| `lenscope` | Maximum scope segment length used in generated names (when scope is enabled, value > 0). |
 | `separator` | Separator character used in generated file names (valid values: `-`, `_`, or `.`). |
 | `casetransform` | Case style applied to generated name segments (for example: `PascalCase`, `CamelCase`, `SnakeCase`, or `KebabCase`). |
 | `statusnew` | Label used for newly created ADRs. |
 | `statusacc` | Label used for accepted ADRs. |
 | `statusrej` | Label used for rejected ADRs. |
 | `statussup` | Label used for superseded ADRs. |
-| `scopes` | Semicolon-separated list of allowed scopes for organizing ADRs (for example: `Enterprise;Domain;Project`; can be empty when `lenscope = 0`). |
-| `folderbyscope` | If `true`, ADR files are grouped by scope folders; if `false`, all ADRs remain in the flat `folderadr` directory. |
-| `skipdomain` | Semicolon-separated list of scope names for which the domain segment should be omitted from the generated filename (must be a subset of `scopes`). |
 | `headerdisclaimer` | Disclaimer header added to ADR template output. |
 | `headertitlefile` | Header label for the ADR file name field in the header. |
 | `headerversion` | Header label for ADR version field. |
@@ -524,37 +527,32 @@ adrplus config --repository
 
 Before selecting a team profile, understand these key concepts:
 
-- **Scopes**: Define organizational boundaries for your ADRs (e.g., "Enterprise", "Backend", "Frontend"). Scopes help organize decisions by domain or team responsibility. When enabled (`lenscope > 0`), the scope appears in the ADR filename.
-
-- **Folder by Scope**: When enabled, ADRs are organized into separate folders for each scope (e.g., `doc/adr/enterprise/`, `doc/adr/backend/`). When disabled, all ADRs stay in a flat structure under the configured `folderadr` folder.
-
-- **Skip Domain**: Some scopes may not need a domain segment in the filename. For example, a "Corporate" scope might skip the domain to keep filenames shorter. You can list multiple scopes separated by semicolons.
+- **Scope and Domain**: Free-text fields on every ADR, shown only in the header table (not the filename), with no validation and no folder organization tied to them. Use them however your team finds useful — e.g. noting which area or team a decision belongs to — AdrPlus does not enforce or interpret their values.
 
 - **Case Transform**: The style applied to the title portion of generated filenames:
-  - `PascalCase`: `UsePostgreSQLAsDatabase`
-  - `CamelCase`: `usePostgreSQLAsDatabase`
-  - `SnakeCase`: `use_postgresql_as_database`
-  - `KebabCase`: `use-postgresql-as-database` (default)
+  - `PascalCase`: `UsePostgreSqlAsDatabase`
+  - `CamelCase`: `usePostgreSqlAsDatabase`
+  - `SnakeCase`: `use_postgre_sql_as_database`
+  - `KebabCase`: `use-postgre-sql-as-database` (default)
 
 - **Separator**: The character separating different parts of the filename:
-  - `-` (hyphen): `ADR0001V01-UsePostgreSQL.md`
-  - `_` (underscore): `ADR0001_UsePostgreSQL.md`
-  - `.` (period): `ADR0001V01.UsePostgreSQL.md`
+  - `-` (hyphen): `ADR0001V01-UsePostgreSql.md`
+  - `_` (underscore): `ADR0001_UsePostgreSql.md`
+  - `.` (period): `ADR0001V01.UsePostgreSql.md`
 
-- **Version vs. Revision**: 
+- **Version vs. Revision**:
   - **Version**: A major change to an ADR (e.g., `V01`, `V02`) that typically represents a significant decision update.
   - **Revision**: A minor change to an ADR (e.g., `R01`, `R02`) that represents clarifications or documentation improvements.
 
-#### 1) Monorepo (multiple apps/domains or enterprise architecture)
+#### 1) Simple repository
 
-Use scopes and folder grouping to keep ADRs organized by area. Each team or domain maintains its own ADR sequence.
+The default shape: a flat `folderadr` directory, no scope/domain-based organization (there isn't one anymore — see [Scope and Domain](#understanding-configuration-concepts) above). Fits most projects, single-domain or not.
+
+> `lenrevision: 0` disables the `revise` command entirely — attempting it under this profile fails with a
+> configuration error. Set `lenrevision` to `1` or higher (see [Product team with frequent revisions](#2-product-team-with-frequent-revisions) below) if you plan to use `revise`.
 
 ```json
 {
-  "scopes": "Enterprise;Project;Backend;Frontend;Mobile;Data",
-  "skipdomain": "Enterprise",
-  "folderbyscope": true,
-  "lenscope": 1,
   "separator": "-",
   "casetransform": "PascalCase",
   "lenversion": 2,
@@ -563,31 +561,10 @@ Use scopes and folder grouping to keep ADRs organized by area. Each team or doma
 ```
 
 **Example filenames generated**:
-- `doc/adr/Enterprise/ADR0001V01E-UnifyAuthenticationStrategy.md`
-- `doc/adr/Backend/ADR0001V01B-UsePostgreSQ@MyBackEndScope.md`
-- `doc/adr/Frontend/ADR0001V01F-AdoptReactFramework@MyFrontEndScope.md`
-
-#### 2) Simple repository
-
-Use a simple flat structure with no scope folder split. Ideal for smaller projects or single-domain repositories.
-
-```json
-{
-  "scopes": "",
-  "folderbyscope": false,
-  "lenscope": 0,
-  "separator": "-",
-  "casetransform": "PascalCase",
-  "lenversion": 2,
-  "lenrevision": 0
-}
-```
-
-**Example filenames generated**:
-- `doc/adr/ADR0001V01-UsePostgreSQL.md`
+- `doc/adr/ADR0001V01-UsePostgreSql.md`
 - `doc/adr/ADR0002V01-AdoptReactFramework.md`
 
-#### 3) Product team with frequent revisions
+#### 2) Product team with frequent revisions
 
 Keep revision metadata visible and standardized. Useful for teams that frequently update ADR documentation or maintain multiple versions.
 
@@ -601,31 +578,9 @@ Keep revision metadata visible and standardized. Useful for teams that frequentl
 
 **Example filenames generated**:
 - `doc/adr/ADR0001V01R01-DecisionTitle.md` (created)
-- `doc/adr/ADR0001V02R01-DecisionTitle.md` (after revision)
-- `doc/adr/ADR0001V03R02-DecisionTitle.md` (after version bump)
+- `doc/adr/ADR0001V01R02-DecisionTitle.md` (after revision - revision increments, version stays)
+- `doc/adr/ADR0001V02R01-DecisionTitle.md` (after version bump - version increments, revision resets to 01)
 - `doc/adr/ADR0002V01R01-DecisionTitle--0001.md` (after superseded bump)
-
-#### 4) Enterprise with department scopes
-
-Organize ADRs by department with custom headers and folder structure.
-
-```json
-{
-  "scopes": "Infrastructure;Database;Platform;Security",
-  "skipdomain": "Platform",
-  "folderbyscope": true,
-  "lenscope": 3,
-  "separator": "-",
-  "casetransform": "PascalCase",
-  "lenversion": 2,
-  "lenrevision": 0
-}
-```
-
-**Example filenames generated**:
-- `doc/adr/Infrastructure/ADR0001V01Inf-UseDockerContainers.md` (Infrastructure)
-- `doc/adr/Database/ADR0001V01Dat-AdoptPostgresql.md` (Database)
-
 
 > Tip: start with one profile, run `adrplus init`, create a test ADR with `adrplus new`, and adjust the config iteratively.
 
@@ -658,9 +613,14 @@ dotnet tool update -g adrplus
 
 Your configuration persists automatically:
 - ✅ **Application settings** (`adrplus.json`): Language, editor preferences, and interface behavior remain unchanged
-- ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns, folder structure, and scope definitions are maintained
+- ✅ **Repository configuration** (`adr-config.adrplus`): ADR naming patterns and folder structure are maintained
 
 No manual reconfiguration is needed after upgrading — simply update the tool and continue using it as before.
+
+> A breaking change occasionally requires more than an in-place update — check `CHANGELOG.md`'s latest
+> section for a "Breaking change - action required" note before running `dotnet tool update`. For
+> example, upgrading from any version older than `1.0.0` requires uninstalling and reinstalling rather
+> than updating in place (see the changelog for why).
 
 ---
 

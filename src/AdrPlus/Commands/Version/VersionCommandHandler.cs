@@ -25,22 +25,13 @@ namespace AdrPlus.Commands.Version
     /// The target ADR must be the latest version for its sequence number, must have been accepted or rejected,
     /// and versioning (<see cref="AdrPlusRepoConfig.LenVersion"/>) must be enabled in the repository configuration.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="VersionCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Versioned</c> lifecycle event.</param>
     internal sealed partial class VersionCommandHandler(
         ILogger<VersionCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
         IFileSystemService fileSystem,
         IValidateConfig validateconfig,
         IConsoleWriter prompt,
+        INewAdrPrompts newAdrPrompts,
         IAdrServices adrServices,
         IPluginManager pluginManager) : ICommandHandler
     {
@@ -48,12 +39,15 @@ namespace AdrPlus.Commands.Version
         private readonly AdrPlusConfig _config = config.Value;
         private readonly IFileSystemService _filesystem = fileSystem;
         private readonly IConsoleWriter _prompt = prompt;
+        private readonly INewAdrPrompts _newAdrPrompts = newAdrPrompts;
         private readonly IValidateConfig _validateconfig = validateconfig;
         private readonly IAdrServices _adrServices = adrServices;
         private readonly IPluginManager _pluginManager = pluginManager;
         private static readonly Arguments[] ValidCommandArgs =
             [Arguments.WizardVersion,
              Arguments.FileAdr,
+             Arguments.DomainAdr,
+             Arguments.ScopeAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
              Arguments.EmptyAdr,
@@ -74,20 +68,11 @@ namespace AdrPlus.Commands.Version
                 info.Header.StatusChange == AdrStatus.Unknown);
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow a new version.
-        /// </summary>
-        /// <returns>A formatted error string listing the required statuses (Accepted/Rejected).</returns>
         private static string MessageNotValidStatusForUpdate()
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}/{Helper.GetResourceStatus(AdrStatus.Rejected)}");
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow a new version, 
-        /// </summary>
-        /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
-        /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(adrStatus)}");
@@ -126,6 +111,7 @@ namespace AdrPlus.Commands.Version
                         [
                             "adrplus version --wizard --open",
                             "adrplus version --file \"path/to/File-ADR\" --refdate \"2026-01-01\"",
+                            "adrplus version --file \"path/to/File-ADR\" --scope \"Backend\" --domain \"Payments\"",
                         ]));
                     return;
                 }
@@ -261,22 +247,23 @@ namespace AdrPlus.Commands.Version
                     }
                 }
 
-                // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
 
                 var emptyard = false;
                 if (parsedArgs.ContainsKey(Arguments.EmptyAdr))
-                { 
+                {
                     emptyard = true;
                 }
 
-                // Create ADR record and file
+                var scope = parsedArgs.TryGetValue(Arguments.ScopeAdr, out string? scopeValue) ? scopeValue : (infolastadr.Header.Scope ?? string.Empty);
+                var domain = parsedArgs.TryGetValue(Arguments.DomainAdr, out string? domainValue) ? domainValue : (infolastadr.Header.Domain ?? string.Empty);
+
                 var adrRecord = new AdrRecord
                 {
                     Number = infoadr.Number,
                     Title = infoadr.Header.Title,
-                    Scope = infoadr.Header.Scope ?? string.Empty,
-                    Domain = infoadr.Header.Domain ?? string.Empty,
+                    Scope = scope,
+                    Domain = domain,
                     StatusCreate = AdrStatus.Proposed,
                     CreateRef = dateAdr,
                     Version = infolastadr.Header.Version+1,
@@ -286,10 +273,6 @@ namespace AdrPlus.Commands.Version
 
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(rootPath, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
@@ -298,13 +281,12 @@ namespace AdrPlus.Commands.Version
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 
                 await _pluginManager.DispatchAsync(AdrEventType.Versioned, adrRecord.ToSnapshot(), filePath, () => content, repoconfig.ToSnapshot(), Path.Combine(rootPath, "plugins-state"), isReplay: false, isActive: isActive, cancellationToken: cancellationToken);
 
-                // Open file if requested
                 OpenAdrFileIfRequested(parsedArgs, filePath);
             }
             catch (Exception ex)
@@ -314,20 +296,12 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an error and writes it to the console.
-        /// </summary>
-        /// <param name="message">The error message to log and display.</param>
         private void LogAndWriteError(string message)
         {
             LogMessages.LogError(_logger, message);
@@ -406,7 +380,6 @@ namespace AdrPlus.Commands.Version
             {
                 parsedArgs.Clear();
 
-                // Select drive
                 string[] drives = _filesystem.GetDrives();
                 var rootPath = drives[0];
                 if (drives.Length > 1)
@@ -419,14 +392,12 @@ namespace AdrPlus.Commands.Version
                     rootPath = Content;
                 }
 
-                // Select folder
                 var folderPrompt = _prompt.PromptSelectFolderPath(Resources.AdrPlus.PromptSelectRepositoryPath, true, rootPath, _filesystem, _validateconfig, cancellationToken);
                 if (folderPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
                 }
 
-                // Validate repo config
                 var configPath = Path.GetFullPath(Path.Combine(folderPrompt.Content, _validateconfig.GetFileNameRepoConfig()));
                 string jsonString = await _filesystem.ReadAllTextAsync(configPath, cancellationToken);
                 var (IsValid, ErrorReport) = _validateconfig.ValidateRepoStructure(jsonString);
@@ -480,7 +451,39 @@ namespace AdrPlus.Commands.Version
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                // Get date
+                var (ScopesAborted, scopes, scopesException) = _newAdrPrompts.PromptGetArrayScopesAdr(filesadrs, cancellationToken);
+                if (ScopesAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (scopesException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered scopes for suggestions: {scopesException.Message}");
+                }
+                var (DomainsAborted, domains, domainsException) = _newAdrPrompts.PromptGetArrayDomainsAdr(filesadrs, cancellationToken);
+                if (DomainsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                if (domainsException != null)
+                {
+                    LogMessages.LogError(_logger, $"Failed to read registered domains for suggestions: {domainsException.Message}");
+                }
+
+                var scopePrompt = _newAdrPrompts.PromptEditScopeAdr(filenewver.info.Header.Scope ?? string.Empty, scopes, cancellationToken);
+                if (scopePrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.ScopeAdr] = scopePrompt.Content.Trim();
+
+                var domainPrompt = _newAdrPrompts.PromptEditDomainAdr(filenewver.info.Header.Domain ?? string.Empty, domains, cancellationToken);
+                if (domainPrompt.IsAborted)
+                {
+                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
+                }
+                parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
+
                 var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
@@ -502,9 +505,8 @@ namespace AdrPlus.Commands.Version
                     parsedArgs[Arguments.EmptyAdr] = string.Empty;
                 }
 
-                // Display summary and confirm
                 var (_, Top) = _prompt.PromptCursorPosition();
-                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
+                DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content, scopePrompt.Content.Trim(), domainPrompt.Content.Trim());
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
                 _prompt.PromptMovePosition(0, Top);
 
@@ -520,10 +522,6 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a failure entry and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -533,17 +531,13 @@ namespace AdrPlus.Commands.Version
             }
         }
 
-        /// <summary>
-        /// Displays the wizard summary showing selected options for ADR versioning.
-        /// </summary>
-        /// <param name="rootpath">The root repository path.</param>
-        /// <param name="fileref">The reference file name.</param>
-        /// <param name="defDateRef">The reference date for the operation.</param>
-        private void DisplayWizardSummary(string rootpath ,string fileref, DateTime defDateRef)
+        private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef, string scope, string domain)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);
             _prompt.PromptWriteSummary(Resources.AdrPlus.File + ": " + fileref);
             _prompt.PromptWriteSummary(Resources.AdrPlus.Date + ": " + defDateRef.ToString("d", CultureInfo.GetCultureInfo(_config.Language)));
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Scope + ": " + scope);
+            _prompt.PromptWriteSummary(Resources.AdrPlus.Domain + ": " + domain);
             _prompt.PromptWriteSummary("");
         }
     }

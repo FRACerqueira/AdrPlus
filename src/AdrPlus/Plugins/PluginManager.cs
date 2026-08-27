@@ -12,6 +12,7 @@ using AdrPlus.Infrastructure.Logging;
 using AdrPlus.Infrastructure.UI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace AdrPlus.Plugins
 {
@@ -22,9 +23,6 @@ namespace AdrPlus.Plugins
     /// and reads the plugin allowlist from <see cref="AdrPlusConfig.PluginAllowlist"/>.
     /// Never throws for a rejected plugin — fail-soft by design.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="PluginManager"/> class.
-    /// </remarks>
     /// <param name="fileSystem">The file system service used to discover plugin subfolders and read manifests.</param>
     /// <param name="config">The application configuration, providing the optional plugin allowlist.</param>
     /// <param name="logger">The logger for recording plugin rejections and warnings.</param>
@@ -55,10 +53,19 @@ namespace AdrPlus.Plugins
         internal readonly List<LoadedPlugin> _loadedPlugins = [];
         private readonly List<PluginRejection> _rejections = [];
 
-        // Per-plugin InitializeAsync state. Deliberately NOT cleared by LoadPluginsAsync: "already tried to
-        // initialize this run" must survive any reload, unlike the discovery-scoped _loadedPlugins/_rejections.
-        private readonly HashSet<string> _initializedPlugins = new(StringComparer.OrdinalIgnoreCase);
-        private readonly HashSet<string> _initFailedPlugins = new(StringComparer.OrdinalIgnoreCase);
+        // Per-plugin-instance InitializeAsync state, keyed by reference (not by name): LoadPluginsAsync always
+        // creates a brand-new IAdrPlugin instance per candidate, so a reload must not let a new instance inherit
+        // an older instance's "already initialized"/"init failed" status just because it shares a manifest name -
+        // the new instance has never actually run InitializeAsync. Cleared alongside _loadedPlugins whenever a
+        // generation is disposed, so these never hold a reference to a disposed instance.
+        private readonly HashSet<IAdrPlugin> _initializedPlugins = new();
+        private readonly HashSet<IAdrPlugin> _initFailedPlugins = new();
+
+        // Hook tasks abandoned by a foreground/background timeout, keyed by the plugin instance they belong to.
+        // Lets a subsequent dispose/reload wait briefly for a still-running abandoned hook instead of blindly
+        // racing DisposeAsync against it on the same instance. ConcurrentDictionary because DispatchAsync fans
+        // out to multiple plugins concurrently via Task.WhenAll, each touching its own (but concurrently-written) key.
+        private readonly ConcurrentDictionary<LoadedPlugin, Task> _outstandingHooks = new();
 
         /// <inheritdoc/>
         public string BuiltinPluginsRoot { get; } = builtinPluginsRoot;
@@ -75,7 +82,10 @@ namespace AdrPlus.Plugins
         /// <inheritdoc/>
         public async Task LoadPluginsAsync(CancellationToken cancellationToken = default)
         {
-            _loadedPlugins.Clear();
+            // Dispose/unload whatever generation is currently loaded before replacing it - reloading within the
+            // same process (e.g. the interactive wizard looping after a config change) must not silently leak
+            // the previous generation's instances and AssemblyLoadContexts.
+            await DisposeCurrentGenerationAsync();
             _rejections.Clear();
 
             var loader = new PluginLoader(_fileSystem);
@@ -169,7 +179,7 @@ namespace AdrPlus.Plugins
 
             var candidates = _loadedPlugins.Where(plugin =>
                 (isActive is null || isActive(plugin)) &&
-                !_initFailedPlugins.Contains(plugin.Manifest.Name!) &&
+                !_initFailedPlugins.Contains(plugin.Instance) &&
                 (plugin.Manifest.SubscribedEvents?.Contains(eventType.ToString(), StringComparer.OrdinalIgnoreCase) ?? false));
 
             var filtered = new List<LoadedPlugin>();
@@ -182,7 +192,9 @@ namespace AdrPlus.Plugins
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw, skipping for this event");
+                    var message = $"{plugin.Manifest.Name}: ShouldHandle threw, skipping for this event (correlationId={correlationId})";
+                    LogMessages.LogPluginError(_logger, ex, message);
+                    _prompt.PromptWriteInfo(message);
                     continue;
                 }
 
@@ -197,7 +209,26 @@ namespace AdrPlus.Plugins
                 return;
             }
 
-            await Task.WhenAll(filtered.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, pendingStateRoot, cancellationToken)));
+            // Sequential init phase: EnsureInitializedAsync mutates _initializedPlugins/_initFailedPlugins
+            // (plain HashSets, not thread-safe) - must finish before the parallel dispatch below starts,
+            // mirroring BackfillAsync's existing sequential-init-then-parallel-sweep split. Without this,
+            // concurrent first-time EnsureInitializedAsync calls from Task.WhenAll below corrupt the shared
+            // HashSets - silently dropping a subscribed plugin from dispatch, or throwing from inside Add.
+            var ready = new List<LoadedPlugin>();
+            foreach (var plugin in filtered)
+            {
+                if (await EnsureInitializedAsync(plugin, cancellationToken))
+                {
+                    ready.Add(plugin);
+                }
+            }
+
+            if (ready.Count == 0)
+            {
+                return;
+            }
+
+            await Task.WhenAll(ready.Select(plugin => DispatchToPluginAsync(plugin, context, correlationId, pendingStateRoot, cancellationToken)));
         }
 
         /// <inheritdoc/>
@@ -218,7 +249,18 @@ namespace AdrPlus.Plugins
                 }
 
                 var pluginStateFolder = Path.Combine(pendingStateRoot, plugin.Manifest.Name!);
-                var entries = await PendingStateStore.ReadAllAsync(_fileSystem, pluginStateFolder, cancellationToken);
+
+                List<PendingEntry> entries;
+                try
+                {
+                    entries = await PendingStateStore.ReadAllAsync(_fileSystem, pluginStateFolder, cancellationToken, WriteWarning);
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    WriteWarning($"{plugin.Manifest.Name}: could not read pending state ({ex.Message}); skipping this plugin's retry this run.");
+                    continue;
+                }
                 if (entries.Count == 0)
                 {
                     continue;
@@ -233,62 +275,94 @@ namespace AdrPlus.Plugins
 
                 var retryPolicy = plugin.Manifest.RetryPolicy ?? new PluginRetryPolicy();
                 var remaining = new List<PendingEntry>();
+                var index = 0;
 
-                foreach (var entry in entries)
+                try
                 {
-                    if (!Enum.TryParse<AdrEventType>(entry.EventType, out var eventType))
+                    for (; index < entries.Count; index++)
                     {
-                        WriteWarning($"{plugin.Manifest.Name}: pending entry for '{entry.AdrKey}' has an unrecognized eventType '{entry.EventType}', dropping");
-                        summary.Dropped++;
-                        continue;
-                    }
+                        var entry = entries[index];
 
-                    var resolved = resolveAdr(entry.AdrKey);
-                    if (resolved is not { } adr)
-                    {
-                        WriteWarning(string.Format(null, FormatMessages.PluginPendingAdrNotFound, plugin.Manifest.Name, entry.AdrKey));
-                        summary.Dropped++;
-                        continue;
-                    }
+                        if (!Enum.TryParse<AdrEventType>(entry.EventType, out var eventType))
+                        {
+                            WriteWarning($"{plugin.Manifest.Name}: pending entry for '{entry.AdrKey}' has an unrecognized eventType '{entry.EventType}', dropping");
+                            summary.Dropped++;
+                            continue;
+                        }
 
-                    var context = new AdrEventContext
-                    {
-                        EventType = eventType,
-                        IsReplay = false,
-                        Adr = adr.Adr,
-                        AdrFilePath = adr.FilePath,
-                        GetAdrRenderedContent = () => adr.Content,
-                        Repo = repo,
-                        CorrelationId = Guid.NewGuid().ToString()
-                    };
+                        var resolved = resolveAdr(entry.AdrKey);
+                        if (resolved is not { } adr)
+                        {
+                            WriteWarning(string.Format(null, FormatMessages.PluginPendingAdrNotFound, plugin.Manifest.Name, entry.AdrKey));
+                            summary.Dropped++;
+                            continue;
+                        }
 
-                    bool shouldHandle;
-                    try
-                    {
-                        shouldHandle = plugin.Instance.ShouldHandle(context);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw on retry, skipping for this entry");
-                        remaining.Add(entry);
-                        summary.StillPending++;
-                        continue;
-                    }
+                        var context = new AdrEventContext
+                        {
+                            EventType = eventType,
+                            IsReplay = false,
+                            Adr = adr.Adr,
+                            AdrFilePath = adr.FilePath,
+                            GetAdrRenderedContent = () => adr.Content,
+                            Repo = repo,
+                            // Reuses the pending entry's own correlationId (assigned when the original live
+                            // dispatch first failed) rather than minting a new one, so retry log lines can
+                            // actually be cross-referenced back to the dispatch that queued this entry.
+                            CorrelationId = entry.CorrelationId
+                        };
 
-                    if (!shouldHandle)
-                    {
-                        summary.Skipped++;
-                        continue;
-                    }
+                        bool shouldHandle;
+                        try
+                        {
+                            shouldHandle = plugin.Instance.ShouldHandle(context);
+                        }
+                        catch (Exception ex)
+                        {
+                            var message = $"{plugin.Manifest.Name}: ShouldHandle threw on retry, skipping for this entry (correlationId={context.CorrelationId})";
+                            LogMessages.LogPluginError(_logger, ex, message);
+                            _prompt.PromptWriteInfo(message);
+                            remaining.Add(entry);
+                            summary.StillPending++;
+                            continue;
+                        }
 
-                    var retried = await RetryEntryAsync(plugin, context, entry, retryPolicy, summary, cancellationToken);
-                    if (retried is not null)
-                    {
-                        remaining.Add(retried);
+                        if (!shouldHandle)
+                        {
+                            summary.Skipped++;
+                            continue;
+                        }
+
+                        var retried = await RetryEntryAsync(plugin, context, entry, retryPolicy, summary, cancellationToken);
+                        if (retried is not null)
+                        {
+                            remaining.Add(retried);
+                        }
                     }
                 }
-
-                await PendingStateStore.WriteAllAsync(_fileSystem, pluginStateFolder, remaining, cancellationToken);
+                catch (OperationCanceledException)
+                {
+                    // The entry at `index` was interrupted mid-retry (most likely during backoff) and everything
+                    // after it was never reached — both are still pending exactly as before, so keep them rather
+                    // than losing them: without this, entries already resolved earlier in this same loop would
+                    // vanish from `remaining` along with everything unresolved, and get redundantly retried (or
+                    // for a non-idempotent plugin, redundantly re-actioned) on the next `sync`.
+                    remaining.AddRange(entries.Skip(index));
+                    throw;
+                }
+                finally
+                {
+                    // CancellationToken.None deliberately: this recovery write must still happen even when the
+                    // token that triggered the catch above is already cancelled.
+                    try
+                    {
+                        await PendingStateStore.WriteAllAsync(_fileSystem, pluginStateFolder, remaining, CancellationToken.None);
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        WriteWarning($"{plugin.Manifest.Name}: could not persist pending state ({ex.Message}); progress made this run may be redone next time.");
+                    }
+                }
             }
 
             return summary;
@@ -297,15 +371,59 @@ namespace AdrPlus.Plugins
         /// <inheritdoc/>
         public async Task DisposeLoadedPluginsAsync(CancellationToken cancellationToken = default)
         {
+            await DisposeCurrentGenerationAsync();
+            _rejections.Clear();
+        }
+
+        /// <summary>
+        /// Disposes and unloads every plugin in the currently-loaded generation, then clears
+        /// <see cref="_loadedPlugins"/> and the per-instance init-tracking sets. Shared by
+        /// <see cref="DisposeLoadedPluginsAsync"/> (final shutdown) and <see cref="LoadPluginsAsync"/> (start of
+        /// every reload) — each plugin's own <see cref="DisposeAsync"/> is bounded by its
+        /// <see cref="PluginManifest.ForegroundTimeoutMs"/> so a slow, non-throwing <c>DisposeAsync</c> cannot
+        /// hang the caller indefinitely. That bound matters here specifically because <see cref="LoadPluginsAsync"/>
+        /// runs at the start of every plugin-touching command, not only at process exit — an unbounded wait here
+        /// would hang every such command, not just shutdown.
+        /// </summary>
+        private async Task DisposeCurrentGenerationAsync()
+        {
             foreach (var plugin in _loadedPlugins)
             {
+                // If a hook abandoned by an earlier timeout is still outstanding for this exact instance, give
+                // it the same grace period to finish before disposing — narrows, though cannot fully eliminate,
+                // the window where DisposeAsync runs concurrently with that hook on the same instance.
+                if (_outstandingHooks.TryGetValue(plugin, out var outstandingHook))
+                {
+                    var graceTask = Task.Delay(plugin.Manifest.ForegroundTimeoutMs, CancellationToken.None);
+                    if (await Task.WhenAny(outstandingHook, graceTask) == graceTask)
+                    {
+                        LogMessages.LogPluginError(_logger, null, $"{plugin.Manifest.Name}: disposing while a hook abandoned by an earlier timeout is still running; DisposeAsync may run concurrently with it");
+                    }
+                }
+
                 try
                 {
-                    await plugin.Instance.DisposeAsync();
+                    var disposeTask = plugin.Instance.DisposeAsync().AsTask();
+                    var timeoutTask = Task.Delay(plugin.Manifest.ForegroundTimeoutMs, CancellationToken.None);
+                    if (await Task.WhenAny(disposeTask, timeoutTask) == timeoutTask)
+                    {
+                        LogMessages.LogPluginError(_logger, null, $"{plugin.Manifest.Name}: DisposeAsync did not complete within {plugin.Manifest.ForegroundTimeoutMs}ms, abandoning it");
+                        _ = disposeTask.ContinueWith(
+                            t =>
+                            {
+                                if (t.IsFaulted)
+                                {
+                                    LogMessages.LogPluginError(_logger, t.Exception, $"{plugin.Manifest.Name}: abandoned DisposeAsync faulted");
+                                }
+                            },
+                            CancellationToken.None,
+                            TaskContinuationOptions.ExecuteSynchronously,
+                            TaskScheduler.Default);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: DisposeAsync threw during shutdown");
+                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: DisposeAsync threw");
                 }
             }
 
@@ -317,12 +435,13 @@ namespace AdrPlus.Plugins
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: AssemblyLoadContext.Unload threw during shutdown");
+                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: AssemblyLoadContext.Unload threw");
                 }
             }
 
             _loadedPlugins.Clear();
-            _rejections.Clear();
+            _initializedPlugins.Clear();
+            _initFailedPlugins.Clear();
         }
 
         /// <inheritdoc/>
@@ -355,7 +474,7 @@ namespace AdrPlus.Plugins
 
             var readyPlugins = _loadedPlugins.Where(plugin =>
                 (isActive is null || isActive(plugin)) &&
-                !_initFailedPlugins.Contains(plugin.Manifest.Name!));
+                !_initFailedPlugins.Contains(plugin.Instance));
             var perPluginSummaries = await Task.WhenAll(readyPlugins.Select(plugin => BackfillPluginAsync(plugin, items, repo, cancellationToken)));
 
             foreach (var summary in perPluginSummaries)
@@ -403,7 +522,12 @@ namespace AdrPlus.Plugins
                 }
                 catch (Exception ex)
                 {
-                    LogMessages.LogPluginError(_logger, ex, $"{plugin.Manifest.Name}: ShouldHandle threw during backfill, skipping this ADR");
+                    // ShouldHandle throwing means this item was never even attempted - it must still be
+                    // reflected in the summary. A bare `continue` here left every SyncSummary field at zero
+                    // when this happened for every eligible ADR, so a fully-failed sweep looked identical to
+                    // "nothing to do" (green PromptWriteSuccess banner, 0/0/0/0).
+                    WritePermanentFailure(plugin.Manifest.Name!, $"ShouldHandle threw during backfill ({ex.Message}) (correlationId={context.CorrelationId})", ex);
+                    summary.PermanentlyFailed++;
                     continue;
                 }
 
@@ -564,11 +688,8 @@ namespace AdrPlus.Plugins
         {
             var name = plugin.Manifest.Name!;
 
-            if (!await EnsureInitializedAsync(plugin, cancellationToken))
-            {
-                return;
-            }
-
+            // Initialization already happened in DispatchAsync's sequential phase before this method's caller
+            // fanned out in parallel - EnsureInitializedAsync must never be called from here too.
             var outcome = await InvokeOnceAsync(plugin, context, plugin.Manifest.ForegroundTimeoutMs, cancellationToken);
 
             switch (outcome.Status)
@@ -577,7 +698,7 @@ namespace AdrPlus.Plugins
                 case PluginInvokeStatus.Skipped:
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        var message = string.Concat(name, ": ", outcome.Status.ToString());
+                        var message = $"{name}: {outcome.Status} (correlationId={correlationId})";
                         LogMessages.LogPluginInfo(_logger, message);
                     }
                     return;
@@ -589,22 +710,24 @@ namespace AdrPlus.Plugins
         }
 
         /// <summary>
-        /// Lazily runs <see cref="IAdrPlugin.InitializeAsync"/> once per plugin per process. Shared by
+        /// Lazily runs <see cref="IAdrPlugin.InitializeAsync"/> once per plugin *instance*. Shared by
         /// the foreground dispatch path and the background retry engine so "already tried to initialize this
-        /// run" state (<see cref="_initializedPlugins"/>/<see cref="_initFailedPlugins"/>) is consistent
-        /// between both callers.
+        /// instance" state (<see cref="_initializedPlugins"/>/<see cref="_initFailedPlugins"/>) is consistent
+        /// between both callers. Keyed by <see cref="LoadedPlugin.Instance"/> reference, not by name — a reload
+        /// (<see cref="LoadPluginsAsync"/>) always produces a genuinely new instance, which must be initialized
+        /// again regardless of whether an earlier instance sharing the same manifest name already was.
         /// </summary>
         /// <returns><see langword="true"/> when the plugin is ready to be invoked; <see langword="false"/> when
-        /// initialization already failed (permanently, for this process) and the caller should skip it.</returns>
+        /// initialization already failed (permanently, for this instance) and the caller should skip it.</returns>
         private async Task<bool> EnsureInitializedAsync(LoadedPlugin plugin, CancellationToken cancellationToken)
         {
             var name = plugin.Manifest.Name!;
 
-            if (_initializedPlugins.Contains(name))
+            if (_initializedPlugins.Contains(plugin.Instance))
             {
                 return true;
             }
-            if (_initFailedPlugins.Contains(name))
+            if (_initFailedPlugins.Contains(plugin.Instance))
             {
                 return false;
             }
@@ -615,7 +738,7 @@ namespace AdrPlus.Plugins
                 var pluginContext = new HostPluginContext(pluginLogger);
                 var pluginConfig = new HostPluginConfiguration(plugin.Manifest.Settings);
                 await plugin.Instance.InitializeAsync(pluginContext, pluginConfig, cancellationToken);
-                _initializedPlugins.Add(name);
+                _initializedPlugins.Add(plugin.Instance);
                 return true;
             }
             catch (OperationCanceledException)
@@ -624,7 +747,7 @@ namespace AdrPlus.Plugins
             }
             catch (Exception ex)
             {
-                _initFailedPlugins.Add(name);
+                _initFailedPlugins.Add(plugin.Instance);
                 WritePermanentFailure(name, ex);
                 return false;
             }
@@ -641,19 +764,37 @@ namespace AdrPlus.Plugins
         {
             var name = plugin.Manifest.Name!;
 
+            // Linked so the plugin's own token actually reflects the timeout, not just the ambient/user-cancel
+            // token — previously the plugin was never told to stop when it timed out, only when the whole
+            // process was cancelled, so a well-behaved plugin got no signal at all when abandoned.
+            var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(timeoutMs);
+
             Task<PluginResult> hookTask;
             try
             {
-                hookTask = plugin.Instance.OnAdrEventAsync(context, cancellationToken);
+                hookTask = plugin.Instance.OnAdrEventAsync(context, timeoutCts.Token);
             }
             catch (OperationCanceledException)
             {
+                timeoutCts.Dispose();
                 throw;
             }
             catch (Exception ex)
             {
+                timeoutCts.Dispose();
                 return PluginInvokeOutcome.Failed(ex.Message, isRetryable: true);
             }
+
+            // Dispose the linked CTS only once the hook task actually finishes, however long that takes — an
+            // abandoned (post-timeout) hook may still be running well after this method returns, and disposing
+            // while it might still register a callback on its copy of the token risks ObjectDisposedException.
+            _ = hookTask.ContinueWith(
+                static (_, state) => ((CancellationTokenSource)state!).Dispose(),
+                timeoutCts,
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
 
             // The delay uses CancellationToken.None deliberately: if the user cancels the command, the delay must
             // not race to "elapsed" and get misread as a plugin timeout — cancellation is checked explicitly below.
@@ -664,12 +805,28 @@ namespace AdrPlus.Plugins
 
             if (completed == delayTask)
             {
-                // The losing hook task keeps running; observe its eventual fault so it never surfaces as an
-                // unobserved task exception later. Its result is never used.
+                // The losing hook task keeps running (now actually signalled to stop via timeoutCts, though a
+                // plugin that ignores its token can still keep going regardless). Track it so a subsequent
+                // dispose/reload can wait briefly for it instead of blindly racing DisposeAsync against it, and
+                // observe its eventual fault so it never surfaces as an unobserved task exception later. Its
+                // result is never used.
+                _outstandingHooks[plugin] = hookTask;
                 _ = hookTask.ContinueWith(
-                    t => LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after timeout ({timeoutMs}ms) elapsed"),
+                    t =>
+                    {
+                        // Remove by key+value, not by key alone - if this same plugin instance times out
+                        // again before this hook completes (e.g. MigrateCommandHandler's per-file dispatch
+                        // loop hitting the same slow plugin repeatedly), a newer hook's tracking entry has
+                        // already overwritten this one at the same key; removing by key alone would erase
+                        // that newer, still-running entry too.
+                        _outstandingHooks.TryRemove(new KeyValuePair<LoadedPlugin, Task>(plugin, hookTask));
+                        if (t.IsFaulted)
+                        {
+                            LogMessages.LogPluginError(_logger, t.Exception, $"{name}: hook faulted after timeout ({timeoutMs}ms) elapsed (correlationId={context.CorrelationId})");
+                        }
+                    },
                     CancellationToken.None,
-                    TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+                    TaskContinuationOptions.ExecuteSynchronously,
                     TaskScheduler.Default);
 
                 return PluginInvokeOutcome.Timeout(timeoutMs);
@@ -703,7 +860,7 @@ namespace AdrPlus.Plugins
 
             if (!isRetryable)
             {
-                WritePermanentFailure(name, lastError);
+                WritePermanentFailure(name, $"{lastError} (correlationId={correlationId})");
                 return;
             }
 
@@ -716,8 +873,20 @@ namespace AdrPlus.Plugins
                 Attempts = attempts,
                 Timestamp = DateTime.UtcNow
             };
-            await PendingStateStore.UpsertAsync(_fileSystem, Path.Combine(pendingStateRoot, name), entry, cancellationToken);
-            WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name));
+            try
+            {
+                await PendingStateStore.UpsertAsync(_fileSystem, Path.Combine(pendingStateRoot, name), entry, cancellationToken, WriteWarning);
+                WriteWarning(string.Format(null, FormatMessages.PluginQueuedForRetry, name) + $" (correlationId={correlationId})");
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // Critical fail-soft boundary: this runs on the foreground dispatch path used by every ADR
+                // lifecycle command (approve/reject/new/etc.) — a failure persisting *that a plugin needs
+                // retrying* must never itself propagate and turn a successful local ADR operation into a
+                // command-level error/exit code 1.
+                WriteWarning($"{name}: could not queue pending retry ({ex.Message}); this failure will not be automatically retried via 'adrplus sync'. (correlationId={correlationId})");
+            }
         }
 
         /// <summary>

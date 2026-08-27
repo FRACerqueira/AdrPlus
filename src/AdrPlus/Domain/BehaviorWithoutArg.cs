@@ -15,7 +15,7 @@ namespace AdrPlus.Domain
         /// </summary>
         Help,
         /// <summary>
-        /// Represents a wizard component for guiding users through a multi-step process. for command 'config' the argument is 'repository'
+        /// Launches the interactive wizard. For the <c>config</c> command specifically, this maps to its 'repository' argument.
         /// </summary>
         Wizard,
         /// <summary>

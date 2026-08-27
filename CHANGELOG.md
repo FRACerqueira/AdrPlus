@@ -9,7 +9,126 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-08-27
+
+`1.0.0` is the first final release — see [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md).
+The project's release-candidate policy ("avoid breaking changes unless critical") no longer applies from
+this point on; a breaking change to the CLI or to `AdrPlus.Abstractions` is now a real semver-major event.
+
+### Added
+
+- The `new` wizard's Scope and Domain prompts now suggest similar values already used elsewhere in the
+  repository (Jaro-Winkler similarity, plain-C# implementation, no new dependency) - e.g. typing
+  `"Backend"` when `"Back-End"` already exists surfaces it as a suggestion. Purely advisory: it never
+  blocks, rejects, or silently rewrites what the user types, keeping this consistent with ADR006 (no
+  host-enforced rules on these fields). Not applied in non-interactive/CLI-flag mode, where a value the
+  caller explicitly passed is always used exactly as given (important for scripted/CI/AI-agent usage).
+- `adrplus version` now accepts `-s/--scope`/`-d/--domain` (matching `new`) and prompts for them in
+  `--wizard` mode, pre-filled with the source ADR's current values with the same suggestion behavior as
+  `new`'s prompts. Omitting them keeps the new version's Scope/Domain unchanged from the source ADR, same
+  as before this change - see [ADR008](doc/adr/ADR008V01-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md).
+- `adrplus supersede` accepts the same `-s/--scope`/`-d/--domain` flags and `--wizard` prompts as
+  `version`, pre-filled with the predecessor ADR's current values - see
+  [ADR008V02](doc/adr/ADR008V02-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md).
+
+### Removed
+
+- Scope and Domain are now plain free-text header fields with no host-enforced rules
+  (see [ADR006](doc/adr/ADR006V02-remove-scope-and-domain-specific-rules.md)). Removed from
+  `adr-config.adrplus`: `scopes` (whitelist), `lenscope` (filename participation/truncation),
+  `skipdomain` (per-scope domain skipping), `folderbyscope` (per-scope subfolders). Removed from the
+  public `AdrPlus.Abstractions` contract: `RepoInfoSnapshot.Scopes`. A config still carrying these
+  fields is rejected as invalid — see [ADR006V03](doc/adr/ADR006V03-remove-scope-and-domain-specific-rules.md)
+  below for why the earlier release-candidate-scoped tolerance for this was retired before `1.0.0`.
+- `AppConstants.ObsoleteRepoConfigFields` and the `ValidateConfig` tolerance branch that consulted it
+  are removed entirely ([ADR006V03](doc/adr/ADR006V03-remove-scope-and-domain-specific-rules.md)) — a
+  config still carrying `scopes`/`lenscope`/`skipdomain`/`folderbyscope` now fails validation with an
+  "unexpected fields" error instead of loading with them silently ignored. This tolerance existed only
+  to avoid hard-failing a config written by a pre-`1.0.0-rc5` install during the release-candidate
+  period; now that `1.0.0` is final, that population no longer exists. If your `adr-config.adrplus`
+  still has any of these four fields, **remove them by hand** — neither `adrplus init` nor
+  `config --repository` can clean an existing dirty file for you (the field-stripping step was removed
+  together with the tolerance it served; `config --repository` also always writes to the machine's
+  shared install-level template, never a specific repository's file).
+- `-e/--empty` removed from `adrplus revise` (both the CLI flag and the `--wizard` prompt) - `revise` now
+  always copies the source ADR's content forward. Per
+  [ADR008](doc/adr/ADR008V01-allow-version-to-change-scope-and-domain-and-restrict-empty-template-to-version.md),
+  starting a revision blank doesn't fit `revise`'s purpose ("fix/clarify wording, same decision"); use
+  `adrplus version --empty` instead when the decision itself has changed enough to warrant a fresh start.
+
+### Changed
+
+- ADR filenames no longer embed Scope or Domain in any form; both remain visible only in the ADR's
+  header table. Title-uniqueness for `adrplus new` is now based on Title alone (previously Title+Domain).
+- The `new` wizard's Scope prompt is now free text (previously a picklist sourced from the repository's
+  configured scope whitelist), matching Domain's existing free-text-with-autocomplete behavior.
+- Bumped to `1.0.0` final (`AdrPlus.Abstractions` to `1.0.0` as well — see
+  [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md)) for this breaking config/contract
+  change and everything else accumulated since `v1.0.0-beta5`, the last version actually released.
+
+### Fixed
+
+- A plugin rejected specifically for an incompatible `abstractionsVersion` (major version mismatch
+  against the host's `AdrPlus.Abstractions`) was reported with the generic entryType/Name/Version
+  mismatch message instead of the dedicated, already-localized-in-11-languages
+  `PluginRejectedAbstractionsVersionIncompatible` message — that message existed but was never wired
+  up to any code path. A plugin author debugging a real `abstractionsVersion` gap was misdirected
+  toward suspecting their `entryType`/`Name`/`Version` instead. The check now reports its own
+  dedicated reason and message.
+- `adrplus init --path <dir>` (no `--file`) on an already-initialized directory used to always prompt
+  for overwrite confirmation, even with no interactive console to answer it (CI, scripts, an AI agent) -
+  it crashed with `Cannot run an interactive control: console input is redirected...` instead of
+  reinitializing or failing cleanly. It now detects the redirected console and skips the prompt,
+  failing with the same clean `Configuration file already exists at: <path>` error a declined
+  confirmation already produced. Reinitializing non-interactively still works via `--file`, which
+  already bypassed this confirmation entirely.
+- `revise` never actually incremented the revision number - a C# operator-precedence bug
+  (`Revision??0 + 1`, which binds as `Revision ?? (0 + 1)` instead of `(Revision ?? 0) + 1`) meant the
+  new revision was always identical to the source ADR's, so `revise` on any ADR already at revision 1
+  or higher failed with `The file already exists`. Only the very first revision of an ADR (revision 0)
+  ever succeeded.
+- `migrate` accepted any `.md` file long enough to cover the configured `migrationpattern`'s field
+  positions, even when the sequence-number, version, or revision segment it extracted from the filename
+  wasn't actually numeric - the bad segment was silently treated as `0` instead of the file being
+  rejected. A legacy file that didn't genuinely match the pattern (e.g. `DECISION-001.md` under a
+  pattern expecting a leading numeric sequence) could migrate anyway and collide with any other
+  non-matching file on `Number == 0`. Such files are now rejected as invalid, matching the "Files NOT
+  Migrated" behavior documented in `MigrationGuide.md`.
+- Omitting a command's own required argument (e.g. `--file` for `approve`/`reject`/`undo`/`revise`/
+  `version`/`supersede`, `--title` for `new`) without `--wizard` used to crash with a raw, internal
+  `The given key '...' was not present in the dictionary` error instead of a real validation message -
+  the "Required When not in wizard mode" check only ever inspected arguments that were already present,
+  so a fully-omitted one was never actually caught. It's now reported as a clean
+  `Required argument '--x' (-x) is missing` error, for every command, consistently.
+- A command run with none of its own flags used to silently re-consult the global `withoutargs` setting
+  (meant only for the truly argument-less `adrplus` invocation) a second time, at the individual-command
+  level - this broke `adrplus help <command>` under `withoutargs: Wizard` (crashed trying to launch an
+  interactive wizard for a non-interactive help request) or `None` (crashed with the same raw dictionary
+  error above), and made any command silently exit `0` with just its help text under the default `Help`
+  setting instead of failing when a required argument was missing. `adrplus help <command>` now always
+  shows that command's help, and a bare command with missing required arguments now always fails with
+  the same clean, real error, independent of `withoutargs`.
+- `--path` (`--domain`/`--scope` for `new`, `--file` for `explore`'s report path) was mislabeled
+  "Required When not in wizard mode" in every command's help text, even though `init`/`explore`/
+  `migrate`/`sync`/`plugins` already treated it as genuinely optional (with their own clean
+  `DirectoryNotFoundException`-style validation) and `new`'s Domain/Scope have never been validated at
+  all (see `FAQ.md`). Only `new`'s `--path` access was actually crash-prone if omitted - it now uses the
+  same safe pattern as the other five commands. Help text for all of these now correctly reads
+  "(Optional)".
+
+### Breaking change - action required
+
+- This is a breaking change with no compatibility shim, by design (see ADR006/ADR006V03).
+  **If you have `adrplus` installed globally at a version older than `1.0.0`, uninstall it and
+  reinstall `1.0.0` rather than upgrading in place** (`dotnet tool uninstall -g adrplus` then
+  `dotnet tool install -g adrplus`). **If you maintain a plugin built against `AdrPlus.Abstractions`
+  older than `1.0.0`, rebuild it against `1.0.0`** - the host's plugin-loader compatibility
+  check only compares the major version number, so an un-rebuilt plugin referencing the removed
+  `RepoInfoSnapshot.Scopes` will load successfully and then fail at runtime the first time it's
+  dispatched an event, rather than being rejected up front. **If your `adr-config.adrplus` still
+  carries `scopes`/`lenscope`/`skipdomain`/`folderbyscope`, remove them by hand** — see the `Removed`
+  entry above for why neither `adrplus init` nor `config --repository` can clean an existing file
+  for you.
 
 ---
 

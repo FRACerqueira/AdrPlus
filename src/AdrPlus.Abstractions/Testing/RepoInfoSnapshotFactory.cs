@@ -18,7 +18,6 @@ namespace AdrPlus.Abstractions.Testing
         /// a test cares about.
         /// </summary>
         /// <param name="folderAdr">The folder path where ADR files are stored. Defaults to <c>"docs/adr"</c>.</param>
-        /// <param name="scopes">The configured scopes for organizing ADRs. Defaults to a single <c>"core"</c> scope.</param>
         /// <param name="statusMapping">
         /// The mapping between <see cref="AdrStatus"/> values and their configured string representations.
         /// Defaults to each <see cref="AdrStatus"/> value mapped to its own enum name.
@@ -26,11 +25,9 @@ namespace AdrPlus.Abstractions.Testing
         /// <returns>A fully populated, valid <see cref="RepoInfoSnapshot"/>.</returns>
         public static RepoInfoSnapshot Create(
             string folderAdr = "docs/adr",
-            IReadOnlyList<string>? scopes = null,
             IReadOnlyDictionary<AdrStatus, string>? statusMapping = null) => new()
             {
                 FolderAdr = folderAdr,
-                Scopes = scopes ?? ["core"],
                 StatusMapping = statusMapping ?? DefaultStatusMapping
             };
 

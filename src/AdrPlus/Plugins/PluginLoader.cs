@@ -22,7 +22,8 @@ namespace AdrPlus.Plugins
         EntryAssemblyPathTraversal,
         NotInAllowlist,
         DuplicateName,
-        EntryTypeIncompatible
+        EntryTypeIncompatible,
+        AbstractionsVersionIncompatible
     }
 
     /// <summary>
@@ -210,10 +211,14 @@ namespace AdrPlus.Plugins
                 instance = (IAdrPlugin)Activator.CreateInstance(entryType)!;
 
                 if (!string.Equals(instance.Name, manifest.Name, StringComparison.OrdinalIgnoreCase)
-                    || instance.Version != manifest.Version
-                    || !IsAbstractionsVersionCompatible(manifest.AbstractionsVersion!))
+                    || instance.Version != manifest.Version)
                 {
                     return PluginLoadOutcome.Failure(RejectEntryTypeIncompatible(folderPath, manifest.Name!, manifest.EntryType!));
+                }
+
+                if (!IsAbstractionsVersionCompatible(manifest.AbstractionsVersion!))
+                {
+                    return PluginLoadOutcome.Failure(RejectAbstractionsVersionIncompatible(folderPath, manifest.Name!, manifest.AbstractionsVersion!));
                 }
             }
             catch (Exception ex) when (ex is IOException or InvalidOperationException or BadImageFormatException or ReflectionTypeLoadException or TargetInvocationException or MissingMethodException)
@@ -256,6 +261,13 @@ namespace AdrPlus.Plugins
         {
             var message = string.Format(null, FormatMessages.PluginRejectedEntryTypeIncompatible, pluginName, entryType);
             return new PluginRejection(folderPath, PluginRejectionReason.EntryTypeIncompatible, message);
+        }
+
+        private static PluginRejection RejectAbstractionsVersionIncompatible(string folderPath, string pluginName, string abstractionsVersion)
+        {
+            var hostMajor = typeof(IAdrPlugin).Assembly.GetName().Version?.Major ?? 0;
+            var message = string.Format(null, FormatMessages.PluginRejectedAbstractionsVersionIncompatible, pluginName, abstractionsVersion, hostMajor);
+            return new PluginRejection(folderPath, PluginRejectionReason.AbstractionsVersionIncompatible, message);
         }
     }
 

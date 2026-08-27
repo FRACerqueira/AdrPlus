@@ -22,15 +22,6 @@ namespace AdrPlus.Commands.Config
     /// (<c>AdrPlus.json</c>), repository (<c>adr-config.adrplus</c>), or ADR template (<c>adr-template.md</c>)
     /// configuration files through an interactive wizard or by supplying an external file.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ConfigCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="configurationMigrator">The configuration migrator to handle configuration migrations.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and configuration deserialization.</param>
     internal sealed class ConfigCommandHandler(
         ILogger<ConfigCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -71,7 +62,7 @@ namespace AdrPlus.Commands.Config
             try
             {
                 ArgumentNullException.ThrowIfNull(args);
-                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs, "-r");
+                var parsedArgs = _adrServices.ParseArgs(args, ValidCommandArgs);
                 if (parsedArgs.ContainsKey(Arguments.Help))
                 {
                     _prompt.PromptWriteHelp(_adrServices.GetHelpText(
@@ -138,14 +129,6 @@ namespace AdrPlus.Commands.Config
             }
         }
 
-        /// <summary>
-        /// Processes the migration configuration 
-        /// </summary>
-        /// <param name="fileConfigPath">Optional path to an external configuration file. Empty string triggers the wizard.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns></returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="InvalidDataException"></exception>
         private async Task ProcessMigrationConfigAsync(string fileConfigPath, CancellationToken cancellationToken)
         {
             string? jsoncontent;
@@ -437,7 +420,6 @@ namespace AdrPlus.Commands.Config
         /// <exception cref="FileNotFoundException">Thrown when the selected template file does not exist.</exception>
         private async Task<string> WizardTemplateConfig(CancellationToken cancellationToken)
         {
-            // Select drive
             string[] drives = _fileSystem.GetDrives();
             var rootPath = drives[0];
             if (drives.Length > 1)
@@ -450,7 +432,6 @@ namespace AdrPlus.Commands.Config
                 rootPath = driveContent;
             }
 
-            // Select file template
             var (IsAborted, Content) = _configPrompts.PromptConfigTemplateAdrSelect(rootPath, cancellationToken);
             if (IsAborted)
             {
@@ -552,10 +533,6 @@ namespace AdrPlus.Commands.Config
             _prompt.PromptWriteSuccess(filePath);
         }
 
-        /// <summary>
-        /// Logs each error in <paramref name="errors"/> as a command failure and writes it to the console.
-        /// </summary>
-        /// <param name="errors">An array of validation error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -652,7 +629,7 @@ namespace AdrPlus.Commands.Config
 
         /// <summary>
         /// Parses <paramref name="modifiedConfig"/> and builds a list of editable <see cref="FieldsJson"/> entries
-        /// for all root-level properties. The <c>template</c> field is marked as non-editable.
+        /// for all root-level properties. The <c>template</c> and <c>migrationPattern</c> fields are excluded.
         /// </summary>
         /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         /// <returns>A list of <see cref="FieldsJson"/> entries representing each configuration field.</returns>
@@ -673,30 +650,6 @@ namespace AdrPlus.Commands.Config
                 else if (property.Name.Equals(AppConstants.FieldMigrationPattern, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
-                }
-                else if (property.Name.Equals(AppConstants.FieldScopes, StringComparison.OrdinalIgnoreCase))
-                {
-                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
-                    if (GetJsonValueAsString(item.Value) == "0")
-                    {
-                        enabled = false;
-                    } 
-                }
-                else if (property.Name.Equals(AppConstants.FieldFolderByScope, StringComparison.OrdinalIgnoreCase))
-                {
-                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
-                    if (GetJsonValueAsString(item.Value) == "0")
-                    {
-                        enabled = false;
-                    }
-                }
-                else if (property.Name.Equals(AppConstants.FieldSkipDomain, StringComparison.OrdinalIgnoreCase))
-                {
-                    var item = root.EnumerateObject().First(x => x.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
-                    if (GetJsonValueAsString(item.Value) == "0")
-                    {
-                        enabled = false;
-                    }
                 }
                 fields.Add(new FieldsJson
                 {
@@ -736,10 +689,6 @@ namespace AdrPlus.Commands.Config
             return fields;
         }
 
-        /// <summary>
-        /// Generates and writes sample ADR filenames to the console to help the user preview the effect of the current configuration.
-        /// </summary>
-        /// <param name="modifiedConfig">The current repository configuration JSON string.</param>
         private void DisplaySampleFiles(string modifiedConfig)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.ConfigInfoFileNameSample);
@@ -762,13 +711,12 @@ namespace AdrPlus.Commands.Config
         private (bool IsAborted, FieldsJson EditField) EditFieldApp(string fieldName, FieldsJson[] fields, CancellationToken cancellationToken)
         {
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
-            var isaborted = ProcessFieldEdit(selection.Name, selection, fields, -1, cancellationToken);
+            var isaborted = ProcessFieldEdit(selection.Name, selection, fields, cancellationToken);
             return (isaborted, selection);
         }
 
         /// <summary>
         /// Prompts the user to edit the repository configuration field identified by <paramref name="fieldName"/>.
-        /// Respects the current <c>lenscope</c> value to enable scope-dependent fields.
         /// </summary>
         /// <param name="fieldName">The name of the field to edit.</param>
         /// <param name="fields">All available repository configuration fields.</param>
@@ -780,9 +728,7 @@ namespace AdrPlus.Commands.Config
         private (bool IsAborted, FieldsJson EditField) EditFieldRepo(string fieldName, FieldsJson[] fields, CancellationToken cancellationToken)
         {
             var selection = fields.First(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
-            var fieldscope = fields.First(f => f.Name.Equals(AppConstants.FieldLenScope, StringComparison.OrdinalIgnoreCase));
-            int lenscope = int.TryParse(fieldscope.Value, out var parsedValue) ? parsedValue : 0;
-            var isaborted = ProcessFieldEdit(selection.Name, selection, fields, lenscope, cancellationToken);
+            var isaborted = ProcessFieldEdit(selection.Name, selection, fields, cancellationToken);
             return (isaborted, selection);
         }
 
@@ -793,10 +739,9 @@ namespace AdrPlus.Commands.Config
         /// <param name="fieldName">The configuration field key to edit.</param>
         /// <param name="selection">The <see cref="FieldsJson"/> entry to update in-place.</param>
         /// <param name="fields">All available configuration fields (used for cross-field validation prompts).</param>
-        /// <param name="lenscope">The current value of <c>lenscope</c>; controls availability of scope-dependent fields.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns><see langword="true"/> when the user aborted the edit; otherwise <see langword="false"/>.</returns>
-        private bool ProcessFieldEdit(string fieldName, FieldsJson selection, FieldsJson[] fields, int lenscope, CancellationToken cancellationToken)
+        private bool ProcessFieldEdit(string fieldName, FieldsJson selection, FieldsJson[] fields, CancellationToken cancellationToken)
         {
             return fieldName switch
             {
@@ -816,14 +761,6 @@ namespace AdrPlus.Commands.Config
                     _configPrompts.PromptEditFieldVersion(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
                 AppConstants.FieldLenRevision => HandleEditField(() =>
                     _configPrompts.PromptEditFieldRevision(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldScopes when lenscope > 0 => HandleEditField(() =>
-                    _configPrompts.PromptEditFieldScopes(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldSkipDomain when lenscope > 0 => HandleEditField(() =>
-                    _configPrompts.PromptEditFieldskipdomain(selection, fields, cancellationToken), selection, v => v.ToString()!),
-                AppConstants.FieldLenScope => HandleEditField(() =>
-                    _configPrompts.PromptEditFieldLenScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
-                AppConstants.FieldFolderByScope when lenscope > 0 => HandleEditField(() =>
-                    _configPrompts.PromptEditFieldFolderByScope(selection, cancellationToken), selection, v => v.ToString(CultureInfo.CurrentCulture)!),
                 AppConstants.FieldCaseTransform => HandleEditField(() =>
                     _configPrompts.PromptEditFieldCaseTransform(selection, cancellationToken), selection, v => v.ToString()!),
                 AppConstants.FieldSeparator => HandleEditField(() =>
@@ -892,16 +829,13 @@ namespace AdrPlus.Commands.Config
         private string[] GetSampleFiles(string modifiedConfig)
         {
             var repoconfig = _adrServices.FromJson(modifiedConfig, string.Empty);
-            var skipdomains = repoconfig.GetSkipDomains();
-            var scopes = repoconfig.GetScopes();
-            var eligibleScope = scopes.Where(x => !skipdomains.Any(s => s == x)).FirstOrDefault() ?? string.Empty;
 
             var models = new[]
             {
-                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}X", skipdomains.FirstOrDefault() ?? string.Empty, string.Empty, repoconfig),
-                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
-                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
-                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, $"{Resources.AdrPlus.Title}Y", eligibleScope, $"{Resources.AdrPlus.Domain}K", repoconfig),
+                CreateSampleModel(1, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}X", repoconfig),
+                CreateSampleModel(2, 1, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", repoconfig),
+                CreateSampleModel(2, 2, 1, AdrStatus.Proposed, null, $"{Resources.AdrPlus.Title}Y", repoconfig),
+                CreateSampleModel(3, 1, 1, AdrStatus.Superseded, 2, $"{Resources.AdrPlus.Title}Y", repoconfig),
             };
 
             return [.. models.Select(m => m.GetFileName(repoconfig))];
@@ -916,12 +850,10 @@ namespace AdrPlus.Commands.Config
         /// <param name="status">The ADR creation status.</param>
         /// <param name="superseded">The sequence number of the superseded ADR, or <see langword="null"/>.</param>
         /// <param name="titleSuffix">A short distinguishing suffix appended to the sample title.</param>
-        /// <param name="scope">The scope string (applied as-is, without case transform).</param>
-        /// <param name="domainSuffix">A short distinguishing suffix appended to the sample domain.</param>
         /// <param name="repoconfig">The repository configuration used for case transformation.</param>
         /// <returns>A new <see cref="AdrRecord"/> instance suitable for filename generation.</returns>
         private static AdrRecord CreateSampleModel(int number, int version, int revision, AdrStatus status, int? superseded,
-            string titleSuffix, string scope, string domainSuffix, AdrPlusRepoConfig repoconfig)
+            string titleSuffix, AdrPlusRepoConfig repoconfig)
         {
             return new AdrRecord
             {
@@ -931,18 +863,11 @@ namespace AdrPlus.Commands.Config
                 Version = version,
                 Revision = revision,
                 Title = $"{Resources.AdrPlus.TitleSample} {titleSuffix}".ToCase(repoconfig.CaseTransform),
-                Scope = scope,
-                Domain = string.IsNullOrEmpty(domainSuffix) ? string.Empty : $"{Resources.AdrPlus.DomainSample} {domainSuffix}".ToCase(repoconfig.CaseTransform),
                 CreateRef = DateTime.UtcNow,
                 Template = string.Empty
             };
         }
 
-        /// <summary>
-        /// Converts a JSON element value to its string representation.
-        /// </summary>
-        /// <param name="element">The JSON element to convert.</param>
-        /// <returns>The string representation of the element value.</returns>
         private static string GetJsonValueAsString(JsonElement element)
         {
             return element.ValueKind switch
@@ -955,14 +880,6 @@ namespace AdrPlus.Commands.Config
             };
         }
 
-        /// <summary>
-        /// Updates a specific field value in the application configuration JSON.
-        /// </summary>
-        /// <param name="jsonContent">The current JSON configuration content.</param>
-        /// <param name="fieldName">The name of the field to update.</param>
-        /// <param name="newValue">The new value for the field.</param>
-        /// <param name="type">The JSON value kind of the field.</param>
-        /// <returns>The updated JSON configuration content.</returns>
         private static string UpdateJsonFieldApp(string jsonContent, string fieldName, string newValue, JsonValueKind type)
         {
             var jsonDoc = JsonDocument.Parse(jsonContent, AppConstants.DocumentOptions);
@@ -991,14 +908,6 @@ namespace AdrPlus.Commands.Config
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        /// <summary>
-        /// Updates a specific field value in the repository configuration JSON.
-        /// </summary>
-        /// <param name="jsonContent">The current JSON configuration content.</param>
-        /// <param name="fieldName">The name of the field to update.</param>
-        /// <param name="newValue">The new value for the field.</param>
-        /// <param name="type">The JSON value kind of the field.</param>
-        /// <returns>The updated JSON configuration content.</returns>
         private static string UpdateJsonFieldRepo(string jsonContent, string fieldName, string newValue, JsonValueKind type)
         {
             using var jsonDoc = JsonDocument.Parse(jsonContent, AppConstants.DocumentOptions);

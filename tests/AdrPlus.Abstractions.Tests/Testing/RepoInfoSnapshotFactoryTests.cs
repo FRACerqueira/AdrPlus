@@ -11,7 +11,6 @@ public class RepoInfoSnapshotFactoryTests
         var snapshot = RepoInfoSnapshotFactory.Create();
 
         snapshot.FolderAdr.Should().Be("docs/adr");
-        snapshot.Scopes.Should().Equal("core");
         snapshot.StatusMapping.Should().ContainKeys(Enum.GetValues<AdrStatus>());
         snapshot.StatusMapping[AdrStatus.Accepted].Should().Be(nameof(AdrStatus.Accepted));
     }
@@ -21,11 +20,9 @@ public class RepoInfoSnapshotFactoryTests
     {
         var snapshot = RepoInfoSnapshotFactory.Create(
             folderAdr: "decisions",
-            scopes: ["backend", "frontend"],
             statusMapping: new Dictionary<AdrStatus, string> { [AdrStatus.Accepted] = "Aprovado" });
 
         snapshot.FolderAdr.Should().Be("decisions");
-        snapshot.Scopes.Should().Equal("backend", "frontend");
         snapshot.StatusMapping.Should().ContainSingle().Which.Should().Be(
             new KeyValuePair<AdrStatus, string>(AdrStatus.Accepted, "Aprovado"));
     }

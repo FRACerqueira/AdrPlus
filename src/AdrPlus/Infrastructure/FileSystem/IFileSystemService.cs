@@ -77,9 +77,9 @@ namespace AdrPlus.Infrastructure.FileSystem
         string? GetFileRootRepositoryPath(string pathfileadr);
 
         /// <summary>
-        /// Returns the fully qualified name of the specified directory.
+        /// Returns the fully qualified path of the directory containing the specified file.
         /// </summary>
-        /// <param name="path">The relative or absolute file path to resolve.</param>
+        /// <param name="path">The relative or absolute path of the file whose containing directory is resolved.</param>
         /// <returns>The fully qualified directory path.</returns>
         string GetFullNameDirectoryByFile(string path);
 

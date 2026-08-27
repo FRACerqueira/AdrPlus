@@ -46,7 +46,11 @@ namespace AdrPlus.Plugins
         /// Discovers and validates every immediate subfolder of <see cref="BuiltinPluginsRoot"/> and
         /// <see cref="UserPluginsRoot"/> (merged into one candidate set before validation/dedup), populating
         /// <see cref="LoadedPlugins"/> and <see cref="Rejections"/>. A missing or empty root is a no-op for
-        /// that root — nothing installed on either is not an error.
+        /// that root — nothing installed on either is not an error. Calling this again within the same process
+        /// (e.g. the interactive wizard looping after a config change) first disposes and unloads whatever
+        /// generation is currently loaded — see <see cref="DisposeLoadedPluginsAsync"/> — and always produces
+        /// brand-new plugin instances, each requiring its own <c>InitializeAsync</c> regardless of whether an
+        /// earlier instance sharing the same manifest name already ran it.
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         Task LoadPluginsAsync(CancellationToken cancellationToken = default);
@@ -153,8 +157,12 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Disposes every plugin in <see cref="LoadedPlugins"/> — the CLI's graceful-shutdown hook, called once
-        /// at process exit. Each plugin's <c>DisposeAsync</c> is invoked independently: one plugin throwing does
-        /// not prevent the others from being disposed (fail-soft). Each plugin's isolated
+        /// at process exit (and internally at the start of every <see cref="LoadPluginsAsync"/> reload). Each
+        /// plugin's <c>DisposeAsync</c> is invoked independently: one plugin throwing does not prevent the
+        /// others from being disposed (fail-soft), and each is bounded by that plugin's own
+        /// <see cref="PluginManifest.ForegroundTimeoutMs"/> — a slow, non-throwing <c>DisposeAsync</c> is
+        /// abandoned rather than allowed to hang the caller indefinitely, since this also runs at the start of
+        /// every plugin-touching command, not only at process exit. Each plugin's isolated
         /// <see cref="System.Runtime.Loader.AssemblyLoadContext"/> is then unloaded on a best-effort basis — not
         /// guaranteed to actually free the assembly in a short-lived CLI process, and not required for correctness.
         /// Idempotent: clears <see cref="LoadedPlugins"/> and <see cref="Rejections"/> afterward, so a second call

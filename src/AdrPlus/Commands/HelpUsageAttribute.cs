@@ -27,9 +27,7 @@ namespace AdrPlus.Commands
         {
             get
             {
-                // Access the resource manager to get the localized string for the current UI culture
                 string? description = Resources.AdrPlus.ResourceManager.GetString(_resourcekey, CultureInfo.CurrentCulture);
-                // Fallback to the key or a default if the localized string is not found
                 return string.IsNullOrEmpty(description) ? _resourcekey : description;
             }
         }

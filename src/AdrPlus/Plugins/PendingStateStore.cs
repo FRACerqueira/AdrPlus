@@ -20,9 +20,13 @@ namespace AdrPlus.Plugins
 
         /// <summary>
         /// Reads all pending entries for <paramref name="pluginStateFolderPath"/>, or an empty list when
-        /// <c>pending.json</c> doesn't exist yet.
+        /// <c>pending.json</c> doesn't exist yet, or when it exists but isn't valid JSON (e.g. truncated by a
+        /// process kill mid-write) — a corrupted file is reported via <paramref name="onWarning"/> and treated
+        /// as "no recoverable pending entries" rather than propagating a parse exception to the caller. The file
+        /// itself is left untouched; a caller that goes on to call <see cref="WriteAllAsync"/> for the same path
+        /// naturally replaces it with valid content on its next successful write.
         /// </summary>
-        public static async Task<List<PendingEntry>> ReadAllAsync(IFileSystemService fileSystem, string pluginStateFolderPath, CancellationToken cancellationToken)
+        public static async Task<List<PendingEntry>> ReadAllAsync(IFileSystemService fileSystem, string pluginStateFolderPath, CancellationToken cancellationToken, Action<string>? onWarning = null)
         {
             var pendingPath = Path.Combine(pluginStateFolderPath, PendingFileName);
 
@@ -32,29 +36,45 @@ namespace AdrPlus.Plugins
             }
 
             var json = await fileSystem.ReadAllTextAsync(pendingPath, cancellationToken);
-            return JsonSerializer.Deserialize<List<PendingEntry>>(json, PluginManifest.SerializerOptions) ?? [];
+            try
+            {
+                return JsonSerializer.Deserialize<List<PendingEntry>>(json, PluginManifest.SerializerOptions) ?? [];
+            }
+            catch (JsonException ex)
+            {
+                onWarning?.Invoke($"'{pendingPath}' is not valid JSON ({ex.Message}) - treating as no pending entries for this run.");
+                return [];
+            }
         }
 
         /// <summary>
         /// Replaces the entire <c>pending.json</c> for <paramref name="pluginStateFolderPath"/> with
-        /// <paramref name="entries"/>.
+        /// <paramref name="entries"/>. Writes to a temporary file first and then renames it into place
+        /// (<see cref="IFileSystemService.MoveFile"/>, itself an atomic <c>File.Move</c> on the same volume) so a
+        /// process killed mid-write leaves the previous, still-valid <c>pending.json</c> in place instead of a
+        /// truncated one. The temp file name includes a random suffix so two concurrent writers (e.g. a cron
+        /// <c>sync</c> running alongside an interactive command touching the same plugin's state) never collide
+        /// on the same temp path — each writer's rename-into-place still ultimately last-writer-wins on
+        /// <paramref name="pluginStateFolderPath"/> itself, which this does not change.
         /// </summary>
         public static async Task WriteAllAsync(IFileSystemService fileSystem, string pluginStateFolderPath, List<PendingEntry> entries, CancellationToken cancellationToken)
         {
             var pendingPath = Path.Combine(pluginStateFolderPath, PendingFileName);
+            var tempPath = pendingPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
 
             fileSystem.CreateDirectory(pluginStateFolderPath);
             var json = JsonSerializer.Serialize(entries, PluginManifest.SerializerOptions);
-            await fileSystem.WriteAllTextAsync(pendingPath, json, cancellationToken);
+            await fileSystem.WriteAllTextAsync(tempPath, json, cancellationToken);
+            fileSystem.MoveFile(tempPath, pendingPath);
         }
 
         /// <summary>
         /// Adds or replaces the entry matching <paramref name="entry"/>'s <see cref="PendingEntry.AdrKey"/> and
         /// <see cref="PendingEntry.EventType"/> in <paramref name="pluginStateFolderPath"/>'s <c>pending.json</c>.
         /// </summary>
-        public static async Task UpsertAsync(IFileSystemService fileSystem, string pluginStateFolderPath, PendingEntry entry, CancellationToken cancellationToken)
+        public static async Task UpsertAsync(IFileSystemService fileSystem, string pluginStateFolderPath, PendingEntry entry, CancellationToken cancellationToken, Action<string>? onWarning = null)
         {
-            var entries = await ReadAllAsync(fileSystem, pluginStateFolderPath, cancellationToken);
+            var entries = await ReadAllAsync(fileSystem, pluginStateFolderPath, cancellationToken, onWarning);
 
             entries.RemoveAll(existing =>
                 string.Equals(existing.AdrKey, entry.AdrKey, StringComparison.Ordinal) &&

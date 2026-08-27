@@ -14,12 +14,6 @@ namespace AdrPlus.Commands.Help
     /// Handles the <c>help</c> command, displaying the list of available commands and their descriptions,
     /// or routing to a specific command handler to show its own detailed help.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="HelpCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="prompt">The console writer for displaying help information.</param>
-    /// <param name="commandRouter">The command router used to delegate to a specific command's help output.</param>
-    /// <param name="adrServices">The ADR services for accessing command metadata and argument parsing.</param>
     internal sealed class HelpCommandHandler(ILogger<HelpCommandHandler> logger,IConsoleWriter prompt, CommandRouter commandRouter, IAdrServices adrServices) : ICommandHandler
     {
         private readonly ILogger<HelpCommandHandler> _logger = logger;
@@ -53,7 +47,7 @@ namespace AdrPlus.Commands.Help
                 }
                 else if (args.Length == 1)
                 {
-                    await _commandRouter.RouteAsync(args[0], [], cancellationToken);
+                    await _commandRouter.RouteAsync(args[0], ["-h"], cancellationToken);
                 }
             }
             catch (Exception ex)

@@ -7,7 +7,7 @@ Many teams still document architectural decisions **inconsistently** (scattered 
 
 AdrPlus was created to **solve this problem with a practical CLI workflow that keeps ADRs standardized, traceable, and easy to evolve over time**.
 
-**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal. 
+**AdrPlus** is a cross-platform .NET command-line tool for managing [Architecture Decision Records (ADRs)](https://adr.github.io/) directly from your terminal.
 
 It supports versioning, revision cycles, status workflows (approve / reject / undo), and an **interactive wizard** — all driven by a lightweight JSON configuration file.
 
@@ -38,7 +38,7 @@ Using **AdrPlus** in an engineering repository helps you:
 - 🤖 **AI assistant integration** — manage ADRs conversationally via the official [AdrPlus AI Assistant Plugin](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) for Claude Code and GitHub Copilot
 - 🧩 **Plugin support** for integrations that react to ADR lifecycle events
 - 🔍 **Explorer** for viewing or **Generate reports** and managing ADR files in your repository
-- ⚙️ **Config editor** for application ,repository settings and migration of existing ADRs to the standardized format
+- ⚙️ **Config editor** for application, repository settings and migration of existing ADRs to the standardized format
 - 📂 **Customizable ADR structure** with user-defined templates and naming conventions
 - 🔄 **Migrate** existing ADRs to the standardized format
 - 💾 **Preserve settings and configuration** across upgrades and reinitializations
@@ -51,7 +51,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ## Using AdrPlus with AI Coding Assistants
 
-Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot - a skill that teaches the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0-rc1 or later.
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot - a skill that teaches the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0 or later.
 
 ---
 

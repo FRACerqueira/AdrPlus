@@ -35,19 +35,6 @@ public string FolderAdr { get; init; }
 #### Property Value
 [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
-<a name='AdrPlus.Abstractions.Domain.RepoInfoSnapshot.Scopes'></a>
-
-## RepoInfoSnapshot\.Scopes Property
-
-Gets the configured scopes for organizing ADRs\.
-
-```csharp
-public System.Collections.Generic.IReadOnlyList<string> Scopes { get; init; }
-```
-
-#### Property Value
-[System\.Collections\.Generic\.IReadOnlyList&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1 'System\.Collections\.Generic\.IReadOnlyList\`1')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1 'System\.Collections\.Generic\.IReadOnlyList\`1')
-
 <a name='AdrPlus.Abstractions.Domain.RepoInfoSnapshot.StatusMapping'></a>
 
 ## RepoInfoSnapshot\.StatusMapping Property

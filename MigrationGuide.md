@@ -11,8 +11,8 @@ Welcome! This guide will walk you through migrating your existing Architecture D
 2. [What Gets Migrated](#what-gets-migrated)
 3. [Before You Start](#before-you-start)
 4. [Migration Methods](#migration-methods)
-   - [Interactive Wizard Mode](#interactive-wizard-mode)
-   - [Direct Path Mode](#direct-path-mode)
+   - [Interactive Wizard Mode](#1-interactive-wizard-mode-recommended-for-first-time-users)
+   - [Direct Path Mode](#2-direct-path-mode-quick-migration)
 5. [Migration Process](#migration-process)
 6. [Verifying the Migration](#verifying-the-migration)
 7. [Troubleshooting](#troubleshooting)
@@ -135,7 +135,7 @@ We have decided to use PostgreSQL...
 ### What Gets Added
 
 - **File Title**: Extracted from filename and added to header
-- **Version**: Empty by default 
+- **Version**: Empty by default
 - **Revision**: Empty by default
 - **Scope/Domain**: Empty by default
 - **Created**: Empty by default
@@ -174,28 +174,28 @@ Before starting migration, **you MUST**:
 
 ### ⚠️ Important Checklist
 
-- [x] **Verify migration was configured**: Run `adrplus config --migrate` first
+- **Verify migration was configured**: Run `adrplus config --migrate` first
   ```bash
   adrplus config --migrate  # Configure migration before proceeding
   ```
 
-- [x] **Backup your repository**: Commit everything to Git
+- **Backup your repository**: Commit everything to Git
   ```bash
   git add .
   git commit -m "backup: before ADR migration"
   ```
 
-- [x] **Verify configuration is correct**
+- **Verify configuration is correct**
   ```bash
   adrplus config --repository  # Walks you through the repository config wizard, showing current values
   ```
 
-- [x] **Confirm no tool-created ADRs exist**: Check that all existing ADRs are manually created, not via `adrplus new`
+- **Confirm no tool-created ADRs exist**: Check that all existing ADRs are manually created, not via `adrplus new`
 
-- [x] **Ensure all ADR files follow migration patterns convention**: 
+- **Ensure all ADR files follow migration patterns convention**:
   - Invalid files will be skipped during migration
 
-- [x] **Close IDE if files are open**: Migration modifies files; avoid file locking issues
+- **Close IDE if files are open**: Migration modifies files; avoid file locking issues
 
 ---
 
@@ -295,7 +295,7 @@ adrplus migrate --path "./doc/adr"
    - Generates a formatted header with all metadata
 
 3. **File Update**
-   - Reads the original ADR content 
+   - Reads the original ADR content
    - Prepends the new AdrPlus header
    - Writes the combined content back to the file
    - Original content remains unchanged
@@ -321,13 +321,9 @@ The migration will skip files that:
 
 ## Verifying the Migration
 
-### Step 1: Check the Migrated Files
+### Step 1: Check the Header Format
 
-Open a migrated ADR file to verify:
-
-### Step 2: Verify Header Format
-
-Confirm the header has been added with the correct metadata:
+Open a migrated ADR file and confirm the header has been added with the correct metadata:
 
 ```markdown
 <!-- Do not remove this comment, lines and table (1-12) -->
@@ -345,21 +341,30 @@ Confirm the header has been added with the correct metadata:
 ---
 ```
 
-### Step 3: Verify Content Integrity
+### Step 2: Verify Content Integrity
 
-Ensure your original content is intact:
+Diff the file against your Git backup to confirm the original content (Context, Decision, Consequences, Alternatives) is unchanged below the new header:
 
-### Step 4: Commit to Git
+```bash
+git diff doc/adr/ADR0001UsePostgreSQL.md
+```
 
-After verifying, commit the migration:
+### Step 3: Commit to Git
+
+Once you've verified the migrated files, commit them:
+
+```bash
+git add doc/adr/
+git commit -m "docs: migrate ADRs to AdrPlus format"
+```
 
 ## Troubleshooting
 
-### Issue: "Migration configuration not found"
+### Issue: Migration settings not configured
 
-**Problem**: Migration command fails because migration settings haven't been configured.
+**Problem**: Migration command fails with `No ADRs were found with valid criteria for migration` because migration settings haven't been configured (the default, empty `migrationpattern` never matches any file).
 
-**Solution**: 
+**Solution**:
 - Run migration configuration first:
   ```bash
   adrplus config --migrate
@@ -370,7 +375,7 @@ After verifying, commit the migration:
 
 ---
 
-### Issue: "Cannot migrate: existing tool-created ADRs detected"
+### Issue: "There are already ADRs that were created using this tool"
 
 **Problem**: You already have ADRs created with `adrplus new` command, blocking migration. This check only blocks `adrplus migrate --path`; `--wizard` mode doesn't throw this error, it just skips any file already in AdrPlus format.
 
@@ -380,31 +385,40 @@ After verifying, commit the migration:
 - Mixing both types during migration would cause conflicts and data loss
 
 **Solutions**:
-- [x] **If you haven't created many tool ADRs**: Delete them and retry migration
- 
-- [x] **If you have valuable tool-created ADRs**: Create a new repository for migration
+- **If you haven't created many tool ADRs**: Delete them and retry migration
+- **If you have valuable tool-created ADRs**: Create a new repository for migration
   - Migrate existing ADRs in a separate branch or repository
   - Merge migrated ADRs back with your tool-created ones after migration completes
   - This requires careful reconciliation
 
-**Best Practice**: 
+**Best Practice**:
 Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-time setup operation.
 
 ---
 
-### Issue: "No ADRs found to migrate"
+### Issue: "No ADRs found"
 
-**Problem**: Migration command found no ADR files.
+**Problem**: Migration command found no `.md` files at all in the target folder.
+
+**Solution**: Verify files are in `doc/adr/` or the configured folder.
+
+---
+
+### Issue: "No ADRs were found with valid criteria for migration"
+
+**Problem**: `.md` files exist in the folder, but none of them matched the configured migration pattern.
 
 **Causes & Solutions**:
-- [x] ADR files don't exist in the specified path
-  - **Solution**: Verify files are in `doc/adr/` or the configured folder
+- `migrationpattern` was never configured (empty by default)
+  - **Solution**: See [Migration settings not configured](#issue-migration-settings-not-configured) above
 
-- [x] Files don't match the naming convention
-  - **Solution**: Check filename format matches your config (e.g., `ADR0001-*.md`)
+- A file is too short for the configured pattern's positions, or a segment the pattern expects to be
+  numeric (the sequence number, version, or revision) isn't actually digits
+  - **Solution**: Check the filename format matches your config's `migrationpattern` (e.g., `ADR0001-*.md`).
+    A file that doesn't genuinely match is rejected rather than silently assigned a wrong number.
 
-- [x] All ADRs already migrated
-  - **Solution**: This is normal if you've run migration before; all files have valid headers
+> **Note**: If every file in the folder is already migrated (has a valid AdrPlus header), `migrate`
+> completes successfully with no output rather than an error — this is normal, not a failure.
 
 ---
 
@@ -413,10 +427,10 @@ Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-ti
 **Problem**: Cannot write to ADR files during migration.
 
 **Causes & Solutions**:
-- [x] Files are open in your IDE or editor
+- Files are open in your IDE or editor
   - **Solution**: Close the files and retry
 
-- [x] Files are read-only or locked
+- Files are read-only or locked
   - **Solution**: Check file permissions and make them writable:
     ```bash
     # Windows
@@ -426,7 +440,7 @@ Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-ti
     chmod 644 doc/adr/*.md
     ```
 
-- [x] Antivirus software blocking file access
+- Antivirus software blocking file access
   - **Solution**: Temporarily disable antivirus or add exclusion
 
 ---
@@ -436,11 +450,11 @@ Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-ti
 **Problem**: Partial migration, some ADRs remain unchanged.
 
 **Causes & Solutions**:
-- [x] Mixed migration status (some already migrated, others not)
+- Mixed migration status (some already migrated, others not)
   - **Behavior**: This is normal! Already-migrated files are skipped
   - **Solution**: Review logs to see which files were processed
 
-- [x] Some files don't match naming convention
+- Some files don't match naming convention
   - **Solution**: Rename files to match your configuration, then re-run migration
 
 ---
@@ -451,10 +465,10 @@ Run migration BEFORE creating any ADRs with `adrplus new`. Migration is a one-ti
 
 **Causes & Solutions**:
 
-- [x] Content was truncated or mixed up
+- Content was truncated or mixed up
   - **Solution**: Restore from Git backup: `git checkout doc/adr/ADRXXXX.md`
 
-- [x] Encoding issues (special characters displayed incorrectly)
+- Encoding issues (special characters displayed incorrectly)
   - **Solution**: Ensure files use UTF-8 encoding
 
 ---
@@ -483,7 +497,6 @@ git status
   git commit -m "backup: before ADR migration"
   ```
 
-  
 - ✅ Ensure both `config --migrate` and `init` have been run before `migrate` — the order between the two doesn't matter, since `migrate` reads whichever migration pattern was configured last
   ```bash
   adrplus config --migrate
@@ -530,7 +543,7 @@ git status
 After successful migration:
 
 1. **Review all migrated ADRs**: Open each file to verify format
-2. **Create new ADRs using AdrPlus**: 
+2. **Create new ADRs using AdrPlus**:
    ```bash
    adrplus new
    ```

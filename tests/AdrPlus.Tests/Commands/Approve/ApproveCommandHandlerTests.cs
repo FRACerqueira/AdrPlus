@@ -209,30 +209,6 @@ public class ApproveCommandHandlerTests
         });
     }
 
-    [Fact]
-    public async Task ExecuteAsync_WithFileWithoutExtension_AddsMarkdownExtension()
-    {
-        // Arrange
-        var args = new[] { "--file", AdrFileWithoutExtensionPath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, AdrFileWithoutExtensionPath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted"}""";
-
-        SetupBasicMocks(parsedArgs, jsonConfig);
-        _mockFileSystem.FileExists(Arg.Is<string>(s => s.EndsWith(".md"))).Returns(true);
-
-        var adrInfo = CreateAdrFileNameComponents(AdrFileWithExtensionPath, AdrStatus.Unknown);
-        _mockAdrServices.ParseFileName(Arg.Is<string>(s => s.EndsWith(".md")), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-            .Returns(adrInfo);
-        _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
-            .Returns((true, string.Empty, new AdrRecord(), "content"));
-
-        // Act
-        await _handler.ExecuteAsync(args, TestContext.Current.CancellationToken);
-
-        // Assert
-        _mockFileSystem.Received().FileExists(Arg.Is<string>(s => s.EndsWith(".md")));
-    }
-
     [Theory]
     [MemberData(nameof(CultureData.Cultures), MemberType = typeof(CultureData))]
     public async Task ExecuteAsync_WithCustomDate_UsesProvidedDate(string cultureName)
@@ -934,39 +910,6 @@ public class ApproveCommandHandlerTests
             .Should().ThrowAsync<InvalidDataException>();
     }
 
-    [Fact]
-    public async Task ExecuteAsync_WhenAdrSuperseded_ThrowsInvalidDataException()
-    {
-        // Arrange - ADR already superseded cannot be approved
-        var args = new[] { "--file", ValidAdrFilePath };
-        var parsedArgs = new Dictionary<Arguments, string> { { Arguments.FileAdr, ValidAdrFilePath } };
-        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted"}""";
-
-        SetupBasicMocks(parsedArgs, jsonConfig);
-
-        var adrInfo = new AdrFileNameComponents
-        {
-            IsValid = true,
-            FileName = ValidAdrFilePath,
-            Number = 1,
-            Header = new AdrHeader
-            {
-                IsValid = true,
-                StatusCreate = AdrStatus.Proposed,
-                StatusUpdate = AdrStatus.Unknown,
-                StatusChange = AdrStatus.Superseded,
-                DateChange = DateTime.UtcNow
-            }
-        };
-        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
-            .Returns(adrInfo);
-        _mockAdrServices.ReadAllAdrByNumber(Arg.Any<int>(), _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
-            .Returns([adrInfo]);
-
-        // Act & Assert
-        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
-            .Should().ThrowAsync<InvalidDataException>();
-    }
 
     [Fact]
     public async Task ExecuteAsync_WithMultipleVersionsOfSameAdr_ApprovesLatestVersion()

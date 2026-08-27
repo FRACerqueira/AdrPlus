@@ -85,28 +85,19 @@ namespace AdrPlus.Domain
 
         /// <summary>
         /// Generates the ADR filename following the naming convention:
-        /// <c>&lt;prefix&gt;&lt;number&gt;&lt;sep&gt;&lt;title&gt;&lt;sep&gt;V&lt;version&gt;[R&lt;revision&gt;][&lt;sep&gt;&lt;scope&gt;[&lt;sep&gt;&lt;domain&gt;]][&lt;sep&gt;SUP&lt;superseded&gt;].md</c>.
+        /// <c>&lt;prefix&gt;&lt;number&gt;&lt;sep&gt;&lt;title&gt;&lt;sep&gt;V&lt;version&gt;[R&lt;revision&gt;][&lt;sep&gt;SUP&lt;superseded&gt;].md</c>.
+        /// Scope and Domain are header-only fields and do not participate in the filename.
         /// </summary>
         /// <param name="config">The ADR Plus configuration containing naming conventions (prefix, separators, lengths, and case transform).</param>
-        /// <returns>A formatted filename string following the ADR naming convention (e.g. <c>ADR-0001-MyTitle-V01R00-ENT-MyDomain-SUP0002.md</c>).</returns>
+        /// <returns>A formatted filename string following the ADR naming convention (e.g. <c>ADR-0001-MyTitle-V01R00-SUP0002.md</c>).</returns>
         public string GetFileName(AdrPlusRepoConfig config)
         {
             var baseFileName = $"{config.Prefix ?? string.Empty}{Number.ToString($"D{config.LenSeq}", null)}";
             var ver = $"V{Version.ToString($"D{config.LenVersion}", null)}";
             var rev = config.LenRevision > 0 ? $"R{Revision!.Value.ToString($"D{config.LenRevision}", null)}" : string.Empty;
-            var scopeSuffix = string.Empty;
-            var domaintext = string.Empty;
-            if (!string.IsNullOrWhiteSpace(Scope) && config.LenScope > 0)
-            {
-                scopeSuffix = Scope[..config.LenScope];
-                if (Domain.Length > 0)
-                {
-                    domaintext = $"@{Domain.ToCase(config.CaseTransform)}";
-                }
-            }
             var title = Title.ToCase(config.CaseTransform);
             var supersede = (Superseded ?? 0) > 0 ? $"{config.Separator}{config.Separator}{Superseded!.Value.ToString($"D{config.LenSeq}", null)}" : string.Empty;
-            var fileName = $"{baseFileName}{ver}{rev}{scopeSuffix}{config.Separator}{title}{domaintext}{supersede}.md";
+            var fileName = $"{baseFileName}{ver}{rev}{config.Separator}{title}{supersede}.md";
             return fileName;
         }
 
@@ -116,7 +107,7 @@ namespace AdrPlus.Domain
         /// </summary>
         /// <param name="config">The ADR Plus configuration containing header format, date format, and status string mappings.</param>
         /// <param name="supersedefile">When <see cref="StatusChange"/> is <see cref="AdrStatus.Superseded"/>, the filename of the superseding ADR to append after the status date.</param>
-        /// <param name="migrated">Flag for migrated option</param>
+        /// <param name="migrated">When <see langword="true"/>, marks the header with the migrated marker and leaves the Version/Revision cells blank instead of writing their actual values.</param>
         /// <returns>A formatted multi-line header string.</returns>
         public string GetHeader(AdrPlusRepoConfig config, string? supersedefile = null, bool migrated = false)
         {

@@ -45,7 +45,7 @@ Create a class library targeting `net10.0` (or anything `>= net8.0`) and referen
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0-rc1" Private="false" />
+    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0" Private="false" />
   </ItemGroup>
 </Project>
 ```
@@ -75,11 +75,12 @@ public interface IAdrPlugin : IAsyncDisposable
 For the full generated API reference of `AdrPlus.Abstractions` — every type and member, with
 their XML-doc comments — see [doc/api-abstractions](doc/api-abstractions/AdrPlus.Abstractions.md).
 
-- **One singleton instance is held per plugin** for the lifetime of the process — `OnAdrEventAsync` must be reentrant (don't rely on mutable instance state across concurrent calls unless you protect it yourself).
+- **One singleton instance is held per plugin for the lifetime of a single command invocation** — `OnAdrEventAsync` must be reentrant (don't rely on mutable instance state across concurrent calls unless you protect it yourself). This is *not* the lifetime of the whole host process: a same-process reload (e.g. the interactive wizard looping after a config change) disposes the current instance and constructs a genuinely new one, which runs `InitializeAsync` again regardless of whether an earlier instance already did.
 - **`InitializeAsync` runs lazily**: only the first time, in this process, that an event you actually subscribe to is about to be dispatched to you. A developer running `adrplus new` never triggers your `InitializeAsync` if you don't subscribe to `Created` — so don't resolve credentials or open connections in a constructor; do it here instead, where a failure (e.g. a missing API key) can be reported against the one thing that needed it.
 - **If `InitializeAsync` throws**, the host treats it as a permanent failure: your plugin is skipped for the rest of this run, with one prominent warning, and nothing is queued for retry (see [Retryable vs. permanent failures](#retryable-vs-permanent-failures)).
 - **`ShouldHandle` is a cheap, synchronous pre-filter**, evaluated *in addition to* `plugin.json`'s `subscribedEvents` — use it for anything `subscribedEvents` can't express (e.g. "only ADRs in the `security` scope").
 - **`OnAdrEventAsync` must never throw for control flow.** Return `PluginResultStatus.Failed` instead. It must also treat any `AdrEventType` value it doesn't recognize as `Skipped` — the host may add new event types later, and your plugin must not break on one it's never seen.
+- **The `CancellationToken` passed to `OnAdrEventAsync` fires when your own call exceeds its configured timeout** (`ForegroundTimeoutMs`/`BackgroundTimeoutMs` in `plugin.json`), not only when the whole process is shutting down — honor it so a slow call actually stops instead of running to completion unobserved. If your call ignores the token and keeps running past the timeout, the host moves on without waiting for it; that abandoned call may still be in flight, on the same instance, when `DisposeAsync` is invoked (at process exit or before a same-process reload) — so `DisposeAsync` should tolerate running concurrently with a still-in-flight `OnAdrEventAsync` call rather than assuming the two never overlap.
 
 ### Implementing `IAdrPlugin`
 
@@ -233,7 +234,7 @@ Every plugin folder needs one, alongside the compiled assembly:
 |---|---|
 | `name` / `version` | Must match `IAdrPlugin.Name`/`Version` exactly — mismatched values reject the plugin at load. |
 | `entryAssembly` / `entryType` | The DLL filename and fully-qualified class implementing `IAdrPlugin`. |
-| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against, as a plain `major.minor.patch` (the host parses it with `System.Version`, which rejects a SemVer prerelease suffix like `-beta6` — use `"1.0.0"`, not the full NuGet package version string). The host checks the SemVer **major** matches its own; a mismatch rejects the plugin with a warning rather than risking a binary-incompatible load. |
+| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against, as a plain `major.minor.patch` (the host parses it with `System.Version`, which rejects a SemVer prerelease suffix like `-beta6` — use `"1.0.0"`, not the full NuGet package version string). The host checks the SemVer **major** matches its own assembly's major (an unparseable value is rejected outright); a mismatch rejects the plugin with a dedicated warning rather than risking a binary-incompatible load. Note this only distinguishes an actual major bump (e.g. a future `2.0.0`) — it can't tell a pre-release suffix apart from its own final release within the same major (both compile to the same `AssemblyVersion`), which is why neither `AdrPlus.csproj` nor `AdrPlus.Abstractions.csproj` pins an explicit `<AssemblyVersion>`: that distinction doesn't matter once a major version is out, since this project's policy ([ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md)) requires a real major bump for any breaking change. |
 | `subscribedEvents` | Cheap, declarative filter — the host skips dispatch entirely for events not listed here, before your code runs at all. |
 | `foregroundTimeoutMs` | How long the single, non-retried foreground attempt gets before the host abandons it and queues a retry. Keep this short — it adds directly to how long `adrplus approve`/etc. takes to return. |
 | `backgroundTimeoutMs` / `retryPolicy` | `backgroundTimeoutMs` applies only to background re-drive (`adrplus sync`) — see [How the plugin system works](#how-the-plugin-system-works). `retryPolicy.maxAttempts` is a single lifecycle budget shared with the initial foreground attempt: a foreground failure that isn't a timeout already consumes one of the `maxAttempts`, leaving fewer for `sync` to use; only a foreground *timeout* leaves the full budget for background retries. `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |
@@ -245,7 +246,7 @@ Every plugin folder needs one, alongside the compiled assembly:
 
 `AdrEventType` has eight values: `Created`, `Versioned`, `Revised`, `Superseded`, `Approved`, `Rejected`, `StatusUndone`, `Migrated`.
 
-**If your plugin syncs the decision itself to an external system** (the Confluence/Jira/Teams case), subscribe only to `Approved`, `Rejected`, `Superseded`, `StatusUndone`, and `Migrated`. `Created`, `Versioned`, and `Revised` fire on **metadata-only scaffolding** — `adrplus new`/`version`/`revise` capture title, domain, scope, and a date, but never a finished decision body (`revise` can even start from `--empty`). The user edits the actual content by hand afterward, outside AdrPlus, before running `approve`/`reject`.
+**If your plugin syncs the decision itself to an external system** (the Confluence/Jira/Teams case), subscribe only to `Approved`, `Rejected`, `Superseded`, `StatusUndone`, and `Migrated`. `Created`, `Versioned`, and `Revised` fire on **metadata-only scaffolding**, none of which ever produce a finished decision body: `adrplus new` captures title, domain, and scope but always starts from a blank template; `adrplus version` inherits domain/scope from the source ADR by default (or accepts `--scope`/`--domain` to change them) and copies its body forward unless `--empty` starts fresh; `adrplus revise` always inherits domain/scope unchanged and copies the source ADR's body forward (no `--empty` option). The user edits the actual content by hand afterward, outside AdrPlus, before running `approve`/`reject`.
 
 This isn't just noise to filter — subscribing to `Revised`/`Versioned` for a content-sync plugin is actively risky. If your plugin upserts one external artifact per ADR (see the next section), a `Revised` event fires *after* your previously-synced, approved content, and reacting to it would overwrite a published decision with a blank draft. Check `context.Adr.StatusUpdate`/`StatusChange` if you need to confirm content is settled before acting.
 
@@ -304,7 +305,7 @@ Practically, this means:
 - Resolve actual credentials (API keys, tokens, passwords) yourself, from an environment variable or a local secret store — never from `settings`.
 - Each repository's `./plugins-state/<name>/pending.json` is local, per-machine, per-repository runtime state, not something to commit — make sure your repo's `.gitignore` excludes `plugins-state/`.
 
-An optional allowlist can restrict which plugin names are permitted to load at all, configured under `pluginallowlist` in the repo's `adrplus.json` (each entry has a `name`, matched case-insensitively, and an as-yet-unenforced `hash` field reserved for future use). This guards against an unexpected plugin folder being loaded — it does not replace the credential discipline above.
+An optional allowlist can restrict which plugin names are permitted to load at all, configured under `pluginallowlist` in the **host-global** `adrplus.json` (resolved relative to the `adrplus` install directory, not any repository — there is no per-repo `adrplus.json`) — each entry has a `name`, matched case-insensitively, and an as-yet-unenforced `hash` field reserved for future use. This guards against an unexpected plugin folder being loaded — it does not replace the credential discipline above.
 
 ---
 

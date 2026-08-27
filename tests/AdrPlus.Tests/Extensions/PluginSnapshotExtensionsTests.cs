@@ -82,22 +82,6 @@ public class PluginSnapshotExtensionsTests
     }
 
     [Fact]
-    public void ToSnapshot_AdrPlusRepoConfig_MapsScopesFromGetScopes()
-    {
-        // Arrange
-        var config = new AdrPlusRepoConfig("", "")
-        {
-            Scopes = "Enterprise;Domain;Project"
-        };
-
-        // Act
-        var snapshot = config.ToSnapshot();
-
-        // Assert
-        snapshot.Scopes.Should().BeEquivalentTo(config.GetScopes());
-    }
-
-    [Fact]
     public void ToSnapshot_AdrPlusRepoConfig_MapsStatusMapping()
     {
         // Arrange

@@ -27,16 +27,6 @@ namespace AdrPlus.Commands.Revise
     /// Versioning (<see cref="AdrPlusRepoConfig.LenVersion"/>) and revision tracking
     /// (<see cref="AdrPlusRepoConfig.LenRevision"/>) must both be enabled in the repository configuration.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="ReviseCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="config">The application configuration settings (folder, language, open command, etc.).</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing and ADR file operations.</param>
-    /// <param name="pluginManager">The plugin manager used to discover and dispatch the <c>Revised</c> lifecycle event.</param>
     internal sealed class ReviseCommandHandler(
         ILogger<ReviseCommandHandler> logger,
         IOptions<AdrPlusConfig> config,
@@ -58,7 +48,6 @@ namespace AdrPlus.Commands.Revise
              Arguments.FileAdr,
              Arguments.DateRefAdr,
              Arguments.OpenFile,
-             Arguments.EmptyAdr,
              Arguments.Help];
 
         /// <summary>
@@ -76,11 +65,6 @@ namespace AdrPlus.Commands.Revise
                 info.Header.StatusChange == AdrStatus.Unknown);
         }
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow revision.
-        /// </summary>
-        /// <param name="repoconfig">The repository configuration providing the status-to-string mapping.</param>
-        /// <returns>A formatted error string listing the required statuses (Accepted/Rejected).</returns>
         private static string MessageNotValidStatusForUpdate()
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(AdrStatus.Accepted)}/{Helper.GetResourceStatus(AdrStatus.Rejected)}");
@@ -191,7 +175,6 @@ namespace AdrPlus.Commands.Revise
                     }
                 }
 
-                // Parse date reference
                 var dateAdr = ParseDateReference(parsedArgs);
 
                 var curpos = _prompt.PromptGetCursorPosition();
@@ -216,7 +199,7 @@ namespace AdrPlus.Commands.Revise
                 {
                     throw new InvalidOperationException(string.Format(null,FormatMessages.ErrAdrSequenceNotFound,infoadr.Number, infolastadr.FileName));
                 }
-                if ((infolastadr.Revision??0 + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
+                if (((infolastadr.Revision??0) + 1).ToString(CultureInfo.InvariantCulture).Length > repoconfig.LenRevision)
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrNewLenRevisionGreaterThanConfig, infolastadr.Revision + 1, repoconfig.LenRevision));
                 }
@@ -234,13 +217,6 @@ namespace AdrPlus.Commands.Revise
                         throw new InvalidOperationException(Resources.AdrPlus.NotLatestVersion);
                     }
                 }
-                var emptyard = false;
-                if (parsedArgs.ContainsKey(Arguments.EmptyAdr))
-                {
-                    emptyard = true;
-                }
-
-                // Create the new revision ADR record and file
                 var adrRecord = new AdrRecord
                 {
                     Number = infoadr.Number,
@@ -250,16 +226,12 @@ namespace AdrPlus.Commands.Revise
                     StatusCreate = AdrStatus.Proposed,
                     CreateRef = dateAdr,
                     Version = infoadr.Header.Version,
-                    Revision = infoadr.Header.Revision??0 + 1,
-                    Template = emptyard ? repoconfig.Template : infoadr.ContentAdr!,
+                    Revision = (infoadr.Header.Revision??0) + 1,
+                    Template = infoadr.ContentAdr!,
                 };
 
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(rootPath, repoconfig.FolderAdr));
-                if (repoconfig.FolderByScope)
-                {
-                    folder = Path.GetFullPath(Path.Combine(folder, adrRecord.Scope));
-                }
                 var filePath = _filesystem.GetFullNameFile(Path.Combine(folder, filename));
                 if (_filesystem.FileExists(filePath))
                 {
@@ -268,7 +240,7 @@ namespace AdrPlus.Commands.Revise
                 var content = $"{adrRecord.GetHeader(repoconfig)}{adrRecord.Template}";
                 await _filesystem.WriteAllTextAsync(filePath, content, cancellationToken);
 
-                _prompt.PromptWarnMissingActivePlugins(missingNames);
+                PluginActivationGate.WarnMissingActivePlugins(_logger, _prompt, missingNames);
                 var msgok = $"{repoconfig.StatusNew} : {filePath}";
                 LogAndWriteSuccess(msgok);
 
@@ -284,30 +256,17 @@ namespace AdrPlus.Commands.Revise
         }
 
 
-        /// <summary>
-        /// Builds a localized error message indicating that the ADR's current status does not allow a new version, 
-        /// </summary>
-        /// <param name="adrStatus">The current (invalid) status of the ADR.</param>
-        /// <returns>A formatted error string naming the current status.</returns>
         private static string MessageNotValidStatusForUpdate(AdrStatus adrStatus)
         {
             return string.Format(null, FormatMessages.ErrInvalidStatusForUpdate, $"{Helper.GetResourceStatus(adrStatus)}");
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an informational entry and writes it to the console as a success.
-        /// </summary>
-        /// <param name="message">The success message to log and display.</param>
         private void LogAndWriteSuccess(string message)
         {
             LogMessages.LogInfo(_logger, message);
             _prompt.PromptWriteSuccess(message);
         }
 
-        /// <summary>
-        /// Logs <paramref name="message"/> as an error and writes it to the console.
-        /// </summary>
-        /// <param name="message">The error message to log and display.</param>
         private void LogAndWriteError(string message)
         {
             LogMessages.LogError(_logger, message);
@@ -473,16 +432,6 @@ namespace AdrPlus.Commands.Revise
                     parsedArgs[Arguments.OpenFile] = string.Empty;
                 }
 
-                var emptyadr = _prompt.PromptEmptyTemplate(cancellationToken);
-                if (emptyadr.IsAborted)
-                {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
-                }
-                if (emptyadr.Content)
-                {
-                    parsedArgs[Arguments.EmptyAdr] = string.Empty;
-                }
-
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
@@ -500,11 +449,6 @@ namespace AdrPlus.Commands.Revise
             }
         }
 
-        /// <summary>
-        /// Logs and displays multiple validation errors to the console.
-        /// Each error is logged individually and displayed to the user.
-        /// </summary>
-        /// <param name="errors">An array of error messages to log and display.</param>
         private void LogAndWriteErrors(string[] errors)
         {
             foreach (var error in errors)
@@ -514,13 +458,6 @@ namespace AdrPlus.Commands.Revise
             }
         }
 
-        /// <summary>
-        /// Displays a formatted summary of the wizard selections before confirming the revision operation.
-        /// Shows the selected repository, file, and reference date in a localized format.
-        /// </summary>
-        /// <param name="rootpath">The root repository path selected by the user.</param>
-        /// <param name="fileref">The name of the ADR file to be revised.</param>
-        /// <param name="defDateRef">The reference date for the new revision.</param>
         private void DisplayWizardSummary(string rootpath, string fileref, DateTime defDateRef)
         {
             _prompt.PromptWriteSummary(Resources.AdrPlus.SelectRepo + ": " + rootpath);

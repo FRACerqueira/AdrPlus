@@ -151,7 +151,6 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
             Repo = new RepoInfoSnapshot
             {
                 FolderAdr = "doc/adr",
-                Scopes = [],
                 StatusMapping = new Dictionary<AdrStatus, string>
                 {
                     [AdrStatus.Proposed] = "Proposed",
@@ -217,7 +216,6 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
             Repo = new RepoInfoSnapshot
             {
                 FolderAdr = "doc/adr",
-                Scopes = [],
                 StatusMapping = new Dictionary<AdrStatus, string>
                 {
                     [AdrStatus.Proposed] = "Proposed",
@@ -236,5 +234,42 @@ public class AdrIndexerPluginEndToEndTests : IDisposable
         File.Exists(Path.Combine(adrFolder, "indexadrs.md")).Should().BeFalse();
 
         await plugin.DisposeAsync();
+    }
+
+    [Fact]
+    public void LoadAssembly_WithIncompatibleAbstractionsVersion_IsRejectedAsAbstractionsVersionIncompatible()
+    {
+        // A real, loadable plugin assembly whose Name/Version genuinely match its manifest, but whose
+        // declared abstractionsVersion has a different major version than the host's AdrPlus.Abstractions -
+        // must be rejected specifically for that reason, not folded into the generic entryType/Name/Version
+        // mismatch rejection (which would misdirect a plugin author debugging a real abstractionsVersion gap).
+        var pluginFolder = Path.Combine(_root, "plugins", "adr-indexer-incompatible");
+        Directory.CreateDirectory(pluginFolder);
+        var compiledDllPath = typeof(AdrIndexerPlugin).Assembly.Location;
+        foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(compiledDllPath)!))
+        {
+            if (Path.GetFileName(file).StartsWith("AdrPlus.Abstractions.", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            File.Copy(file, Path.Combine(pluginFolder, Path.GetFileName(file)), overwrite: true);
+        }
+
+        var manifest = new PluginManifest
+        {
+            Name = "AdrIndexer",
+            Version = "1.0.0",
+            EntryAssembly = Path.GetFileName(compiledDllPath),
+            EntryType = typeof(AdrIndexerPlugin).FullName,
+            AbstractionsVersion = "99.0.0",
+            SubscribedEvents = ["Approved"]
+        };
+
+        var outcome = PluginLoader.LoadAssembly(pluginFolder, manifest);
+
+        outcome.Loaded.Should().BeNull();
+        outcome.Rejection.Should().NotBeNull();
+        outcome.Rejection!.Reason.Should().Be(PluginRejectionReason.AbstractionsVersionIncompatible);
+        outcome.Rejection!.Message.Should().Contain("99.0.0");
     }
 }

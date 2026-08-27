@@ -20,15 +20,6 @@ namespace AdrPlus.Commands.Init
     /// Handles the <c>init</c> command, which initializes the ADR repository structure by creating
     /// the configuration file and optional scope sub-folders at the specified target path.
     /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="InitCommandHandler"/> class.
-    /// </remarks>
-    /// <param name="logger">The logger for recording command execution and errors.</param>
-    /// <param name="fileSystem">The file system service for I/O operations.</param>
-    /// <param name="validateconfig">The service for validating and loading JSON configuration files.</param>
-    /// <param name="prompt">The console writer for displaying output and prompting user input.</param>
-    /// <param name="adrServices">The ADR services for argument parsing, command metadata, and config deserialization.</param>
-    /// <param name="pluginManager">The plugin manager used to discover whatever is available on the host to record the new repo's <c>activeplugins</c> baseline.</param>
     internal sealed class InitCommandHandler(
         ILogger<InitCommandHandler> logger,
         IFileSystemService fileSystem,
@@ -148,36 +139,8 @@ namespace AdrPlus.Commands.Init
         }
 
         /// <summary>
-        /// Creates a sub-folder for each scope defined in <paramref name="config"/> when
-        /// <see cref="AdrPlusRepoConfig.FolderByScope"/> is <see langword="true"/>.
-        /// Folders that already exist are silently skipped.
-        /// </summary>
-        /// <param name="config">The repository configuration that defines scopes and the folder-by-scope flag.</param>
-        /// <param name="repoPath">The root repository path under which scope folders are created.</param>
-        /// <param name="result">The list to which the fully qualified paths of newly created directories are appended.</param>
-        private void CreateScopeDirectories(AdrPlusRepoConfig config, string repoPath, List<string> result)
-        {
-            if (!config.FolderByScope)
-            {
-                return;
-            }
-
-            var scopes = config.Scopes.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var scope in scopes)
-            {
-                var scopePath = Path.GetFullPath(Path.Combine(repoPath, scope));
-                if (!_fileSystem.DirectoryExists(scopePath))
-                {
-                    var fullname = _fileSystem.CreateDirectory(scopePath);
-                    result.Add(fullname);
-                }
-            }
-        }
-
-        /// <summary>
         /// Initializes the ADR repository structure at <paramref name="targetPath"/>:
-        /// creates the ADR folder (when it does not exist), writes the configuration file,
-        /// and creates optional scope sub-folders.
+        /// creates the ADR folder (when it does not exist) and writes the configuration file.
         /// </summary>
         /// <param name="targetPath">The root directory where the repository will be initialized.</param>
         /// <param name="fileConfig">The path to the configuration file.</param>
@@ -194,12 +157,22 @@ namespace AdrPlus.Commands.Init
             if (_fileSystem.FileExists(configPath) && fileConfig.Length == 0)
             {
                 filecfg = configPath;
-                var (IsAborted, ConfirmYes) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
-                if (IsAborted)
+                // No interactive console to confirm with (CI, scripts, an automation agent) - refuse
+                // cleanly instead of blocking on a prompt that can never be answered. Re-running `init`
+                // to intentionally reset a repository's config is still possible non-interactively via
+                // `--file`, which bypasses this confirmation entirely (see the branch below).
+                var isNonInteractive = Console.IsInputRedirected || Console.IsOutputRedirected;
+                var confirmYes = false;
+                if (!isNonInteractive)
                 {
-                    throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                    var (IsAborted, ConfirmResult) = _prompt.PromptConfirm(Resources.AdrPlus.InitCmdConfigUpdateFileAlreadyExists, cancellationToken);
+                    if (IsAborted)
+                    {
+                        throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
+                    }
+                    confirmYes = ConfirmResult;
                 }
-                if (!ConfirmYes)
+                if (!confirmYes)
                 {
                     throw new InvalidOperationException(string.Format(null, FormatMessages.ErrConfigFileAlreadyExists, configPath));
                 }
@@ -232,7 +205,7 @@ namespace AdrPlus.Commands.Init
             }
             var newrepoconfig = JsonSerializer.Deserialize<AdrPlusRepoConfig>(jsonrepoconfig, AppConstants.RepoSerializerOptions)!;
 
-            //ensure if new configutation is valid (check existent number,version and revision)
+            // ensure the new configuration's digit lengths can represent the existing max number/version/revision
             (int maxnumber, int maxversion, int maxrevision) = await _validateconfig.GetMaxNumberVersionRevision(targetPath, newrepoconfig);
             if (maxnumber.ToString(CultureInfo.InvariantCulture).Length > newrepoconfig.LenSeq)
             {
@@ -253,12 +226,12 @@ namespace AdrPlus.Commands.Init
         }
 
         /// <summary>
-        /// Reads the default repository configuration template, validates its structure, writes it to
-        /// <paramref name="rootrepoPath"/>, and creates scope sub-folders when required.
+        /// Reads the default repository configuration template, validates its structure, and writes it to
+        /// <paramref name="rootrepoPath"/>.
         /// </summary>
         /// <param name="jsonrepoconfig">The JSON string representing the repository configuration.</param>
         /// <param name="rootrepoPath">The destination root path repository for the new configuration file.</param>
-        /// <param name="result">The list to which the created file path (and any scope folder paths) are appended.</param>
+        /// <param name="result">The list to which the created file path is appended.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <exception cref="InvalidOperationException">Thrown when the default configuration template fails structure validation.</exception>
         private async Task CreateNewConfigAsync(string jsonrepoconfig, string rootrepoPath,  List<string> result, CancellationToken cancellationToken)
@@ -275,7 +248,6 @@ namespace AdrPlus.Commands.Init
                 _fileSystem.CreateDirectory(folderadr);
                 result.Add(folderadr);
             }
-            CreateScopeDirectories(config, folderadr, result);
             await WriteActivePluginsBaselineAsync(filepath, cancellationToken);
         }
 

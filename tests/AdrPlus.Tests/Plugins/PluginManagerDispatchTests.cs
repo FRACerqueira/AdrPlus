@@ -60,7 +60,6 @@ public class PluginManagerDispatchTests
     private static AbstractionsDomain.RepoInfoSnapshot CreateRepoSnapshot() => new()
     {
         FolderAdr = "docs/adr",
-        Scopes = [],
         StatusMapping = new Dictionary<AbstractionsDomain.AdrStatus, string>()
     };
 
@@ -242,6 +241,134 @@ public class PluginManagerDispatchTests
         writtenPaths.Should().OnlyHaveUniqueItems();
         writtenPaths.Should().Contain(p => p.Contains("repoA") && p.Contains("p1"));
         writtenPaths.Should().Contain(p => p.Contains("repoB") && p.Contains("p1"));
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WhenHookTimesOut_CancelsTheTokenPassedToThePlugin()
+    {
+        // Previously the plugin only ever received the ambient/user-cancel token, never one derived from the
+        // manifest's own timeout — so a well-behaved plugin was never actually told to stop when abandoned.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        // The manifest's ForegroundTimeoutMs and the linked CTS's CancelAfter(timeoutMs) are independent
+        // timers of the same duration — there's no guarantee CancelAfter has already fired the instant
+        // DispatchAsync returns, so wait on the token's own cancellation signal instead of racing timers.
+        var cancelledSignal = new TaskCompletionSource();
+        plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                callInfo.Arg<CancellationToken>().Register(() => cancelledSignal.TrySetResult());
+                return new TaskCompletionSource<PluginResult>().Task;
+            });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"], foregroundTimeoutMs: 30)));
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        var completed = await Task.WhenAny(cancelledSignal.Task, Task.Delay(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken));
+
+        completed.Should().BeSameAs(cancelledSignal.Task);
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WhenPersistingPendingStateFails_DoesNotPropagateException()
+    {
+        // Critical fail-soft boundary: this runs on the foreground path used by every ADR lifecycle command, so
+        // a failure to persist "this plugin needs retrying" must never itself turn a successful local ADR
+        // operation into a command-level error/exit code 1.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Failed, Message = "boom", IsRetryable = true });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
+        _fileSystem.WriteAllTextAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new IOException("disk full"));
+
+        var act = () => manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task LoadPluginsAsync_CalledAgainAfterDispatch_DisposesPreviousInstanceAndReinitializesNewOne()
+    {
+        // Regression: a same-process reload (e.g. the interactive wizard looping after a config change)
+        // previously reused per-name init bookkeeping, so a genuinely new instance skipped InitializeAsync
+        // and the previous generation's instance was never disposed.
+        var manifest = CreateManifest("p1", ["Approved"]);
+        var firstInstance = Substitute.For<IAdrPlugin>();
+        firstInstance.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        firstInstance.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Success });
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(firstInstance, manifest));
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(1), "/repo/adr/0001.md", () => "c1", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+        await firstInstance.Received(1).InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>());
+
+        // No builtin/user plugin roots are configured on this fixture, so discovery finds nothing new — but the
+        // previous generation must still be disposed and its init bookkeeping cleared.
+        await manager.LoadPluginsAsync(TestContext.Current.CancellationToken);
+
+        await firstInstance.Received(1).DisposeAsync();
+        manager.LoadedPlugins.Should().BeEmpty();
+
+        var secondInstance = Substitute.For<IAdrPlugin>();
+        secondInstance.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+        secondInstance.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+            .Returns(new PluginResult { Status = PluginResultStatus.Success });
+        manager._loadedPlugins.Add(CreateLoadedPlugin(secondInstance, manifest));
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(2), "/repo/adr/0002.md", () => "c2", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        await secondInstance.Received(1).InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WithManyNeverInitializedPluginsOnSameEvent_InitializesEachExactlyOnceWithoutCorruption()
+    {
+        // Regression: EnsureInitializedAsync used to run inside DispatchAsync's parallel Task.WhenAll
+        // fan-out, doing unsynchronized Contains/Add on the shared _initializedPlugins/_initFailedPlugins
+        // HashSets from multiple threads at once - corrupting them (a disposable audit probe reproduced both
+        // an uncaught InvalidOperationException from inside HashSet.Add, and a silently-dropped plugin never
+        // invoked at all, across 3/3 target frameworks). Task.Yield widens the interleaving window.
+        const int pluginCount = 50;
+        var manager = CreateManager();
+        var plugins = new List<IAdrPlugin>();
+        for (var i = 0; i < pluginCount; i++)
+        {
+            var plugin = Substitute.For<IAdrPlugin>();
+            plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(true);
+            plugin.InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>())
+                .Returns(async _ => { await Task.Yield(); });
+            plugin.OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>())
+                .Returns(new PluginResult { Status = PluginResultStatus.Success });
+            plugins.Add(plugin);
+            manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest($"p{i}", ["Approved"])));
+        }
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        foreach (var plugin in plugins)
+        {
+            await plugin.Received(1).InitializeAsync(Arg.Any<IPluginContext>(), Arg.Any<IPluginConfiguration>(), Arg.Any<CancellationToken>());
+            await plugin.Received(1).OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
+        }
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WhenShouldHandleThrows_WarnsOnConsoleNotJustLog()
+    {
+        // Regression: previously log-only, unlike every other plugin failure path in this class.
+        var plugin = Substitute.For<IAdrPlugin>();
+        plugin.ShouldHandle(Arg.Any<AdrEventContext>()).Returns(_ => throw new InvalidOperationException("boom"));
+        var manager = CreateManager();
+        manager._loadedPlugins.Add(CreateLoadedPlugin(plugin, CreateManifest("p1", ["Approved"])));
+
+        await manager.DispatchAsync(AdrEventType.Approved, CreateAdrSnapshot(), "/repo/adr/0001.md", () => "content", CreateRepoSnapshot(), "/repo/plugins-state", isReplay: false, isActive: null, cancellationToken: TestContext.Current.CancellationToken);
+
+        _console.Received(1).PromptWriteInfo(Arg.Is<string>(s => s.Contains("p1") && s.Contains("correlationId=")));
+        await plugin.DidNotReceive().OnAdrEventAsync(Arg.Any<AdrEventContext>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

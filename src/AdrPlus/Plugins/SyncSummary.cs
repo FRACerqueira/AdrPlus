@@ -27,7 +27,11 @@ namespace AdrPlus.Plugins
         /// <summary>Items removed because the plugin reported a non-retryable failure.</summary>
         public int PermanentlyFailed { get; set; }
 
-        /// <summary>Default-mode only: entries removed because their <c>adrKey</c> no longer resolves to an ADR file.</summary>
+        /// <summary>
+        /// Default-mode only: entries removed either because their <c>adrKey</c> no longer resolves to an ADR
+        /// file, or because their <c>eventType</c> in <c>pending.json</c> doesn't parse as a known
+        /// <see cref="AdrEventType"/> (e.g. a value written by a future host version).
+        /// </summary>
         public int Dropped { get; set; }
 
         /// <summary>

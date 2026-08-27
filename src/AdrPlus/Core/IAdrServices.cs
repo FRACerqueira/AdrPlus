@@ -38,9 +38,8 @@ namespace AdrPlus.Core
         /// </summary>
         /// <param name="args">The command-line arguments to parse.</param>
         /// <param name="argsForCommand">The expected argument definitions for the command.</param>
-        /// <param name="defaultarg">An optional default argument to use if no arguments are provided.</param>
         /// <returns>A dictionary mapping argument types to their parsed values.</returns>
-        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null);
+        Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand);
 
         /// <summary>
         /// Generates help text for a command.
@@ -105,19 +104,24 @@ namespace AdrPlus.Core
         /// <param name="directoryPath">The directory path to search in.</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="includeNotMatched">Indicates whether to include ADR files that do not match the configured naming conventions.</param>
+        /// <param name="includeContent">
+        /// Whether to materialize each file's body (<see cref="AdrFileNameComponents.ContentAdr"/>) past the
+        /// header table. Pass <see langword="false"/> when the caller only needs filename/header fields (e.g.
+        /// scope/domain/number lookups) - skips a wasteful re-join of the file's lines that would otherwise be
+        /// allocated and immediately discarded.
+        /// </param>
         /// <returns>An array of all <see cref="AdrFileNameComponents"/> found.</returns>
-        Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false);
+        Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false, bool includeContent = true);
 
         /// <summary>
-        /// Gets the file path of an ADR with a unique title in a specific domain asynchronously.
+        /// Gets the file path of an ADR with a unique title asynchronously.
         /// </summary>
         /// <param name="title">The title of the ADR to find.</param>
-        /// <param name="domain">The domain to search within.</param>
         /// <param name="fileSystemService">The file system service used to access files.</param>
         /// <param name="rootrepo">The root path repository</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
-        /// <returns>The file path of the ADR with the matching title and domain.</returns>
-        Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config);
+        /// <returns>The file path of the ADR with the matching title.</returns>
+        Task<string> GetFileByUniqueTitle(string title, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config);
 
         /// <summary>
         /// Gets the next available ADR sequence number asynchronously.
@@ -148,13 +152,61 @@ namespace AdrPlus.Core
         Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
 
         /// <summary>
+        /// Gets all available scopes asynchronously.
+        /// </summary>
+        /// <param name="fileSystemService">The file system service used to access files.</param>
+        /// <param name="directoryPath">The directory path to search in.</param>
+        /// <param name="config">The ADR Plus repository configuration.</param>
+        /// <returns>An array of scope names found in the repository.</returns>
+        Task<string[]> GetScopes(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config);
+
+        /// <summary>
+        /// Pure, I/O-free variant of <see cref="GetFileByUniqueTitle"/> for a caller that already has an
+        /// <see cref="AdrFileNameComponents"/> array on hand (e.g. shared across several lookups in the same
+        /// command, instead of each one re-reading the repository).
+        /// </summary>
+        /// <param name="title">The title of the ADR to find.</param>
+        /// <param name="adrFiles">A previously read set of ADR files, e.g. from <see cref="ReadAllAdr"/>.</param>
+        /// <param name="config">The ADR Plus repository configuration.</param>
+        /// <returns>The file path of the ADR with the matching title, or <see cref="string.Empty"/> if none.</returns>
+        string GetFileByUniqueTitleFrom(string title, AdrFileNameComponents[] adrFiles, AdrPlusRepoConfig config);
+
+        /// <summary>
+        /// Pure, I/O-free variant of <see cref="GetNextNumber"/> for a caller that already has an
+        /// <see cref="AdrFileNameComponents"/> array on hand.
+        /// </summary>
+        /// <param name="adrFiles">A previously read set of ADR files, e.g. from <see cref="ReadAllAdr"/>.</param>
+        /// <returns>The next available sequence number.</returns>
+        int GetNextNumberFrom(AdrFileNameComponents[] adrFiles);
+
+        /// <summary>
+        /// Pure, I/O-free variant of <see cref="GetDomains"/> for a caller that already has an
+        /// <see cref="AdrFileNameComponents"/> array on hand.
+        /// </summary>
+        /// <param name="adrFiles">A previously read set of ADR files, e.g. from <see cref="ReadAllAdr"/>.</param>
+        /// <returns>An array of domain names found among <paramref name="adrFiles"/>.</returns>
+        string[] GetDomainsFrom(AdrFileNameComponents[] adrFiles);
+
+        /// <summary>
+        /// Pure, I/O-free variant of <see cref="GetScopes"/> for a caller that already has an
+        /// <see cref="AdrFileNameComponents"/> array on hand.
+        /// </summary>
+        /// <param name="adrFiles">A previously read set of ADR files, e.g. from <see cref="ReadAllAdr"/>.</param>
+        /// <returns>An array of scope names found among <paramref name="adrFiles"/>.</returns>
+        string[] GetScopesFrom(AdrFileNameComponents[] adrFiles);
+
+        /// <summary>
         /// Parses the header and content from an ADR file asynchronously.
         /// </summary>
         /// <param name="filePath">The path to the ADR file to parse.</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="fileSystemService">The file system service used to read the file.</param>
+        /// <param name="includeContent">
+        /// Whether to materialize the body past the header table. Pass <see langword="false"/> when the caller
+        /// only needs header fields - the returned <c>content</c> is <see cref="string.Empty"/> in that case.
+        /// </param>
         /// <returns>A tuple containing the parsed <see cref="AdrHeader"/> and the remaining file content.</returns>
-        Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService);
+        Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true);
 
         /// <summary>
         /// Parses the file name components from an ADR file path asynchronously.
@@ -162,8 +214,12 @@ namespace AdrPlus.Core
         /// <param name="filePath">The path to the ADR file.</param>
         /// <param name="config">The ADR Plus repository configuration.</param>
         /// <param name="fileSystemService">The file system service used to access file information.</param>
+        /// <param name="includeContent">
+        /// Whether to materialize <see cref="AdrFileNameComponents.ContentAdr"/> - see
+        /// <see cref="ParseAdrHeaderAndContentAsync"/>.
+        /// </param>
         /// <returns>An <see cref="AdrFileNameComponents"/> object containing the parsed file name components.</returns>
-        Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService);
+        Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true);
 
         /// <summary>
         /// Converts a JSON string to an <see cref="AdrPlusRepoConfig"/> object.

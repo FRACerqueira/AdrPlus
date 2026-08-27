@@ -12,7 +12,7 @@ namespace AdrPlus.Tests.Helpers;
 
 /// <summary>
 /// Provides helper methods for setting up mocks and test fixtures specific to ExploreCommandHandler tests.
-/// Ensures consistent, cross-platform mock behavior and reduces test boilerplate.
+/// Ensures consistent mock behavior and reduces test boilerplate.
 /// </summary>
 internal static class ExploreCommandHandlerMockHelper
 {
@@ -112,7 +112,7 @@ internal static class ExploreCommandHandlerMockHelper
     }
 
     /// <summary>
-    /// Gets cross-platform explore field strings for report generation testing.
+    /// Gets explore field strings for report generation testing.
     /// Field format: "1-File", "2-Folder", "3-Format", "4-Status", etc.
     /// </summary>
     public static string[] GetExploreFields(params int[] fieldNumbers)

@@ -7,16 +7,14 @@ using AdrPlus.Commands;
 using AdrPlus.Domain;
 using AdrPlus.Infrastructure.FileSystem;
 using AdrPlus.Infrastructure.Formatting;
-using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
 namespace AdrPlus.Core
 {
-    internal class AdrService(IConfiguration configuration) : IAdrServices
+    internal class AdrService : IAdrServices
     {
-        private readonly IConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         private const StringComparison ordinalIgnoreCase = StringComparison.OrdinalIgnoreCase;
 
         public AdrPlusRepoConfig FromJson(string jsonString,string template)
@@ -62,12 +60,6 @@ namespace AdrPlus.Core
                 if (lenrevision >= 0) config.LenRevision = lenrevision;
             }
 
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldLenScope, out var lenscopeElement) && lenscopeElement.ValueKind == JsonValueKind.Number)
-            {
-                var lenscope = lenscopeElement.GetInt32();
-                if (lenscope >= 0) config.LenScope = lenscope;
-            }
-
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldSeparator, out var separatorElement) && separatorElement.ValueKind == JsonValueKind.String)
             {
                 var separator = separatorElement.GetString();
@@ -94,23 +86,6 @@ namespace AdrPlus.Core
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldStatusSuperseded, out var statusSupElement) && statusSupElement.ValueKind == JsonValueKind.String)
                 config.StatusSup = statusSupElement.GetString()!;
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldScopes, out var scopesElement) && scopesElement.ValueKind == JsonValueKind.String)
-                config.Scopes = scopesElement.GetString()!;
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldFolderByScope, out var folderByScopeElement))
-            {
-                if (folderByScopeElement.ValueKind == JsonValueKind.True)
-                    config.FolderByScope = true;
-                else if (folderByScopeElement.ValueKind == JsonValueKind.False)
-                    config.FolderByScope = false;
-                else if (folderByScopeElement.ValueKind == JsonValueKind.String &&
-                         bool.TryParse(folderByScopeElement.GetString(), out bool folderByScopeValue))
-                    config.FolderByScope = folderByScopeValue;
-            }
-
-            if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldSkipDomain, out var skipdomainElement) && skipdomainElement.ValueKind == JsonValueKind.String)
-                config.SkipDomain = skipdomainElement.GetString()!;
 
             if (Helper.TryGetPropertyCaseInsensitive(root, AppConstants.FieldHeaderDisclaimer, out var headerDisclaimerElement) && headerDisclaimerElement.ValueKind == JsonValueKind.String)
                 config.HeaderDisclaimer = headerDisclaimerElement.GetString()!;
@@ -151,7 +126,7 @@ namespace AdrPlus.Core
             return config;
         }
 
-        public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
+        public async Task<(AdrHeader header, string content)> ParseAdrHeaderAndContentAsync(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true)
         {
             var lines = await fileSystemService.ReadAllLinesAsync(filePath);
 
@@ -428,6 +403,13 @@ namespace AdrPlus.Core
                 result.IsValid = false;
                 result.ErrorMessage = string.Format(null, CompositeFormat.Parse(Resources.AdrPlus.ErrMsgAdrHeaderParsingError), ex.Message);
             }
+            // Rejoining every line past the header into one string is wasted work (allocated, then
+            // immediately discarded) for a caller that only needs header fields (e.g. scope/domain/number
+            // lookups) - skip it entirely when the caller says it doesn't need the body.
+            if (!includeContent)
+            {
+                return (result, string.Empty);
+            }
             var content = string.Join(Environment.NewLine, lines.Skip(AppConstants.LenghtHeader));
             if (lines.Length > AppConstants.LenghtHeader)
             {
@@ -436,7 +418,30 @@ namespace AdrPlus.Core
             return (result, content);
         }
 
-        public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService)
+        public async Task<AdrFileNameComponents> ParseFileName(string filePath, AdrPlusRepoConfig config, IFileSystemService fileSystemService, bool includeContent = true)
+        {
+            var result = ParseFileNameOnly(filePath, config);
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService, includeContent);
+            result.Header = header;
+            result.ContentAdr = content;
+            return result;
+        }
+
+        /// <summary>
+        /// Parses only the filename-derived fields (<see cref="AdrFileNameComponents.Number"/>/<c>Version</c>/
+        /// <c>Revision</c>/<c>Title</c>/<c>Prefix</c>) — no file I/O, since those fields always come from the
+        /// filename itself (for both adrplus-created and migrated files), never the header. Used as a cheap
+        /// pre-filter by <see cref="ReadAllAdrByNumber"/> before paying for a full <see cref="ParseFileName"/> —
+        /// narrowing the glob pattern itself isn't safe (a migrated file's name doesn't follow adrplus's own
+        /// naming convention, so it wouldn't match a stricter glob), but filtering by the already-known-cheap
+        /// <see cref="AdrFileNameComponents.Number"/> before the expensive header+content read is.
+        /// </summary>
+        private static AdrFileNameComponents ParseFileNameOnly(string filePath, AdrPlusRepoConfig config)
         {
             var result = new AdrFileNameComponents
             {
@@ -452,14 +457,10 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ExceptionFilenameMustHaveMdExtension;
                 return result;
             }
-            //try parse with configured ADRLUS format
             var parseResult = ParseAdrPlusFileNameAsync(filePath, config);
             if (parseResult.Success)
             {
                 result = parseResult.Result;
-                var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
-                result.Header = header;
-                result.ContentAdr = content;
                 result.IsValid = true;
                 return result;
             }
@@ -473,9 +474,6 @@ namespace AdrPlus.Core
                 if (Success)
                 {
                     result = resultMigration;
-                    var (header, content) = await ParseAdrHeaderAndContentAsync(filePath, config, fileSystemService);
-                    result.Header = header;
-                    result.ContentAdr = content;
                     result.IsValid = true;
                     return result;
                 }
@@ -484,7 +482,6 @@ namespace AdrPlus.Core
                     result = resultMigration;
                 }
             }
-            // If filename parsing failed, try to load the file header anyway to report header errors ?
             return result;
         }
 
@@ -521,10 +518,27 @@ namespace AdrPlus.Core
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
+            if (!int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length), CultureInfo.InvariantCulture, out var numberseq))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            var numberver = 0;
+            if (valueversion.Length > 0 && !int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out numberver))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
+            var numberrev = 0;
+            if (valuerevison.Length > 0 && !int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out numberrev))
+            {
+                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
+                return (false, result);
+            }
             result.Prefix = valueprefix.Length > 0 ? nameWithoutExtension.Substring(valueprefix.Position, valueprefix.Length) : string.Empty;
-            result.Number = valueseq.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueseq.Position, valueseq.Length), CultureInfo.InvariantCulture, out var numberseq) ? numberseq : 0;
-            result.Version = valueversion.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valueversion.Position, valueversion.Length), CultureInfo.InvariantCulture, out var numberver) ? numberver : 0;
-            result.Revision = valuerevison.Length > 0 && int.TryParse(nameWithoutExtension.AsSpan(valuerevison.Position, valuerevison.Length), CultureInfo.InvariantCulture, out var numberrev) ? numberrev : 0;
+            result.Number = numberseq;
+            result.Version = numberver;
+            result.Revision = numberrev;
             result.Title = valuetitle.Position < nameWithoutExtension.Length ? nameWithoutExtension[valuetitle.Position..] : string.Empty;
             return (true, result);
         }
@@ -609,42 +623,14 @@ namespace AdrPlus.Core
             result.Version = pattern["V"].Length == 0 ? 0 : int.Parse(pattern["V"], CultureInfo.InvariantCulture);
             //revision
             result.Revision = pattern["R"].Length == 0 ? 0 : int.Parse(pattern["R"], CultureInfo.InvariantCulture);
-            //scope
-            result.Scope = pattern["S"].Length == 0 ? "" : pattern["S"];
-
-            //invalid version
-            if (result.Scope.Length > 0 && pattern["V"].Length == 0 && config.LenVersion > 0 && result.Scope.StartsWith("V", StringComparison.OrdinalIgnoreCase))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-
-            //invalid revision
-            if (result.Scope.Length > 0 && pattern["R"].Length == 0 && config.LenRevision > 0 && result.Scope.StartsWith("R", StringComparison.OrdinalIgnoreCase))
-            {
-                result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
-                return (false, result);
-            }
-            //title and domain
+            //title
             part = parts[1];
             if (part.Length == 0)
             {
                 result.ErrorMessage = Resources.AdrPlus.ErrorInvalidFilenameFormat;
                 return (false, result);
             }
-            index = part.LastIndexOf('@');
-            if (index != -1)
-            {
-                result.Title = part[..index];
-                if (index + 1 < part.Length)
-                {
-                    result.Domain = part[(index + 1)..];
-                }
-            }
-            else
-            {
-                result.Title = part;
-            }
+            result.Title = part;
             result.SupersededValue = string.IsNullOrEmpty(supersedeNumber) ? null : int.Parse(supersedeNumber, CultureInfo.InvariantCulture);
             return (true, result);
         }
@@ -675,6 +661,16 @@ namespace AdrPlus.Core
 
             foreach (var filePath in mdFiles)
             {
+                // Cheap, I/O-free pre-filter: Number always comes from the filename (never the header), so
+                // files that don't actually match `sequence` - the vast majority, since the substring glob
+                // above isn't selective (e.g. every ADR whose filename embeds "V01" matches a search for
+                // sequence "1") - are excluded before paying for the expensive header+content read below.
+                var nameOnly = ParseFileNameOnly(filePath, config);
+                if (!nameOnly.IsValid || nameOnly.Number != sequence)
+                {
+                    continue;
+                }
+
                 var aux = await ParseFileName(filePath, config, fileSystemService);
                 if (aux.IsValid && (aux.Header.IsValid || aux.Header.IsMigrated) && aux.Number == sequence)
                 {
@@ -684,7 +680,7 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
-        public async Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false)
+        public async Task<AdrFileNameComponents[]> ReadAllAdr(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config, bool includeNotMatched = false, bool includeContent = true)
         {
             ArgumentNullException.ThrowIfNull(config);
             ArgumentNullException.ThrowIfNull(fileSystemService);
@@ -708,7 +704,7 @@ namespace AdrPlus.Core
 
             foreach (var filePath in mdFiles)
             {
-                var parsedComponents = await ParseFileName(filePath, config, fileSystemService);
+                var parsedComponents = await ParseFileName(filePath, config, fileSystemService, includeContent);
                 if (!parsedComponents.IsValid && !includeNotMatched)
                 {
                     continue;
@@ -723,39 +719,67 @@ namespace AdrPlus.Core
                 .ThenByDescending(x=> x.Revision ?? 0)];
         }
 
-        public async Task<string> GetFileByUniqueTitle(string title, string domain, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
+        public async Task<string> GetFileByUniqueTitle(string title, IFileSystemService fileSystemService, string rootrepo, AdrPlusRepoConfig config)
         {
-            var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform), domain.ToCase(config.CaseTransform));
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, rootrepo, config);
-            var aux = adrFiles
-                .FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
+            // UniqueTitle is derived purely from the filename-parsed Title - the body is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, rootrepo, config, includeContent: false);
+            return GetFileByUniqueTitleFrom(title, adrFiles, config);
+        }
+
+        public string GetFileByUniqueTitleFrom(string title, AdrFileNameComponents[] adrFiles, AdrPlusRepoConfig config)
+        {
+            var uniqueTitle = AdrFileNameComponents.CreateUniqueTitle(title.ToCase(config.CaseTransform));
+            var aux = adrFiles.FirstOrDefault(f => f.UniqueTitle == uniqueTitle);
             return aux?.FileName ?? string.Empty;
         }
 
         public async Task<int> GetNextNumber(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
-            return adrFiles.Length == 0 ? 1 : adrFiles.Max(f => f.Number) + 1;
+            // Number is derived purely from the filename - the body is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetNextNumberFrom(adrFiles);
         }
+
+        public int GetNextNumberFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0 ? 1 : adrFiles.Max(f => f.Number) + 1;
 
         public async Task<AdrFileNameComponents?> GetLatestADRSequence(int sequence, IFileSystemService fileSystemService, string rootpath, AdrPlusRepoConfig config)
         {
             return (await ReadAllAdrByNumber(sequence, fileSystemService, rootpath, config))
                 .OrderBy(x => x.Version)
                 .ThenBy(x => x.Revision ?? 0)
-                .Last();
+                .LastOrDefault();
         }
 
         public async Task<string[]> GetDomains(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
         {
-            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config);
-            return adrFiles.Length == 0
+            // Only Header.Domain is read below - the body past the header table is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetDomainsFrom(adrFiles);
+        }
+
+        public string[] GetDomainsFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0
                 ? []
                 : [.. adrFiles
-                    .Where(f => !string.IsNullOrWhiteSpace(f.Domain))
-                    .DistinctBy(x => x.Domain!.ToPascalCase())
-                    .Select(f => f.Domain!)];
+                    .Where(f => !string.IsNullOrWhiteSpace(f.Header.Domain))
+                    .DistinctBy(x => x.Header.Domain!.ToPascalCase())
+                    .Select(f => f.Header.Domain!)];
+
+        public async Task<string[]> GetScopes(IFileSystemService fileSystemService, string directoryPath, AdrPlusRepoConfig config)
+        {
+            // Only Header.Scope is read below - the body past the header table is never consulted.
+            AdrFileNameComponents[] adrFiles = await ReadAllAdr(fileSystemService, directoryPath, config, includeContent: false);
+            return GetScopesFrom(adrFiles);
         }
+
+        public string[] GetScopesFrom(AdrFileNameComponents[] adrFiles) =>
+            adrFiles.Length == 0
+                ? []
+                : [.. adrFiles
+                    .Where(f => !string.IsNullOrWhiteSpace(f.Header.Scope))
+                    .DistinctBy(x => x.Header.Scope!.ToPascalCase())
+                    .Select(f => f.Header.Scope!)];
 
         public async Task<(bool Isvalid, string Error, AdrRecord? Record, string? Content)> StatusUpdateAdrAsync(string fullpath, AdrStatus adrStatus, DateTime dref, AdrPlusRepoConfig config, IFileSystemService fileSystemService, CancellationToken cancellationToken)
         {
@@ -855,42 +879,13 @@ namespace AdrPlus.Core
             return [.. result];
         }
 
-        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand, string? defaultarg = null)
+        public Dictionary<Arguments, string> ParseArgs(string[] args, Arguments[] argsForCommand)
         {
             ArgumentNullException.ThrowIfNull(args);
             ArgumentNullException.ThrowIfNull(argsForCommand);
 
             var parsedArgs = new Dictionary<Arguments, string>(args.Length);
 
-            if (args.Length == 0)
-            {
-                var section = _configuration.GetSection(AppConstants.DefaultSettingsRoot);
-                if (!section.Exists())
-                {
-                    throw new InvalidDataException(Resources.AdrPlus.ErrMsgDefaultSettingsMissing);
-                }
-                var behaviorWithoutArgs = section[AppConstants.FieldWithoutArgs];
-                Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out var behavior);
-                switch (behavior)
-                {
-                    case BehaviorWithoutArg.Help:
-                        args = ["-h"];
-                        break;
-                    case BehaviorWithoutArg.Wizard:
-                        if (defaultarg != null)
-                        {
-                            if (!string.IsNullOrWhiteSpace(defaultarg))
-                            {
-                                args = [defaultarg];
-                            }
-                        }
-                        else
-                        {
-                            args = ["-w"];
-                        }
-                        break;
-                }
-            }
             if (Array.IndexOf(args, "-h") >= 0 || Array.IndexOf(args, "--help") >= 0)
             {
                 parsedArgs[Arguments.Help] = string.Empty;
@@ -950,10 +945,10 @@ namespace AdrPlus.Core
             }
             if (!haswizard)
             {
-                foreach (var metadata in parsedArgs.Keys)
+                foreach (var required in argsForCommand)
                 {
-                    var argMetadata = s_argumentMetadata.First(x => x.CommandArg == metadata);
-                    if (parsedArgs[argMetadata.CommandArg].Length == 0 && argMetadata.Usage == UsageArgumments.OptionalWithValueWhenWizard)
+                    var argMetadata = s_argumentMetadata.First(x => x.CommandArg == required);
+                    if (argMetadata.Usage == UsageArgumments.OptionalWithValueWhenWizard && !parsedArgs.ContainsKey(required))
                     {
                         throw new ArgumentException(
                             string.Format(null, s_exceptionMissingRequiredArgumentFormat,

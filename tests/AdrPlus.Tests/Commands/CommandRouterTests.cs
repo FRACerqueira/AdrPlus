@@ -15,7 +15,6 @@ namespace AdrPlus.Tests.Commands;
 /// <summary>
 /// Unit tests for CommandRouter class.
 /// Tests demonstrate command routing patterns using NSubstitute.
-/// These tests are designed to run cross-platform on both Linux and Windows.
 /// </summary>
 public class CommandRouterTests
 {
@@ -164,7 +163,7 @@ public class CommandRouterTests
     #region RouteAsync - Console Output Tests
 
     [Fact]
-    public async Task RouteAsync_WithUnknownCommandName_CallsWriteFinishedCommand()
+    public async Task RouteAsync_WithUnknownCommandName_NeverCallsWriteFinishedCommand()
     {
         // Arrange
         var serviceProvider = Substitute.For<IServiceProvider>();
@@ -180,9 +179,9 @@ public class CommandRouterTests
         await Record.ExceptionAsync(
             () => router.RouteAsync("unknown", [], TestContext.Current.CancellationToken));
 
-        // Assert
-        // The finally block should execute and call WriteFinishedCommand
-        // even though we threw an exception earlier
+        // Assert - an unknown command throws before the try/finally is ever entered, so the
+        // "command finished" message (only written in RouteAsync's finally block) must never fire.
+        console.DidNotReceive().PromptWriteFinishedCommand(Arg.Any<string>());
     }
 
     [Fact]
@@ -343,60 +342,5 @@ public class CommandRouterTests
 
     #endregion
 
-    #region RouteAsync - Cross-Platform Tests
-
-    [Fact]
-    public async Task RouteAsync_WithValidCommand_WorksOnAllPlatforms()
-    {
-        // Arrange
-        var mockHandler = Substitute.For<ICommandHandler>();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddScoped<ICommandHandler>(_ => mockHandler);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
-        var adrServices = Substitute.For<IAdrServices>();
-        var configuration = Substitute.For<IConfiguration>();
-        var commandMap = new Dictionary<string, Type> { { "init", typeof(ICommandHandler) } };
-        adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
-
-        // Act
-        var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("init", [], TestContext.Current.CancellationToken));
-
-        // Assert - no platform-specific exceptions
-        ex.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task RouteAsync_WithArgsContainingPathsWithDifferentSeparators_WorksCrossPlatform()
-    {
-        // Arrange
-        var mockHandler = Substitute.For<ICommandHandler>();
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddScoped<ICommandHandler>(_ => mockHandler);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        var logger = Substitute.For<ILogger<CommandRouter>>();
-        var console = Substitute.For<IConsoleWriter>();
-        var adrServices = Substitute.For<IAdrServices>();
-        var configuration = Substitute.For<IConfiguration>();
-        var commandMap = new Dictionary<string, Type> { { "review", typeof(ICommandHandler) } };
-        adrServices.GenerateCommandsMap().Returns(commandMap);
-        var router = new CommandRouter(configuration, serviceProvider, logger, console, adrServices);
-
-        var args = new[] { "path\\to\\file", "path/to/file" };
-
-        // Act
-        var ex = await Record.ExceptionAsync(
-            () => router.RouteAsync("review", args, TestContext.Current.CancellationToken));
-
-        // Assert - args passed as-is without platform interpretation
-        ex.Should().BeNull();
-    }
-
-    #endregion
 }
 

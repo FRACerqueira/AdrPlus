@@ -22,7 +22,7 @@ No. AdrPlus manages ADR Markdown files and can be used in repositories of any la
 
 ### Is it possible to have multiple ADRs with the same title but different scopes?
 
-Yes. If scopes are enabled, ADRs with the same title can coexist as long as they are in different scopes.
+No. Title uniqueness is based on the title alone — Scope and Domain are free-text header fields and don't factor into it. Give ADRs that cover different areas a distinct title.
 
 ### Is the wizard mandatory to use AdrPlus?
 
@@ -53,6 +53,16 @@ The behavior is controlled by the `withoutargs` setting in `adrplus.json`:
 
 You can change this behavior anytime by running `adrplus config --application`.
 
+### What happens if I run a command but omit one of its required arguments?
+
+The `withoutargs` setting only governs what happens when **no command** is given at all (the case
+above) — it does not apply once you've named a specific command. If that command has a required
+argument (marked "Required When not in wizard mode" in `adrplus help <command>` — for example
+`--file` for `approve`/`reject`/`undo`/`revise`/`version`/`supersede`, or `--title` for `new`) and
+you omit it without `--wizard`, AdrPlus fails immediately with a clear
+`Required argument '--x' (-x) is missing` error, regardless of `withoutargs`. This also means
+`adrplus help <command>` always shows that command's help text, independent of `withoutargs`.
+
 ## Configuration
 
 ### Can I customize ADR headers?
@@ -65,11 +75,11 @@ Yes. You can customize status labels in `adr-config.adrplus` with `statusnew`, `
 
 ### Can I organize ADRs by scope folders?
 
-Yes. Set `folderbyscope` to `true` but ensure your workflow and team conventions align with this structure.
+No. Scope is a free-text header field with no folder or naming behavior tied to it. If you want ADRs physically grouped by area, organize `folderadr` subfolders yourself.
 
 ### When is `--domain` required for `new`?
 
-When scope is enabled and the selected scope is not listed in `skipdomain`.
+Never — `--scope` and `--domain` are both optional, free-text fields with no validation.
 
 ### Can I change the date format in ADR metadata?
 
@@ -79,9 +89,9 @@ No. The date format is fixed in the tool's metadata handling and cannot be custo
 
 ### What is the difference between `version`, `revise`, and `supersede`?
 
-- `version`: creates a new major version of the same ADR sequence.
-- `revise`: creates a revision of the same ADR version (when revision is enabled).
-- `supersede`: creates a successor ADR with a new sequence number.
+- `version`: creates a new major version of the same ADR sequence. Accepts `--scope`/`--domain` to reclassify the topic if it changed; omitted, it keeps the source ADR's current values.
+- `revise`: creates a revision of the same ADR version (when revision is enabled). Always carries Scope/Domain forward unchanged — no `--scope`/`--domain` flags, since a revision is a wording fix to the same decision, not a reclassification.
+- `supersede`: creates a successor ADR with a new sequence number. Also accepts `--scope`/`--domain`, same as `version` — a genuinely different decision is at least as likely to belong elsewhere.
 
 ### How does the tool determine the next ADR number when creating a new ADR?
 
@@ -147,5 +157,5 @@ Depends on which one:
 
 ### Can I use AdrPlus in a monorepo with multiple projects?
 
-Yes. Use scopes to organize ADRs by project, and ensure your team conventions align with this structure.
+Yes. There's no built-in per-project folder organization, but you can point each project at its own `adr-config.adrplus`/`folderadr`, or use the free-text Scope/Domain header fields to note which project an ADR belongs to.
 

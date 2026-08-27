@@ -21,7 +21,7 @@ namespace AdrPlus.Core
 
         public static int ExitCode;
 
-        #region Trsanformation
+        #region Transformation
         public static string FmtStatus(AdrFileNameComponents arg, AdrPlusRepoConfig adrPlusRepoConfig)
         {
             if (!arg.IsValid || !arg.Header.IsValid)
@@ -94,22 +94,17 @@ namespace AdrPlus.Core
 
         public static string FmtFolder(AdrFileNameComponents arg, string folderrepoadr)
         {
-            // Normalize all path separators to forward slashes for consistent cross-platform handling
-            // This ensures compatibility when paths may use Windows backslashes on Linux or vice versa
+            // normalize separators first so this works regardless of which OS wrote the path
             var normalizedPath = arg.FileName.Replace('\\', '/');
             var normalizedRepoFolder = folderrepoadr.Replace('\\', '/');
 
-            // Remove the repo folder path
             var result = normalizedPath.Replace(normalizedRepoFolder, string.Empty, StringComparison.Ordinal);
 
-            // Get the filename from the normalized path
             var lastSeparatorIndex = normalizedPath.LastIndexOf('/');
             var fileName = lastSeparatorIndex >= 0 ? normalizedPath[(lastSeparatorIndex + 1)..] : normalizedPath;
 
-            // Remove the filename from the result
             result = result.Replace(fileName, string.Empty, StringComparison.Ordinal);
 
-            // Clean up leading and trailing separators
             return result.Trim('/', '\\').Trim();
         }
 
@@ -264,11 +259,9 @@ namespace AdrPlus.Core
         /// <returns><see langword="true"/> if a property with the specified name was found; otherwise <see langword="false"/>.</returns>
         public static bool TryGetPropertyCaseInsensitive(JsonElement element, string propertyName, out JsonElement value)
         {
-            // First try exact match for performance
             if (element.TryGetProperty(propertyName, out value))
                 return true;
 
-            // Then try case-insensitive search
             foreach (var property in element.EnumerateObject())
             {
                 if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))

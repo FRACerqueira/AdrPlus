@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>Lunghezza Revisione</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Lunghezza Ambito</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Ambiti</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Cartella per Ambito</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Salta Dominio quando</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>Separatore</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Formato del nome file non valido. Sono richiesti almeno numero e titolo</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Formato ambito non valido: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Campo obbligatorio mancante: '{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>Il campo '{0}' deve essere almeno {1}</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Il campo '{0}' deve essere vuoto quando '{1}' è 0</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Il campo '{0}' non deve essere vuoto quando '{1}' è maggiore di 0</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Ogni ambito in '{0}' deve essere almeno lungo quanto il valore di '{1}' ({2})</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>I seguenti ambiti non sono definiti: {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Il campo '{0}' non può essere true quando '{1}' è vuoto</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>Il campo '{0}' deve essere uno dei seguenti: {1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Trasformazione del testo applicata ai nomi dei file</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>Organizza gli ADR in cartelle separate per ambito</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>Percorso relativo alla cartella del repository ADR</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Lunghezza del numero di revisione nei nomi dei file</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Lunghezza dell'abbreviazione dell'ambito nei nomi dei file</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>Lunghezza del numero di sequenza nei nomi dei file</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>Prefisso per i nomi dei file ADR</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>Elenco degli ambiti validi per gli ADR (separati da punto e virgola. '*' alla fine di ogni ambito per evitare di usare il dominio)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Carattere usato per separare le parti del nome del file</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Ambiti in cui le informazioni sul dominio vengono omesse</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>Etichetta di testo per lo stato 'Accettato'</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>Il comando per aprire l'ADR deve contenere il testo '{0}'</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Trovate voci di ambito duplicate</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>Il repository non è inizializzato</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Errore nel file di configurazione: {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Ambito non valido '{0}'. Gli ambiti validi sono: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>Esiste già un ADR con questo titolo: {0}</value>
@@ -774,6 +726,9 @@
   </data>
   <data name="PromptReadingRegisteredDomains" xml:space="preserve">
     <value>Lettura dei domini registrati...</value>
+  </data>
+  <data name="PromptReadingRegisteredScopes" xml:space="preserve">
+    <value>Lettura degli ambiti registrati...</value>
   </data>
   <data name="PromptSelectRepositoryPath" xml:space="preserve">
     <value>Seleziona il percorso del repository</value>

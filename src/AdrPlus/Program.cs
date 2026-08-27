@@ -36,7 +36,7 @@ namespace AdrPlus
                 return 0;
             }
 
-            // Hook into Console lifetime events (Ctrl+C / SIGTERM)
+            // Hook into Console lifetime events (Ctrl+C)
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 eventArgs.Cancel = true; // Prevent immediate process termination
@@ -58,7 +58,7 @@ namespace AdrPlus
             try
             {
 
-                //Setup anbd Build Configuration
+                //Setup and Build Configuration
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile(AppConstants.AppConfigfileName, optional: false, reloadOnChange: true)
@@ -101,7 +101,6 @@ namespace AdrPlus
             {
                 Console.Out.Flush();
             }
-            // Flushes any buffered output directly to the console window
             return Helper.ExitCode;
         }
 
