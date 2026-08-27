@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>Lengte revisie</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Lengte bereik</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Bereiken</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Map per bereik</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Domein overslaan wanneer</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>Scheidingsteken</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Ongeldig bestandsnaamformaat. Minimaal een nummer en een titel verwacht</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Ongeldig bereikformaat: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Verplicht veld ontbreekt: '{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>Veld '{0}' moet minstens {1} zijn</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Veld '{0}' moet leeg zijn wanneer '{1}' 0 is</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Veld '{0}' mag niet leeg zijn wanneer '{1}' groter is dan 0</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Elk bereik in '{0}' moet minstens zo lang zijn als de waarde van '{1}' ({2})</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>De volgende bereiken zijn niet gedefinieerd: {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Veld '{0}' mag niet true zijn wanneer '{1}' leeg is</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>Veld '{0}' moet een van de volgende zijn: {1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Teksttransformatie toegepast op bestandsnamen</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>ADR's ordenen in afzonderlijke mappen per bereik</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>Relatief pad naar de ADR-repositorymap</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Lengte van het revisienummer in bestandsnamen</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Lengte van de bereikafkorting in bestandsnamen</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>Lengte van het volgnummer in bestandsnamen</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>Voorvoegsel voor ADR-bestandsnamen</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>Lijst van geldige bereiken voor ADR's (gescheiden door puntkomma. '*' aan het einde van elk bereik om het domein niet te gebruiken)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Teken gebruikt om delen van de bestandsnaam te scheiden</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Bereiken waarvoor domeininformatie wordt weggelaten</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>Tekstlabel voor de status 'Goedgekeurd'</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>Het commando om ADR te openen moet de tekst '{0}' bevatten</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Dubbele bereikvermeldingen gevonden</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>De repository is niet geïnitialiseerd</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Fout in configuratiebestand: {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Ongeldig bereik '{0}'. Geldige bereiken zijn: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>Een ADR met deze titel bestaat al: {0}</value>

@@ -14,3 +14,5 @@ It is generated automatically by the `AdrIndexer` AdrPlus plugin — do not edit
 | [ADR005V01-scope-the-firstinstaller.adrplus-automation-seed-to-non-interactive-first-installs-only](ADR005V01-scope-the-firstinstaller.adrplus-automation-seed-to-non-interactive-first-installs-only.md) | Scope the firstinstaller.adrplus automation seed to non-interactive first installs only | V01 | Accepted (2026-08-08) |
 | [ADR006V01-remove-scope-and-domain-specific-rules](ADR006V01-remove-scope-and-domain-specific-rules.md) | Remove Scope and Domain Specific Rules | V01 | Accepted (2026-08-26) |
 | [ADR006V02-remove-scope-and-domain-specific-rules](ADR006V02-remove-scope-and-domain-specific-rules.md) | Remove Scope and Domain Specific Rules | V02 | Accepted (2026-08-26) |
+| [ADR006V03-remove-scope-and-domain-specific-rules](ADR006V03-remove-scope-and-domain-specific-rules.md) | Remove Scope and Domain Specific Rules | V03 | Accepted (2026-08-27) |
+| [ADR007V01-adopt-1.0.0-as-the-final-release-version](ADR007V01-adopt-1.0.0-as-the-final-release-version.md) | Adopt 1.0.0 as the final release version | V01 | Accepted (2026-08-27) |

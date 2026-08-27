@@ -305,12 +305,7 @@ namespace AdrPlus.Core
 
         /// <summary>
         /// Validates and normalizes the repository configuration JSON to ensure all required fields are present and consistent.
-        /// Clamps <c>lenversion</c> and <c>lenrevision</c> to their valid ranges, and drops repository config fields
-        /// removed in 1.0.0-rc5 (ADR006: <see cref="AppConstants.ObsoleteRepoConfigFields"/>) when a legacy config still
-        /// carries them. This is a best-effort cleanup limited to callers of this method (the interactive
-        /// <c>adrplus config --repository</c> wizard and the host's own version-bump migration) — it is not a
-        /// guarantee that these fields disappear from every config on disk; <see cref="ValidateRepoStructure"/> is
-        /// what actually guarantees a config carrying them is never rejected, regardless of whether this method ran.
+        /// Clamps <c>lenversion</c> and <c>lenrevision</c> to their valid ranges.
         /// </summary>
         /// <param name="jsonContent">The JSON string to validate and normalize.</param>
         /// <returns>The normalized JSON content as a string.</returns>
@@ -324,11 +319,6 @@ namespace AdrPlus.Core
                 kvp => kvp.Key.ToLowerInvariant(),
                 kvp => kvp.Value
             );
-
-            foreach (var obsoleteField in AppConstants.ObsoleteRepoConfigFields)
-            {
-                jsonObject.Remove(obsoleteField);
-            }
 
             var lenversion = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenVersion].ToString() ?? "0", CultureInfo.InvariantCulture), 2, 3);
             var lenrevision = Math.Clamp(int.Parse(jsonObject[AppConstants.FieldLenRevision].ToString() ?? "0", CultureInfo.InvariantCulture), 0, 3);
@@ -544,7 +534,6 @@ namespace AdrPlus.Core
 
                 var extraFields = actualFields
                     .Except(requiredFields.Keys, StringComparer.OrdinalIgnoreCase)
-                    .Except(AppConstants.ObsoleteRepoConfigFields, StringComparer.OrdinalIgnoreCase)
                     .ToList();
                 if (extraFields.Count > 0)
                 {

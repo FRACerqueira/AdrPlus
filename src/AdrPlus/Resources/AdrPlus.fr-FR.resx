@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>Longueur de révision</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Longueur de portée</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Portées</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Dossier par portée</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Ignorer le domaine quand</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>Séparateur</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Format de nom de fichier invalide. Au moins le numéro et le titre sont attendus</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Format de portée invalide : {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Champ obligatoire manquant : '{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>Le champ '{0}' doit être au moins {1}</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Le champ '{0}' doit être vide quand '{1}' est 0</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Le champ '{0}' ne doit pas être vide quand '{1}' est supérieur à 0</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Chaque portée dans '{0}' doit être au moins aussi longue que la valeur de '{1}' ({2})</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>Les portées suivantes ne sont pas définies : {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Le champ '{0}' ne peut pas être true quand '{1}' est vide</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>Le champ '{0}' doit être l'un des suivants : {1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Transformation de texte appliquée aux noms de fichier</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>Organiser les ADR dans des dossiers séparés par portée</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>Chemin relatif vers le dossier du dépôt ADR</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Longueur du numéro de révision dans les noms de fichier</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Longueur de l'abréviation de portée dans les noms de fichier</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>Longueur du numéro de séquence dans les noms de fichier</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>Préfixe pour les noms de fichier ADR</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>Liste des portées valides pour les ADR (séparées par un point-virgule. '*' à la fin de chaque portée pour éviter d'utiliser le domaine)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Caractère utilisé pour séparer les parties du nom de fichier</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Portées pour lesquelles les informations de domaine sont omises</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>Libellé de texte pour le statut 'Accepté'</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>La commande pour ouvrir l'ADR doit contenir le texte '{0}'</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Entrées de portée en double trouvées</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>Le dépôt n'est pas initialisé</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Erreur dans le fichier de configuration : {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Portée invalide '{0}'. Les portées valides sont : {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>Un ADR avec ce titre existe déjà : {0}</value>

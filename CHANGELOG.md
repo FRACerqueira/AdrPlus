@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-08-27
+
+`1.0.0` is the first final release — see [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md).
+The project's release-candidate policy ("avoid breaking changes unless critical") no longer applies from
+this point on; a breaking change to the CLI or to `AdrPlus.Abstractions` is now a real semver-major event.
 
 ### Added
 
@@ -26,9 +30,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (see [ADR006](doc/adr/ADR006V02-remove-scope-and-domain-specific-rules.md)). Removed from
   `adr-config.adrplus`: `scopes` (whitelist), `lenscope` (filename participation/truncation),
   `skipdomain` (per-scope domain skipping), `folderbyscope` (per-scope subfolders). Removed from the
-  public `AdrPlus.Abstractions` contract: `RepoInfoSnapshot.Scopes`. A legacy `adr-config.adrplus` that
-  still carries these fields is tolerated - it's never rejected as invalid, they're just ignored - but
-  the host does not guarantee removing them from the file for you; that's a manual cleanup if you want it.
+  public `AdrPlus.Abstractions` contract: `RepoInfoSnapshot.Scopes`. A config still carrying these
+  fields is rejected as invalid — see [ADR006V03](doc/adr/ADR006V03-remove-scope-and-domain-specific-rules.md)
+  below for why the earlier release-candidate-scoped tolerance for this was retired before `1.0.0`.
+- `AppConstants.ObsoleteRepoConfigFields` and the `ValidateConfig` tolerance branch that consulted it
+  are removed entirely ([ADR006V03](doc/adr/ADR006V03-remove-scope-and-domain-specific-rules.md)) — a
+  config still carrying `scopes`/`lenscope`/`skipdomain`/`folderbyscope` now fails validation with an
+  "unexpected fields" error instead of loading with them silently ignored. This tolerance existed only
+  to avoid hard-failing a config written by a pre-`1.0.0-rc5` install during the release-candidate
+  period; now that `1.0.0` is final, that population no longer exists. If your `adr-config.adrplus`
+  still has any of these four fields, **remove them by hand** — neither `adrplus init` nor
+  `config --repository` can clean an existing dirty file for you (the field-stripping step was removed
+  together with the tolerance it served; `config --repository` also always writes to the machine's
+  shared install-level template, never a specific repository's file).
 
 ### Changed
 
@@ -36,10 +50,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   header table. Title-uniqueness for `adrplus new` is now based on Title alone (previously Title+Domain).
 - The `new` wizard's Scope prompt is now free text (previously a picklist sourced from the repository's
   configured scope whitelist), matching Domain's existing free-text-with-autocomplete behavior.
-- Bumped to `1.0.0-rc5` (`AdrPlus.Abstractions` to `1.0.0-rc2`) for this breaking config/contract change.
+- Bumped to `1.0.0` final (`AdrPlus.Abstractions` to `1.0.0` as well — see
+  [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md)) for this breaking config/contract
+  change and everything else accumulated since `v1.0.0-beta5`, the last version actually released.
 
 ### Fixed
 
+- A plugin rejected specifically for an incompatible `abstractionsVersion` (major version mismatch
+  against the host's `AdrPlus.Abstractions`) was reported with the generic entryType/Name/Version
+  mismatch message instead of the dedicated, already-localized-in-11-languages
+  `PluginRejectedAbstractionsVersionIncompatible` message — that message existed but was never wired
+  up to any code path. A plugin author debugging a real `abstractionsVersion` gap was misdirected
+  toward suspecting their `entryType`/`Name`/`Version` instead. The check now reports its own
+  dedicated reason and message.
 - `adrplus init --path <dir>` (no `--file`) on an already-initialized directory used to always prompt
   for overwrite confirmation, even with no interactive console to answer it (CI, scripts, an AI agent) -
   it crashed with `Cannot run an interactive control: console input is redirected...` instead of
@@ -83,14 +106,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking change - action required
 
-- This is a pre-1.0 release-candidate breaking change with no compatibility shim, by design (see ADR006).
-  **If you have `adrplus` installed globally at a version older than `1.0.0-rc5`, uninstall it and
-  reinstall `1.0.0-rc5` rather than upgrading in place** (`dotnet tool uninstall -g adrplus` then
+- This is a breaking change with no compatibility shim, by design (see ADR006/ADR006V03).
+  **If you have `adrplus` installed globally at a version older than `1.0.0`, uninstall it and
+  reinstall `1.0.0` rather than upgrading in place** (`dotnet tool uninstall -g adrplus` then
   `dotnet tool install -g adrplus`). **If you maintain a plugin built against `AdrPlus.Abstractions`
-  older than `1.0.0-rc2`, rebuild it against `1.0.0-rc2`** - the host's plugin-loader compatibility
+  older than `1.0.0`, rebuild it against `1.0.0`** - the host's plugin-loader compatibility
   check only compares the major version number, so an un-rebuilt plugin referencing the removed
   `RepoInfoSnapshot.Scopes` will load successfully and then fail at runtime the first time it's
-  dispatched an event, rather than being rejected up front.
+  dispatched an event, rather than being rejected up front. **If your `adr-config.adrplus` still
+  carries `scopes`/`lenscope`/`skipdomain`/`folderbyscope`, remove them by hand** — see the `Removed`
+  entry above for why neither `adrplus init` nor `config --repository` can clean an existing file
+  for you.
 
 ---
 

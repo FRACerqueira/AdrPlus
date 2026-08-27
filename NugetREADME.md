@@ -51,7 +51,7 @@ Using **AdrPlus** in an engineering repository helps you:
 
 ## Using AdrPlus with AI Coding Assistants
 
-Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot - a skill that teaches the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0-rc1 or later.
+Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot - a skill that teaches the full command surface, plus an audit agent, an index-generator agent, and an agent that flags pending changes needing an ADR before a commit or PR. Requires `adrplus` v1.0.0 or later.
 
 ---
 

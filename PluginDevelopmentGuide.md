@@ -45,7 +45,7 @@ Create a class library targeting `net10.0` (or anything `>= net8.0`) and referen
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0-rc2" Private="false" />
+    <PackageReference Include="AdrPlus.Abstractions" Version="1.0.0" Private="false" />
   </ItemGroup>
 </Project>
 ```
@@ -234,7 +234,7 @@ Every plugin folder needs one, alongside the compiled assembly:
 |---|---|
 | `name` / `version` | Must match `IAdrPlugin.Name`/`Version` exactly — mismatched values reject the plugin at load. |
 | `entryAssembly` / `entryType` | The DLL filename and fully-qualified class implementing `IAdrPlugin`. |
-| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against, as a plain `major.minor.patch` (the host parses it with `System.Version`, which rejects a SemVer prerelease suffix like `-beta6` — use `"1.0.0"`, not the full NuGet package version string). The host checks the SemVer **major** matches its own; a mismatch rejects the plugin with a warning rather than risking a binary-incompatible load. |
+| `abstractionsVersion` | The `AdrPlus.Abstractions` version you built against, as a plain `major.minor.patch` (the host parses it with `System.Version`, which rejects a SemVer prerelease suffix like `-beta6` — use `"1.0.0"`, not the full NuGet package version string). The host checks the SemVer **major** matches its own assembly's major (an unparseable value is rejected outright); a mismatch rejects the plugin with a dedicated warning rather than risking a binary-incompatible load. Note this only distinguishes an actual major bump (e.g. a future `2.0.0`) — it can't tell a pre-release suffix apart from its own final release within the same major (both compile to the same `AssemblyVersion`), which is why neither `AdrPlus.csproj` nor `AdrPlus.Abstractions.csproj` pins an explicit `<AssemblyVersion>`: that distinction doesn't matter once a major version is out, since this project's policy ([ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md)) requires a real major bump for any breaking change. |
 | `subscribedEvents` | Cheap, declarative filter — the host skips dispatch entirely for events not listed here, before your code runs at all. |
 | `foregroundTimeoutMs` | How long the single, non-retried foreground attempt gets before the host abandons it and queues a retry. Keep this short — it adds directly to how long `adrplus approve`/etc. takes to return. |
 | `backgroundTimeoutMs` / `retryPolicy` | `backgroundTimeoutMs` applies only to background re-drive (`adrplus sync`) — see [How the plugin system works](#how-the-plugin-system-works). `retryPolicy.maxAttempts` is a single lifecycle budget shared with the initial foreground attempt: a foreground failure that isn't a timeout already consumes one of the `maxAttempts`, leaving fewer for `sync` to use; only a foreground *timeout* leaves the full budget for background retries. `backoff` is `"Fixed"` or `"Exponential"`; delay for attempt *n* is `delayMs` (Fixed) or `delayMs * 2^(n-1)` (Exponential), randomized by `jitter`. |

@@ -200,7 +200,7 @@ Prefer managing ADRs in plain language instead of typing commands yourself? The 
 - An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
 - An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
 
-Requires `adrplus` v1.0.0-rc1 or later — earlier pre-releases (including beta1/beta2, which weren't safe to drive non-interactively) are no longer supported.
+Requires `adrplus` v1.0.0 or later — earlier pre-releases (including beta1/beta2, which weren't safe to drive non-interactively) are no longer supported.
 
 ---
 
@@ -617,10 +617,10 @@ Your configuration persists automatically:
 
 No manual reconfiguration is needed after upgrading — simply update the tool and continue using it as before.
 
-> This project is still pre-1.0 (release candidate). A breaking change occasionally requires more than an
-> in-place update — check `CHANGELOG.md`'s `[Unreleased]`/latest section for a "Breaking change - action
-> required" note before running `dotnet tool update`. For example, upgrading past `1.0.0-rc5` requires
-> uninstalling and reinstalling rather than updating in place (see the changelog for why).
+> A breaking change occasionally requires more than an in-place update — check `CHANGELOG.md`'s latest
+> section for a "Breaking change - action required" note before running `dotnet tool update`. For
+> example, upgrading from any version older than `1.0.0` requires uninstalling and reinstalling rather
+> than updating in place (see the changelog for why).
 
 ---
 

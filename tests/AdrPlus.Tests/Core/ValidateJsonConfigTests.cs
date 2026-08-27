@@ -42,10 +42,6 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldLenSeq, 4 },
             { AppConstants.FieldLenVersion, 2 },
             { AppConstants.FieldLenRevision, 0 },
-            { AppConstants.FieldLenScope, 0 },
-            { AppConstants.FieldScopes, "" },
-            { AppConstants.FieldFolderByScope, false },
-            { AppConstants.FieldSkipDomain, "" },
             { AppConstants.FieldSeparator, "-" },
             { AppConstants.FieldCaseTransform, "CamelCase" },
             { AppConstants.FieldStatusNew, "New" },
@@ -91,10 +87,6 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldLenSeq, 4 },
             { AppConstants.FieldLenVersion, 2 },
             { AppConstants.FieldLenRevision, 0 },
-            { AppConstants.FieldLenScope, 0 },
-            { AppConstants.FieldScopes, "" },
-            { AppConstants.FieldFolderByScope, false },
-            { AppConstants.FieldSkipDomain, "" },
             { AppConstants.FieldSeparator, "-" },
             { AppConstants.FieldCaseTransform, "CamelCase" },
             { AppConstants.FieldStatusNew, "New" },
@@ -924,18 +916,14 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void EnsureFieldsRepoStructure_WithCaseInsensitiveKeys_WorksCorrectly()
+    public void EnsureFieldsRepoStructure_WithCaseInsensitiveKeys_ClampsRegardlessOfCasing()
     {
         // Arrange
         var validator = CreateValidator([]);
         var json = JsonSerializer.Serialize(new Dictionary<string, object>
         {
-            { "LENSCOPE", 3 },
-            { "SCOPES", "scope1;scope2" },
-            { "skipdomain", "scope1" },
-            { "FOLDERBYSCOPE", false },
-            { "LENVERSION", 2 },
-            { "LENREVISION", 0 }
+            { "LENVERSION", 5 },
+            { "LENREVISION", 5 }
         }, AppConstants.RepoSerializerOptions);
 
         // Act
@@ -944,8 +932,8 @@ public class ValidateJsonConfigTests
 
         // Assert
         resultDict.Should().NotBeNull();
-        // The four obsolete fields must be stripped regardless of the casing they were written in.
-        resultDict.Should().NotContainKeys("lenscope", "scopes", "skipdomain", "folderbyscope");
+        int.Parse(resultDict!["lenversion"].ToString()!).Should().Be(3);
+        int.Parse(resultDict!["lenrevision"].ToString()!).Should().Be(3);
     }
 
     #endregion
@@ -1562,12 +1550,12 @@ public class ValidateJsonConfigTests
     }
 
     [Fact]
-    public void ValidateRepoStructure_WithLegacyObsoleteFieldsPopulated_IsStillValid()
+    public void ValidateRepoStructure_WithLegacyObsoleteFieldsPopulated_IsInvalid()
     {
-        // Arrange - a config written by a pre-1.0.0-rc5 version, with the four fields ADR006 removed
-        // (scopes/lenscope/skipdomain/folderbyscope) still populated with realistic, non-default values -
-        // not just empty/zero/false. ValidateRepoStructure must tolerate this indefinitely (see
-        // AppConstants.ObsoleteRepoConfigFields), not silently reject it as having "unexpected fields".
+        // Arrange - a config still carrying the four fields ADR006 removed (scopes/lenscope/skipdomain/
+        // folderbyscope), populated with realistic, non-default values. ADR006V03 retired the
+        // release-candidate-era tolerance for these fields now that 1.0.0 is final (ADR007) - such a
+        // config must now be rejected as having unexpected fields, like any other unrecognized key.
         var validator = CreateValidator([]);
         var legacyJson = JsonSerializer.Serialize(new Dictionary<string, object>
         {
@@ -1578,10 +1566,10 @@ public class ValidateJsonConfigTests
             { AppConstants.FieldLenSeq, 4 },
             { AppConstants.FieldLenVersion, 2 },
             { AppConstants.FieldLenRevision, 0 },
-            { AppConstants.FieldLenScope, 1 },
-            { AppConstants.FieldScopes, "Enterprise;Domain;Project" },
-            { AppConstants.FieldFolderByScope, true },
-            { AppConstants.FieldSkipDomain, "Enterprise" },
+            { "lenscope", 1 },
+            { "scopes", "Enterprise;Domain;Project" },
+            { "folderbyscope", true },
+            { "skipdomain", "Enterprise" },
             { AppConstants.FieldSeparator, "-" },
             { AppConstants.FieldCaseTransform, "CamelCase" },
             { AppConstants.FieldStatusNew, "New" },
@@ -1608,7 +1596,8 @@ public class ValidateJsonConfigTests
         var (IsValid, ErrorReport) = validator.ValidateRepoStructure(legacyJson);
 
         // Assert
-        IsValid.Should().BeTrue(string.Join(", ", ErrorReport));
+        IsValid.Should().BeFalse();
+        ErrorReport.Should().Contain(e => e.Contains("lenscope", StringComparison.OrdinalIgnoreCase));
     }
 
     #endregion

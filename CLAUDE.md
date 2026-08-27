@@ -54,7 +54,7 @@ For multi-step tasks, state a brief plan:
 
 ## 5. Current Project Status
 
-- **Version**: `1.0.0-rc3` (the project is in release candidate — avoid breaking changes unless critical for the 1.0.0 release; if one is truly unavoidable, still don't add compatibility aliases/shims for renames).
+- **Version**: `1.0.0` (final release — see [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md). The pre-1.0 "avoid breaking changes unless critical" allowance no longer applies: a breaking change now requires a real semver-major bump, same as any other stable project. Still don't add compatibility aliases/shims for renames unless a specific breaking change genuinely warrants one.)
 - **Localization**: both the UI strings (`src/AdrPlus/Resources/AdrPlus.*.resx`) and the ADR templates (`src/AdrPlus/Resources/*-template*.md`, `adr-template*.adrplus`) are localized into 11 languages — `en-US` (neutral), `pt-BR`, `de-DE`, `es-ES`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nl-BE`, `ru-RU`, `zh-CN` — matching the set already shipped by the `PromptPlus` dependency. The first-run wizard offers all 11 explicitly, plus "Other" for any other valid culture code.
 - The 9 non-English/Portuguese languages are machine-translated and marked pending native-speaker review — see `TRANSLATIONS.md` for per-file status before treating any of them as final.
 

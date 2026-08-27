@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -207,18 +207,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>Length Revision</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Length Scope</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Scopes</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Folder By Scope</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Skip Domain when</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>Separator</value>
   </data>
@@ -273,9 +261,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Invalid filename format. Expected at least number and title</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Invalid scope format: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Missing required field: '{0}'</value>
   </data>
@@ -293,21 +278,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>Field '{0}' must be at least {1}</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Field '{0}' must be empty when '{1}' is 0</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Field '{0}' must be not empty when '{1}' is greater than 0</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Each scope in '{0}' must be at least as long as the '{1}' value ({2})</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>The following scopes are not defined: {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Field '{0}' cannot be true when '{1}' is empty</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>Field '{0}' must be one of: {1}</value>
@@ -615,9 +585,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Text transformation applied to file names</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>Organize ADRs in separate folders by scope</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>Relative path to the ADR repository folder</value>
   </data>
@@ -629,9 +596,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Length of the revision number in file names</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Length of the scope abbreviation in file names</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>Length of the sequence number in file names</value>
@@ -645,14 +609,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>Prefix for ADR file names</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>List of valid scopes for ADRs (separated by semicolon; '*' at the end of each scope to avoid using the domain)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Character used to separate file name parts</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Scopes where domain information is omitted</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>Text label for the 'Accepted' status</value>
@@ -717,9 +675,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>The command to open ADR must contain the text '{0}'</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Duplicate scope entries found</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>The repository is not initialized</value>
   </data>
@@ -743,9 +698,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Error in configuration file: {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Invalid scope '{0}'. Valid scopes are: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>An ADR with this title already exists: {0}</value>

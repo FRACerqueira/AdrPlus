@@ -80,46 +80,6 @@ namespace AdrPlus.Core
 
         public const string FieldLenRevision = "lenrevision";
 
-        /// <summary>
-        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): used to control whether/how much of the
-        /// scope was embedded in ADR filenames. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and
-        /// tolerate it in configs written by older versions.
-        /// </summary>
-        public const string FieldLenScope = "lenscope";
-
-        /// <summary>
-        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): the semicolon-separated whitelist of
-        /// valid scope values. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate it in
-        /// configs written by older versions.
-        /// </summary>
-        public const string FieldScopes = "scopes";
-
-        /// <summary>
-        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): whether ADRs were organized into
-        /// per-scope subfolders. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate it in
-        /// configs written by older versions.
-        /// </summary>
-        public const string FieldFolderByScope = "folderbyscope";
-
-        /// <summary>
-        /// Obsolete repository config field (removed in 1.0.0-rc5, see ADR006): the scopes for which the domain
-        /// prompt/segment was skipped. Kept only so <see cref="ObsoleteRepoConfigFields"/> can recognize and tolerate
-        /// it in configs written by older versions.
-        /// </summary>
-        public const string FieldSkipDomain = "skipdomain";
-
-        /// <summary>
-        /// Repository config field names removed in 1.0.0-rc5 (ADR006: Scope/Domain became free-text header-only
-        /// fields, no longer governed). <see cref="ValidateConfig.ValidateRepoStructure"/> tolerates these when
-        /// present in a config written by an older version instead of reporting them as unexpected fields — this is
-        /// the only guarantee: a config carrying them is silently ignored, indefinitely, not rejected. There is no
-        /// guarantee they get removed from the file; <see cref="ValidateConfig.EnsureFieldsRepoStructure"/> strips
-        /// them as a best-effort cleanup, but only for the callers that actually invoke it.
-        /// </summary>
-        public static readonly IReadOnlySet<string> ObsoleteRepoConfigFields = new HashSet<string>(
-            [FieldLenScope, FieldScopes, FieldFolderByScope, FieldSkipDomain],
-            StringComparer.OrdinalIgnoreCase);
-
         public const string FieldSeparator = "separator";
 
         public const string FieldCaseTransform = "casetransform";

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>修订号长度</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>范围长度</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>范围</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>按范围分文件夹</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>跳过域的条件</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>分隔符</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>文件名格式无效，至少需要包含编号和标题</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>无效的范围格式：{0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>缺少必需字段：'{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>字段 '{0}' 必须至少为 {1}</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>当 '{1}' 为 0 时，字段 '{0}' 必须为空</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>当 '{1}' 大于 0 时，字段 '{0}' 不能为空</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>'{0}' 中的每个范围长度必须至少达到 '{1}' 的值（{2}）</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>以下范围未定义：{0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>当 '{1}' 为空时，字段 '{0}' 不能为 true</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>字段 '{0}' 必须是以下之一：{1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>应用于文件名的文本转换</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>按范围将 ADR 组织到不同的文件夹中</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>ADR 仓库文件夹的相对路径</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>文件名中修订号的长度</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>文件名中范围缩写的长度</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>文件名中序号的长度</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>ADR 文件名的前缀</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>ADR 的有效范围列表（以分号分隔。在每个范围末尾加 '*' 可避免使用域）</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>用于分隔文件名各部分的字符</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>省略域信息的范围</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>“已接受”状态的文本标签</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>打开 ADR 的命令必须包含文本 '{0}'</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>发现重复的范围条目</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>仓库尚未初始化</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>配置文件中存在错误：{0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>无效的范围 '{0}'。有效范围为：{1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>已存在具有此标题的 ADR：{0}</value>

@@ -95,14 +95,12 @@ public class AdrServiceTests
             { AppConstants.FieldLenSeq, 4 },
             { AppConstants.FieldLenVersion, 2 },
             { AppConstants.FieldLenRevision, 1 },
-            { AppConstants.FieldLenScope, 0 },
             { AppConstants.FieldSeparator, "-" },
             { AppConstants.FieldCaseTransform, "CamelCase" },
             { AppConstants.FieldStatusNew, "Proposed" },
             { AppConstants.FieldStatusAccepted, "Accepted" },
             { AppConstants.FieldStatusRejected, "Rejected" },
-            { AppConstants.FieldStatusSuperseded, "Superseded" },
-            { AppConstants.FieldScopes, "" }
+            { AppConstants.FieldStatusSuperseded, "Superseded" }
         });
         var template = "# ADR {0}";
 
@@ -1446,10 +1444,6 @@ public class AdrServiceTests
                  { AppConstants.FieldLenSeq, 4 },
                  { AppConstants.FieldLenVersion, 2 },
                  { AppConstants.FieldLenRevision, 0 },
-                 { AppConstants.FieldLenScope, 0 },
-                 { AppConstants.FieldScopes, "" },
-                 { AppConstants.FieldFolderByScope, false },
-                 { AppConstants.FieldSkipDomain, "" },
                  { AppConstants.FieldSeparator, "-" },
                  { AppConstants.FieldCaseTransform, "AsIs" }
              });

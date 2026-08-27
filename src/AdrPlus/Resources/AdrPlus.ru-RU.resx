@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>Длина ревизии</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>Длина области</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>Области</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>Папка по области</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>Пропускать домен, когда</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>Разделитель</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>Недопустимый формат имени файла. Ожидается как минимум номер и заголовок</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>Недопустимый формат области: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>Отсутствует обязательное поле: '{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>Поле '{0}' должно быть не менее {1}</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>Поле '{0}' должно быть пустым, если '{1}' равно 0</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>Поле '{0}' не должно быть пустым, если '{1}' больше 0</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>Каждая область в '{0}' должна быть не короче значения '{1}' ({2})</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>Следующие области не определены: {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>Поле '{0}' не может быть true, если '{1}' пусто</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>Поле '{0}' должно быть одним из: {1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>Преобразование текста, применяемое к именам файлов</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>Организовать ADR в отдельные папки по области</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>Относительный путь к папке репозитория ADR</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>Длина номера ревизии в именах файлов</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>Длина сокращения области в именах файлов</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>Длина порядкового номера в именах файлов</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>Префикс для имён файлов ADR</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>Список допустимых областей для ADR (разделённых точкой с запятой. '*' в конце области означает не использовать домен)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>Символ, используемый для разделения частей имени файла</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>Области, для которых сведения о домене не указываются</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>Текстовая метка для статуса «Принято»</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>Команда для открытия ADR должна содержать текст '{0}'</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>Обнаружены повторяющиеся области</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>Репозиторий не инициализирован</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>Ошибка в файле конфигурации: {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>Недопустимая область '{0}'. Допустимые области: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>ADR с таким заголовком уже существует: {0}</value>

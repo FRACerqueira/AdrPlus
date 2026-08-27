@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- Machine-translated; pending native-speaker review. See TRANSLATIONS.md. -->
   <!--
@@ -208,18 +208,6 @@
   <data name="FieldTitleLenRevision" xml:space="preserve">
     <value>リビジョンの長さ</value>
   </data>
-  <data name="FieldTitleLenScope" xml:space="preserve">
-    <value>スコープの長さ</value>
-  </data>
-  <data name="FieldTitleScopes" xml:space="preserve">
-    <value>スコープ</value>
-  </data>
-  <data name="FieldTitleFolderByScope" xml:space="preserve">
-    <value>スコープ別フォルダー</value>
-  </data>
-  <data name="FieldTitleSkipDomain" xml:space="preserve">
-    <value>ドメインを省略する条件</value>
-  </data>
   <data name="FieldTitleSeparator" xml:space="preserve">
     <value>区切り文字</value>
   </data>
@@ -274,9 +262,6 @@
   <data name="ErrorInvalidFilenameFormat" xml:space="preserve">
     <value>無効なファイル名形式です。少なくとも番号とタイトルが必要です</value>
   </data>
-  <data name="ErrorInvalidScopeFormat" xml:space="preserve">
-    <value>無効なスコープ形式です: {0}</value>
-  </data>
   <data name="ValidationMissingRequiredField" xml:space="preserve">
     <value>必須フィールドがありません: '{0}'</value>
   </data>
@@ -294,21 +279,6 @@
   </data>
   <data name="ValidationFieldMinimumValue" xml:space="preserve">
     <value>フィールド '{0}' は {1} 以上である必要があります</value>
-  </data>
-  <data name="ValidationScopesMustBeEmptyWhenLenScopeZero" xml:space="preserve">
-    <value>'{1}' が 0 の場合、フィールド '{0}' は空である必要があります</value>
-  </data>
-  <data name="ValidationScopesMustNotBeEmptyWhenLenScopePositive" xml:space="preserve">
-    <value>'{1}' が 0 より大きい場合、フィールド '{0}' は空にできません</value>
-  </data>
-  <data name="ValidationScopeMinLength" xml:space="preserve">
-    <value>'{0}' 内の各スコープは、'{1}' の値 ({2}) 以上の長さである必要があります</value>
-  </data>
-  <data name="ValidationskipdomainInvalidScopes" xml:space="preserve">
-    <value>次のスコープは定義されていません: {0}</value>
-  </data>
-  <data name="ValidationFolderByScopeRequiresScopes" xml:space="preserve">
-    <value>'{1}' が空の場合、フィールド '{0}' を true にすることはできません</value>
   </data>
   <data name="ValidationMustbeFollowing" xml:space="preserve">
     <value>フィールド '{0}' は次のいずれかである必要があります: {1}</value>
@@ -616,9 +586,6 @@
   <data name="ConfigFieldDescCaseTransform" xml:space="preserve">
     <value>ファイル名に適用されるテキスト変換</value>
   </data>
-  <data name="ConfigFieldDescFolderByScope" xml:space="preserve">
-    <value>ADR をスコープ別のフォルダーに分けて整理します</value>
-  </data>
   <data name="ConfigFieldDescFolderRepo" xml:space="preserve">
     <value>ADR リポジトリフォルダーへの相対パス</value>
   </data>
@@ -630,9 +597,6 @@
   </data>
   <data name="ConfigFieldDescLenRevision" xml:space="preserve">
     <value>ファイル名内のリビジョン番号の桁数</value>
-  </data>
-  <data name="ConfigFieldDescLenScope" xml:space="preserve">
-    <value>ファイル名内のスコープ省略形の桁数</value>
   </data>
   <data name="ConfigFieldDescLenSeq" xml:space="preserve">
     <value>ファイル名内の連番の桁数</value>
@@ -646,14 +610,8 @@
   <data name="ConfigFieldDescPrefix" xml:space="preserve">
     <value>ADR ファイル名のプレフィックス</value>
   </data>
-  <data name="ConfigFieldDescScopes" xml:space="preserve">
-    <value>ADR で使用できるスコープの一覧 (セミコロンで区切ります。ドメインを使用しない場合は各スコープの末尾に '*' を付けます)</value>
-  </data>
   <data name="ConfigFieldDescSeparator" xml:space="preserve">
     <value>ファイル名の各部分を区切る文字</value>
-  </data>
-  <data name="ConfigFieldDescSkipDomain" xml:space="preserve">
-    <value>ドメイン情報を省略するスコープ</value>
   </data>
   <data name="ConfigFieldDescStatusAccepted" xml:space="preserve">
     <value>「承認済み」ステータスのテキストラベル</value>
@@ -718,9 +676,6 @@
   <data name="ErrMsgOpenAdrMustContainPlaceholder" xml:space="preserve">
     <value>ADR を開くコマンドにはテキスト '{0}' を含める必要があります</value>
   </data>
-  <data name="ErrMsgScopesDuplicateEntries" xml:space="preserve">
-    <value>重複したスコープのエントリが見つかりました</value>
-  </data>
   <data name="ErrorInitCommandNotExecuted" xml:space="preserve">
     <value>リポジトリが初期化されていません</value>
   </data>
@@ -744,9 +699,6 @@
   </data>
   <data name="ErrorInConfigFile" xml:space="preserve">
     <value>設定ファイルにエラーがあります: {0}</value>
-  </data>
-  <data name="NewAdrErrorInvalidScope" xml:space="preserve">
-    <value>無効なスコープ '{0}' です。有効なスコープ: {1}</value>
   </data>
   <data name="NewAdrErrorUniqueTitleAlreadyExists" xml:space="preserve">
     <value>このタイトルの ADR は既に存在します: {0}</value>
