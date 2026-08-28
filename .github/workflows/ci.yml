@@ -51,9 +51,11 @@ jobs:
           --no-build
           --configuration Release
           --verbosity normal
-          --logger "trx;LogFileName=test-results.trx"
-          --collect:"XPlat Code Coverage"
           --results-directory TestResults
+          --
+          --report-xunit-trx
+          --coverage
+          --coverage-output-format cobertura
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -68,5 +70,5 @@ jobs:
         if: always()
         with:
           name: coverage-${{ matrix.os }}
-          path: "**/TestResults/**/coverage.cobertura.xml"
+          path: "**/TestResults/**/*.cobertura.xml"
           retention-days: 7
