@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-08-28
+
+### Changed
+
+- Updated `PromptPlus` from `6.0.0-rc2` to `6.0.0` (final).
+- Updated `Microsoft.Extensions.Hosting` from `10.0.10` to `10.0.11`.
+
+---
+
 ## [1.0.0] - 2026-08-27
 
 `1.0.0` is the first final release — see [ADR007](doc/adr/ADR007V01-adopt-1.0.0-as-the-final-release-version.md).
