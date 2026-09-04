@@ -196,7 +196,7 @@ For a detailed walkthrough, see the [Step-by-Step Guide](StepByStepGuide.md).
 Prefer managing ADRs in plain language instead of typing commands yourself? The official [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) brings the same skill and agents to both [Claude Code](https://claude.com/claude-code) and GitHub Copilot:
 
 - A skill (`manage-adrs`) that teaches Claude the full `adrplus` command surface, so it can create, approve, reject, version, revise, supersede, and configure ADRs without guessing at flags.
-- An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain integrity, status hygiene) and produces a read-only report.
+- An `adr-auditor` agent that audits an existing ADR repository (structural compliance, content completeness, supersede-chain and date-consistency checks, risk-calibrated status hygiene, and failure-visibility documentation) and produces a read-only report.
 - An `adr-indexer` agent that turns `adrplus explore`'s report into a readable, grouped index page.
 - An `adr-decision-check` agent that checks pending changes before a commit or PR (or on request) and recommends whether they need a new ADR or a version/revise/supersede of an existing one.
 
@@ -328,6 +328,14 @@ You can also execute commands directly, one by one, without the wizard and witho
     adrplus plugins --uninstall "PluginName"
 
 ```
+
+All six commands above that record a status change (`new`, `approve`, `reject`, `supersede`, `version`, `revise`)
+also accept `--refdate <date>`, to record the change as having happened on a specific date instead of today —
+useful when backfilling history or batch-registering decisions made earlier. `--refdate` can never be later than
+today. On `approve`/`reject`/`supersede`/`version`/`revise` it also can't be earlier than the date already
+recorded for that ADR (its `Created` date, or its most recent recorded update, whichever applies); `new` has no
+lower bound, since a brand-new sequence number has no prior history to respect. `--wizard` mode enforces the same
+range directly in the date picker, so an invalid date can't even be selected there.
 
 Use `adrplus help <command>` to check the available parameters for each command.
 
