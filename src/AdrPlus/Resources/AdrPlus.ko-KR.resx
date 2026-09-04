@@ -694,6 +694,12 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>잘못된 날짜 형식입니다. 예상 형식: {0}</value>
   </data>
+  <data name="ErrorRefDateBeforeHistory" xml:space="preserve">
+    <value>참조 날짜 {0}은(는) 이 ADR에 대해 이미 기록된 {1}보다 이전일 수 없습니다</value>
+  </data>
+  <data name="ErrorRefDateInFuture" xml:space="preserve">
+    <value>참조 날짜 {0}은(는) 오늘({1})보다 이후일 수 없습니다</value>
+  </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
     <value>외부 명령이 실행되었지만 실패했습니다: {0}</value>
   </data>

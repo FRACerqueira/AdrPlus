@@ -929,6 +929,24 @@ namespace AdrPlus.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The reference date {0} cannot be earlier than {1}, already recorded for this ADR.
+        /// </summary>
+        internal static string ErrorRefDateBeforeHistory {
+            get {
+                return ResourceManager.GetString("ErrorRefDateBeforeHistory", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The reference date {0} cannot be later than today ({1}).
+        /// </summary>
+        internal static string ErrorRefDateInFuture {
+            get {
+                return ResourceManager.GetString("ErrorRefDateInFuture", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to External command executed but failed: {0}.
         /// </summary>
         internal static string ErrorExternalCommand {

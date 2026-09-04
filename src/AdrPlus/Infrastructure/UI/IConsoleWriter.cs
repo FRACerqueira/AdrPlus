@@ -56,11 +56,14 @@ namespace AdrPlus.Infrastructure.UI
         (int left, int top) PromptCursorPosition();
 
         /// <summary>
-        /// Moves the cursor to a new position in the console.
+        /// Clears every console row from <paramref name="top"/> down to the cursor's current row
+        /// (inclusive), then moves the cursor back to column 0 of <paramref name="top"/>. Used after
+        /// a wizard's multi-line summary + confirm prompt is no longer needed, so the line written next
+        /// isn't rendered on top of leftover summary text that's longer than it.
         /// </summary>
-        /// <param name="left">The left position to move the cursor to.</param>
-        /// <param name="top">The top position to move the cursor to.</param>
-        void PromptMovePosition(int left, int top);
+        /// <param name="top">The row where the summary block started (the value captured by
+        /// <see cref="PromptCursorPosition"/> before the summary was displayed).</param>
+        void PromptClearRegionFromTop(int top);
 
         /// <summary>
         /// Ensures that the console culture settings are properly configured based on the provided application configuration.
@@ -146,7 +149,7 @@ namespace AdrPlus.Infrastructure.UI
         /// available in full via <c>adrplus plugins --list</c>. Called once a command's own repository/plugin
         /// state is known. Callers should invoke this right before their own result message (not immediately
         /// after resolving the repo path) — writing any earlier can land on a cursor position a wizard flow has
-        /// already repositioned (e.g. via <see cref="PromptMovePosition"/> after a confirm step), making the
+        /// already repositioned (e.g. via <see cref="PromptClearRegionFromTop"/> after a confirm step), making the
         /// output invisible even though it was technically written.
         /// </summary>
         /// <param name="missingPluginNames">Names listed as active but not currently loaded; empty prints nothing.</param>
@@ -180,9 +183,11 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="message">The message to display to the user.</param>
         /// <param name="dateref">The reference date to display initially.</param>
         /// <param name="adrPlusRepo">The repository configuration.</param>
+        /// <param name="minValue">The earliest date the user is allowed to select (inclusive). Pass <see cref="DateTime.MinValue"/> when no lower bound applies.</param>
+        /// <param name="maxValue">The latest date the user is allowed to select (inclusive).</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected date.</returns>
-        (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, DateTime minValue, DateTime maxValue, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select an ADR from a list of latest ADR files.

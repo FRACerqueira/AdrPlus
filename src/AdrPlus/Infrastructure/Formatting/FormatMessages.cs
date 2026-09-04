@@ -40,6 +40,8 @@ namespace AdrPlus.Infrastructure.Formatting
         public static CompositeFormat ErrFileNotFound => Get(() => Resources.AdrPlus.ExceptionFileNotFound);
         public static CompositeFormat ErrConfigFileInvalid => Get(() => Resources.AdrPlus.ErrorInConfigFile);
         public static CompositeFormat ErrInvalidDateFormat => Get(() => Resources.AdrPlus.ErrorDateFormat);
+        public static CompositeFormat ErrRefDateBeforeHistory => Get(() => Resources.AdrPlus.ErrorRefDateBeforeHistory);
+        public static CompositeFormat ErrRefDateInFuture => Get(() => Resources.AdrPlus.ErrorRefDateInFuture);
         public static CompositeFormat ErrDirectoryNotFoundFormat => Get(() => Resources.AdrPlus.ExceptionDirectoryNotFound);
         public static CompositeFormat ErrInvalidStatusForUpdate => Get(() => Resources.AdrPlus.NotValidStatusForUpdate);
         public static CompositeFormat ErrInvalidStatusForApproveReject => Get(() => Resources.AdrPlus.NotValidStatusForApproveAndReject);

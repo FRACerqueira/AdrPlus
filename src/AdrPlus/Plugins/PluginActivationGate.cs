@@ -35,7 +35,7 @@ namespace AdrPlus.Plugins
         /// <c>IPluginManager.LoadPluginsAsync</c>), to compute <c>IsActive</c> for the dispatch-family calls, but
         /// defer the actual <c>PromptWarnMissingActivePlugins</c> call to right before their own result message.
         /// Printing any earlier can land on a cursor position a wizard flow has already repositioned (e.g. via
-        /// <c>IConsoleWriter.PromptMovePosition</c> after a confirm step), making the output invisible even
+        /// <c>IConsoleWriter.PromptClearRegionFromTop</c> after a confirm step), making the output invisible even
         /// though it was technically written.
         /// </summary>
         /// <param name="pluginManager">The plugin manager whose <c>LoadedPlugins</c> reflects this run's discovery.</param>

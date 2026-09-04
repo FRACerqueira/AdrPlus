@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-09-04
+
+### Fixed
+
+- `--refdate` on `approve`, `reject`, `supersede`, `version`, and `revise` is now validated against the
+  ADR's own recorded history: it can no longer be earlier than the ADR's `Created` date (for `approve`/
+  `reject`) or its most recent recorded update date (for `supersede`/`version`/`revise`). This closes a
+  gap where, for example, `adrplus approve --refdate 2026-01-01` could record an ADR as approved months
+  before it was created, or `adrplus supersede --refdate 2026-01-01` could record a successor ADR as
+  created before the decision it supersedes. Not applied to `new` (no prior history exists yet for a new
+  sequence number).
+- `--refdate` on all six commands that accept it (`new`, `approve`, `reject`, `supersede`, `version`,
+  `revise`) is now also rejected when it is later than today - e.g. `adrplus new --refdate 2099-01-01`
+  previously succeeded silently with no upper-bound check at all.
+- `--wizard` mode's final confirmation step no longer leaves stale summary text on screen: after the
+  Y/N prompt returns, the whole summary region is now cleared before the next line is written there,
+  instead of just repositioning the cursor over it. Previously, if the result line was shorter than the
+  summary text at the same row, leftover characters from the summary remained visible past the end of
+  the new line. Affects every command with a `--wizard` confirmation step (`approve`, `config`,
+  `explore`, `new`, `reject`, `revise`, `supersede`, `undo-status`, `version`).
+
+### Changed
+
+- `--wizard` mode's date-selection calendar now constrains which dates can even be highlighted, using
+  `PromptPlus`'s `Range(min, max)` on the underlying control, instead of only rejecting an invalid choice
+  after the fact. Without this, a `--wizard` run could walk through every step (select file, pick a date,
+  confirm) only to hit the new `--refdate` validation as a hard failure at the very end - the exact
+  scenario this closes. `approve`/`reject` bound the calendar to the selected ADR's own `Created` date;
+  `supersede`/`version`/`revise` bound it to the source ADR's most recent recorded date; all six commands
+  cap the upper bound at today. `new` has no lower bound, since a brand-new sequence number has no prior
+  history to respect.
+
+---
+
 ## [1.0.1] - 2026-08-28
 
 ### Changed

@@ -154,6 +154,21 @@ namespace AdrPlus.Commands.Approve
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
+                var (isValidFutureDate, futureDateError) = Helper.ValidateRefDateNotInFuture(dateAdr);
+                if (!isValidFutureDate)
+                {
+                    throw new InvalidDataException(futureDateError);
+                }
+
+                if (infoadr.Header.DateCreate.HasValue)
+                {
+                    var (isValidDate, dateError) = Helper.ValidateRefDateNotBefore(dateAdr, infoadr.Header.DateCreate.Value);
+                    if (!isValidDate)
+                    {
+                        throw new InvalidDataException(dateError);
+                    }
+                }
+
                 var (updok, upderror, record, content) = await _adrServices.StatusUpdateAdrAsync(infoadr.FileName, AdrStatus.Accepted, dateAdr, repoconfig, _filesystem, cancellationToken);
                 if (!updok || record is null || content is null)
                 {
@@ -279,7 +294,8 @@ namespace AdrPlus.Commands.Approve
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var minRefDate = filenewver.info!.Header.DateCreate ?? DateTime.MinValue;
+                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, minRefDate, DateTime.UtcNow.Date, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);
@@ -290,7 +306,7 @@ namespace AdrPlus.Commands.Approve
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), defDateRef);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

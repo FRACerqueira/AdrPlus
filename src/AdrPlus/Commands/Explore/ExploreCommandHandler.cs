@@ -459,7 +459,7 @@ namespace AdrPlus.Commands.Explore
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(parsedArgs, fieldsseleted.FieldsExplore);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.PromptConfirmExplore, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

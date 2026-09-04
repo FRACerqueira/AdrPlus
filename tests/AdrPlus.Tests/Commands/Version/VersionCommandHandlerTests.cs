@@ -1206,6 +1206,69 @@ namespace AdrPlus.Tests.Commands.Version
         }
 
         [Fact]
+        public async Task ExecuteAsync_WithRefDateBeforeUpdated_ThrowsInvalidDataException()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath, "--refdate", "2026-01-01" };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath },
+                { Arguments.DateRefAdr, "2026-01-01" }
+            };
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
+
+            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+            infoadr.Header.DateUpdate = new DateTime(2026, 6, 1);
+
+            // Set up specific mocks after the generic ones (from SetupBasicMocks) so these take precedence.
+            // fileadr/rootPath are normalized via Path.GetFullPath inside the handler before being passed
+            // to these calls, so the literal test constants never match - use Arg.Any<string>() for those.
+            _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(infoadr);
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            // Act & Assert
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+                .Should().ThrowAsync<InvalidDataException>();
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_WithRefDateInFuture_ThrowsInvalidDataException()
+        {
+            // Arrange
+            var configPath = "/repo/.adrplus";
+            var args = new[] { "--file", AdrFilePath, "--refdate", "2099-01-01" };
+            var parsedArgs = new Dictionary<Arguments, string>
+            {
+                { Arguments.FileAdr, AdrFilePath },
+                { Arguments.DateRefAdr, "2099-01-01" }
+            };
+
+            SetupBasicMocks(parsedArgs, BasicJsonConfig, configPath);
+
+            var infoadr = CreateTestAdrFileNameComponents(AdrFileName, AdrStatus.Accepted, number: 1, revision: 1);
+
+            // Set up specific mocks after the generic ones (from SetupBasicMocks) so these take precedence.
+            // fileadr/rootPath are normalized via Path.GetFullPath inside the handler before being passed
+            // to these calls, so the literal test constants never match - use Arg.Any<string>() for those.
+            _mockAdrServices.ParseFileName(Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+                .Returns(infoadr);
+            _mockAdrServices.ReadAllAdrByNumber(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns([]);
+            _mockAdrServices.GetLatestADRSequence(1, _mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>())
+                .Returns(callInfo => Task.FromResult<AdrFileNameComponents?>(infoadr));
+
+            // Act & Assert
+            await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+                .Should().ThrowAsync<InvalidDataException>();
+        }
+
+        [Fact]
         public async Task ExecuteAsync_WithInvalidDateFormat_ThrowsFormatException()
         {
             // Arrange
@@ -1602,7 +1665,7 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(callInfo => (false, callInfo.Arg<string>()));
             _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
                 .Returns(callInfo => (false, callInfo.Arg<string>()));
-            _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+            _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
                 .Returns((true, DateTime.UtcNow));
 
             // Act & Assert
@@ -1953,13 +2016,13 @@ namespace AdrPlus.Tests.Commands.Version
                 .Returns(callInfo => (false, callInfo.Arg<string>()));
             _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
                 .Returns(callInfo => (false, callInfo.Arg<string>()));
-            _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+            _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
                 .Returns((false, new DateTime(2026, 1, 15)));
             _mockConsole.PromptEmptyTemplate(Arg.Any<CancellationToken>())
                 .Returns((false, false));
             var (_, Top) = ((0, 10));
             _mockConsole.PromptCursorPosition().Returns((0, Top));
-            _mockConsole.PromptMovePosition(0, Top);
+            _mockConsole.PromptClearRegionFromTop(Top);
 
             var repoConfig = new AdrPlusRepoConfig("", "")
             {

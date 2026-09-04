@@ -694,6 +694,12 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>Ungültiges Datumsformat. Erwartetes Format: {0}</value>
   </data>
+  <data name="ErrorRefDateBeforeHistory" xml:space="preserve">
+    <value>Das Referenzdatum {0} darf nicht früher sein als {1}, das bereits für diese ADR erfasst wurde</value>
+  </data>
+  <data name="ErrorRefDateInFuture" xml:space="preserve">
+    <value>Das Referenzdatum {0} darf nicht später als heute ({1}) sein</value>
+  </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
     <value>Externer Befehl ausgeführt, aber fehlgeschlagen: {0}</value>
   </data>

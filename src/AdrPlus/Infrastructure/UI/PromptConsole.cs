@@ -324,9 +324,15 @@ namespace AdrPlus.Infrastructure.UI
             return PromptPlus.Console.GetCursorPosition();
         }
 
-        public void PromptMovePosition(int left, int top)
-        { 
-            PromptPlus.Console.SetCursorPosition(left, top);
+        /// <inheritdoc/>
+        public void PromptClearRegionFromTop(int top)
+        {
+            var (_, bottom) = PromptPlus.Console.GetCursorPosition();
+            for (var row = top; row <= bottom; row++)
+            {
+                PromptPlus.Console.ClearLine(row);
+            }
+            PromptPlus.Console.SetCursorPosition(0, top);
         }
 
         /// <inheritdoc/>
@@ -489,13 +495,14 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, CancellationToken cancellationToken = default)
+        public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, DateTime minValue, DateTime maxValue, CancellationToken cancellationToken = default)
         {
             message =$"{message}";
             var result = PromptPlus.Controls
                 .Calendar(message)
                 .Culture(config.Language)
                 .Default(dateref)
+                .Range(minValue, maxValue)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? dateref : result.Content!.Value);
         }
