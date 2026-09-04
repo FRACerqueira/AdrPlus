@@ -323,7 +323,7 @@ namespace AdrPlus.Commands.Reject
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), defDateRef);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

@@ -415,7 +415,7 @@ namespace AdrPlus.Commands.NewAdr
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(parsedArgs, defDateRef);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
                 if (resultCnf.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

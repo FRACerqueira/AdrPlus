@@ -428,7 +428,7 @@ namespace AdrPlus.Commands.Supersede
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewsup.info.FileName), defDateRef, scopePrompt.Content.Trim(), domainPrompt.Content.Trim());
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
 
                 if (resultCnf.IsAborted)
                 {

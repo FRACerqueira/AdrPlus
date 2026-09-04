@@ -1646,7 +1646,7 @@ public class ReviseCommandHandlerTests
             .Returns((false, new DateTime(2026, 1, 15)));
         var (_, Top) = ((0, 10));
         _mockConsole.PromptCursorPosition().Returns((0, Top));
-        _mockConsole.PromptMovePosition(0, Top);
+        _mockConsole.PromptClearRegionFromTop(Top);
 
         var repoConfig = new AdrPlusRepoConfig("", "")
         {

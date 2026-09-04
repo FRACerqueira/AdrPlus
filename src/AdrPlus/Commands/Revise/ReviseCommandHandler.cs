@@ -454,7 +454,7 @@ namespace AdrPlus.Commands.Revise
                 var (_, Top) = _prompt.PromptCursorPosition();
                 DisplayWizardSummary(folderPrompt.Content, Path.GetFileName(filenewver.info.FileName), dateRefPrompt.Content);
                 var resultCnf = _prompt.PromptConfirm(Resources.AdrPlus.NewAdrPromptConfirmCreation, cancellationToken);
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
 
                 if (resultCnf.IsAborted)
                 {

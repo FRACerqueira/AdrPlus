@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--refdate` on all six commands that accept it (`new`, `approve`, `reject`, `supersede`, `version`,
   `revise`) is now also rejected when it is later than today - e.g. `adrplus new --refdate 2099-01-01`
   previously succeeded silently with no upper-bound check at all.
+- `--wizard` mode's final confirmation step no longer leaves stale summary text on screen: after the
+  Y/N prompt returns, the whole summary region is now cleared before the next line is written there,
+  instead of just repositioning the cursor over it. Previously, if the result line was shorter than the
+  summary text at the same row, leftover characters from the summary remained visible past the end of
+  the new line. Affects every command with a `--wizard` confirmation step (`approve`, `config`,
+  `explore`, `new`, `reject`, `revise`, `supersede`, `undo-status`, `version`).
 
 ### Changed
 

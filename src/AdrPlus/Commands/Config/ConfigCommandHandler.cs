@@ -367,7 +367,7 @@ namespace AdrPlus.Commands.Config
                     return (JsonSerializer.Serialize(repoconfig, AppConstants.RepoSerializerOptions), prefixvalue);
                 }
                 PromptPlus.Config.EnabledAbortKey = true;
-                _prompt.PromptMovePosition(0, Curtop);
+                _prompt.PromptClearRegionFromTop(Curtop);
             }
         }
 
@@ -619,7 +619,7 @@ namespace AdrPlus.Commands.Config
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser, cancellationToken);
                 }
-                _prompt.PromptMovePosition(0, Top);
+                _prompt.PromptClearRegionFromTop(Top);
                 modifiedConfig = UpdateJsonFieldRepo(modifiedConfig, field.Name, field.Value, field.Type);
                 modifiedConfig = _validateConfig.EnsureFieldsRepoStructure(modifiedConfig);
             }
