@@ -4,6 +4,7 @@
 // ***************************************************************************************
 
 using AdrPlus.Domain;
+using AdrPlus.Infrastructure.Formatting;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -142,6 +143,42 @@ namespace AdrPlus.Core
                 return false;
             }
             return Enum.TryParse<BehaviorWithoutArg>(behaviorWithoutArgs, true, out _);
+        }
+
+        /// <summary>
+        /// Validates that a reference date is not earlier than a date already recorded for this ADR or its lineage,
+        /// preventing a status transition from being dated before the event it logically depends on.
+        /// </summary>
+        /// <param name="dref">The reference date being applied to a new status transition.</param>
+        /// <param name="notBefore">The most recent date already on record that <paramref name="dref"/> must not precede.</param>
+        /// <returns>A tuple indicating validity and, when invalid, a formatted error message.</returns>
+        public static (bool IsValid, string Error) ValidateRefDateNotBefore(DateTime dref, DateTime notBefore)
+        {
+            if (dref.Date < notBefore.Date)
+            {
+                return (false, string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrRefDateBeforeHistory,
+                    dref.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    notBefore.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+            }
+            return (true, string.Empty);
+        }
+
+        /// <summary>
+        /// Validates that a reference date is not later than today, since a refdate records something that
+        /// already happened and cannot be dated in the future.
+        /// </summary>
+        /// <param name="dref">The reference date being applied to a new status transition.</param>
+        /// <returns>A tuple indicating validity and, when invalid, a formatted error message.</returns>
+        public static (bool IsValid, string Error) ValidateRefDateNotInFuture(DateTime dref)
+        {
+            var today = DateTime.UtcNow.Date;
+            if (dref.Date > today)
+            {
+                return (false, string.Format(CultureInfo.CurrentCulture, FormatMessages.ErrRefDateInFuture,
+                    dref.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+            }
+            return (true, string.Empty);
         }
 
         #endregion

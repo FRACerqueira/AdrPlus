@@ -359,6 +359,29 @@ public class NewAdrCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithRefDateInFuture_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var futureDate = "2099-01-01";
+        var args = new[] { "--path", RepoPath, "--title", "My New ADR", "--refdate", futureDate };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.TargetRepo, RepoPath },
+            { Arguments.TitleAdr, "My New ADR" },
+            { Arguments.DateRefAdr, futureDate }
+        };
+
+        SetupBasicMocks(parsedArgs, BasicJsonConfig);
+        _mockAdrServices.GetFileByUniqueTitleFrom(Arg.Any<string>(), Arg.Any<AdrFileNameComponents[]>(), Arg.Any<AdrPlusRepoConfig>())
+            .Returns(string.Empty);
+        _mockAdrServices.GetNextNumberFrom(Arg.Any<AdrFileNameComponents[]>()).Returns(1);
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WithInvalidDateFormat_ThrowsFormatException()
     {
         // Arrange
@@ -644,7 +667,7 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PromptClearWaitText(cursorPos);
         _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -673,7 +696,7 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PromptClearWaitText(cursorPos);
         _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((true, string.Empty));
@@ -704,7 +727,7 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PromptClearWaitText(cursorPos);
         _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((false, "Domain"));
@@ -898,7 +921,7 @@ public class NewAdrCommandHandlerTests
         _mockConsole.PromptClearWaitText(cursorPos);
         _mockNewAdrPrompts.PromptEditTitleAdr(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((false, "My New ADR"));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((false, new DateTime(2026, 1, 15)));
         _mockNewAdrPrompts.PromptEditScopeAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns((false, string.Empty));

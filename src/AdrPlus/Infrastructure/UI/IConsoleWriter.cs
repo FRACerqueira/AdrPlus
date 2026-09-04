@@ -180,9 +180,11 @@ namespace AdrPlus.Infrastructure.UI
         /// <param name="message">The message to display to the user.</param>
         /// <param name="dateref">The reference date to display initially.</param>
         /// <param name="adrPlusRepo">The repository configuration.</param>
+        /// <param name="minValue">The earliest date the user is allowed to select (inclusive). Pass <see cref="DateTime.MinValue"/> when no lower bound applies.</param>
+        /// <param name="maxValue">The latest date the user is allowed to select (inclusive).</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A tuple containing a boolean indicating if the operation was aborted and the selected date.</returns>
-        (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, CancellationToken cancellationToken = default);
+        (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig adrPlusRepo, DateTime minValue, DateTime maxValue, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Prompts the user to select an ADR from a list of latest ADR files.

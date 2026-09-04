@@ -694,6 +694,12 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>Недопустимый формат даты. Ожидаемый формат: {0}</value>
   </data>
+  <data name="ErrorRefDateBeforeHistory" xml:space="preserve">
+    <value>Дата ссылки {0} не может быть раньше {1}, уже зафиксированной для этого ADR</value>
+  </data>
+  <data name="ErrorRefDateInFuture" xml:space="preserve">
+    <value>Дата ссылки {0} не может быть позже сегодняшнего дня ({1})</value>
+  </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
     <value>Внешняя команда выполнена, но завершилась с ошибкой: {0}</value>
   </data>

@@ -694,6 +694,12 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>無効な日付形式です。期待される形式: {0}</value>
   </data>
+  <data name="ErrorRefDateBeforeHistory" xml:space="preserve">
+    <value>参照日 {0} は、このADRに既に記録されている {1} より前にすることはできません</value>
+  </data>
+  <data name="ErrorRefDateInFuture" xml:space="preserve">
+    <value>参照日 {0} は本日 ({1}) より後にすることはできません</value>
+  </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
     <value>外部コマンドは実行されましたが失敗しました: {0}</value>
   </data>

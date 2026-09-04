@@ -167,6 +167,22 @@ namespace AdrPlus.Commands.Supersede
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
+                var (isValidFutureDate, futureDateError) = Helper.ValidateRefDateNotInFuture(dateAdr);
+                if (!isValidFutureDate)
+                {
+                    throw new InvalidDataException(futureDateError);
+                }
+
+                var notBeforeDate = infoadr.Header.DateUpdate ?? infoadr.Header.DateCreate;
+                if (notBeforeDate.HasValue)
+                {
+                    var (isValidDate, dateError) = Helper.ValidateRefDateNotBefore(dateAdr, notBeforeDate.Value);
+                    if (!isValidDate)
+                    {
+                        throw new InvalidDataException(dateError);
+                    }
+                }
+
                 var curpos = _prompt.PromptGetCursorPosition();
                 if (hasWizard)
                 {
@@ -400,7 +416,8 @@ namespace AdrPlus.Commands.Supersede
                 }
                 parsedArgs[Arguments.DomainAdr] = domainPrompt.Content.Trim();
 
-                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var minRefDate = filenewsup.info!.Header.DateUpdate ?? filenewsup.info!.Header.DateCreate ?? DateTime.MinValue;
+                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, minRefDate, DateTime.UtcNow.Date, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

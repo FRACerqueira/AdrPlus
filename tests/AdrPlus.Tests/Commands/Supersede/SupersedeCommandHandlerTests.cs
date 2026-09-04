@@ -262,6 +262,63 @@ public class SupersedeCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithRefDateBeforeAccepted_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath, "--refdate", "2026-01-01" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, ValidAdrFilePath },
+            { Arguments.DateRefAdr, "2026-01-01" }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown);
+        adrInfo.Header.DateUpdate = new DateTime(2026, 3, 10);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusChangeSupersedeAdrAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
+                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithRefDateInFuture_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath, "--refdate", "2099-01-01" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, ValidAdrFilePath },
+            { Arguments.DateRefAdr, "2099-01-01" }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "FolderAdr": "adr", "StatusNew": "Proposed", "StatusAcc": "Accepted", "StatusSup": "Superseded"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+        _mockAdrServices.GetNextNumber(_mockFileSystem, Arg.Any<string>(), Arg.Any<AdrPlusRepoConfig>()).Returns(2);
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Accepted, AdrStatus.Unknown);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusChangeSupersedeAdrAsync(
+                Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DateTime>(),
+                Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WithScopeAndDomainArgs_UsesProvidedValuesInsteadOfPredecessorAdr()
     {
         // Arrange
@@ -901,7 +958,7 @@ public class SupersedeCommandHandlerTests
             .Returns(callInfo => (false, callInfo.Arg<string>()));
         _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns(callInfo => (false, callInfo.Arg<string>()));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((true, DateTime.UtcNow));
 
         // Act & Assert
@@ -938,7 +995,7 @@ public class SupersedeCommandHandlerTests
             .Returns(callInfo => (false, callInfo.Arg<string>()));
         _mockNewAdrPrompts.PromptEditDomainAdr(Arg.Any<string>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
             .Returns(callInfo => (false, callInfo.Arg<string>()));
-        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<CancellationToken>())
+        _mockConsole.PromptCalendar(Arg.Any<string>(), Arg.Any<DateTime>(), _config, Arg.Any<DateTime>(), Arg.Any<DateTime>(), Arg.Any<CancellationToken>())
             .Returns((false, DateTime.UtcNow));
         _mockConsole.PromptConfirm(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((true, false));

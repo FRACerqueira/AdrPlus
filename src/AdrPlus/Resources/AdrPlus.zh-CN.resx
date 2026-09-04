@@ -694,6 +694,12 @@
   <data name="ErrorDateFormat" xml:space="preserve">
     <value>日期格式无效。预期格式：{0}</value>
   </data>
+  <data name="ErrorRefDateBeforeHistory" xml:space="preserve">
+    <value>参考日期 {0} 不能早于该 ADR 已记录的 {1}</value>
+  </data>
+  <data name="ErrorRefDateInFuture" xml:space="preserve">
+    <value>参考日期 {0} 不能晚于今天（{1}）</value>
+  </data>
   <data name="ErrorExternalCommand" xml:space="preserve">
     <value>外部命令执行失败：{0}</value>
   </data>

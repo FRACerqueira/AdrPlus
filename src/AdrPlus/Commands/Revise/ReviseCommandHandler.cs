@@ -187,6 +187,7 @@ namespace AdrPlus.Commands.Revise
                 {
                     _prompt.PromptClearWaitText(curpos);
                 }
+
                 if (!infolastadr.IsValid)
                 {
                     throw new InvalidDataException(infolastadr.ErrorMessage);
@@ -217,6 +218,23 @@ namespace AdrPlus.Commands.Revise
                         throw new InvalidOperationException(Resources.AdrPlus.NotLatestVersion);
                     }
                 }
+
+                var (isValidFutureDate, futureDateError) = Helper.ValidateRefDateNotInFuture(dateAdr);
+                if (!isValidFutureDate)
+                {
+                    throw new InvalidDataException(futureDateError);
+                }
+
+                var notBeforeDate = infolastadr.Header.DateUpdate ?? infolastadr.Header.DateCreate;
+                if (notBeforeDate.HasValue)
+                {
+                    var (isValidDate, dateError) = Helper.ValidateRefDateNotBefore(dateAdr, notBeforeDate.Value);
+                    if (!isValidDate)
+                    {
+                        throw new InvalidDataException(dateError);
+                    }
+                }
+
                 var adrRecord = new AdrRecord
                 {
                     Number = infoadr.Number,
@@ -421,7 +439,8 @@ namespace AdrPlus.Commands.Revise
                 }
                 parsedArgs[Arguments.FileAdr] = filenewver.info!.FileName;
 
-                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, cancellationToken);
+                var minRefDate = filenewver.info!.Header.DateUpdate ?? filenewver.info!.Header.DateCreate ?? DateTime.MinValue;
+                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, DateTime.UtcNow, _config, minRefDate, DateTime.UtcNow.Date, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

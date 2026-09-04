@@ -149,6 +149,12 @@ namespace AdrPlus.Commands.NewAdr
 
                 var dateAdr = ParseDateReference(parsedArgs);
 
+                var (isValidFutureDate, futureDateError) = Helper.ValidateRefDateNotInFuture(dateAdr);
+                if (!isValidFutureDate)
+                {
+                    throw new InvalidDataException(futureDateError);
+                }
+
                 var adrRecord = CreateAdrRecord(nextNumber, parsedArgs, dateAdr, repoconfig);
                 var filename = adrRecord.GetFileName(repoconfig);
                 var folder = Path.GetFullPath(Path.Combine(targetPath, repoconfig.FolderAdr));
@@ -346,7 +352,7 @@ namespace AdrPlus.Commands.NewAdr
                 parsedArgs[Arguments.TitleAdr] = titlePrompt.Content.Trim();
                 defTitle = titlePrompt.Content.Trim();
 
-                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, defDateRef, _config, cancellationToken);
+                var dateRefPrompt = _prompt.PromptCalendar(Resources.AdrPlus.NewAdrPromptSelectDate, defDateRef, _config, DateTime.MinValue, DateTime.UtcNow.Date, cancellationToken);
                 if (dateRefPrompt.IsAborted)
                 {
                     throw new OperationCanceledException(Resources.AdrPlus.CancelledByUser);

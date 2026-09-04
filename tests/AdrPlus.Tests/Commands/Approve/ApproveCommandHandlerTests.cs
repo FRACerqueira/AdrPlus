@@ -248,6 +248,57 @@ public class ApproveCommandHandlerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithRefDateBeforeCreated_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath, "--refdate", "2026-01-01" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, ValidAdrFilePath },
+            { Arguments.DateRefAdr, "2026-01-01" }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Unknown);
+        adrInfo.Header.DateCreate = new DateTime(2026, 6, 1);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithRefDateInFuture_ThrowsInvalidDataException()
+    {
+        // Arrange
+        var args = new[] { "--file", ValidAdrFilePath, "--refdate", "2099-01-01" };
+        var parsedArgs = new Dictionary<Arguments, string>
+        {
+            { Arguments.FileAdr, ValidAdrFilePath },
+            { Arguments.DateRefAdr, "2099-01-01" }
+        };
+        var jsonConfig = """{"Prefix": "ADR", "LenSeq": 4, "LenVersion": 2, "StatusNew": "Proposed", "StatusAcc": "Accepted"}""";
+
+        SetupBasicMocks(parsedArgs, jsonConfig);
+
+        var adrInfo = CreateAdrFileNameComponents(ValidAdrFilePath, AdrStatus.Unknown);
+        _mockAdrServices.ParseFileName(ValidAdrFilePath, Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem)
+            .Returns(adrInfo);
+        _mockAdrServices.StatusUpdateAdrAsync(Arg.Any<string>(), AdrStatus.Accepted, Arg.Any<DateTime>(), Arg.Any<AdrPlusRepoConfig>(), _mockFileSystem, Arg.Any<CancellationToken>())
+            .Returns((true, string.Empty, new AdrRecord(), "content"));
+
+        // Act & Assert
+        await _handler.Invoking(h => h.ExecuteAsync(args, TestContext.Current.CancellationToken))
+            .Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenFileNotFound_ThrowsFileNotFoundException()
     {
         // Arrange

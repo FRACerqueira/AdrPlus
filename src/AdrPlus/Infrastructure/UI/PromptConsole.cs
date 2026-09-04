@@ -489,13 +489,14 @@ namespace AdrPlus.Infrastructure.UI
         }
 
         /// <inheritdoc/>
-        public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, CancellationToken cancellationToken = default)
+        public (bool IsAborted, DateTime Content) PromptCalendar(string message, DateTime dateref, AdrPlusConfig config, DateTime minValue, DateTime maxValue, CancellationToken cancellationToken = default)
         {
             message =$"{message}";
             var result = PromptPlus.Controls
                 .Calendar(message)
                 .Culture(config.Language)
                 .Default(dateref)
+                .Range(minValue, maxValue)
                 .Run(cancellationToken);
             return (result.IsAborted, result.IsAborted ? dateref : result.Content!.Value);
         }
