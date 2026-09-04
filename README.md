@@ -20,6 +20,7 @@ AdrPlus was created to **solve this problem with a practical CLI workflow that k
 
 It supports versioning, revision cycles, status workflows (approve / reject / undo), and an **interactive wizard** — all driven by a lightweight JSON configuration file.
 
+![AdrPlus wizard demo](demoadr.gif)
 
 ---
 
