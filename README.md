@@ -10,6 +10,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-512BD4)](https://dotnet.microsoft.com/)
 
+> [!WARNING]
+> **This project is being replaced.**
+>
+> AdrPlus is being succeeded by two new projects:
+>
+> - **[adrpy-tui](https://github.com/FRACerqueira/adrpy-tui)**
+> - **[adrpy-ai](https://github.com/FRACerqueira/adrpy-ai)**
+>
+> New features and active development will happen in those repositories. AdrPlus remains available as-is, but it is no longer the primary focus.
+>
+> A future version of AdrPlus, architecturally similar to [adrpy-tui](https://github.com/FRACerqueira/adrpy-tui), **will be evaluated** later on. There is no commitment or timeline for it yet. Watch this repository for updates.
+>
+> If you are starting a new project, please consider using the new tools instead.
+ 
 > 🤖 **New:** manage your ADRs conversationally with the [**AdrPlus AI Assistant Plugin**](https://github.com/FRACerqueira/AdrPlus-IA-Plugin) — let Claude Code or GitHub Copilot create, approve, audit, and index ADRs for you. [Learn more ↓](#using-adrplus-with-ai-coding-assistants)
 
 Many teams still document architectural decisions **inconsistently** (scattered Markdown files, no version flow, and hard-to-track status changes).
